@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedRealMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2024-02-04">
+    enum="AndroidProcessedMinidumps" expires_after="2024-04-28">
   <owner>wnwen@chromium.org</owner>
   <owner>src/components/minidump_uploader/OWNERS</owner>
   <summary>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Stability.Android.SystemExitReason"
-    enum="AndroidProcessExitReason" expires_after="2024-02-11">
+    enum="AndroidProcessExitReason" expires_after="2024-04-28">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
@@ -297,7 +297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

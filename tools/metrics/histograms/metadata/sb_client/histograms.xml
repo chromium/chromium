@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestDuration" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.EncryptedZipUsesAes" enum="BooleanZipHasAES"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -327,7 +327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsDeepScanningPrompt"
-    enum="BooleanRequested" expires_after="2024-02-11">
+    enum="BooleanRequested" expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -511,7 +511,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.CancelClassificationReason"
     enum="SBClientPhishingCancelClassificationReason"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

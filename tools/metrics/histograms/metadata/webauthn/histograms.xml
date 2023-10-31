@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManModalRequests"
-    enum="CredManGetRequestEnum" expires_after="2024-01-01">
+    enum="CredManGetRequestEnum" expires_after="2024-04-28">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>

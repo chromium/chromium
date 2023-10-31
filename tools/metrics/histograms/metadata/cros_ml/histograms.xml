@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.{Population}.CpuTimeMicrosec"
-    units="microseconds" expires_after="2024-02-01">
+    units="microseconds" expires_after="2024-04-28">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>
@@ -157,7 +157,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
-    expires_after="2024-02-01">
+    expires_after="2024-04-28">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.HandwritingModel.Recognize.Event"
-    enum="Boolean" expires_after="2024-02-01">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.TextSuggester.Suggest.Event"
-    enum="BooleanError" expires_after="2024-02-01">
+    enum="BooleanError" expires_after="2024-04-28">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>

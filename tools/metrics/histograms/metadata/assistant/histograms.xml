@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ButtonClickCount" enum="AssistantButtonId"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ContextEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>updowndota@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.OptInFlowStatus" enum="AssistantOptInFlowStatus"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>Record the status of the Assistant opt-in flow.</summary>
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.QueryResponseType" enum="AssistantQueryResponseType"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>The Assistant query response type.</summary>

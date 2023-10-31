@@ -129,7 +129,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.KeyboardAutoRepeat{Setting}"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-04-28">
   <owner>ckincaid@chromium.org</owner>
   <owner>dmblack@google.com</owner>
   <owner>cros-settings@google.com</owner>
@@ -143,7 +143,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.KeyboardFunctionKeys"
-    enum="BooleanToggled" expires_after="2024-02-05">
+    enum="BooleanToggled" expires_after="2024-04-28">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -165,7 +165,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.TouchpadSpeedValue"
-    enum="TouchpadSensitivity" expires_after="2024-02-20">
+    enum="TouchpadSensitivity" expires_after="2024-04-28">
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -244,7 +244,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Languages.Interaction"
-    enum="SettingsLanguagesPageInteraction" expires_after="2024-02-25">
+    enum="SettingsLanguagesPageInteraction" expires_after="2024-04-28">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -320,7 +320,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumClicksUntilChange"
-    units="clicks" expires_after="2024-02-11">
+    units="clicks" expires_after="2024-04-28">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>wesokuhara@google.com</owner>
@@ -350,7 +350,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumSearchResultsFetched" units="results"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -410,7 +410,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.PathVisited"
-    enum="WebUIOSSettingsPathHashes" expires_after="2024-02-25">
+    enum="WebUIOSSettingsPathHashes" expires_after="2024-04-28">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -524,7 +524,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSectionSelected"
-    enum="OsSettingsSection" expires_after="2024-02-25">
+    enum="OsSettingsSection" expires_after="2024-04-28">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -544,7 +544,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSubpageSelected"
-    enum="OsSettingsSubpage" expires_after="2024-02-25">
+    enum="OsSettingsSubpage" expires_after="2024-04-28">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -554,7 +554,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultTypeSelected"
-    enum="OsSettingsSearchResultType" expires_after="2024-02-25">
+    enum="OsSettingsSearchResultType" expires_after="2024-04-28">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -577,7 +577,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.TimeUntilChange" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>wesokuhara@google.com</owner>

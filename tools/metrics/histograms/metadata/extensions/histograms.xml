@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.AppLaunch" enum="AppLaunch"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>tapted@chromium.org</owner>
@@ -743,7 +743,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateBeforeRequestTime.SingleExtension2"
-    units="microseconds" expires_after="2024-02-04">
+    units="microseconds" expires_after="2024-04-28">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -791,7 +791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.LoadRulesetResult"
-    enum="LoadRulesetResult" expires_after="2024-02-20">
+    enum="LoadRulesetResult" expires_after="2024-04-28">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -801,7 +801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2"
-    units="rules" expires_after="2024-02-25">
+    units="rules" expires_after="2024-04-28">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -960,7 +960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RulesetReindexSuccessful"
-    enum="BooleanSuccess" expires_after="2024-02-04">
+    enum="BooleanSuccess" expires_after="2024-04-28">
   <owner>lazyboy@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1214,7 +1214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DisableReason2" enum="ExtensionDisableReason"
-    expires_after="2024-01-01">
+    expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1297,7 +1297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.EventPageIdleTime" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>The time an extension's event page has spent unloaded.</summary>
@@ -1756,7 +1756,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledAndBlockListed" units="count"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1769,7 +1769,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledCacheStatus"
     enum="ExtensionInstallationDownloadingCacheStatus"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
@@ -1780,7 +1780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledCreationStage"
-    enum="ExtensionInstallCreationStage" expires_after="2024-02-04">
+    enum="ExtensionInstallCreationStage" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1795,7 +1795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledDownloadingStage"
-    enum="ExtensionInstallationDownloadingStage" expires_after="2024-02-04">
+    enum="ExtensionInstallationDownloadingStage" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1811,7 +1811,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledFailureCacheStatus"
     enum="ExtensionInstallationDownloadingCacheStatus"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1825,7 +1825,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureCrxInstallError"
-    enum="ExtensionInstallationCrxInstallError" expires_after="2024-02-04">
+    enum="ExtensionInstallationCrxInstallError" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1838,7 +1838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureManifestInvalidAppStatusError"
-    enum="ManifestInvalidAppStatusError" expires_after="2024-02-04">
+    enum="ManifestInvalidAppStatusError" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1853,7 +1853,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureNoUpdatesInfo"
-    enum="ExtensionNoUpdatesInfo" expires_after="2024-02-04">
+    enum="ExtensionNoUpdatesInfo" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1868,7 +1868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureReason3"
-    enum="ExtensionInstallationFailureReason" expires_after="2024-02-04">
+    enum="ExtensionInstallationFailureReason" expires_after="2024-04-28">
 <!-- Name completed by histogram_suffixes name="ExtensionSource" -->
 
   <owner>vkovalova@google.com</owner>
@@ -1887,7 +1887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureSandboxUnpackFailureReason2"
-    enum="ExtensionUnpackFailureReason" expires_after="2024-02-04">
+    enum="ExtensionUnpackFailureReason" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1903,7 +1903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureSessionType{FailureReason}"
-    enum="SessionType" expires_after="2024-02-20">
+    enum="SessionType" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1928,7 +1928,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled"
-    enum="BooleanEnabled" expires_after="2024-02-04">
+    enum="BooleanEnabled" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1948,7 +1948,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS"
     enum="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1962,7 +1962,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache"
-    enum="BooleanCacheHit" expires_after="2024-02-04">
+    enum="BooleanCacheHit" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1975,7 +1975,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledLoadTime" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1986,7 +1986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledNotLoadedDisableReason"
-    enum="ExtensionDisableReason" expires_after="2024-02-04">
+    enum="ExtensionDisableReason" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2011,7 +2011,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2045,7 +2045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTimedOutAndNotInstalledCount"
-    units="units" expires_after="2024-02-04">
+    units="units" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2056,7 +2056,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTimedOutCount" units="units"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2067,7 +2067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTime{ExtensionInstallStages}"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2099,7 +2099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTotalCandidateCount" units="units"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2113,7 +2113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalled{ErrorType}FetchTries"
-    units="retries" expires_after="2024-02-20">
+    units="retries" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2135,7 +2135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalled{ErrorType}NetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2024-02-20">
+    enum="NetErrorCodes" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2229,7 +2229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.ExtensionMV3Calls"
-    enum="ExtensionFunctions" expires_after="2024-02-04">
+    enum="ExtensionFunctions" expires_after="2024-04-28">
   <owner>tjudkins@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -2451,7 +2451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.GuestView.ChangeOwnerWebContentsOnAttach"
-    enum="Boolean" expires_after="2024-02-20">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>mcnee@chromium.org</owner>
   <owner>src/components/guest_view/OWNERS</owner>
   <summary>
@@ -2877,7 +2877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.InstallFrictionDialogAction"
-    enum="ExtensionInstallFrictionDialogAction" expires_after="2024-02-04">
+    enum="ExtensionInstallFrictionDialogAction" expires_after="2024-04-28">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3473,7 +3473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.LoadType2" enum="ExtensionType"
-    expires_after="2024-01-01">
+    expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3747,7 +3747,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.NetworkDelay" units="ms" expires_after="2024-02-20">
+<histogram name="Extensions.NetworkDelay" units="ms" expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -4047,7 +4047,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ProcessManagerStartupHostsTime2" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4442,7 +4442,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2024-02-20">
+    enum="SettingsOverriddenDialogResult" expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4564,7 +4564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
-    units="Extension Count" expires_after="2024-02-11">
+    units="Extension Count" expires_after="2024-04-28">
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4574,7 +4574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Toolbar.InvocationSource"
-    enum="ExtensionActionInvocationSource" expires_after="2024-02-11">
+    enum="ExtensionActionInvocationSource" expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4678,7 +4678,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTime"
-    units="ms" expires_after="2024-02-04">
+    units="ms" expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4690,7 +4690,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTimeInMicroseconds"
-    units="microseconds" expires_after="2024-02-04">
+    units="microseconds" expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4721,7 +4721,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestListenerEvaluationTimeInMicroseconds.{HandlerTypes}"
-    units="microseconds" expires_after="2024-02-20">
+    units="microseconds" expires_after="2024-04-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -4975,7 +4975,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithFriction"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4988,7 +4988,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithoutFriction"
-    enum="Boolean" expires_after="2024-02-04">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -5052,7 +5052,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.{ExtensionSource}ForceInstalled{ErrorType}HttpErrorCode2"
-    enum="HttpResponseCode" expires_after="2024-02-20">
+    enum="HttpResponseCode" expires_after="2024-04-28">
   <owner>vkovalova@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>

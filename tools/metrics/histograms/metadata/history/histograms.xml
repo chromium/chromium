@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.InitialState"
-    enum="HistoryClustersInitialState" expires_after="2024-02-11">
+    enum="HistoryClustersInitialState" expires_after="2024-04-28">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.NumQueries"
-    units="number queries made" expires_after="2024-02-11">
+    units="number queries made" expires_after="2024-04-28">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -590,7 +590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.BatchEntityLookupLatency2" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -604,7 +604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.BatchEntityLookupSize" units="count"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -827,7 +827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.ContextClusterer.ThreadTime"
-    units="ms" expires_after="2024-02-11">
+    units="ms" expires_after="2024-04-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -843,7 +843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.EntityIdGathering.ThreadTime"
-    units="ms" expires_after="2024-02-11">
+    units="ms" expires_after="2024-04-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -859,7 +859,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason{Source}"
-    enum="ClusterFilterReason" expires_after="2024-02-20">
+    enum="ClusterFilterReason" expires_after="2024-04-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1028,7 +1028,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.AllKeywordsCount"
-    units="count" expires_after="2024-02-11">
+    units="count" expires_after="2024-04-28">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1063,7 +1063,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.ShortKeywordsCount"
-    units="count" expires_after="2024-02-11">
+    units="count" expires_after="2024-04-28">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1216,7 +1216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.ProcessBatchOfVisits.ThreadTime"
-    units="ms" expires_after="2024-02-11">
+    units="ms" expires_after="2024-04-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1232,7 +1232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime"
-    units="ms" expires_after="2024-02-25">
+    units="ms" expires_after="2024-04-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1595,7 +1595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.JourneysEligibleAndEnabledAtSessionStart"
-    units="BooleanEnabled" expires_after="2024-02-25">
+    units="BooleanEnabled" expires_after="2024-04-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1606,7 +1606,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.KeywordCache.Latency" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1644,7 +1644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.KeywordCache.ThreadTime" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1675,7 +1675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.ProcessClustersDuration" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>olivierli@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1697,7 +1697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.ServiceLatency" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1865,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UpdateClusters.TimeBetweenTasks" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1886,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.WebUISessionDuration" units="ms"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -2076,7 +2076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount28Day_V3" units="domains"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2138,7 +2138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount7Day_V3" units="domains"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2217,7 +2217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsLegacy" units="visits"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2231,7 +2231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsNotRemapped" units="visits"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2245,7 +2245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableFrom" units="visits"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2259,7 +2259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsRemappableOpener" units="visits"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2273,7 +2273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsTotal" units="visits"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2291,7 +2291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.HistoryPageView" enum="HistoryPageView"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>calamity@chromium.org</owner>
   <owner>src/chrome/browser/resources/history/OWNERS</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2305,7 +2305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InitializationFailureStep" enum="HistoryInitStep"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2332,7 +2332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryURLHistoryItems" units="items"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2401,7 +2401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MigrateFailureFromVersion" units="units"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2429,7 +2429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MonthlyURLCount" units="urls"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2681,7 +2681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitTableCount" units="visits"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -2704,7 +2704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WeeklyURLCount" units="URLs"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>

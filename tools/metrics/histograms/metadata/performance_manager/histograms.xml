@@ -23,7 +23,7 @@ each histogram.
 </variants>
 
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
-    enum="AccessibilityModeFlagEnum" expires_after="2024-02-25">
+    enum="AccessibilityModeFlagEnum" expires_after="2024-04-28">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -33,7 +33,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Experimental.HasAccessibilityModeFlag"
-    enum="Boolean" expires_after="2024-02-25">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -44,7 +44,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU.{Timing}"
-    units="%" expires_after="2024-01-01">
+    units="%" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -70,7 +70,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.BackgroundTabsToGetUnderCPUThreshold.{Timing}"
-    units="count" expires_after="2024-01-01">
+    units="count" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -83,7 +83,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.DurationOverThreshold"
-    units="ms" expires_after="2024-01-01">
+    units="ms" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -95,7 +95,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.TopNBackgroundCPU.{N}.{Timing}"
-    units="%" expires_after="2024-01-01">
+    units="%" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -115,7 +115,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU.{Timing}"
-    units="%" expires_after="2024-01-01">
+    units="%" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -128,7 +128,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundTabCount.{Timing}"
-    units="count" expires_after="2024-01-01">
+    units="count" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -140,7 +140,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.TotalForegroundCPU.{Timing}"
-    units="%" expires_after="2024-01-01">
+    units="%" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -153,7 +153,7 @@ each histogram.
 
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.TotalForegroundTabCount.{Timing}"
-    units="count" expires_after="2024-01-01">
+    units="count" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>

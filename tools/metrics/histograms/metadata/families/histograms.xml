@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="AddSupervisionDialog.Enrollment"
-    enum="AddSupervisionEnrollment" expires_after="2024-02-20">
+    enum="AddSupervisionEnrollment" expires_after="2024-04-28">
   <owner>courtneywong@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.FaviconAvailability"
-    enum="SupervisedUserFaviconAvailability" expires_after="2024-02-11">
+    enum="SupervisedUserFaviconAvailability" expires_after="2024-04-28">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.ParentAccess.FlowResult.{FlowType}"
-    enum="ParentAccessFlowResult" expires_after="2024-02-20">
+    enum="ParentAccessFlowResult" expires_after="2024-04-28">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.ParentAccessWidgetError.{FlowType}"
-    enum="FamilyLinkUserParentAccessWidgetError" expires_after="2024-02-20">
+    enum="FamilyLinkUserParentAccessWidgetError" expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -272,7 +272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.HttpStatusOrNetError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-02-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-04-28">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.CreatePermissionRequest.Status"
-    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-02-20">
+    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-04-28">
   <owner>tju@google.com</owner>
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
-    units="ms" expires_after="2024-02-11">
+    units="ms" expires_after="2024-04-28">
   <owner>anthie@google.com</owner>
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.DeviceOwner" enum="Boolean"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -505,7 +505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.FamilyLinkUsersCount" units="Number of Users"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -516,7 +516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.GaiaUsersCount" units="Number of Users"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList" enum="FamilyLinkManagedSiteList"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -542,7 +542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList.Conflict" enum="BooleanHasConflict"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -565,7 +565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteListCount.Approved"
-    units="Number of approved sites" expires_after="2024-02-11">
+    units="Number of approved sites" expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -578,7 +578,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteListCount.Blocked"
-    units="Number of blocked sites" expires_after="2024-02-11">
+    units="Number of blocked sites" expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -628,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.SessionEngagement.Weekday" units="Hour of day"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -640,7 +640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.SessionEngagement.Weekend" units="Hour of day"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -667,7 +667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType" enum="FamilyLinkWebFilterType"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.{AppType}AppsCount2" units="Number of Apps"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -704,7 +704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.{ExtensionStatus}ExtensionsCount2"
-    units="Number of Extensions" expires_after="2024-02-20">
+    units="Number of Extensions" expires_after="2024-04-28">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -726,7 +726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.BlockedIframeCount" units="iframes"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>yilkal@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -787,7 +787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.RequestPermissionSource"
-    enum="ManagedUserURLRequestPermissionSource" expires_after="2024-02-20">
+    enum="ManagedUserURLRequestPermissionSource" expires_after="2024-04-28">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -809,7 +809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SupervisedUsers.ExtensionEnablement"
-    enum="SupervisedUserExtensionEnablement" expires_after="2024-02-11">
+    enum="SupervisedUserExtensionEnablement" expires_after="2024-04-28">
   <owner>courtneywong@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SupervisedUsers.ExtensionsMayRequestPermissions"
-    enum="BooleanEnabled" expires_after="2024-02-11">
+    enum="BooleanEnabled" expires_after="2024-04-28">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>

@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -157,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.JobDuration.JobCancelled" units="ms"
-    expires_after="2024-02-05">
+    expires_after="2024-04-28">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkAutomaticPrintersCount"
-    units="printers" expires_after="2024-02-11">
+    units="printers" expires_after="2024-04-28">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkDiscoveredPrintersCount"
-    units="printers" expires_after="2024-02-11">
+    units="printers" expires_after="2024-04-28">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult.SettingsDiscoveredPrinters"
-    enum="PrinterSetupResult" expires_after="2024-02-01">
+    enum="PrinterSetupResult" expires_after="2024-04-28">
   <owner>gavinwill@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterStatusReasons"
-    enum="PrinterStatusReasons" expires_after="2024-02-25">
+    enum="PrinterStatusReasons" expires_after="2024-04-28">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

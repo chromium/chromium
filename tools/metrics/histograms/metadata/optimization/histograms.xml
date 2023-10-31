@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.HintCacheLevelDBStore.Status"
     enum="OptimizationGuideHintCacheLevelDBStoreStatus"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -975,7 +975,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ModelThreadExecutionLatency.PageEntities"
-    units="ms" expires_after="2024-02-11">
+    units="ms" expires_after="2024-04-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1017,7 +1017,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesExtracted"
-    enum="BooleanAnnotated" expires_after="2024-02-11">
+    enum="BooleanAnnotated" expires_after="2024-04-28">
   <owner>mahmadi@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1661,7 +1661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.RemoteFetchingEnabled" enum="BooleanEnabled"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

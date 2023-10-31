@@ -34,7 +34,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.InputDeviceTypeChangedTo"
-    enum="AudioDeviceType" expires_after="2024-02-14">
+    enum="AudioDeviceType" expires_after="2024-04-28">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -45,7 +45,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.InputGainSetTo" units="%"
-    expires_after="2024-02-14">
+    expires_after="2024-04-28">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -67,7 +67,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.NoiseCancellationEnabled"
-    enum="BooleanEnabled" expires_after="2024-02-14">
+    enum="BooleanEnabled" expires_after="2024-04-28">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -77,7 +77,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputDeviceTypeChangedTo"
-    enum="AudioDeviceType" expires_after="2024-02-14">
+    enum="AudioDeviceType" expires_after="2024-04-28">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -88,7 +88,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputMuteStateChange"
-    enum="AudioMuteButtonAction" expires_after="2024-02-14">
+    enum="AudioMuteButtonAction" expires_after="2024-04-28">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -98,7 +98,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputVolumeSetTo" units="%"
-    expires_after="2024-02-14">
+    expires_after="2024-04-28">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

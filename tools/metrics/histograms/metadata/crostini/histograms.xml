@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.AvailableDiskCancel" units="MiB"
-    expires_after="2024-01-06">
+    expires_after="2024-04-28">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.ContainerOsVersion" enum="CrostiniContainerOsVersion"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.TerminalSettingsChanged"
-    enum="CrostiniTerminalSetting" expires_after="2024-02-25">
+    enum="CrostiniTerminalSetting" expires_after="2024-04-28">
   <owner>joelhockey@chromium.org</owner>
   <owner>lxj@google.com</owner>
   <summary>

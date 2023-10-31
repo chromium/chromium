@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="ThreadPool.UnnecessaryWakeup" enum="BooleanHit"
-    expires_after="2024-02-01">
+    expires_after="2024-04-28">
   <owner>spvw@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

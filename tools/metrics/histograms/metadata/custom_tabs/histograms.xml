@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Branding.BrandingCheckDuration" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Branding.BrandingDecision"
-    enum="CustomTabsBrandingDecision" expires_after="2024-02-25">
+    enum="CustomTabsBrandingDecision" expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Branding.NumberOfClients" units="count"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.CloseCause" enum="CustomTabsCloseCause"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.GSA"
-    enum="CustomTabsConnection" expires_after="2024-02-04">
+    enum="CustomTabsConnection" expires_after="2024-04-28">
   <owner>kgrosu@google.com</owner>
   <owner>jinsukkim@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.NonGSA"
-    enum="CustomTabsConnection" expires_after="2024-02-04">
+    enum="CustomTabsConnection" expires_after="2024-04-28">
   <owner>kgrosu@google.com</owner>
   <owner>jinsukkim@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.HadInteractionOnClose.Form" enum="Boolean"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.HadInteractionOnClose.Navigation" enum="Boolean"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -363,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.IntentToFirstCommitNavigationTime3" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Time between the intent arrival to a Custom Tab and the first navigation
@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.IntentToFirstNavigationStartTime" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Time between the intent arrival to a Custom Tab and the navigation start.
@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PartialCustomTabType"
-    enum="CustomTabsPartialCustomTabType" expires_after="2024-02-04">
+    enum="CustomTabsPartialCustomTabType" expires_after="2024-04-28">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ResizeType2" enum="CustomTabsResizeType2"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -558,7 +558,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CustomTabs.RetainableSessionsV2.TimeBetweenLaunch{IdentifierType}"
-    units="seconds" expires_after="2024-02-20">
+    units="seconds" expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

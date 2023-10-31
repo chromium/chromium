@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Enterprise.AccountStatusCheckResult"
-    enum="EnterpriseAccountStatus" expires_after="2024-02-04">
+    enum="EnterpriseAccountStatus" expires_after="2024-04-28">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.AutoEnrollmentControllerTimeout"
     enum="EnterpriseAutoEnrollmentControllerTimeoutReport"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vsavu@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-04-28">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime"
-    units="ms" expires_after="2024-02-04">
+    units="ms" expires_after="2024-04-28">
   <owner>sergiyb@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentProtocolTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-04-28">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2024-02-20">
+    enum="EnterpriseDeviceManagementStatus" expires_after="2024-04-28">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2024-02-20">
+    enum="NetErrorCodes" expires_after="2024-04-28">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmResult{EnterpriseAutoEnrollmentType}"
-    enum="PsmResult" expires_after="2024-02-20">
+    enum="PsmResult" expires_after="2024-04-28">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2024-02-20">
+    enum="EnterpriseDeviceManagementStatus" expires_after="2024-04-28">
   <owner>sergiyb@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.BrowserSigninPolicy"
-    enum="EnterpriseBrowserSigninPolicy" expires_after="2024-02-20">
+    enum="EnterpriseBrowserSigninPolicy" expires_after="2024-04-28">
   <owner>alexwchen@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -590,14 +590,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceRemoteCommand.Crd.Result"
-    enum="EnterpriseCrdSessionResultCode" expires_after="2024-02-11">
+    enum="EnterpriseCrdSessionResultCode" expires_after="2024-04-28">
   <owner>macinashutosh@google.com</owner>
   <owner>chromeos-commercial-crd@google.com</owner>
   <summary>Reports success/failure when a session is attempted.</summary>
 </histogram>
 
 <histogram name="Enterprise.DeviceRemoteCommand.Crd.SessionType"
-    enum="EnterpriseCrdUserType" expires_after="2024-02-11">
+    enum="EnterpriseCrdUserType" expires_after="2024-04-28">
   <owner>macinashutosh@google.com</owner>
   <owner>chromeos-commercial-crd@google.com</owner>
   <summary>
@@ -639,7 +639,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DeviceRemoteCommand.Executed{Enterprise_RemoteCommandType}"
-    enum="RemoteCommandExecutionStatus" expires_after="2024-02-20">
+    enum="RemoteCommandExecutionStatus" expires_after="2024-04-28">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -669,7 +669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceRemoteCommand.Received"
-    enum="RemoteCommandReceivedStatus" expires_after="2024-02-04">
+    enum="RemoteCommandReceivedStatus" expires_after="2024-04-28">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -1264,7 +1264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.DlpPolicyPresent" enum="Boolean"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1517,7 +1517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ReportedBlockLevelRestriction"
-    enum="EnterpriseDlpPolicyRestriction" expires_after="2024-02-11">
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2024-04-28">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1527,7 +1527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ReportedEventStatus" enum="GoogleRpcCode"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1536,7 +1536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ReportedReportLevelRestriction"
-    enum="EnterpriseDlpPolicyRestriction" expires_after="2024-02-11">
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2024-04-28">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1691,7 +1691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DMServerRequestSuccess{EnterpriseDMServerRequest}"
-    enum="EnterpriseDMServerRequestSuccess" expires_after="2024-02-20">
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2024-04-28">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1834,7 +1834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrolledDevicePolicyPresent" enum="Boolean"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -1860,7 +1860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Enrollment" enum="EnterpriseEnrollmentType"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1870,7 +1870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentAttestationBased"
-    enum="EnterpriseEnrollmentType" expires_after="2024-02-04">
+    enum="EnterpriseEnrollmentType" expires_after="2024-04-28">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1884,7 +1884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForced" enum="EnterpriseEnrollmentType"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1894,7 +1894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedAttestationBased"
-    enum="EnterpriseEnrollmentType" expires_after="2024-02-04">
+    enum="EnterpriseEnrollmentType" expires_after="2024-04-28">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1938,7 +1938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2024-02-25">
+    enum="EnterpriseEnrollmentType" expires_after="2024-04-28">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1952,7 +1952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentNudge.PolicyFetchResult"
-    enum="EnrollmentNudgePolicyFetchResult" expires_after="2024-02-01">
+    enum="EnrollmentNudgePolicyFetchResult" expires_after="2024-04-28">
   <owner>andreydav@google.com</owner>
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
@@ -2033,7 +2033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Success" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2185,7 +2185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
-    enum="InvalidDevicePolicyFilesStatus" expires_after="2024-02-04">
+    enum="InvalidDevicePolicyFilesStatus" expires_after="2024-04-28">
   <owner>emaxx@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>vsavu@google.com</owner>
@@ -2412,7 +2412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies" enum="EnterprisePolicies"
-    expires_after="2024-02-05">
+    expires_after="2024-04-28">
   <owner>vsavu@google.com</owner>
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2423,7 +2423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies.Sources" enum="EnterprisePoliciesSources"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>zmin@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2437,7 +2437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies.{PolicyLevel}" enum="EnterprisePolicies"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>zmin@chromium.org</owner>
   <owner>qiutanw@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2570,7 +2570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ProfileIdentifier.Status" enum="Boolean"
-    expires_after="2024-01-14">
+    expires_after="2024-04-28">
   <owner>hmare@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -2666,7 +2666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SafeSites.Latency" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>ftirelo@chromium.org</owner>
   <owner>ljjlee@google.com</owner>
   <owner>cbe-eng@google.com</owner>
@@ -2693,7 +2693,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.Status"
     enum="SecondaryGoogleAccountUsagePolicyFetchStatus"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -3069,7 +3069,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.VPDCacheReadResult" enum="VPDCacheReadResult"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vsavu@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -3138,7 +3138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidPolicies" enum="EnterprisePolicies"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>pastarmovj@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
@@ -3149,7 +3149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidPoliciesDetected"
-    units="disabled policies" expires_after="2024-02-04">
+    units="disabled policies" expires_after="2024-04-28">
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chomium.org</owner>
   <summary>
@@ -3231,7 +3231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsManaged2" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
@@ -3244,7 +3244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsManagedOrEnterpriseDevice"
-    enum="BooleanEnabled" expires_after="2024-02-04">
+    enum="BooleanEnabled" expires_after="2024-04-28">
   <owner>pastarmovj@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>

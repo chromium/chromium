@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.Operation"
-    enum="WebAudioContextOperation" expires_after="2024-02-04">
+    enum="WebAudioContextOperation" expires_after="2024-04-28">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.HardwareBufferSize" units="units"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.HardwareOutputLatency" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>

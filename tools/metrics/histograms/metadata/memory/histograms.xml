@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.SamplingIntervalKB" units="KB"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Active" units="MB"
-    expires_after="2024-02-05">
+    expires_after="2024-04-28">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Background" units="MB"
-    expires_after="2024-02-05">
+    expires_after="2024-04-28">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
-    expires_after="2024-02-05">
+    expires_after="2024-04-28">
   <owner>ajuma@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -762,7 +762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.MacAvailableMemoryPercentFreePageCache2"
-    units="%" expires_after="2024-02-04">
+    units="%" expires_after="2024-04-28">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -778,7 +778,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.MacFileBackedMemoryMB2" units="MB"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -909,7 +909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
-    units="MB" expires_after="2024-02-25">
+    units="MB" expires_after="2024-04-28">
   <owner>tasak@google.com</owner>
   <owner>bartekn@google.com</owner>
   <summary>
@@ -1373,7 +1373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint3"
-    units="KB" expires_after="2024-02-04">
+    units="KB" expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1405,7 +1405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint"
-    units="KB" expires_after="2024-02-04">
+    units="KB" expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1591,7 +1591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.OOMKills.Daily" units="kills"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>vovoy@google.com</owner>
   <owner>src/chromeos/ash/components/memory/OWNERS</owner>
   <summary>
@@ -1636,7 +1636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.Read.Throughput" units="MiBps"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1721,7 +1721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.SizeKb" units="KB"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -1752,7 +1752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.DiskReadTime.5min" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1798,7 +1798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.MemoryReclaim" units="microseconds"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
   <summary>
@@ -2193,7 +2193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.HibernatedCanvas.OriginalSize" units="MB"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-memory@chromium.org</owner>
   <summary>
@@ -2206,7 +2206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.HibernatedCanvas.Size" units="MB"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-memory@chromium.org</owner>
   <summary>
@@ -2265,7 +2265,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.PrivateMemoryFootprintExcludingWaivedRenderers"
-    units="MB" expires_after="2024-02-11">
+    units="MB" expires_after="2024-04-28">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2568,7 +2568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VmmSwap.{VmName}.DisableReason"
-    enum="VmmSwapDisableReason" expires_after="2024-01-31">
+    enum="VmmSwapDisableReason" expires_after="2024-04-28">
   <owner>kawasin@google.com</owner>
   <owner>sstan@google.com</owner>
   <summary>
@@ -2634,7 +2634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VmmSwap.{VmName}.PolicyResult"
-    enum="VmmSwapPolicyResult" expires_after="2024-01-31">
+    enum="VmmSwapPolicyResult" expires_after="2024-04-28">
   <owner>kawasin@google.com</owner>
   <owner>sstan@google.com</owner>
   <summary>

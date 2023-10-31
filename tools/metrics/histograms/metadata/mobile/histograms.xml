@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.GetImageDataByJsResult"
-    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2024-02-11">
+    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2024-04-28">
   <owner>djean@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -1038,7 +1038,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -1205,7 +1205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.IntentToCreationTime" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>

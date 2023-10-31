@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="VRSessionTime" units="ms" expires_after="2024-02-20">
+<histogram name="VRSessionTime" units="ms" expires_after="2024-04-28">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="VRViewerType" enum="VRViewerType" expires_after="2024-02-25">
+<histogram name="VRViewerType" enum="VRViewerType" expires_after="2024-04-28">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>The type of headset being used for VR.</summary>

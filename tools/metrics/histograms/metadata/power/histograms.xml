@@ -581,7 +581,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.LongInterval"
     enum="PerformanceMonitor.UsageScenario.LongInterval"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -637,7 +637,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.AdaptiveChargingDelayDelta.{AdaptiveChargingState}.{OnTimeStatus}"
-    units="minutes" expires_after="2024-02-20">
+    units="minutes" expires_after="2024-04-28">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeGranularityMilliwattHours2"
-    units="milliwatt-hours" expires_after="2024-02-11">
+    units="milliwatt-hours" expires_after="2024-04-28">
   <owner>pmonette@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -1271,7 +1271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatterySaver.UserBrightenedSec" units="seconds"
-    expires_after="2024-02-28">
+    expires_after="2024-04-28">
   <owner>cwd@google.com</owner>
   <owner>chromeos-bsm@google.com</owner>
   <summary>
@@ -1695,7 +1695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain{Exclusive}" units="0.1 mAh"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1878,7 +1878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.IOPMPowerSource.SamplingEventDelta" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1961,7 +1961,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Power.Mac" units="mW" expires_after="2024-02-04">
+<histogram base="true" name="Power.Mac" units="mW" expires_after="2024-04-28">
   <owner>olivierli@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
@@ -2079,7 +2079,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonPressed" units="units"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -2191,7 +2191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeCancel" units="units"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -2205,7 +2205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeSuccess" units="units"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
