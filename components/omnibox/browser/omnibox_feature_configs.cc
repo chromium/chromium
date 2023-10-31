@@ -55,11 +55,11 @@ ShortcutBoosting::ShortcutBoosting() {
                        .Get();
   non_top_hit_threshold =
       base::FeatureParam<int>(&kShortcutBoost,
-                              "ShortcutBoostNonTopHitThreshold", 0)
+                              "ShortcutBoostNonTopHitThreshold", 2)
           .Get();
   group_with_searches =
       base::FeatureParam<bool>(&kShortcutBoost,
-                               "ShortcutBoostGroupWithSearches", false)
+                               "ShortcutBoostGroupWithSearches", true)
           .Get();
 }
 

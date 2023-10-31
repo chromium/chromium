@@ -284,15 +284,17 @@ ShortcutsProviderTest::ShortcutsProviderTest() {
   // `scoped_feature_list_` needs to be initialized as early as possible, to
   // avoid data races caused by tasks on other threads accessing it.
   scoped_feature_list_.Reset();
-  // Even though these are enabled by default on desktop, they aren't enabled by
-  // default on mobile. To avoid having 2 sets of tests around, explicitly
-  // enable them for all platforms for tests.
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox::kRichAutocompletion,
-      {{"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
-       {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-       {"RichAutocompletionAutocompleteShortcutText", "true"},
-       {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}});
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      // Even though these are enabled by default on desktop, they aren't
+      // enabled by default on mobile. To avoid having 2 sets of tests around,
+      // explicitly enable them for all platforms for tests.
+      {{omnibox::kRichAutocompletion,
+        {{"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
+         {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+         {"RichAutocompletionAutocompleteShortcutText", "true"},
+         {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}}},
+       {omnibox::kLogUrlScoringSignals, {}}},
+      {});
   RichAutocompletionParams::ClearParamsForTesting();
 }
 
@@ -733,10 +735,8 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteAggregateShortcuts) {
   TestShortcutData shortcut_data[] = {
       MakeShortcutData("wi", "https://wikipedia.org/wilson7", 1, 1),
       MakeShortcutData("wilson7", "https://wikipedia.org/wilson7", 2, 2),
-      MakeShortcutData("wilson8", "https://wikipedia.org/wilson8", 1, 3),
-      // A 'sacrificial' shortcut that will be boosted so that the shortcuts we
-      // care about won't be boosted and we can verify their relevance scores.
-      MakeShortcutData("wilsonBoosted", "https://wikipedia.org/boosted", 0, 4),
+      MakeShortcutData("wilson8", "https://wikipedia.org/wilson8", 1, 10),
+      MakeShortcutData("wilsonBoosted", "https://wikipedia.org/boosted", 0, 20),
 
       // To verify the interaction with the provider limit.
       MakeShortcutData("zebra1", "https://wikipedia.org/zebra-a", 1, 1),
@@ -765,13 +765,10 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteAggregateShortcuts) {
                                "https://wikipedia.org/wilson8",
                                "https://wikipedia.org/wilson7",
                            });
-    EXPECT_EQ(matches[0].relevance, 1414);
-    // There are 2 shortcuts with the wilson7 url which have the same aggregate
-    // text length, visit count, and last visit as the 1 winston shortcut; so
-    // they should be scored the same. Matches with the same score otherwise,
-    // are demoted by 1, hence the `+ 1`.
-    EXPECT_EQ(matches[1].relevance, matches[2].relevance + 1);
-    EXPECT_GT(matches[2].relevance, 0);
+    // Boosted 1414 + number of hits.
+    EXPECT_EQ(matches[0].relevance, 1434);
+    EXPECT_EQ(matches[1].relevance, 1424);
+    EXPECT_EQ(matches[2].relevance, 1417);  // Aggregate number of hits: 1 + 2.
   }
 
   {
@@ -787,11 +784,9 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteAggregateShortcuts) {
                                "https://wikipedia.org/wilson8",
                                "https://wikipedia.org/wilson7",
                            });
-    EXPECT_EQ(matches[0].relevance, 1414);
-    // _GT instead _EQ since the un-aggregated wilson7 has less hits than the
-    // un-aggregated wilson8.
-    EXPECT_GT(matches[1].relevance, matches[2].relevance + 1);
-    EXPECT_GT(matches[2].relevance, 0);
+    EXPECT_EQ(matches[0].relevance, 1434);
+    EXPECT_EQ(matches[1].relevance, 1424);
+    EXPECT_EQ(matches[2].relevance, 1416);  // Un-aggregated number of hits: 2.
   }
 
   {
@@ -807,13 +802,13 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteAggregateShortcuts) {
     provider_->Start(input, false);
     const auto& matches = provider_->matches();
     VerifyMatches(matches, {
-                               "https://wikipedia.org/zebra-a",
                                "https://wikipedia.org/zebra-c",
+                               "https://wikipedia.org/zebra-a",
                                "https://wikipedia.org/zebra-b",
                            });
-    EXPECT_GT(matches[0].relevance, matches[1].relevance + 1);
-    EXPECT_EQ(matches[1].relevance, matches[2].relevance + 1);
-    EXPECT_GT(matches[2].relevance, 0);
+    EXPECT_EQ(matches[0].relevance, 1424);
+    EXPECT_EQ(matches[1].relevance, 1423);
+    EXPECT_EQ(matches[2].relevance, 1422);
   }
 
   {
@@ -910,15 +905,18 @@ TEST_F(ShortcutsProviderTest, Score) {
 
   // Aggregate score should consider the shortest text length, most recent visit
   // time, and sum of visit counts.
-  auto shortcut_a_short = MakeShortcut(u"size______12", days_ago(3), 1);
-  auto shortcut_a_frequent = MakeShortcut(u"size__________16", days_ago(3), 10);
-  auto shortcut_a_recent = MakeShortcut(u"size__________16", days_ago(1), 1);
+  // It's not possible to have shortcuts with 0 hits. But using realistic values
+  // would trigger shortcut boosting while we want to test the unboosted scores.
+  auto shortcut_a_short = MakeShortcut(u"size______12", days_ago(3), 0);
+  auto shortcut_a_frequent = MakeShortcut(u"size__________16", days_ago(3), 1);
+  auto shortcut_a_recent = MakeShortcut(u"size__________16", days_ago(1), 0);
   auto score_a = CalculateAggregateScore(
       1, {&shortcut_a_short, &shortcut_a_frequent, &shortcut_a_recent});
-  auto shortcut_b = MakeShortcut(u"size______12", days_ago(1), 12);
+  auto shortcut_b = MakeShortcut(u"size______12", days_ago(1), 1);
   auto score_b = CalculateAggregateScore(1, {&shortcut_b});
   EXPECT_EQ(score_a, score_b);
   EXPECT_GT(score_a, 0);
+  EXPECT_LT(score_a, 1414);
 
   // Typing more of the text increases score.
   auto score_b_long_query = CalculateAggregateScore(2, {&shortcut_b});
@@ -939,14 +937,15 @@ TEST_F(ShortcutsProviderTest, Score) {
   EXPECT_EQ(CalculateAggregateScore(1, {&short_shortcut}), kMaxScore);
 
   // More recent shortcuts should be scored higher.
-  auto shortcut_b_old = MakeShortcut(u"size______12", days_ago(2), 12);
+  auto shortcut_b_old = MakeShortcut(u"size______12", days_ago(2), 1);
   auto score_b_old = CalculateAggregateScore(1, {&shortcut_b_old});
   EXPECT_LT(score_b_old, score_b);
 
   // Shortcuts with higher visit counts should be scored higher.
-  auto shortcut_b_frequent = MakeShortcut(u"size______12", days_ago(1), 13);
-  auto score_b_frequent = CalculateAggregateScore(1, {&shortcut_b_frequent});
-  EXPECT_GT(score_b_frequent, score_b);
+  auto shortcut_b_infrequent = MakeShortcut(u"size______12", days_ago(1), 0);
+  auto score_b_infrequent =
+      CalculateAggregateScore(1, {&shortcut_b_infrequent});
+  EXPECT_LT(score_b_infrequent, score_b);
 }
 
 TEST_F(ShortcutsProviderTest, ScoreBoost) {
@@ -1027,7 +1026,7 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
     EXPECT_EQ(matches.size(), 2u);
     EXPECT_EQ(matches[0].destination_url.spec(), "https://only-urls.com/2");
     EXPECT_EQ(matches[1].destination_url.spec(), "https://only-urls.com/1");
-    EXPECT_EQ(matches[0].relevance, 1300);
+    EXPECT_EQ(matches[0].relevance, 1302);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
     EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
@@ -1066,7 +1065,7 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
               "https://urls-before-searches.com/2");
     EXPECT_EQ(matches[1].destination_url.spec(),
               "https://urls-before-searches.com/1");
-    EXPECT_EQ(matches[0].relevance, 1300);
+    EXPECT_EQ(matches[0].relevance, 1302);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
     EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
