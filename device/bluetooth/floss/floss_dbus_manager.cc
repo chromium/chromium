@@ -455,15 +455,15 @@ FlossAdminClient* FlossDBusManager::GetAdminClient() {
 
 void FlossDBusManager::InitializeAdapterClients(int adapter,
                                                 base::OnceClosure on_ready) {
-  // Clean up active adapter clients
-  if (active_adapter_ != kInvalidAdapter) {
-    client_bundle_->ResetAdapterClients();
-  }
-
   // Initializing already current adapter.
   if (active_adapter_ == adapter) {
     std::move(on_ready).Run();
     return;
+  }
+
+  // Clean up active adapter clients
+  if (active_adapter_ != kInvalidAdapter) {
+    client_bundle_->ResetAdapterClients();
   }
 
   // Set current adapter. If it's kInvalidAdapter, this doesn't need to do any
