@@ -243,6 +243,7 @@ class Component {
     // State overrides.
     void DoHandle() override;
     bool CanTryDiffUpdate() const;
+    void CheckIfCacheContainsCrxComplete(bool crx_is_in_cache);
   };
 
   class StateUpToDate : public State {

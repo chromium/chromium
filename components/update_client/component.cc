@@ -942,24 +942,48 @@ void Component::StateCanUpdate::DoHandle() {
 
   // Start computing the cost of the this update from here on.
   component.update_begin_ = base::TimeTicks::Now();
-
+  CHECK(component.update_context_->crx_cache_);
   if (CanTryDiffUpdate()) {
-    TransitionState(std::make_unique<StateDownloadingDiff>(&component));
-  } else {
-    TransitionState(std::make_unique<StateDownloading>(&component));
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&update_client::CrxCache::Contains,
+                       component.update_context_->crx_cache_.value(),
+                       component.crx_component()->app_id,
+                       component.previous_fp_),
+        base::BindOnce(
+            &Component::StateCanUpdate::CheckIfCacheContainsCrxComplete,
+            base::Unretained(this)));
+    return;
   }
+  TransitionState(std::make_unique<StateDownloading>(&component));
 }
 
 // Returns true if a differential update is available, it has not failed yet,
 // and the configuration allows this update.
 bool Component::StateCanUpdate::CanTryDiffUpdate() const {
-  const auto& component = Component::State::component();
   if (!base::FeatureList::IsEnabled(features::kPuffinPatches)) {
     return false;
   }
+  const auto& component = Component::State::component();
   return HasDiffUpdate(component) && !component.diff_error_code_ &&
          component.update_context_->crx_cache_.has_value() &&
          component.update_context_->config->EnabledDeltas();
+}
+
+void Component::StateCanUpdate::CheckIfCacheContainsCrxComplete(
+    bool crx_is_in_cache) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto& component = State::component();
+  if (crx_is_in_cache) {
+    TransitionState(std::make_unique<StateDownloadingDiff>(&component));
+  } else {
+    // If the configuration allows diff update, but the previous crx
+    // is not cached, report the kPuffinMissingPreviousCrx error.
+    component.diff_error_category_ = ErrorCategory::kUnpack;
+    component.diff_error_code_ =
+        static_cast<int>(UnpackerError::kPuffinMissingPreviousCrx);
+    TransitionState(std::make_unique<StateDownloading>(&component));
+  }
 }
 
 Component::StateUpToDate::StateUpToDate(Component* component)
