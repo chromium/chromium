@@ -3801,6 +3801,10 @@ static_library("ui") {
       "//chrome/browser/chromeos/extensions/wm",
     ]
 
+    if (is_chrome_branded) {
+      deps += [ "//chrome/browser/nearby_sharing/internal/icons" ]
+    }
+
     if (!is_official_build) {
       if (!use_real_dbus_clients) {
         sources += [

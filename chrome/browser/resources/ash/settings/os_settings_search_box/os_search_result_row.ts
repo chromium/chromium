@@ -6,6 +6,9 @@
  * @fileoverview 'os-search-result-row' is the container for one search result.
  */
 import 'chrome://resources/cr_elements/icons.html.js';
+// <if expr="_google_chrome">
+import '/nearby/nearby-share-internal-icons.m.js';
+// </if>
 import '../os_settings_icons.html.js';
 import '../settings_shared.css.js';
 
@@ -741,6 +744,11 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kMouse:
         return 'os-settings:mouse';
       case SearchResultIcon.kNearbyShare:
+        // <if expr="_google_chrome">
+        if (loadTimeData.getBoolean('isNameEnabled')) {
+          return 'nearby-share-internal:nearby-share';
+        }
+        // </if>
         return 'os-settings:nearby-share';
       case SearchResultIcon.kOnScreenKeyboard:
         return 'os-settings:on-screen-keyboard';

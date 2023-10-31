@@ -17,6 +17,7 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
@@ -62,6 +64,10 @@
 #include "chrome/grit/settings_shared_resources.h"
 #include "chrome/grit/settings_shared_resources_map.h"
 #endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/nearby_sharing/internal/icons/grit/nearby_share_internal_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -115,6 +121,16 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   html_source->AddResourcePaths(
       base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
 #endif
+
+  // Flag for using updated icons in search results and pages.
+  html_source->AddBoolean("isNameEnabled", ::features::IsNameEnabled());
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddResourcePath("nearby/nearby-share-internal-icons.html",
+                               IDR_NEARBY_SHARE_INTERNAL_ICONS);
+  html_source->AddResourcePath("nearby/nearby-share-internal-icons.m.js",
+                               IDR_NEARBY_SHARE_INTERNAL_ICONS_M_JS);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,

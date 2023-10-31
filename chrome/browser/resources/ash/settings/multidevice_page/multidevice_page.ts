@@ -6,6 +6,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+// <if expr="_google_chrome">
+import '/nearby/nearby-share-internal-icons.m.js';
+// </if>
+
 import '/shared/settings/controls/password_prompt_dialog.js';
 import '../settings_shared.css.js';
 import '../nearby_share_page/nearby_share_subpage.js';
@@ -162,6 +166,13 @@ export class SettingsMultidevicePageElement extends
         type: Boolean,
         value: () => {
           return isRevampWayfindingEnabled();
+        },
+      },
+
+      isNameEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isNameEnabled');
         },
       },
 

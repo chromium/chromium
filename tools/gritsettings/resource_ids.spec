@@ -97,6 +97,9 @@
     "includes": [2220],
     "structures": [2240],
   },
+  "chrome/browser/nearby_sharing/internal/nearby_share_internal_icons.grd": {
+    "includes": [2250],
+  },
   "chrome/browser/nearby_sharing/internal/nearby_share_internal_strings.grd": {
     "messages": [2260],
   },
