@@ -1035,6 +1035,16 @@ const FeatureEntry::FeatureVariation kHibernateFeatureVariations[] = {
     {"Hibernate after 24 hours", &kHibernate24, 1, nullptr},
 };
 
+const FeatureEntry::FeatureParam kAutomaticallyGroup = {
+    ash::features::kAutomaticallyLockGroup.name, "true"};
+const FeatureEntry::FeatureParam kManuallyGroup = {
+    ash::features::kAutomaticallyLockGroup.name, "false"};
+
+const FeatureEntry::FeatureVariation kSnapGroupsVariations[] = {
+    {"automatically group", &kAutomaticallyGroup, 1, nullptr},
+    {"manually group", &kManuallyGroup, 1, nullptr},
+};
+
 const char kPreferDcheckInternalName[] = "prefer-dcheck";
 
 const char kLacrosAvailabilityIgnoreInternalName[] =
@@ -4264,6 +4274,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFasterSplitScreenSetupName,
      flag_descriptions::kFasterSplitScreenSetupDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFasterSplitScreenSetup)},
+    {"ash-snap-groups", flag_descriptions::kSnapGroupsName,
+     flag_descriptions::kSnapGroupsDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSnapGroup,
+                                    kSnapGroupsVariations,
+                                    "SnapGroups")},
     {"rounded-display", flag_descriptions::kRoundedDisplay,
      flag_descriptions::kRoundedDisplayDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kRoundedDisplay)},

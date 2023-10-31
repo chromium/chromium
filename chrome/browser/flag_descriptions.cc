@@ -6933,6 +6933,11 @@ const char kSchedulerConfigurationConservative[] =
 const char kSchedulerConfigurationPerformance[] =
     "Enables Hyper-Threading on relevant CPUs.";
 
+const char kSnapGroupsName[] = "Enable Snap Groups feature";
+const char kSnapGroupsDescription[] =
+    "Enables the ability to accelerate the window layout setup process and "
+    "access the window layout as a group";
+
 const char kMediaDynamicCgroupName[] = "Media Dynamic Cgroup";
 const char kMediaDynamicCgroupDescription[] =
     "Dynamic Cgroup allows tasks from media workload to be consolidated on "
