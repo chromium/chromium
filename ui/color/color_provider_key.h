@@ -32,10 +32,26 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     kNormal,
     kHigh,
   };
+  // ForcedColors key applies contrast themes based on the user’s preferences or
+  // system settings.
   enum class ForcedColors {
     kNone,
+    // Forced colors is simulated by the Devtools “Emulate Forced Colors”
+    // setting.
+    // https://developer.chrome.com/docs/devtools/rendering/emulate-css/#emulate-css-media-feature-forced-colors.
     kEmulated,
+    // Forced colors is activated by the system’s high contrast mode on Windows.
+    // https://support.microsoft.com/en-us/windows/change-color-contrast-in-windows-fedc744c-90ac-69df-aed5-c8a90125e696
     kActive,
+    // Forced colors is activated by the browser's Page colors feature across
+    // platforms. kDusk and kDesert themes map to defaults available on Windows
+    // 11 [1], while kBlack and kWhite are themes available in Windows 10 [2].
+    // [1] https://support.microsoft.com/en-us/windows/change-color-contrast-in-windows-fedc744c-90ac-69df-aed5-c8a90125e696
+    // [2] https://support.microsoft.com/en-us/windows/change-color-contrast-in-windows-fedc744c-90ac-69df-aed5-c8a90125e696#WindowsVersion=Windows_10
+    kDusk,
+    kDesert,
+    kBlack,
+    kWhite,
   };
   enum class ElevationMode {
     kLow,

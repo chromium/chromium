@@ -49,8 +49,25 @@ bool NativeTheme::SystemDarkModeSupported() {
 ColorProviderKey NativeTheme::GetColorProviderKey(
     scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
-  ui::ColorProviderKey key;
+  const auto get_forced_colors_key = [](bool forced_colors,
+                                        PageColors page_colors) {
+    if (!forced_colors) {
+      return ColorProviderKey::ForcedColors::kNone;
+    }
+    static constexpr auto kForcedColorsMap =
+        base::MakeFixedFlatMap<PageColors, ColorProviderKey::ForcedColors>(
+            {{PageColors::kOff, ColorProviderKey::ForcedColors::kNone},
+             {PageColors::kDusk, ColorProviderKey::ForcedColors::kDusk},
+             {PageColors::kDesert, ColorProviderKey::ForcedColors::kDesert},
+             {PageColors::kBlack, ColorProviderKey::ForcedColors::kBlack},
+             {PageColors::kWhite, ColorProviderKey::ForcedColors::kWhite},
+             {PageColors::kHighContrast,
+              ColorProviderKey::ForcedColors::kActive}});
 
+    return kForcedColorsMap.at(page_colors);
+  };
+
+  ui::ColorProviderKey key;
   switch (GetDefaultSystemColorScheme()) {
     case ColorScheme::kDark:
       key.color_mode = ColorProviderKey::ColorMode::kDark;
@@ -69,9 +86,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   key.contrast_mode = UserHasContrastPreference()
                           ? ColorProviderKey::ContrastMode::kHigh
                           : ColorProviderKey::ContrastMode::kNormal;
-  key.forced_colors = InForcedColorsMode()
-                          ? ColorProviderKey::ForcedColors::kActive
-                          : ColorProviderKey::ForcedColors::kNone;
+  key.forced_colors = get_forced_colors_key(InForcedColorsMode(), page_colors_);
   key.system_theme = system_theme_;
   key.frame_type = use_custom_frame ? ColorProviderKey::FrameType::kChromium
                                     : ColorProviderKey::FrameType::kNative;
@@ -81,6 +96,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   key.user_color = user_color_;
   key.scheme_variant = scheme_variant_;
   key.custom_theme = std::move(custom_theme);
+
   return key;
 }
 
@@ -310,6 +326,7 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
   bool should_use_dark_colors = observed_theme->ShouldUseDarkColors();
   bool forced_colors = observed_theme->InForcedColorsMode();
+  PageColors page_colors = observed_theme->GetPageColors();
   bool prefers_reduced_transparency =
       observed_theme->GetPrefersReducedTransparency();
   PreferredColorScheme preferred_color_scheme =
@@ -318,6 +335,10 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
   bool inverted_colors = observed_theme->GetInvertedColors();
   bool notify_observers = false;
 
+  if (theme_to_update_->GetPageColors() != page_colors) {
+    theme_to_update_->set_page_colors(page_colors);
+    notify_observers = true;
+  }
   if (theme_to_update_->ShouldUseDarkColors() != should_use_dark_colors) {
     theme_to_update_->set_use_dark_colors(should_use_dark_colors);
     notify_observers = true;

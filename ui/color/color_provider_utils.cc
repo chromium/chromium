@@ -170,6 +170,14 @@ base::StringPiece ForcedColorsName(
       return "kEmulated";
     case ColorProviderKey::ForcedColors::kActive:
       return "kActive";
+    case ColorProviderKey::ForcedColors::kDusk:
+      return "kDusk";
+    case ColorProviderKey::ForcedColors::kDesert:
+      return "kDesert";
+    case ColorProviderKey::ForcedColors::kBlack:
+      return "kBlack";
+    case ColorProviderKey::ForcedColors::kWhite:
+      return "kWhite";
     default:
       return "<invalid>";
   }

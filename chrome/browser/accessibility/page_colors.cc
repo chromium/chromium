@@ -70,6 +70,7 @@ void PageColors::OnPageColorsChanged() {
   }
 #endif  // BUILDFLAG(IS_WIN)
   native_theme->set_page_colors(current_page_colors);
+  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 ui::NativeTheme::PageColors PageColors::CalculatePageColors() {
