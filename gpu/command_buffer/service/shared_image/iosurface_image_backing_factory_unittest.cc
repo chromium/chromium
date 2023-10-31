@@ -654,7 +654,12 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
   bool DawnForceFallbackAdapter() const override {
     return GetDawnBackendType() == wgpu::BackendType::Vulkan;
   }
-#endif
+#else
+  wgpu::BackendType GetDawnBackendType() const {
+    NOTREACHED();
+    return wgpu::BackendType::Undefined;
+  }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
  protected:
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
