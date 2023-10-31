@@ -9,8 +9,12 @@
 
 #include <cmath>
 
+#include "base/base_paths.h"
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -757,6 +761,78 @@ TEST(PNGCodec, DecodeCorrupted) {
     compressed[i] = i;
   EXPECT_FALSE(PNGCodec::Decode(&compressed[0], compressed.size(),
                                 PNGCodec::FORMAT_RGBA, &output, &outw, &outh));
+}
+
+// Test decoding three PNG images, identical except for different gAMA chunks
+// (with gamma values of 1.0, 1.8 and 2.2). All images are 256 x 256 pixels and
+// 8-bit grayscale. The left half of the image is a solid block of medium gray
+// (128 out of 255). The right half of the image alternates between black (0
+// out of 255) and white (255 out of 255) in a checkerboard pattern.
+//
+// For the first file (gamma 1.0, linear), if you squint, the 128/255 left half
+// should look about as bright as the checkerboard right half. PNGCodec::Decode
+// applies gamma correction (assuming a default display gamma of 2.2), so the
+// top left pixel value should be corrected from 128 to 186.
+//
+// The second file (gamma 1.8)'s correction is not as strong: from 128 to 145.
+//
+// The third file (gamma 2.2) matches the default display gamma and so the 128
+// nominal value is unchanged. If you squint, the 128/255 left half should look
+// darker than the right half.
+//
+// When viewing these images in a browser, make sure to apply the "img {
+// image-rendering: pixelated }" CSS. Otherwise, browsers will often blur when
+// up-scaling (e.g. on high DPI displays), trumping the "two halves should have
+// roughly equal / different brightness" effect. You can view the images at
+// https://nigeltao.github.io/blog/2022/gamma-aware-pixelated-images.html
+TEST(PNGCodec, DecodeGamma) {
+  base::FilePath root_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir));
+  base::FilePath data_dir = root_dir.AppendASCII("ui")
+                                .AppendASCII("gfx")
+                                .AppendASCII("test")
+                                .AppendASCII("data")
+                                .AppendASCII("codec");
+
+  struct SourceFile {
+    double gamma;
+    unsigned char corrected;
+    std::string filename;
+  };
+
+  const SourceFile kSourceFiles[] = {
+      {1.0, 186, "checkerboard.gamma1dot0.png"},
+      {1.8, 145, "checkerboard.gamma1dot8.png"},
+      {2.2, 128, "checkerboard.gamma2dot2.png"},
+  };
+
+  for (const auto& sf : kSourceFiles) {
+    base::FilePath filename = data_dir.AppendASCII(sf.filename);
+    absl::optional<const std::vector<uint8_t>> opt_input =
+        base::ReadFileToBytes(filename);
+    ASSERT_TRUE(opt_input.has_value()) << "failed to load: " << filename;
+    const std::vector<uint8_t>& input = opt_input.value();
+    ASSERT_GT(input.size(), 0u);
+
+    std::vector<unsigned char> output;
+    int outw, outh;
+    ASSERT_TRUE(PNGCodec::Decode(&input[0], input.size(), PNGCodec::FORMAT_RGBA,
+                                 &output, &outw, &outh));
+    ASSERT_GT(output.size(), 0u);
+
+    // The floor(etc) formula matches libpng (see github link below). Note that
+    // libpng's png_gamma_8bit_correct function takes a single "png_fixed_point
+    // gamma_val" argument that (1) combines both the PNG-file gAMA chunk value
+    // and the display gamma and (2) is scaled by 100000 since the PNG gAMA
+    // chunk holds an integer value. Here, we use "sf.gamma / 2.2" instead.
+    // sf.gamma represents the PNG-file value and 2.2 is the display gamma.
+    //
+    // https://github.com/glennrp/libpng/blob/e755fb79ba945fea8a318dc343e73d22a39e2f4e/png.c#L3893
+    ASSERT_EQ(static_cast<double>(sf.corrected),
+              floor(255.0 * pow(128.0 / 255.0, sf.gamma / 2.2) + 0.5));
+
+    EXPECT_EQ(output[0], sf.corrected) << "gamma: " << sf.gamma;
+  }
 }
 
 TEST(PNGCodec, EncodeBGRASkBitmapStridePadded) {
