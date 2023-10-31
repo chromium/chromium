@@ -269,20 +269,23 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (url == null || url.isEmpty()) return;
         assert url.isValid();
 
-        BookmarkModel bookmarkModel =
-                BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            // Add to reading list.
-            BookmarkUtils.addToReadingList(
-                    url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                    .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
+        Profile profile = mTab.getProfile().getOriginalProfile();
+        BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    // Add to reading list.
+                    BookmarkUtils.addToReadingList(
+                            url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
+                    TrackerFactory.getTrackerForProfile(profile)
+                            .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
 
-            // Add to offline pages.
-            RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
-                    .savePageLater(url.getSpec(), OfflinePageBridge.BOOKMARK_NAMESPACE,
-                            /*userRequested*/ true);
-        });
+                    // Add to offline pages.
+                    RequestCoordinatorBridge.getForProfile(profile)
+                            .savePageLater(
+                                    url.getSpec(),
+                                    OfflinePageBridge.BOOKMARK_NAMESPACE,
+                                    /*userRequested*/ true);
+                });
     }
 
     @Override

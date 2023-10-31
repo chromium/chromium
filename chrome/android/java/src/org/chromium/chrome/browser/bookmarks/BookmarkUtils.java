@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -194,10 +193,7 @@ public class BookmarkUtils {
 
         if (bookmarkId != null && bookmarkId.getType() == BookmarkType.NORMAL) {
             @BrowserProfileType
-            int type =
-                    Profile.getBrowserProfileTypeFromProfile(
-                            IncognitoUtils.getProfileFromWindowAndroid(
-                                    tab.getWindowAndroid(), tab.isIncognito()));
+            int type = Profile.getBrowserProfileTypeFromProfile(tab.getProfile());
             RecordHistogram.recordEnumeratedHistogram(
                     "Bookmarks.AddedPerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
         }
