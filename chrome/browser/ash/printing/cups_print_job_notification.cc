@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -236,32 +235,19 @@ void CupsPrintJobNotification::UpdateNotificationIcon() {
     case CupsPrintJob::State::STATE_PAGE_DONE:
     case CupsPrintJob::State::STATE_SUSPENDED:
     case CupsPrintJob::State::STATE_RESUMED: {
-      if (chromeos::features::IsJellyEnabled()) {
-        notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
-      } else {
-        notification_->set_accent_color(kSystemNotificationColorNormal);
-      }
+      notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
       notification_->set_vector_small_image(kNotificationPrintingIcon);
       break;
     }
     case CupsPrintJob::State::STATE_DOCUMENT_DONE: {
-      if (chromeos::features::IsJellyEnabled()) {
-        notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
-      } else {
-        notification_->set_accent_color(kSystemNotificationColorNormal);
-      }
+      notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
       notification_->set_vector_small_image(kNotificationPrintingDoneIcon);
       break;
     }
     case CupsPrintJob::State::STATE_CANCELLED:
     case CupsPrintJob::State::STATE_FAILED:
     case CupsPrintJob::State::STATE_ERROR: {
-      if (chromeos::features::IsJellyEnabled()) {
-        notification_->set_accent_color_id(cros_tokens::kCrosSysError);
-      } else {
-        notification_->set_accent_color(
-            kSystemNotificationColorCriticalWarning);
-      }
+      notification_->set_accent_color_id(cros_tokens::kCrosSysError);
       notification_->set_vector_small_image(kNotificationPrintingWarningIcon);
       break;
     }
