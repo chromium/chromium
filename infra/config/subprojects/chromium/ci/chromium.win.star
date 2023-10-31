@@ -132,6 +132,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builderless = True,
     # Too flaky. See crbug.com/876224 for more details.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
