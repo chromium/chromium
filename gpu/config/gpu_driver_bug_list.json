@@ -2408,7 +2408,7 @@
     {
       "id": 309,
       "cr_bugs": [993233],
-      "description": "Don't use video processor scaling on non-Intel, non-NVIDIA GPUs.",
+      "description": "Don't use video processor scaling on non-Intel, non-NVIDIA GPUs and older AMD GPUs",
       "os": {
         "type" : "win"
       },
@@ -2418,6 +2418,13 @@
         },
         {
           "vendor_id": "0x10de"
+        },
+        {
+          "vendor_id": "0x1002",
+          "driver_version": {
+            "op": ">=",
+            "value": "31.0.14001.45012"
+          }
         }
       ],
       "features": [
