@@ -90,7 +90,7 @@ StorageInfo BuildStorageInfo(
     base::apple::ScopedCFTypeRef<CFStringRef> uuid_string(
         CFUUIDCreateString(nullptr, uuid));
     if (uuid_string.get())
-      unique_id = base::SysCFStringRefToUTF8(uuid_string.get());
+      unique_id = base::SysCFStringRefToUTF8(uuid_string);
   }
   if (unique_id.empty()) {
     std::u16string revision =
@@ -160,8 +160,8 @@ StorageMonitorMac::StorageMonitorMac() = default;
 
 StorageMonitorMac::~StorageMonitorMac() {
   if (session_.get()) {
-    DASessionUnscheduleFromRunLoop(session_.get(), CFRunLoopGetCurrent(),
-                                   kCFRunLoopCommonModes);
+    DASessionUnscheduleFromRunLoop(
+        session_, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
   }
 }
 
@@ -170,18 +170,25 @@ void StorageMonitorMac::Init() {
 
   // Register for callbacks for attached, changed, and removed devices.
   // This will send notifications for existing devices too.
-  DARegisterDiskAppearedCallback(session_.get(),
-                                 kDADiskDescriptionMatchVolumeMountable,
-                                 DiskAppearedCallback, this);
-  DARegisterDiskDisappearedCallback(session_.get(),
-                                    kDADiskDescriptionMatchVolumeMountable,
-                                    DiskDisappearedCallback, this);
+  DARegisterDiskAppearedCallback(
+      session_,
+      kDADiskDescriptionMatchVolumeMountable,
+      DiskAppearedCallback,
+      this);
+  DARegisterDiskDisappearedCallback(
+      session_,
+      kDADiskDescriptionMatchVolumeMountable,
+      DiskDisappearedCallback,
+      this);
   DARegisterDiskDescriptionChangedCallback(
-      session_.get(), kDADiskDescriptionMatchVolumeMountable,
-      kDADiskDescriptionWatchVolumePath, DiskDescriptionChangedCallback, this);
+      session_,
+      kDADiskDescriptionMatchVolumeMountable,
+      kDADiskDescriptionWatchVolumePath,
+      DiskDescriptionChangedCallback,
+      this);
 
-  DASessionScheduleWithRunLoop(session_.get(), CFRunLoopGetCurrent(),
-                               kCFRunLoopCommonModes);
+  DASessionScheduleWithRunLoop(
+      session_, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
 
   image_capture_device_manager_ = std::make_unique<ImageCaptureDeviceManager>();
   image_capture_device_manager_->SetNotifications(receiver());
@@ -285,13 +292,13 @@ void StorageMonitorMac::EjectDevice(
   receiver()->ProcessDetach(device_id);
 
   base::apple::ScopedCFTypeRef<DADiskRef> disk(
-      DADiskCreateFromBSDName(nullptr, session_.get(), bsd_name.c_str()));
+      DADiskCreateFromBSDName(nullptr, session_, bsd_name.c_str()));
   if (!disk.get()) {
     std::move(callback).Run(StorageMonitor::EJECT_FAILURE);
     return;
   }
   // Get the reference to the full disk for ejecting.
-  disk.reset(DADiskCopyWholeDisk(disk.get()));
+  disk.reset(DADiskCopyWholeDisk(disk));
   if (!disk.get()) {
     std::move(callback).Run(StorageMonitor::EJECT_FAILURE);
     return;
@@ -337,7 +344,7 @@ void StorageMonitorMac::GetDiskInfoAndUpdate(
   std::string* bsd_name = new std::string;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&BuildStorageInfo, dict.get(), bsd_name),
+      base::BindOnce(&BuildStorageInfo, dict, bsd_name),
       base::BindOnce(&StorageMonitorMac::UpdateDisk, AsWeakPtr(), update_type,
                      base::Owned(bsd_name)));
 }

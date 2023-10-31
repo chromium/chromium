@@ -38,7 +38,7 @@ absl::optional<double> GetEventFloatValue(IOHIDServiceClientRef service,
       IOHIDServiceClientCopyEvent(service, event_type, 0, 0));
   if (!event)
     return absl::nullopt;
-  return IOHIDEventGetFloatValue(event.get(), IOHIDEventFieldBase(event_type));
+  return IOHIDEventGetFloatValue(event, IOHIDEventFieldBase(event_type));
 }
 
 }  // namespace
@@ -55,16 +55,14 @@ std::unique_ptr<M1SensorsReader> M1SensorsReader::Create() {
   base::apple::ScopedCFTypeRef<IOHIDEventSystemClientRef> system(
       IOHIDEventSystemClientCreate(kCFAllocatorDefault));
 
-  if (!system) {
+  if (system == nil)
     return nullptr;
-  }
 
   NSDictionary* filter = @{
     @kIOHIDPrimaryUsagePageKey : @(kHIDPage_AppleVendor),
     @kIOHIDPrimaryUsageKey : @(kHIDUsage_AppleVendor_TemperatureSensor),
   };
-  IOHIDEventSystemClientSetMatching(system.get(),
-                                    base::apple::NSToCFPtrCast(filter));
+  IOHIDEventSystemClientSetMatching(system, base::apple::NSToCFPtrCast(filter));
 
   return base::WrapUnique(new M1SensorsReader(std::move(system)));
 }
@@ -80,18 +78,18 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
   double sum_p_core_temp = 0;
   double sum_e_core_temp = 0;
 
-  for (CFIndex i = 0; i < CFArrayGetCount(services.get()); ++i) {
+  for (CFIndex i = 0; i < CFArrayGetCount(services); ++i) {
     IOHIDServiceClientRef service =
-        (IOHIDServiceClientRef)CFArrayGetValueAtIndex(services.get(), i);
+        (IOHIDServiceClientRef)CFArrayGetValueAtIndex(services, i);
 
     base::apple::ScopedCFTypeRef<CFStringRef> product(
         base::apple::CFCast<CFStringRef>(
             IOHIDServiceClientCopyProperty(service, CFSTR(kIOHIDProductKey))));
-    if (!product) {
+    if (product == nil) {
       continue;
     }
 
-    if (CFStringHasPrefix(product.get(), CFSTR("pACC MTR Temp Sensor"))) {
+    if (CFStringHasPrefix(product, CFSTR("pACC MTR Temp Sensor"))) {
       absl::optional<double> temp =
           GetEventFloatValue(service, kIOHIDEventTypeTemperature);
       if (temp.has_value()) {
@@ -100,7 +98,7 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
       }
     }
 
-    if (CFStringHasPrefix(product.get(), CFSTR("eACC MTR Temp Sensor"))) {
+    if (CFStringHasPrefix(product, CFSTR("eACC MTR Temp Sensor"))) {
       absl::optional<double> temp =
           GetEventFloatValue(service, kIOHIDEventTypeTemperature);
       if (temp.has_value()) {
