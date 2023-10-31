@@ -111,7 +111,9 @@ class SmartDimLacrosIntegrationTest : public SmartDimIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, SmartDim) {
+// Disabled due to failure on chromeos-betty-pi-arc-chrome.
+// TODO(http://b/308674133): Enable after fix.
+IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, DISABLED_SmartDim) {
   ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
 
   // The test opens a Lacros window, so ensure the Wayland server is running and
