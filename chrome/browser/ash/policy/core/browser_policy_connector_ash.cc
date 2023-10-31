@@ -293,8 +293,11 @@ void BrowserPolicyConnectorAsh::Init(
 void BrowserPolicyConnectorAsh::PreShutdown() {
   // Let the |affiliated_invalidation_service_provider_| unregister itself as an
   // observer of per-Profile InvalidationServices and the device-global
-  // invalidation::TiclInvalidationService it may have created as an observer of
+  // invalidation::InvalidationService it may have created as an observer of
   // the DeviceOAuth2TokenService that is destroyed before Shutdown() is called.
+  //
+  // TODO(b/308427142) The comment above is hard to grok, as is the code it
+  // describes. We should clean this up.
   if (affiliated_invalidation_service_provider_) {
     affiliated_invalidation_service_provider_->Shutdown();
   }

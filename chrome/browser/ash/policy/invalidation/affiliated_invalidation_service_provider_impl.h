@@ -78,8 +78,7 @@ class AffiliatedInvalidationServiceProviderImpl
   // Destroy the device-global invalidation service, if any.
   void DestroyDeviceInvalidationService();
 
-  // Initializes and returns either TiclInvalidationService or
-  // FCMInvalidationService depending on the feature kPolicyFcmInvalidations.
+  // Initializes and returns an `InvalidationService`.
   std::unique_ptr<invalidation::InvalidationService>
   InitializeDeviceInvalidationService();
 
