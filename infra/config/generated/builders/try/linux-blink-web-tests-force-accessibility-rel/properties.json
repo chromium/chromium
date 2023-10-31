@@ -36,10 +36,6 @@
       ]
     }
   },
-  "$build/flakiness": {
-    "check_for_flakiness": false,
-    "check_for_flakiness_with_resultdb": false
-  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "jobs": 150,

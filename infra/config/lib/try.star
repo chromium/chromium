@@ -284,10 +284,13 @@ def try_builder(
             check_for_flakiness_with_resultdb,
         )
 
-        properties["$build/flakiness"] = {
-            "check_for_flakiness": check_for_flakiness,
-            "check_for_flakiness_with_resultdb": check_for_flakiness_with_resultdb,
-        }
+        flakiness = {}
+        if defaults.get_value("check_for_flakiness", check_for_flakiness):
+            flakiness["check_for_flakiness"] = True
+        if defaults.get_value("check_for_flakiness_with_resultdb", check_for_flakiness_with_resultdb):
+            flakiness["check_for_flakiness_with_resultdb"] = True
+        if flakiness:
+            properties["$build/flakiness"] = flakiness
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
