@@ -98,10 +98,6 @@ class PLATFORM_EXPORT PowerStatusHelper {
                                        bool is_fullscreen,
                                        absl::optional<int> average_fps);
 
-  // Return the histogram names.  Here so that tests can find them too.
-  static const char* BatteryDeltaHistogram();
-  static const char* ElapsedTimeHistogram();
-
   // Recompute everything when playback state or power experiment state changes.
   void OnAnyStateChange();
 

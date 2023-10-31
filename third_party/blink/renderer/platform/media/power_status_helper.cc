@@ -13,77 +13,6 @@
 #include "services/device/public/mojom/battery_status.mojom-blink.h"
 
 namespace blink {
-namespace {
-
-static constexpr const char* kBatteryDeltaHistogram =
-    "Media.PlaybackPower.BatteryDelta";
-static constexpr const char* kElapsedTimeHistogram =
-    "Media.PlaybackPower.ElapsedTime";
-
-// Minimum enum value that we'll generate, inclusive.
-static constexpr int kMinEnumValue = 0;
-
-// Maximum enum value that we'll generate, inclusive.
-static constexpr int kMaxEnumValue =
-    PowerStatusHelper::Bits::kCodecBitsH264 |
-    PowerStatusHelper::Bits::kCodecBitsVP9Profile0 |
-    PowerStatusHelper::Bits::kCodecBitsVP9Profile2 |
-
-    PowerStatusHelper::Bits::kResolution360p |
-    PowerStatusHelper::Bits::kResolution720p |
-    PowerStatusHelper::Bits::kResolution1080p |
-
-    PowerStatusHelper::Bits::kFrameRate30 |
-    PowerStatusHelper::Bits::kFrameRate60 |
-
-    PowerStatusHelper::Bits::kFullScreenNo |
-    PowerStatusHelper::Bits::kFullScreenYes;
-
-// UMA buckets are always [uma_min, uma_max).  The first bucket is an implicit
-// underflow bucket [0, uma_min), and the last is the overflow bucket
-// [uma_max, infinity).  The underflow bucket isn't counted, but the overflow
-// bucket is.
-
-// Minimum bucket number.  Since we always get an underflow bucket, we choose
-// the minimum bucket to be one higher than the minimum enum value.  That way.
-// the minimum enum goes to the underflow bucket.
-// //tools/metrics/histograms/README.md#count-histograms_choosing-min-and-max
-// for details.
-static constexpr int kMinUmaValue = kMinEnumValue + 1;
-
-// We want to avoid using the overflow bucket. See
-// //tools/metrics/histograms/README.md#count-histograms_choosing-min-and-max
-// and UMA_HISTOGRAM_EXACT_LINEAR for details.
-
-// Max value as reported to UMA, which is the lower bound of the overflow
-// bucket.  Add one, since we want the overflow bucket to be unused.
-static constexpr int kMaxUmaValue = kMaxEnumValue + 1;
-
-// Number of buckets we want, which includes the overflow bucket but not the
-// implicit underflow bucket.
-// NOTE: We add two here, else we don't quite get enough buckets.  This was
-// emperically determined by checking Histogram::bucket_ranges().  It might
-// be the case that we should subtract one here and from |kMaxUmaValue|, but
-// either way, i think it works out.  We just have one unused bucket at worst,
-// which won't be renumbered even if we start using it later.
-static constexpr int kNumUmaBuckets = kMaxUmaValue - kMinUmaValue + 2;
-
-// For example, if kMinEnum == 0 and kMaxEnum == 5 (inclusive), then:
-// kMinUma = 1 (0 is implicit), kMaxUma = 6, and we'll want the implicit
-// underflow bucket plus kNumUmaBuckets = 6 more.
-// [0, 1)  << implicit underflow bucket, kMinEnum goes here
-// [1, 2)
-// [2, 3)
-// [3, 4)
-// [4, 5)
-// [5, 6)  << kMaxEnum goes here
-// [6, infinity)  << unused overflow bucket.
-
-// We can have more, but shouldn't without talking to metrics folks.
-static_assert(kNumUmaBuckets < 100, "Too many buckets");
-
-}  // namespace
-
 PowerStatusHelper::PowerStatusHelper(
     CreateBatteryMonitorCB create_battery_monitor_cb)
     : create_battery_monitor_cb_(std::move(create_battery_monitor_cb)) {}
@@ -140,16 +69,6 @@ absl::optional<int> PowerStatusHelper::BucketFor(
   bucket |= is_fullscreen ? kFullScreenYes : kFullScreenNo;
 
   return bucket;
-}
-
-// static
-const char* PowerStatusHelper::BatteryDeltaHistogram() {
-  return kBatteryDeltaHistogram;
-}
-
-// static
-const char* PowerStatusHelper::ElapsedTimeHistogram() {
-  return kElapsedTimeHistogram;
 }
 
 void PowerStatusHelper::SetIsPlaying(bool is_playing) {
@@ -249,17 +168,6 @@ void PowerStatusHelper::OnBatteryStatus(
   const base::TimeDelta elapsed = now - last_update_;
   const int64_t elapsed_msec = elapsed.InMilliseconds();
   if (delta_int > 0 && elapsed_msec > 0) {
-    // Record that we consumed |delta_int| battery percent in |elapsed_msec|.
-    base::LinearHistogram::FactoryGet(
-        BatteryDeltaHistogram(), kMinUmaValue, kMaxUmaValue, kNumUmaBuckets,
-        base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->AddCount(*current_bucket_, delta_int);
-
-    base::LinearHistogram::FactoryGet(
-        ElapsedTimeHistogram(), kMinUmaValue, kMaxUmaValue, kNumUmaBuckets,
-        base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->AddCount(*current_bucket_, static_cast<int>(elapsed_msec));
-
     // Update the baseline to |current_level|, but include any fractional
     // unrecorded amount so that we can record it later.
     battery_level_baseline_ = current_level + (delta - delta_int);

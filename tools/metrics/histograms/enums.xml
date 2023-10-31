@@ -59614,45 +59614,6 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Android Media Picker indirectly (ACTION_GET_CONTENT)"/>
 </enum>
 
-<enum name="MediaPlaybackPowerTypes">
-  <int value="0" label="H264 360p 30fps embedded"/>
-  <int value="1" label="VP9P0 360p 30fps embedded"/>
-  <int value="2" label="VP9P2 360p 30fps embedded"/>
-  <int value="4" label="H264 720p 30fps embedded"/>
-  <int value="5" label="VP9P0 720p 30fps embedded"/>
-  <int value="6" label="VP9P2 720p 30fps embedded"/>
-  <int value="8" label="H264 1080p 30fps embedded"/>
-  <int value="9" label="VP9P0 1080p 30fps embedded"/>
-  <int value="10" label="VP9P2 1080p 30fps embedded"/>
-  <int value="16" label="H264 360p 60fps embedded"/>
-  <int value="17" label="VP9P0 360p 60fps embedded"/>
-  <int value="18" label="VP9P2 360p 60fps embedded"/>
-  <int value="20" label="H264 720p 60fps embedded"/>
-  <int value="21" label="VP9P0 720p 60fps embedded"/>
-  <int value="22" label="VP9P2 720p 60fps embedded"/>
-  <int value="24" label="H264 1080p 60fps embedded"/>
-  <int value="25" label="VP9P0 1080p 60fps embedded"/>
-  <int value="26" label="VP9P2 1080p 60fps embedded"/>
-  <int value="32" label="H264 360p 30fps fullscreen"/>
-  <int value="33" label="VP9P0 360p 30fps fullscreen"/>
-  <int value="34" label="VP9P2 360p 30fps fullscreen"/>
-  <int value="36" label="H264 720p 30fps fullscreen"/>
-  <int value="37" label="VP9P0 720p 30fps fullscreen"/>
-  <int value="38" label="VP9P2 720p 30fps fullscreen"/>
-  <int value="40" label="H264 1080p 30fps fullscreen"/>
-  <int value="41" label="VP9P0 1080p 30fps fullscreen"/>
-  <int value="42" label="VP9P2 1080p 30fps fullscreen"/>
-  <int value="48" label="H264 360p 60fps fullscreen"/>
-  <int value="49" label="VP9P0 360p 60fps fullscreen"/>
-  <int value="50" label="VP9P2 360p 60fps fullscreen"/>
-  <int value="52" label="H264 720p 60fps fullscreen"/>
-  <int value="53" label="VP9P0 720p 60fps fullscreen"/>
-  <int value="54" label="VP9P2 720p 60fps fullscreen"/>
-  <int value="56" label="H264 1080p 60fps fullscreen"/>
-  <int value="57" label="VP9P0 1080p 60fps fullscreen"/>
-  <int value="58" label="VP9P2 1080p 60fps fullscreen"/>
-</enum>
-
 <enum name="MediaPlayerExitStatus">
   <int value="0" label="No errors"/>
   <int value="1" label="Has errors"/>

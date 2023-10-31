@@ -4579,35 +4579,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.PlaybackPower.BatteryDelta"
-    enum="MediaPlaybackPowerTypes" expires_after="2020-07-31">
-  <owner>liberato@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Total battery (0-100 percent) consumed by playback. When divided by
-    Media.PlaybackPower.ElapsedTime, this provides the average rate of battery
-    drain for that category of playback. Units are (total) percent. This is
-    recorded when an entire percent (or more) is consumed during playback. Since
-    devices have different battery sizes, methods of measuring battery, and
-    different power consumption rates, it's a good idea to filter by a specific
-    device type and OS version before trying to interpret these results. The
-    magnitude of these numbers, alone, is also likely hard to use, for this
-    reason. Instead, consider comparing A/B experiments to see if they get
-    larger or smaller. Playbacks under one msec are ignored.
-  </summary>
-</histogram>
-
-<histogram name="Media.PlaybackPower.ElapsedTime"
-    enum="MediaPlaybackPowerTypes" expires_after="2020-07-31">
-  <owner>liberato@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Total time, in msec, elapsed while consuming the battery described by
-    Media.PlaybackPower.BatteryDelta. See that histogram for details. Recorded
-    when one or more percent of battery is consumed during playback.
-  </summary>
-</histogram>
-
 <histogram name="Media.ProgressEventTimerState"
     enum="HTMLMediaElement_ProgressEventTimerState" expires_after="2021-08-01">
   <owner>fdoray@chromium.org</owner>

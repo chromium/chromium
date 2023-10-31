@@ -137,24 +137,6 @@ class PowerStatusHelperTest : public testing::Test {
                       : PowerStatusHelper::kFullScreenNo);
   }
 
-  void FastForward(base::TimeDelta delta) {
-    task_environment_.FastForwardBy(delta);
-  }
-
-  // Verify that we've added |battery_delta| and |time_delta| to |bucket| in
-  // both histograms.
-  void VerifyHistogramDelta(int bucket,
-                            int battery_delta,
-                            base::TimeDelta time_delta) {
-    // Since histograms are cumulative, include the new counts.
-    total_battery_delta += battery_delta;
-    total_time_delta += time_delta.InMilliseconds();
-    histogram_tester_.ExpectBucketCount(helper_->BatteryDeltaHistogram(),
-                                        bucket, total_battery_delta);
-    histogram_tester_.ExpectBucketCount(helper_->ElapsedTimeHistogram(), bucket,
-                                        total_time_delta);
-  }
-
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -196,32 +178,13 @@ TEST_F(PowerStatusHelperTest, BasicReportingWithFractionalAmounts) {
   // over to the next call.
   EXPECT_CALL(monitor_, DidGetBatteryMonitor()).Times(1);
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
-  const int bucket = MakeRecordable();
+  MakeRecordable();
 
   const float baseline_level = 0.9;
-  // Will round to 10%.
-  const float second_level = baseline_level - 0.106;
-  // Will round to 11% (plus a little).
-  const float third_level = second_level - 0.106;
 
   // This should be the baseline.
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
   monitor_.ProvidePowerUpdate(false, baseline_level);
-
-  // This should trigger recording.
-  base::TimeDelta time_delta = base::Seconds(1);
-  FastForward(time_delta);
-
-  EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
-  monitor_.ProvidePowerUpdate(false, second_level);
-  VerifyHistogramDelta(bucket, 10, time_delta);
-
-  // This should also record, and pick up the fractional percentage drop that
-  // wasn't included in the previous one.
-  FastForward(time_delta);
-  EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
-  monitor_.ProvidePowerUpdate(false, third_level);
-  VerifyHistogramDelta(bucket, 11, time_delta);
 }
 
 TEST_F(PowerStatusHelperTest, ChargingResetsBaseline) {
@@ -229,7 +192,7 @@ TEST_F(PowerStatusHelperTest, ChargingResetsBaseline) {
   // Make sure that the baseline resets.
   EXPECT_CALL(monitor_, DidGetBatteryMonitor()).Times(1);
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
-  const int bucket = MakeRecordable();
+  MakeRecordable();
 
   const float fake_baseline_level = 0.95;
   const float baseline_level = 0.9;
@@ -246,13 +209,6 @@ TEST_F(PowerStatusHelperTest, ChargingResetsBaseline) {
   // This should be the correct baseline.
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
   monitor_.ProvidePowerUpdate(false, baseline_level);
-
-  // This should trigger recording.
-  base::TimeDelta time_delta = base::Seconds(1);
-  FastForward(time_delta);
-  EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
-  monitor_.ProvidePowerUpdate(false, second_level);
-  VerifyHistogramDelta(bucket, 10, time_delta);
 }
 
 TEST_F(PowerStatusHelperTest, ExperimentStateStopsRecording) {
@@ -280,7 +236,6 @@ TEST_F(PowerStatusHelperTest, ChangingBucketsWorks) {
 
   const float fake_baseline_level = 0.95;
   const float baseline_level = 0.9;
-  const float second_level = baseline_level - 0.10;
 
   // Send the fake baseline.
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
@@ -293,13 +248,6 @@ TEST_F(PowerStatusHelperTest, ChangingBucketsWorks) {
   // This should be the correct baseline.
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
   monitor_.ProvidePowerUpdate(false, baseline_level);
-
-  // This should trigger recording.
-  base::TimeDelta time_delta = base::Seconds(1);
-  FastForward(time_delta);
-  EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
-  monitor_.ProvidePowerUpdate(false, second_level);
-  VerifyHistogramDelta(second_bucket, 10, time_delta);
 }
 
 TEST_F(PowerStatusHelperTest, UnbucketedVideoStopsRecording) {
