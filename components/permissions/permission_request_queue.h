@@ -41,8 +41,8 @@ class PermissionRequestQueue {
   ~PermissionRequestQueue();
 
   bool IsEmpty() const;
-  size_t Count() const;
   size_t Count(PermissionRequest* request) const;
+  size_t size() const { return size_; }
 
   // Push a new request into queue. This function will decide based on request
   // priority and platform whether to call |PushBack| or |PushFront|.
@@ -92,6 +92,8 @@ class PermissionRequestQueue {
   // priorities have strictly ascending, contignous values from lowest to
   // highest.
   std::vector<base::circular_deque<PermissionRequest*>> queued_requests_;
+
+  size_t size_{0};
 };
 
 }  // namespace permissions

@@ -283,7 +283,7 @@ void PermissionRequestManager::AddRequest(
 }
 
 bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
-  if (pending_permission_requests_.IsEmpty() || !IsRequestInProgress() ||
+  if (!IsRequestInProgress() ||
       IsCurrentRequestEmbeddedPermissionElementInitiated()) {
     return true;
   }
@@ -292,6 +292,10 @@ bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
   while (!pending_permission_requests_.IsEmpty() &&
          !ValidateRequest(pending_permission_requests_.Peek())) {
     pending_permission_requests_.Pop();
+  }
+
+  if (pending_permission_requests_.IsEmpty()) {
+    return true;
   }
 
   auto current_request_fate = CurrentRequestFate::kKeepCurrent;
@@ -324,6 +328,7 @@ bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
   }
 
   if (current_request_fate == CurrentRequestFate::kKeepCurrent &&
+      !pending_permission_requests_.IsEmpty() &&
       pending_permission_requests_.Peek()
           ->IsEmbeddedPermissionElementInitiated()) {
     current_request_fate = CurrentRequestFate::kPreempt;
@@ -333,7 +338,7 @@ bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
     case CurrentRequestFate::kKeepCurrent:
       return true;
     case CurrentRequestFate::kPreempt: {
-      DCHECK(!pending_permission_requests_.IsEmpty());
+      CHECK(!pending_permission_requests_.IsEmpty());
       auto* next_candidate = pending_permission_requests_.Peek();
 
       // Consider a case of infinite loop here (eg: 2 low priority requests can
