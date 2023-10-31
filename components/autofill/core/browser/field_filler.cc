@@ -155,8 +155,7 @@ bool NormalizeAdminAreaForCountryCode(std::u16string* admin_area,
     return false;
   }
 
-  AutofillProfile tmp_profile;
-  tmp_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code));
+  AutofillProfile tmp_profile((AddressCountryCode(country_code)));
   tmp_profile.SetRawInfo(ADDRESS_HOME_STATE, *admin_area);
   if (!address_normalizer->NormalizeAddressSync(&tmp_profile)) {
     return false;

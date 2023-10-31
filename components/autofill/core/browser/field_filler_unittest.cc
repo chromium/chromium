@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/field_filler.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 
 #include <stddef.h>
 
@@ -148,15 +150,16 @@ class AutofillFieldFillerTest : public testing::Test {
 
  protected:
   AutofillFieldFillerTest()
-      : credit_card_(test::GetCreditCard()), address_(test::GetFullProfile()) {}
+      : credit_card_(test::GetCreditCard()),
+        address_(std::make_unique<AutofillProfile>(test::GetFullProfile())) {}
 
   CreditCard* credit_card() { return &credit_card_; }
-  AutofillProfile* address() { return &address_; }
+  AutofillProfile* address() { return address_.get(); }
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   CreditCard credit_card_;
-  AutofillProfile address_;
+  std::unique_ptr<AutofillProfile> address_;
 };
 
 TEST_F(AutofillFieldFillerTest, Type) {
@@ -654,7 +657,7 @@ TEST_P(PhoneNumberTest, FillPhoneNumber) {
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
 
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("US"));
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
                      test_case.phone_home_whole_number_value);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1915,7 +1918,7 @@ void DoTestFillAugmentedPhoneCountryCodeField(
       test_case.phone_country_code_selection_options, field_type));
   field.set_heuristic_type(GetActiveHeuristicSource(), PHONE_HOME_COUNTRY_CODE);
 
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("US"));
   address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
                      test_case.phone_home_whole_number_value);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1988,9 +1991,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectAbbreviatedState) {
 
   AutofillField field = CreateTestSelectAutofillField({"BA", "BB", "BC", "BY"},
                                                       ADDRESS_HOME_STATE);
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("DE"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
@@ -2006,9 +2008,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectLocalizedState) {
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Bayern", "Berlin", "Brandenburg", "Bremen"}, ADDRESS_HOME_STATE);
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("DE"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
@@ -2025,9 +2026,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectLocalizedStateSubstring) {
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Bavaria Has Munich", "Berlin has Berlin"}, ADDRESS_HOME_STATE);
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("DE"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
@@ -2047,9 +2047,8 @@ TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
   field.max_length = 4;
 
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("DE"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
@@ -2066,9 +2065,8 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Bavari", "Berlin", "Lower Saxony"}, ADDRESS_HOME_STATE);
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("DE"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavari");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
@@ -2090,9 +2088,8 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWhenStateIsNotInOptions) {
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("US"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
@@ -2109,9 +2106,8 @@ TEST_F(AutofillFieldFillerTest,
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Colorado", "Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("US"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
@@ -2134,9 +2130,8 @@ TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_STATE);
   field.max_length = 4;
 
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("DE"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
@@ -2153,9 +2148,8 @@ TEST_F(AutofillFieldFillerTest,
 
   AutofillField field = CreateTestSelectAutofillField(
       {"Colombia", "Connecticut", "California"}, ADDRESS_HOME_STATE);
-  AutofillProfile address;
+  AutofillProfile address(AddressCountryCode("US"));
   address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, /*forced_fill_values=*/{}, &field,
