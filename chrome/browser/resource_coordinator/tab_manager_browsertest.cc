@@ -41,10 +41,9 @@
 #include "components/performance_manager/public/features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -138,6 +137,41 @@ class DiscardWaiter : public TabLifecycleObserver {
   }
 
   base::RunLoop run_loop_;
+};
+
+// Allows tests to wait for a renderer process host to exit.
+class WindowedRenderProcessHostExitObserver
+    : public content::RenderProcessHostObserver {
+ public:
+  WindowedRenderProcessHostExitObserver() {
+    for (auto it = content::RenderProcessHost::AllHostsIterator();
+         !it.IsAtEnd(); it.Advance()) {
+      host_observation_.AddObservation(it.GetCurrentValue());
+    }
+  }
+
+  void Wait() {
+    if (!seen_) {
+      run_loop_.Run();
+    }
+    EXPECT_TRUE(seen_);
+  }
+
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override {
+    seen_ = true;
+    host_observation_.RemoveObservation(host);
+  }
+
+ private:
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
+
+  base::RunLoop run_loop_;
+  bool seen_ = false;
 };
 
 }  // namespace
@@ -588,9 +622,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTestWithTwoTabs,
   // The Tab Manager should be able to fast-kill a process for the discarded tab
   // on all platforms, as each tab will be running in a separate process by
   // itself regardless of the discard reason.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-      content::NotificationService::AllSources());
+  WindowedRenderProcessHostExitObserver observer;
   // Advance time so everything is urgent discardable.
   test_clock_.Advance(kBackgroundUrgentProtectionTime);
   EXPECT_TRUE(
@@ -634,9 +666,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, UrgentFastShutdownWithUnloadHandler) {
 #if BUILDFLAG(IS_CHROMEOS)
   // The unsafe attempt for ChromeOS should succeed as ChromeOS ignores unload
   // handlers when in critical condition.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-      content::NotificationService::AllSources());
+  WindowedRenderProcessHostExitObserver observer;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT));
