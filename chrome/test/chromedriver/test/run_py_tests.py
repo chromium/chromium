@@ -150,6 +150,37 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'PureBidiTest.testSessionCommandInEndedSession',
 ]
 
+_BROWSER_SPECIFIC_FILTER = {}
+_BROWSER_SPECIFIC_FILTER['chrome'] = [
+]
+_BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
+    # TODO: Each test in this list must have an explanation why it is expected
+    # to fail. If the test is not expected to fail a corresponding issue must
+    # be created and referred to in the comment above the excluded test.
+    # See crbug.com/chromedriver/4358.
+    'ZChromeStartRetryCountTest.testChromeStartRetryCount',
+    'ChromeDriverTest.testWindowMaximize',
+    'ChromeDriverTest.testWindowFullScreen',
+    'ChromeDriverTest.testCanSwitchToPrintPreviewDialog',
+    'ChromeDriverSecureContextTest.*',
+    'RemoteBrowserTest.testConnectToRemoteBrowser',
+    'LaunchDesktopTest.testExistingDevToolsPortFile',
+    # FedCM is not supported by chrome-headless-shell.
+    'FedCmSpecificTest.*',
+    'ChromeDriverTest.testSlowIFrame',
+    'ChromeExtensionsCapabilityTest.testCanInspectBackgroundPage',
+    'ChromeExtensionsCapabilityTest.testIFrameWithExtensionsSource',
+    # chrome-headless-shell does not support chrome:about page
+    'ChromeSwitchesCapabilityTest.testRemoteDebuggingPort',
+    # chrome-headless-shell does not support chrome:about page
+    'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
+    'ChromeExtensionsCapabilityTest.testIFrameWithExtensionsSource',
+    'ChromeExtensionsCapabilityTest.testCanInspectBackgroundPage',
+    'ChromeDriverTest.testShouldHandleNewWindowLoadingProperly',
+    'ChromeDriverTest.testSetRPHResgistrationMode',
+    'ChromeDownloadDirTest.testDownloadDirectoryOverridesExistingPreferences',
+]
+
 _DESKTOP_NEGATIVE_FILTER = [
     # Desktop doesn't support touch (without --touch-events).
     'ChromeDriverTestLegacy.testTouchSingleTapElement',
@@ -183,11 +214,13 @@ _INTEGRATION_NEGATIVE_FILTER = [
 ]
 
 
-def _GetDesktopNegativeFilter():
+def _GetDesktopNegativeFilter(browser_name = 'chrome'):
   filter = _NEGATIVE_FILTER + _DESKTOP_NEGATIVE_FILTER
   os = util.GetPlatformName()
   if os in _OS_SPECIFIC_FILTER:
     filter += _OS_SPECIFIC_FILTER[os]
+  if browser_name in _BROWSER_SPECIFIC_FILTER:
+    filter += _BROWSER_SPECIFIC_FILTER[browser_name]
   return filter
 
 _ANDROID_NEGATIVE_FILTER = {}
@@ -338,6 +371,104 @@ _ANDROID_NEGATIVE_FILTER['chromedriver_webview_shell'] = (
         'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
+
+def _GetChromePathList(driver_path, platform):
+  path_mapping = {
+    'linux': [os.path.join(driver_path, 'chrome')],
+    'mac': [
+      os.path.join(driver_path,
+                   'Google Chrome for Testing.app',
+                   'Contents', 'MacOS',
+                   'Google Chrome for Testing'),
+      os.path.join(driver_path, 'Google Chrome.app',
+                   'Contents', 'MacOS', 'Google Chrome'),
+      os.path.join(driver_path, 'Chromium.app',
+                   'Contents', 'MacOS', 'Chromium')],
+    'win': [os.path.join(driver_path, 'chrome.exe')]}
+  if platform in path_mapping:
+    return path_mapping[platform]
+  return []
+
+def _GetHeadlessShellPathList(driver_path, platform):
+  posix_path_list = [
+    os.path.join(driver_path, 'chrome-headless-shell'),
+    os.path.join(driver_path, 'headless_shell')]
+  path_mapping = {
+    'linux': posix_path_list,
+    'mac': posix_path_list,
+    'win': [
+      os.path.join(driver_path, 'chrome-headless-shell.exe'),
+      os.path.join(driver_path, 'headless_shell.exe')]}
+  if platform in path_mapping:
+    return path_mapping[platform]
+  return []
+
+def _InferBrowserName(chrome_binary):
+  components = os.path.split(chrome_binary)
+  if len(components) == 0:
+    return 'chrome' # default to chrome if path is not provided
+  program = os.path.splitext(os.path.basename(chrome_binary))[0]
+  if program in {'chrome-headless-shell', 'headless_shell'}:
+    return 'chrome-headless-shell'
+  else:
+    return 'chrome'
+
+def _InferBrowserPath(browser_name,
+                      driver_path,
+                      platform,
+                      path_exists = os.path.exists):
+  path_list = []
+  if browser_name == 'chrome':
+    path_list = _GetChromePathList(driver_path, platform)
+  elif browser_name == 'chrome-headless-shell':
+    path_list = _GetHeadlessShellPathList(driver_path, platform)
+  for path in path_list:
+    if path_exists(path):
+      return path
+  return None
+
+class RunnerSelfTest(unittest.TestCase):
+  def testPathListsForKnownPlatforms(self):
+    driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
+    self.assertGreater(len(_GetChromePathList(driver_path, 'linux')), 0)
+    self.assertGreater(len(_GetChromePathList(driver_path, 'mac')), 0)
+    self.assertGreater(len(_GetChromePathList(driver_path, 'win')), 0)
+    self.assertGreater(len(_GetHeadlessShellPathList(driver_path, 'linux')), 0)
+    self.assertGreater(len(_GetHeadlessShellPathList(driver_path, 'mac')), 0)
+    self.assertGreater(len(_GetHeadlessShellPathList(driver_path, 'win')), 0)
+
+  def testPathListsForUnknownPlatforms(self):
+    driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
+    self.assertIsNotNone(_GetChromePathList(driver_path, 'unknown'))
+    self.assertIsNotNone(_GetHeadlessShellPathList(driver_path, 'unknown'))
+    self.assertEqual(len(_GetChromePathList(driver_path, 'unknown')), 0)
+    self.assertEqual(len(_GetHeadlessShellPathList(driver_path, 'unknown')), 0)
+    self.assertIsNotNone(_GetChromePathList(driver_path, ''))
+    self.assertIsNotNone(_GetHeadlessShellPathList(driver_path, ''))
+    self.assertEqual(len(_GetChromePathList(driver_path, '')), 0)
+    self.assertEqual(len(_GetHeadlessShellPathList(driver_path, '')), 0)
+
+  def testBrowserNameInference(self):
+    driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
+    for platform in ['linux', 'mac', 'win']:
+      for path in _GetChromePathList(driver_path, platform):
+        self.assertEqual('chrome', _InferBrowserName(path))
+      for path in _GetHeadlessShellPathList(driver_path, platform):
+        self.assertEqual('chrome-headless-shell', _InferBrowserName(path))
+
+  def testBrowserPathInference(self):
+    is_headless_shell = lambda path: 'chrome-headless-shell' in path
+    is_not_headless_shell = lambda path: 'chrome-headless-shell' not in path
+    driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
+    for platform in ['linux', 'mac', 'win']:
+      self.assertGreater(len(_InferBrowserPath('chrome',
+                                driver_path,
+                                platform,
+                                is_not_headless_shell)), 0)
+      self.assertGreater(len(_InferBrowserPath('chrome-headless-shell',
+                                               driver_path,
+                                               platform,
+                                               is_headless_shell)), 0)
 
 
 class ChromeDriverBaseTest(unittest.TestCase):
@@ -7513,6 +7644,21 @@ if __name__ == '__main__':
       action='store_true',
       default=False,
       help='Allow ChromeDriver to run with an incompatible Chrome version')
+  parser.add_argument(
+      '--browser-name',
+      default=None,
+      help='Browser specific test subset selector. Inferred from the path '
+           'to the binary if possible. Otherwise defaults to chrome')
+
+  ##############################################################################
+  # Note for other Chromium based browsers!!!
+  # Path inference works only for Chrome and chrome-headless-shell.
+  # Therefore you need to pass the path to your browser explicitly via the
+  # --chrome argument.
+  # The test set for your browser most likely coincides with the test set for
+  # 'chrome'. Therefore you need to pass --browser-name=chrome or just omit this
+  # argument altogether as 'chrome' is already the default value.
+  ##############################################################################
 
   options = parser.parse_args()
 
@@ -7559,39 +7705,27 @@ if __name__ == '__main__':
   global _CHROMEDRIVER_SERVER_URL
   _CHROMEDRIVER_SERVER_URL = chromedriver_server.GetUrl()
 
-
   global _CHROME_BINARY
+  browser_name = options.browser_name
+
   if options.chrome:
     _CHROME_BINARY = util.GetAbsolutePathOfUserPath(options.chrome)
+    if browser_name is None:
+      browser_name = _InferBrowserName(options.chrome)
   else:
     # In some test environments (such as commit queue), it's not convenient to
     # specify Chrome binary location on the command line. Try to use heuristics
     # to locate the Chrome binary next to the ChromeDriver binary.
     driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
-    chrome_path = None
-    platform = util.GetPlatformName()
-    if platform == 'linux':
-      chrome_path = os.path.join(driver_path, 'chrome')
-    elif platform == 'mac':
-      if os.path.exists(os.path.join(driver_path,
-                                     'Google Chrome for Testing.app')):
-          chrome_path = os.path.join(driver_path,
-                                     'Google Chrome for Testing.app',
-                                     'Contents', 'MacOS',
-                                     'Google Chrome for Testing')
-      elif os.path.exists(os.path.join(driver_path, 'Google Chrome.app')):
-        chrome_path = os.path.join(driver_path, 'Google Chrome.app',
-                                   'Contents', 'MacOS', 'Google Chrome')
-      else:
-        chrome_path = os.path.join(driver_path, 'Chromium.app',
-                                   'Contents', 'MacOS', 'Chromium')
-    elif platform == 'win':
-      chrome_path = os.path.join(driver_path, 'chrome.exe')
 
-    if chrome_path is not None and os.path.exists(chrome_path):
-      _CHROME_BINARY = chrome_path
-    else:
-      _CHROME_BINARY = None
+    if browser_name is None:
+      browser_name = 'chrome'
+    _CHROME_BINARY = _InferBrowserPath(browser_name,
+                                       driver_path,
+                                       util.GetPlatformName())
+    if _CHROME_BINARY is None:
+      print('Failed to find the browser "%s". ' +
+            'Delegating this task to ChromeDriver' % browser_name)
 
   global _ANDROID_PACKAGE_KEY
   _ANDROID_PACKAGE_KEY = options.android_package
@@ -7609,7 +7743,7 @@ if __name__ == '__main__':
     if _ANDROID_PACKAGE_KEY:
       negative_filter = _ANDROID_NEGATIVE_FILTER[_ANDROID_PACKAGE_KEY]
     else:
-      negative_filter = _GetDesktopNegativeFilter()
+      negative_filter = _GetDesktopNegativeFilter(browser_name)
 
     if options.test_type is not None:
       if options.test_type == 'integration':
