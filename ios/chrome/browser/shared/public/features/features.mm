@@ -63,10 +63,6 @@ const base::FeatureParam<DefaultBrowserPromoGenericTailoredArm>
         DefaultBrowserPromoGenericTailoredArm::kOnlyGeneric,
         &kDefaultBrowserPromoGenericTailoredArmOptions};
 
-BASE_FEATURE(kDefaultBrowserRefactoringPromoManager,
-             "DefaultBrowserRefactoringPromoManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDefaultBrowserVideoPromo,
              "DefaultBrowserVideoPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -595,10 +595,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
   return false;
 }
 
-bool IsDefaultBrowserInPromoManagerEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserRefactoringPromoManager);
-}
-
 bool IsDefaultBrowserVideoPromoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserVideoPromo);
 }

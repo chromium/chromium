@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
@@ -85,9 +84,6 @@
 }
 
 - (void)notifyHandlerShowPromo {
-  if (!IsDefaultBrowserInPromoManagerEnabled()) {
-    return;
-  }
   self.promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::DefaultBrowser);
 
@@ -96,10 +92,6 @@
 }
 
 - (void)notifyHandlerDismissPromo:(BOOL)animated {
-  if (IsDefaultBrowserInPromoManagerEnabled()) {
-    return;
-  }
-  self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
 }
 
 - (void)onEnteringBackground:(PromoReason)currentPromoReason
@@ -113,47 +105,17 @@
   AppState* appState = self.sceneState.appState;
 
   // Register default browser promo manager to the promo manager.
-  if (IsDefaultBrowserInPromoManagerEnabled()) {
-    DCHECK(self.sceneState.appState.mainBrowserState);
+  DCHECK(self.sceneState.appState.mainBrowserState);
 
-    DCHECK(self.promosManager);
-    if (ShouldRegisterPromoWithPromoManager(
-            [self isSignedIn], /*is_omnibox_copy_paste=*/false,
-            feature_engagement::TrackerFactory::GetForBrowserState(
-                appState.mainBrowserState))) {
-      self.promosManager->RegisterPromoForSingleDisplay(
-          promos_manager::Promo::DefaultBrowser);
-    } else {
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::DefaultBrowser);
-    }
-    return;
-  }
-
-  // Can only present UI when activation level is
-  // SceneActivationLevelForegroundActive. Show the UI if user has met the
-  // qualifications to be shown the promo.
-  if (appState.shouldShowDefaultBrowserPromo && !appState.currentUIBlocker) {
-    id<DefaultPromoCommands> defaultPromoHandler =
-        HandlerForProtocol(self.dispatcher, DefaultPromoCommands);
-    switch (appState.defaultBrowserPromoTypeToShow) {
-      case DefaultPromoTypeGeneral:
-        [defaultPromoHandler showDefaultBrowserFullscreenPromo];
-        break;
-      case DefaultPromoTypeStaySafe:
-        [defaultPromoHandler showTailoredPromoStaySafe];
-        break;
-      case DefaultPromoTypeMadeForIOS:
-        [defaultPromoHandler showTailoredPromoMadeForIOS];
-        break;
-      case DefaultPromoTypeAllTabs:
-        [defaultPromoHandler showTailoredPromoAllTabs];
-        break;
-      case DefaultPromoTypeVideo:
-        break;
-    }
-
-    appState.shouldShowDefaultBrowserPromo = NO;
+  DCHECK(self.promosManager);
+  if (ShouldRegisterPromoWithPromoManager(
+          [self isSignedIn], /*is_omnibox_copy_paste=*/false,
+          feature_engagement::TrackerFactory::GetForBrowserState(
+              appState.mainBrowserState))) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::DefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
   }
 }
 

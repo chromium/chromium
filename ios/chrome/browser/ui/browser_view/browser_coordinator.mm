@@ -99,7 +99,6 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
-#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -751,21 +750,6 @@ enum class ToolbarKind {
   self.activityOverlayCoordinator = nil;
 }
 
-// Shows a default promo with the passed type or nothing if a tailored promo is
-// already present.
-- (void)showTailoredPromoWithType:(DefaultPromoType)type {
-  if (self.tailoredPromoCoordinator) {
-    // Another promo is being shown, return early.
-    return;
-  }
-  self.tailoredPromoCoordinator = [[TailoredPromoCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                            type:type];
-  self.tailoredPromoCoordinator.handler = self;
-  [self.tailoredPromoCoordinator start];
-}
-
 // Instantiates a BrowserViewController.
 - (void)createViewController {
   DCHECK(self.browserContainerCoordinator.viewController);
@@ -818,7 +802,6 @@ enum class ToolbarKind {
     @protocol(ActivityServiceCommands),
     @protocol(AutofillBottomSheetCommands),
     @protocol(BrowserCoordinatorCommands),
-    @protocol(DefaultPromoCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
@@ -1793,31 +1776,6 @@ enum class ToolbarKind {
   self.paymentsSuggestionBottomSheetCoordinator = nil;
 }
 
-#pragma mark - DefaultPromoCommands
-
-- (void)showTailoredPromoStaySafe {
-  [self showTailoredPromoWithType:DefaultPromoTypeStaySafe];
-}
-
-- (void)showTailoredPromoMadeForIOS {
-  [self showTailoredPromoWithType:DefaultPromoTypeMadeForIOS];
-}
-
-- (void)showTailoredPromoAllTabs {
-  [self showTailoredPromoWithType:DefaultPromoTypeAllTabs];
-}
-
-- (void)showDefaultBrowserFullscreenPromo {
-  if (!self.defaultBrowserPromoCoordinator) {
-    self.defaultBrowserPromoCoordinator =
-        [[DefaultBrowserPromoCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser];
-    self.defaultBrowserPromoCoordinator.handler = self;
-  }
-  [self.defaultBrowserPromoCoordinator start];
-}
-
 - (void)showChoice {
   if (!ios::provider::IsChoiceEnabled()) {
     return;
@@ -1843,10 +1801,8 @@ enum class ToolbarKind {
   self.defaultBrowserPromoCoordinator = nil;
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
-  if (IsDefaultBrowserInPromoManagerEnabled()) {
-    [self.defaultBrowserPromoManager stop];
-    self.defaultBrowserPromoManager = nil;
-  }
+  [self.defaultBrowserPromoManager stop];
+  self.defaultBrowserPromoManager = nil;
 }
 
 #pragma mark - FeedCommands
@@ -2059,10 +2015,6 @@ enum class ToolbarKind {
 }
 
 - (void)maybeDisplayDefaultBrowserPromo {
-  if (!IsDefaultBrowserInPromoManagerEnabled()) {
-    return;
-  }
-
   if (self.defaultBrowserPromoManager) {
     // The default browser promo manager is already being displayed. Early
     // return as this is expected if a default browser promo was open and the
@@ -2079,8 +2031,6 @@ enum class ToolbarKind {
 }
 
 - (void)displayDefaultBrowserPromoAfterRemindMeLater {
-  CHECK(IsDefaultBrowserInPromoManagerEnabled());
-
   self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];

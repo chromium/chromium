@@ -457,10 +457,6 @@ NSString* SerializedValue(const base::Value* value) {
         @"Multiwindow not supported");
   }
 
-  // Always disable default browser promo in new window, to avoid
-  // messages to be closed too early.
-  [self disableDefaultBrowserPromo];
-
   NSUserActivity* activity =
       [[NSUserActivity alloc] initWithActivityType:@"EG2NewWindow"];
   UISceneActivationRequestOptions* options =
@@ -1475,12 +1471,6 @@ int watchRunNumber = 0;
 + (void)copyURLToPasteBoard {
   UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
   pasteboard.URL = [NSURL URLWithString:@"chrome://version"];
-}
-
-+ (void)disableDefaultBrowserPromo {
-  chrome_test_util::GetMainController().appState.shouldShowDefaultBrowserPromo =
-      NO;
-  LogUserInteractionWithFullscreenPromo();
 }
 
 #pragma mark - First Run Utilities

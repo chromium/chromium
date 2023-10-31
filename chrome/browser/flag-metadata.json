@@ -1554,11 +1554,6 @@
     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 121
   },
-  {
-    "name": "default-browser-refactoring-promo-manager",
-    "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 125
-  },
   {  "name": "default-browser-video-in-settings",
      "owners": [ "gayane@google.com", "bling-flags@google.com" ],
      "expiry_milestone": 130

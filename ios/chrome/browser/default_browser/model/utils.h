@@ -141,10 +141,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
     feature_engagement::Tracker* tracker,
     syncer::SyncService* syncService);
 
-// Returns true if the full screen default browser promos are added to the promo
-// manager.
-bool IsDefaultBrowserInPromoManagerEnabled();
-
 // Returns true if the default browser video promo is enabled.
 bool IsDefaultBrowserVideoPromoEnabled();
 

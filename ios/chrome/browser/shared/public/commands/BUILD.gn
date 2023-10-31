@@ -62,7 +62,6 @@ source_set("commands") {
     "tos_commands.h",
     "unit_conversion_commands.h",
     "web_content_commands.h",
-    "whats_new_commands.h",
   ]
 
   deps = [

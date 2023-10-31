@@ -62,10 +62,6 @@ enum class DefaultBrowserPromoGenericTailoredArm {
 extern const base::FeatureParam<DefaultBrowserPromoGenericTailoredArm>
     kDefaultBrowserPromoGenericTailoredParam;
 
-// Feature flag that allows full screen default browser promos to be added to
-// the promo manager.
-BASE_DECLARE_FEATURE(kDefaultBrowserRefactoringPromoManager);
-
 // Feature flag that enables the default browser video promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserVideoPromo);
 

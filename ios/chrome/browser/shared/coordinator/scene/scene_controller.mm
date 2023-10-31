@@ -442,10 +442,6 @@ void InjectNTP(Browser* browser) {
 - (void)setStartupParameters:(AppStartupParameters*)parameters {
   _startupParameters = parameters;
   self.startupParametersAreBeingHandled = NO;
-  BOOL shouldShowPromo =
-      self.sceneState.appState.shouldShowDefaultBrowserPromo &&
-      (parameters.postOpeningAction == NO_ACTION);
-  self.sceneState.appState.shouldShowDefaultBrowserPromo = shouldShowPromo;
 
   if (parameters.openedViaFirstPartyScheme) {
     [[NonModalDefaultBrowserPromoSchedulerSceneAgent
@@ -1129,10 +1125,6 @@ void InjectNTP(Browser* browser) {
         currentBrowser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
   }
-
-  if (!IsDefaultBrowserInPromoManagerEnabled()) {
-    [self maybeShowDefaultBrowserPromo:self.mainInterface.browser];
-  }
 }
 
 // Notifies the Feature Engagement Tracker that an eligibility criterion has
@@ -1150,83 +1142,6 @@ void InjectNTP(Browser* browser) {
     tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
     tracker->NotifyEvent(
         feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
-  }
-}
-
-// `YES` if Chrome is not the default browser, the app did not crash recently,
-// the user never saw the promo UI and is in the correct experiment groups.
-- (BOOL)potentiallyInterestedUser {
-  // If skipping first run, not in Safe Mode, no post opening action and the
-  // launch is not after a crash, consider showing the default browser promo.
-  TabOpeningPostOpeningAction postOpeningAction =
-      self.NTPActionAfterTabSwitcherDismissal;
-  if (self.startupParameters) {
-    postOpeningAction = self.startupParameters.postOpeningAction;
-  }
-  return postOpeningAction == NO_ACTION &&
-         GetApplicationContext()->WasLastShutdownClean() &&
-         !IsChromeLikelyDefaultBrowser();
-}
-
-- (void)maybeShowDefaultBrowserPromo:(Browser*)browser {
-  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
-  PrefService* prefService = browserState->GetPrefs();
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-
-  if (self.sceneState.appState.startupInformation.isFirstRun ||
-      IsUserPolicyNotificationNeeded(authService, prefService) ||
-      ![self potentiallyInterestedUser]) {
-    // Don't show the default browser promo when either (1) the user is going
-    // through the First Run screens, (2) the user MUST see the User Policy
-    // notification, OR (3) it was determined that the user isn't potentially
-    // interested in that promo.
-    //
-    // Showing the User Policy notification has priority over showing the
-    // default browser promo. Both dialogs are competing for the same time slot
-    // which is after the browser startup and the browser UI is initialized.
-    return;
-  }
-
-  // Show the Default Browser promo UI if the user's past behavior fits
-  // the categorization of potentially interested users or if the user is
-  // signed in. Do not show if it is determined that Chrome is already the
-  // default browser (checked in the if enclosing this comment) or if the user
-  // has already seen the promo UI. If the user was in the experiment group
-  // that showed the Remind Me Later button and tapped on it, then show the
-  // promo again if now is the right time.
-
-  BOOL isSignedIn = [self isSignedIn];
-
-  // Tailored promos take priority over general promo.
-  BOOL isMadeForIOSPromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS);
-  BOOL isAllTabsPromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) &&
-      isSignedIn;
-  BOOL isStaySafePromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe);
-
-  BOOL isTailoredPromoEligibleUser =
-      !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
-      (isMadeForIOSPromoEligible || isAllTabsPromoEligible ||
-       isStaySafePromoEligible);
-  if (isTailoredPromoEligibleUser && !UserInFullscreenPromoCooldown()) {
-    self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
-    self.sceneState.appState.defaultBrowserPromoTypeToShow =
-        MostRecentInterestDefaultPromoType(!isSignedIn);
-    DCHECK(self.sceneState.appState.defaultBrowserPromoTypeToShow !=
-           DefaultPromoTypeGeneral);
-    return;
-  }
-
-  if (!HasUserInteractedWithFullscreenPromoBefore() &&
-      (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
-       isSignedIn) &&
-      !UserInFullscreenPromoCooldown()) {
-    self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
-    self.sceneState.appState.defaultBrowserPromoTypeToShow =
-        DefaultPromoTypeGeneral;
   }
 }
 

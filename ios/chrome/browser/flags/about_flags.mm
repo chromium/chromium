@@ -1196,11 +1196,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
-    {"default-browser-refactoring-promo-manager",
-     flag_descriptions::kDefaultBrowserRefactoringPromoManagerName,
-     flag_descriptions::kDefaultBrowserRefactoringPromoManagerDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kDefaultBrowserRefactoringPromoManager)},
     {"default-browser-video-promo",
      flag_descriptions::kDefaultBrowserVideoPromoName,
      flag_descriptions::kDefaultBrowserVideoPromoDescription, flags_ui::kOsIos,

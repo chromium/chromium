@@ -688,11 +688,6 @@
 // Copies a chrome:// URL that doesn't require internet connection.
 + (void)copyURLToPasteBoard;
 
-// Disables default browser promo. If a test needs to check a message drop down
-// in a second window, this needs to be disabled or the popup will kill the
-// message.
-+ (void)disableDefaultBrowserPromo;
-
 #pragma mark - First Run Utilities
 
 // Writes the First Run Sentinel file, used to record that First Run has

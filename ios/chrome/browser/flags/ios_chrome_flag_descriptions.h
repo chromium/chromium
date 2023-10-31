@@ -234,11 +234,6 @@ extern const char kDefaultBrowserFullscreenPromoExperimentDescription[];
 extern const char kDefaultBrowserIntentsShowSettingsName[];
 extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 
-// Title and description for the flag to allow the fullscreen default browser
-// promos to be added to the promo manager.
-extern const char kDefaultBrowserRefactoringPromoManagerName[];
-extern const char kDefaultBrowserRefactoringPromoManagerDescription[];
-
 // Title and description for the flag to enable skipping the default browser
 // promo.
 extern const char kDefaultBrowserPromoForceShowPromoName[];
