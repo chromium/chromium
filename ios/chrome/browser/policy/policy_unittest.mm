@@ -36,12 +36,14 @@ class PolicyTest : public PlatformTest {
         state_directory_.GetPath());
     ASSERT_TRUE(enterprise_policy_helper_->GetBrowserState());
 
-    // Multiple tests use policy_test_cases.json, so compute its path once.
+    // Multiple tests use policy/pref_mapping, so compute its path
+    // once.
     base::FilePath test_data_directory;
     ASSERT_TRUE(
         base::PathService::Get(ios::DIR_TEST_DATA, &test_data_directory));
-    policy_test_cases_path_ = test_data_directory.Append(
-        FILE_PATH_LITERAL("policy/policy_test_cases.json"));
+    policy_test_cases_path_ =
+        test_data_directory.Append(FILE_PATH_LITERAL("policy"))
+            .Append(FILE_PATH_LITERAL("pref_mapping"));
   }
 
  protected:

@@ -112,12 +112,12 @@ design can be found at [policy_design.md](./policy_design.md).**
             [configuration_policy_handler_list_factory.cc](https://cs.chromium.org/chromium/src/chrome/browser/policy/configuration_policy_handler_list_factory.cc?type=cs&q=kSimplePolicyMap&g=0&l=150).
             If the policy needs additional verification or processing, please
             implement a `ConfigurationPolicyHandler` to do so.
-        3.  Test the mapping by adding policy to
-            [policy_test_cases.json](https://cs.chromium.org/chromium/src/components/policy/test/data/policy_test_cases.json?q=policy_test_case) (see [instructions](https://cs.chromium.org/chromium/src/docs/enterprise/policy_pref_mapping_test.md)).
+        3.  Test the mapping by adding PolicyName.json  under
+            [policy/test/data/pref_mapping](https://cs.chromium.org/chromium/src/components/policy/test/data/pref_mapping) (see [instructions](https://cs.chromium.org/chromium/src/docs/enterprise/policy_pref_mapping_test.md)).
         4.  iOS platform has its own
             [configuration_policy_handler_list_factory.mm](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/policy/configuration_policy_handler_list_factory.mm)
             and
-            [policy_test_cases.json](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/data/policy/policy_test_cases.json)
+            [policy/pref_mapping](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/test/data/policy/pref_mapping)
             file.
 7.  Disable the user setting UI when the policy is applied.
     -   If your feature can be controlled by GUI in `chrome://settings`, the
@@ -280,8 +280,8 @@ When removing support for a policy:
 1. Lastly after the last supported version has been branched:
    - remove all the code that implements the policy behavior as shown in the
      [Examples](#examples) section below after the milestone has been reached.
-   - Update the related test in the `policy_test_cases.json` by clearing the
-     the test for that policy.
+   - Update the related tests in the under `policy/test/data/pref_mapping` by removing all
+     test related to that policy and any resulting empty file.
 1. Notify chromium-enterprise@chromium.org to ensure this removal of support is
    mentioned in the enterprise release notes.
 

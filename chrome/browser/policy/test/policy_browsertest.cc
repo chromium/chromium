@@ -13,9 +13,10 @@
 // policy values are copied into local state or Profile prefs. They can be used
 // to enable policy during test.
 //
-// Simple policy to prefs mapping can be tested with policy_test_cases.json. If
-// the conversion is complicated and requires custom policy handler, we
-// recommend to test the handler separately.
+// Simple policy to prefs mapping can be tested with
+// chrome/test/data/policy/pref_mapping/[PolicyName].json. If the conversion is
+// complicated and requires custom policy handler, we recommend to test the
+// handler separately.
 
 #include "base/run_loop.h"
 #include "base/time/time.h"

@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
@@ -38,10 +39,6 @@ namespace policy {
 
 namespace {
 
-// The name of the instructions key in policy_test_cases.json that does not need
-// to be parsed.
-const char kInstructionKeyName[] = "-- Instructions --";
-
 enum class PrefLocation {
   kUserProfile,
   kSigninProfile,
@@ -58,13 +55,6 @@ PrefLocation GetPrefLocation(const base::Value::Dict& settings) {
     return PrefLocation::kSigninProfile;
   ADD_FAILURE() << "Unknown pref location: " << *location;
   return PrefLocation::kUserProfile;
-}
-
-std::string GetPolicyName(const std::string& policy_name_decorated) {
-  const size_t offset = policy_name_decorated.find('.');
-  if (offset != std::string::npos)
-    return policy_name_decorated.substr(0, offset);
-  return policy_name_decorated;
 }
 
 PrefService* GetPrefServiceForLocation(PrefLocation location,
@@ -276,8 +266,9 @@ bool CheckRequiredBuildFlagsSupported(const PolicyPrefMappingTest* test) {
 // loaded from components/policy/test/data/policy_test_cases.json.
 class PolicyTestCase {
  public:
-  PolicyTestCase(const std::string& name, const base::Value::Dict& test_case)
-      : name_(name) {
+  PolicyTestCase(const std::string& policy_name,
+                 const base::Value::Dict& test_case)
+      : policy_name_(policy_name) {
     is_official_only_ = test_case.FindBool("official_only").value_or(false);
     can_be_recommended_ =
         test_case.FindBool("can_be_recommended").value_or(false);
@@ -308,7 +299,7 @@ class PolicyTestCase {
   PolicyTestCase(const PolicyTestCase& other) = delete;
   PolicyTestCase& operator=(const PolicyTestCase& other) = delete;
 
-  const std::string& name() const { return name_; }
+  const std::string& policy_name() const { return policy_name_; }
 
   bool is_official_only() const { return is_official_only_; }
 
@@ -366,7 +357,7 @@ class PolicyTestCase {
   bool HasSupportedOs() const { return !supported_os_.empty(); }
 
  private:
-  std::string name_;
+  std::string policy_name_;
   bool is_official_only_;
   bool can_be_recommended_;
   bool has_reason_for_missing_test_;
@@ -382,33 +373,39 @@ class PolicyTestCases {
   typedef std::map<std::string, PolicyTestCaseVector> PolicyTestCaseMap;
   typedef PolicyTestCaseMap::const_iterator iterator;
 
-  explicit PolicyTestCases(const base::FilePath& test_case_path) {
+  explicit PolicyTestCases(const base::FilePath& test_case_dir) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string json;
-    if (!base::ReadFileToString(test_case_path, &json)) {
-      ADD_FAILURE() << "Error reading: " << test_case_path;
-      return;
-    }
-    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
-    if (!parsed_json.has_value()) {
-      ADD_FAILURE() << "Error parsing policy_test_cases.json: "
-                    << parsed_json.error().message;
-      return;
-    }
 
-    base::Value::Dict* dict = parsed_json->GetIfDict();
-    if (!dict) {
-      ADD_FAILURE()
-          << "Error parsing policy_test_cases.json: Expected dictionary.";
-      return;
-    }
-    for (auto it : *dict) {
-      const std::string policy_name = GetPolicyName(it.first);
-      if (policy_name == kInstructionKeyName)
-        continue;
-      auto policy_test_case =
-          std::make_unique<PolicyTestCase>(it.first, it.second.GetDict());
-      policy_test_cases_[policy_name].push_back(std::move(policy_test_case));
+    base::FileEnumerator iterator(
+        test_case_dir, /*recursive=*/false, base::FileEnumerator::FILES,
+        FILE_PATH_LITERAL("*.json"),
+        base::FileEnumerator::FolderSearchPolicy::ALL,
+        base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
+
+    for (base::FilePath path = iterator.Next(); !path.empty();
+         path = iterator.Next()) {
+      if (!base::ReadFileToString(path, &json)) {
+        ADD_FAILURE() << "Error reading: " << path;
+        return;
+      }
+      auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+      if (!parsed_json.has_value()) {
+        ADD_FAILURE() << "Error parsing " << path << " : "
+                      << parsed_json.error().message;
+        return;
+      }
+      if (!parsed_json->is_list()) {
+        ADD_FAILURE() << "Error parsing policy_test_cases.json: Expected list.";
+        return;
+      }
+      std::string policy_name =
+          path.BaseName().RemoveFinalExtension().MaybeAsASCII();
+      for (const auto& test_case : parsed_json->GetList()) {
+        auto policy_test_case =
+            std::make_unique<PolicyTestCase>(policy_name, test_case.GetDict());
+        policy_test_cases_[policy_name].push_back(std::move(policy_test_case));
+      }
     }
   }
 
@@ -537,7 +534,7 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
     for (const auto& test_case : policy->second) {
       EXPECT_TRUE(test_case->has_reason_for_missing_test() ||
                   !test_case->policy_pref_mapping_tests().empty())
-          << "Test case " << test_case->name()
+          << "Test case " << test_case->policy_name()
           << " has empty list of test cases (policy_pref_mapping_tests). Add "
              "tests or use reason_for_missing_test.";
 
@@ -571,9 +568,15 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
   auto test_filter = GetTestFilter();
 
   for (const auto& policy : test_cases) {
-    for (const auto& test_case : policy.second) {
-      SCOPED_TRACE(::testing::Message()
-                   << "Policy test case name: " << test_case->name());
+    for (size_t idx = 0; idx < policy.second.size(); ++idx) {
+      auto& test_case = policy.second[idx];
+      SCOPED_TRACE(policy.second.size() <= 1
+                       ? ::testing::Message()
+                             << "Policy name: " << test_case->policy_name()
+                       : ::testing::Message()
+                             << "Policy name: " << test_case->policy_name()
+                             << " - " << idx);
+
       if (chunk_info != nullptr) {
         const size_t policy_name_hash = base::PersistentHash(policy.first);
         const size_t chunk_index = policy_name_hash % chunk_info->num_chunks;
@@ -584,7 +587,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
       }
 
       if (test_filter.has_value() &&
-          !base::Contains(test_filter.value(), test_case->name())) {
+          !base::Contains(test_filter.value(), test_case->policy_name())) {
         // Skip policy based on the filter.
         continue;
       }
@@ -611,11 +614,11 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
         SCOPED_TRACE(::testing::Message() << "Mapping test index " << i);
 
         EXPECT_FALSE(pref_mapping->prefs().empty())
-            << "Test #" << i << " for " << test_case->name()
+            << "Test #" << i << " for " << test_case->policy_name()
             << " is missing pref values to check for";
 
         if (!CheckRequiredBuildFlagsSupported(pref_mapping.get())) {
-          LOG(INFO) << "Test #" << i << " for " << test_case->name()
+          LOG(INFO) << "Test #" << i << " for " << test_case->policy_name()
                     << " skipped due to buildflags";
           continue;
         }

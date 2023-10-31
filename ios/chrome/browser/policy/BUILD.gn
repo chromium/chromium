@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/bundle_data_from_filelist.gni")
+
 source_set("policy") {
   sources = [
     "browser_dm_token_storage_ios.h",
@@ -167,16 +169,14 @@ source_set("test_support") {
   ]
 }
 
-bundle_data("test_resources") {
+bundle_data_from_filelist("test_resources") {
   visibility = [
     ":eg2_tests",
     ":unit_tests",
   ]
   testonly = true
-  sources = [ "//ios/chrome/test/data/policy/policy_test_cases.json" ]
-  outputs = [
-    "{{bundle_resources_dir}}/ios/chrome/test/data/policy/{{source_file_part}}",
-  ]
+  filelist_name =
+      "//ios/chrome/test/data/policy/policy_test_bundle_data.filelist"
 }
 
 source_set("unit_tests") {

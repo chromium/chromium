@@ -38,7 +38,7 @@ const char kActionShutdown[] = "Shutdown";
 const char kActionDoNothing[] = "DoNothing";
 
 // All policies in this list should have a pref mapping test case in
-// components/policy/test/data/policy_test_cases.json with location
+// components/policy/test/data/pref_mapping/[PolicyName].json with location
 // "signin_profile".
 const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenAutoSelectCertificateForUrls,
