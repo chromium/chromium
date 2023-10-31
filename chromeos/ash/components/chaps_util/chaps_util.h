@@ -8,6 +8,7 @@
 #include <pk11pub.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
