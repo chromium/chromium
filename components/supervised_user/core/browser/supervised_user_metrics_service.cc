@@ -45,7 +45,7 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
   DCHECK(url_filter);
 
   supervised_user_metrics_.push_back(
-      std::make_unique<ParentalControlMetrics>(pref_service, url_filter));
+      std::make_unique<ParentalControlMetrics>(url_filter));
 
   for (auto& supervised_user_metric : supervised_user_metrics_) {
     AddObserver(supervised_user_metric.get());
