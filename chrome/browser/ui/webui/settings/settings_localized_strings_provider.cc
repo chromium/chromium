@@ -2437,7 +2437,6 @@ void AddSearchStrings(content::WebUIDataSource* html_source) {
     {"searchExplanation", IDS_SETTINGS_SEARCH_EXPLANATION},
     {"searchExplanationLearnMoreA11yLabel",
      IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL},
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
     {"searchEngineChoiceEntryPointSubtitle",
      IDS_SEARCH_ENGINE_CHOICE_SETTINGS_ENTRY_POINT_SUBTITLE},
     {"searchEnginesChange",
@@ -2446,7 +2445,6 @@ void AddSearchStrings(content::WebUIDataSource* html_source) {
      IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE},
     {"searchEnginesSetAsDefaultButton", IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE},
     {"searchEnginesCancelButton", IDS_CANCEL},
-#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
