@@ -7047,5 +7047,5 @@ crbug.com/1497325 [ Mac ] external/wpt/css/css-color/nested-color-mix-with-curre
 crbug.com/1497337 [ Win ] external/wpt/html/semantics/popovers/popover-focus-2.html [ Failure Pass ]
 
 # Gardener 2023-10-31
-crbug.com/1497825 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/shared-storage-aggregation-coordinator.https.html [ Failure Pass ]
+crbug.com/1497825 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/shared-storage-aggregation-coordinator.https.html [ Timeout Pass ]
 crbug.com/1496252 [ Win ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Timeout Pass ]
