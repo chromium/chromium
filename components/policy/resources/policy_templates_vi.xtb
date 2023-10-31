@@ -1145,7 +1145,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="1972134432340252414">Chặn các điểm tiện ích cũ trong Quá trình chạy trình duyệt</translation>
 <translation id="1977581177449752640">Nếu bạn đặt chính sách này, máy chủ truy cập từ xa sẽ dùng một chứng chỉ máy khách có tên thường gọi (CN) của nhà phát hành cụ thể để xác thực theo <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Để dùng chứng chỉ máy khách có sẵn, hãy đặt chính sách này thành <ph name="WILDCARD_VALUE" />. Tính năng này sẽ bị tắt nếu bạn để trống hoặc không đặt chính sách này.</translation>
 <translation id="1984934843478301531">Tự động khởi chạy ứng dụng</translation>
-<translation id="1985545260037812875">Hiển thị màn hình cài đặt kích thước trên màn hình trong khi đăng nhập</translation>
+<translation id="1985545260037812875">Hiện màn hình cài đặt kích thước hiển thị trong quá trình đăng nhập</translation>
 <translation id="1985598967415986700">Có thể kiểm soát được Tính năng Giảm thiểu tác nhân người dùng qua Field-Trials và Origin-Trials.</translation>
 <translation id="1987789058026551147">Bật tính năng báo cáo phiên kiosk của thiết bị</translation>
 <translation id="1988345404999458987">Cung cấp cấu hình của các máy chủ máy in hiện có.
