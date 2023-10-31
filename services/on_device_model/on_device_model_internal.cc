@@ -14,50 +14,6 @@
 
 namespace on_device_model {
 
-namespace {
-
-// TODO(cduvall): Implement sessions in ml::OnDeviceModelExecutor.
-class SessionImpl : public OnDeviceModel::Session {
- public:
-  explicit SessionImpl(ml::OnDeviceModelExecutor* executor)
-      : executor_(executor) {}
-  ~SessionImpl() override = default;
-
-  SessionImpl(const SessionImpl&) = delete;
-  SessionImpl& operator=(const SessionImpl&) = delete;
-
-  void AddContext(mojom::InputOptionsPtr input) override {}
-
-  void Execute(
-      mojom::InputOptionsPtr input,
-      mojo::PendingRemote<mojom::StreamingResponder> response) override {
-    executor_->Execute(input->text, std::move(response));
-  }
-
- private:
-  raw_ptr<ml::OnDeviceModelExecutor> executor_;
-};
-
-class OnDeviceModelImpl : public OnDeviceModel {
- public:
-  explicit OnDeviceModelImpl(
-      std::unique_ptr<ml::OnDeviceModelExecutor> executor)
-      : executor_(std::move(executor)) {}
-  ~OnDeviceModelImpl() override = default;
-
-  OnDeviceModelImpl(const OnDeviceModelImpl&) = delete;
-  OnDeviceModelImpl& operator=(const OnDeviceModelImpl&) = delete;
-
-  std::unique_ptr<Session> CreateSession() override {
-    return std::make_unique<SessionImpl>(executor_.get());
-  }
-
- private:
-  std::unique_ptr<ml::OnDeviceModelExecutor> executor_;
-};
-
-}  // namespace
-
 // static
 std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
     ModelAssets assets) {
@@ -70,7 +26,7 @@ std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
   if (!executor) {
     return nullptr;
   }
-  return std::make_unique<OnDeviceModelImpl>(std::move(executor));
+  return executor;
 }
 
 // static
