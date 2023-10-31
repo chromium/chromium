@@ -9,7 +9,6 @@
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/test/render_view_test.h"
-#include "form_autofill_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
@@ -102,7 +101,6 @@ TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingId) {
 
   std::vector<blink::WebAutofillClient::FormIssue> form_issues_2 =
       GetFormIssues(form_target.GetFormControlElements(), form_issues);
-  LOG(ERROR) << "hueee " << form_issues_2.size();
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues, GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
       /*violating_attr=*/"aria-labelledby"));

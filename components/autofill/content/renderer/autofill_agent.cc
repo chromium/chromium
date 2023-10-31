@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/a11y_utils.h"
+#include "components/autofill/content/renderer/form_autofill_issues.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_tracker.h"
@@ -1168,6 +1169,11 @@ void AutofillAgent::ExtractFormsUnthrottled(
   }
   FormCache::UpdateFormCacheResult cache =
       form_cache_->UpdateFormCache(field_data_manager_.get());
+  content::RenderFrame* render_frame = unsafe_render_frame();
+  if (render_frame) {
+    form_issues::MaybeEmitFormIssuesToDevtools(*render_frame->GetWebFrame(),
+                                               cache.updated_forms);
+  }
   if (!cache.updated_forms.empty() || !cache.removed_forms.empty()) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->FormsSeen(cache.updated_forms,

@@ -80,11 +80,7 @@ using blink::WebSelectElement;
 using blink::WebSelectListElement;
 using blink::WebString;
 using blink::WebVector;
-using blink::mojom::GenericIssueErrorType;
 
-// TODO(crbug.com/1399414): Remove the devtools issue emission from this file
-// once we start using the dedicated issues class from
-// https://chromium-review.googlesource.com/c/chromium/src/+/4543002.
 namespace autofill::form_util {
 
 using ::autofill::mojom::ButtonTitleType;
@@ -1292,33 +1288,6 @@ FormFieldData* SearchForFormControlByName(
   return it != end ? it->first : nullptr;
 }
 
-void EmitDevtoolsIssueForLabelWithoutControlDevtoolsIssue(
-    WebLabelElement label,
-    bool label_for_matches_names_attribute) {
-  if (!HasAttribute<kFor>(label)) {
-    // Label has neither for attribute nor a control element was found.
-    label.GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::kFormLabelHasNeitherForNorNestedInput,
-        label.GetDomNodeId());
-  } else if (!label_for_matches_names_attribute) {
-    // Label has for attribute but no labellable element whose id OR name
-    // matches it.
-    // This issue is not emitted in case an element has a name that matches it,
-    // instead we emit kFormLabelForNameError to educate developers that labels
-    // should be linked to element ids.
-    label.GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::kFormLabelForMatchesNonExistingIdError,
-        label.GetDomNodeId(), GetWebString<kFor>());
-  } else {
-    // Add a DevTools issue informing the developer that the `label`'s for-
-    // attribute is pointing to the name of a field, even though the ID should
-    // be used.
-    label.GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::kFormLabelForNameError, label.GetDomNodeId(),
-        GetWebString<kFor>());
-  }
-}
-
 // Considers all <label> descendents of `root`, looks at their corresponding
 // control and matches them to the fields in `field_set`. The corresponding
 // control is either a descendent of the label or an input specified by id in
@@ -1346,11 +1315,6 @@ void MatchLabelsAndFields(
       // field element's name rather than its id, so we compensate here.
       field_data = SearchForFormControlByName(GetAttribute<kFor>(label).Utf16(),
                                               field_set, label_source);
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableDevtoolsIssues)) {
-        EmitDevtoolsIssueForLabelWithoutControlDevtoolsIssue(
-            label, label_source == FormFieldData::LabelSource::kForName);
-      }
     } else if (control.IsFormControlElement()) {
       WebFormControlElement form_control = control.To<WebFormControlElement>();
       if (form_control.FormControlTypeForAutofill() ==
@@ -1401,93 +1365,6 @@ void MatchLabelsAndFields(
   }
 }
 
-//  Emits a devtools issue if two or more inputs tags have the same id
-//  attribute.
-void MaybeEmitDuplicateIdForInputDevtoolsIssue(
-    const WebVector<WebFormControlElement>& elements) {
-  const WebString id_attr = GetWebString<kId>();
-
-  // Create copies of `elements` with ids that can be modified
-  WebVector<WebFormControlElement> elements_with_id_attr;
-  elements_with_id_attr.reserve(elements.size());
-  for (const auto& element : elements) {
-    if (form_util::IsAutofillableElement(element) &&
-        !element.GetIdAttribute().IsEmpty()) {
-      elements_with_id_attr.push_back(element);
-    }
-  }
-
-  base::ranges::sort(elements_with_id_attr, {},
-                     &WebFormControlElement::GetIdAttribute);
-
-  for (auto it = elements_with_id_attr.begin();
-       (it = base::ranges::adjacent_find(
-            it, elements_with_id_attr.end(), {},
-            &WebFormControlElement::GetIdAttribute)) !=
-       elements_with_id_attr.end();
-       it++) {
-    // All elements are pointing to the same document.
-    // Therefore we can simply use `it` and not `next`. Also it is ok to
-    // emit duplicate issues here because devtools takes care of deduplication.
-    it->GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::kFormDuplicateIdForInputError,
-        std::next(it)->GetDomNodeId(), id_attr);
-    it->GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::kFormDuplicateIdForInputError,
-        it->GetDomNodeId(), id_attr);
-  }
-}
-
-void MaybeEmitInputWithEmptyIdAndNameDevtoolsIssue(
-    const WebFormControlElement& element) {
-  if (GetAttribute<kName>(element).IsEmpty() &&
-      element.GetIdAttribute().IsEmpty()) {
-    element.GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::kFormEmptyIdAndNameAttributesForInputError,
-        element.GetDomNodeId());
-  }
-}
-
-void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
-    const WebFormControlElement& element) {
-  if (HasAttribute<kAutocomplete>(element)) {
-    return;
-  }
-
-  auto ParsedHtmlAttributeValueToAutocompleteHasFieldType =
-      [](const std::string& attribute_value) {
-        absl::optional<AutocompleteParsingResult>
-            parsed_attribute_to_autocomplete =
-                ParseAutocompleteAttribute(attribute_value);
-        if (!parsed_attribute_to_autocomplete) {
-          return false;
-        }
-
-        return parsed_attribute_to_autocomplete->field_type !=
-                   HtmlFieldType::kUnspecified &&
-               parsed_attribute_to_autocomplete->field_type !=
-                   HtmlFieldType::kUnrecognized;
-      };
-
-  bool name_attr_matches_autocomplete =
-      ParsedHtmlAttributeValueToAutocompleteHasFieldType(
-          GetAttribute<kName>(element).Utf8());
-  bool id_attr_matches_autocomplete =
-      ParsedHtmlAttributeValueToAutocompleteHasFieldType(
-          element.GetIdAttribute().Utf8());
-
-  if (name_attr_matches_autocomplete || id_attr_matches_autocomplete) {
-    WebString attribute_with_autocomplete_value = id_attr_matches_autocomplete
-                                                      ? GetWebString<kId>()
-                                                      : GetWebString<kName>();
-    element.GetDocument().GetFrame()->AddGenericIssue(
-        GenericIssueErrorType::
-            kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
-        element.GetDomNodeId(), attribute_with_autocomplete_value);
-    return;
-  }
-}
-
 // Populates the |form|'s
 //  * FormData::fields
 //  * FormData::child_frames
@@ -1513,9 +1390,6 @@ bool OwnedOrUnownedFormToFormData(
   DCHECK(form->child_frames.empty());
   DCHECK(!optional_field || form_control_element);
 
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
-    MaybeEmitDuplicateIdForInputDevtoolsIssue(control_elements);
-  }
   // Extracts fields from |control_elements| into `form->fields` and sets
   // `form->child_frames[i].predecessor` to the field index of the last field
   // that precedes the |i|th child frame.
@@ -1548,12 +1422,6 @@ bool OwnedOrUnownedFormToFormData(
         form_element, control_element, field_data_manager, extract_options,
         &form->fields.back(), &shadow_fields.back());
     fields_extracted[i] = true;
-
-    if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
-      MaybeEmitInputWithEmptyIdAndNameDevtoolsIssue(control_element);
-      MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
-          control_element);
-    }
 
     // Finds the last frame that precedes |control_element|.
     while (next_iframe < iframe_elements.size() &&
@@ -1722,25 +1590,6 @@ std::string GetAutocompleteAttribute(const WebElement& element) {
     return "x-max-data-length-exceeded";
   }
   return autocomplete_attribute;
-}
-
-void MaybeEmitAutocompleteAttributeDevtoolsIssue(const WebElement& element) {
-  std::string autocomplete_attribute = GetAutocompleteAttribute(element);
-  if (HasAttribute<kAutocomplete>(element) && autocomplete_attribute.empty()) {
-    element.GetDocument().GetFrame()->AddGenericIssue(
-        blink::mojom::GenericIssueErrorType::
-            kFormAutocompleteAttributeEmptyError,
-        element.GetDomNodeId(), GetWebString<kAutocomplete>());
-  }
-
-  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-
-  if (IsAutocompleteTypeWrongButWellIntended(autocomplete_attribute)) {
-    element.GetDocument().GetFrame()->AddGenericIssue(
-        blink::mojom::GenericIssueErrorType::
-            kFormInputHasWrongButWellIntendedAutocompleteValueError,
-        element.GetDomNodeId(), GetWebString<kAutocomplete>());
-  }
 }
 
 // TODO(crbug.com/1335257): This check is very similar to IsWebElementVisible()
@@ -2153,10 +2002,6 @@ void WebFormControlElementToFormField(
   field->parsed_autocomplete =
       ParseAutocompleteAttribute(field->autocomplete_attribute);
 
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
-    MaybeEmitAutocompleteAttributeDevtoolsIssue(element);
-  }
-
   if (base::EqualsCaseInsensitiveASCII(GetAttribute<kRole>(element).Utf16(),
                                        "presentation")) {
     field->role = FormFieldData::RoleAttribute::kPresentation;
@@ -2196,9 +2041,6 @@ void WebFormControlElementToFormField(
     if (field->name.empty()) {
       field->name = field->name_attribute.empty() ? field->id_attribute
                                                   : field->name_attribute;
-    }
-    if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
-      MaybeEmitAutocompleteAttributeDevtoolsIssue(element);
     }
     if (field->autocomplete_attribute.empty()) {
       field->autocomplete_attribute = GetAutocompleteAttribute(host);
@@ -2951,22 +2793,6 @@ std::u16string CoalesceTextByIdList(const WebDocument& document,
   return text;
 }
 
-void MaybeEmitAriaLabelledByDevtoolsIssue(const WebElement& element,
-                                          const WebString& id_list) {
-  const WebString aria_labelledby_attr = GetWebString<kAriaLabelledBy>();
-  if (base::ranges::any_of(
-          base::SplitStringPiece(id_list.Utf16(), base::kWhitespaceUTF16,
-                                 base::KEEP_WHITESPACE,
-                                 base::SPLIT_WANT_NONEMPTY),
-          [&](const auto& id) {
-            return element.GetDocument().GetElementById(WebString(id)).IsNull();
-          })) {
-    element.GetDocument().GetFrame()->AddGenericIssue(
-        blink::mojom::GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
-        element.GetDomNodeId(), GetWebString<kAriaLabelledBy>());
-  }
-}
-
 }  // namespace
 
 std::u16string GetAriaLabel(const blink::WebDocument& document,
@@ -2974,9 +2800,6 @@ std::u16string GetAriaLabel(const blink::WebDocument& document,
   if (HasAttribute<kAriaLabelledBy>(element)) {
     blink::WebString aria_label_attribute =
         GetAttribute<kAriaLabelledBy>(element);
-    if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
-      MaybeEmitAriaLabelledByDevtoolsIssue(element, aria_label_attribute);
-    }
     std::u16string text = CoalesceTextByIdList(document, aria_label_attribute);
     if (!text.empty())
       return text;
