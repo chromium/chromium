@@ -291,8 +291,9 @@ NotificationGroupingController::CreateCopyForParentNotification(
           message_center_utils::GenerateGroupParentNotificationIdSuffix(
               parent_notification.notifier_id()),
       parent_notification.title(), parent_notification.message(),
-      ui::ImageModel(), std::u16string(), parent_notification.origin_url(),
-      parent_notification.notifier_id(), message_center::RichNotificationData(),
+      ui::ImageModel(), parent_notification.display_source(),
+      parent_notification.origin_url(), parent_notification.notifier_id(),
+      message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   copy->set_timestamp(parent_notification.timestamp() - base::Milliseconds(1));
   copy->set_settings_button_handler(
@@ -303,6 +304,7 @@ NotificationGroupingController::CreateCopyForParentNotification(
         parent_notification.delegate()->GetDelegateForParentCopy());
   }
   copy->set_vector_small_image(parent_notification.parent_vector_small_image());
+  copy->set_small_image(parent_notification.small_image());
 
   if (parent_notification.accent_color_id().has_value()) {
     copy->set_accent_color_id(parent_notification.accent_color_id().value());

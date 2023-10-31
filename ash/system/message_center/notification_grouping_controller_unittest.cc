@@ -407,11 +407,15 @@ TEST_P(NotificationGroupingControllerTest, ParentNotificationMetadata) {
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com/");
   const auto icon = gfx::VectorIcon();
+  const auto small_image = gfx::Image();
+  const std::u16string display_source0 = u"test_display_source0";
 
   auto notification = MakeNotification(id0, url);
   notification->set_accent_color_id(ui::kColorAshSystemUIMenuIcon);
   notification->set_accent_color(SK_ColorRED);
   notification->set_parent_vector_small_image(icon);
+  notification->set_small_image(small_image);
+  notification->set_display_source(display_source0);
   message_center->AddNotification(std::move(notification));
 
   id1 = AddNotificationWithOriginUrl(url);
@@ -427,6 +431,8 @@ TEST_P(NotificationGroupingControllerTest, ParentNotificationMetadata) {
             parent_notification->accent_color_id());
   EXPECT_EQ(SK_ColorRED, parent_notification->accent_color());
   EXPECT_EQ(&icon, &parent_notification->vector_small_image());
+  EXPECT_EQ(small_image, parent_notification->small_image());
+  EXPECT_EQ(display_source0, parent_notification->display_source());
 }
 
 // Parent notification's priority should always match the priority of the last
