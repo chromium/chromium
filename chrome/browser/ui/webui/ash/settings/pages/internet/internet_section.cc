@@ -745,10 +745,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_IMEI_AND_SERIAL},
       {"deviceInfoPopupA11yEidImeiAndSerial",
        IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_IMEI_AND_SERIAL},
-      {"internetMenuItemDescription",
-       IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION},
-      {"internetMenuItemDescriptionHotspotAvailable",
-       IDS_OS_SETTINGS_INTERNET_MENU_ITEM_DESCRIPTION_HOTSPOT_AVAILABLE},
       {"internetAddCellular", IDS_SETTINGS_INTERNET_ADD_CELLULAR},
       {"internetAddConnection", IDS_SETTINGS_INTERNET_ADD_CONNECTION},
       {"internetAddConnectionExpandA11yLabel",
@@ -765,8 +761,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetJoinType", IDS_SETTINGS_INTERNET_JOIN_TYPE},
       {"internetKnownNetworksPageTitle", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS},
       {"internetNoNetworks", IDS_SETTINGS_INTERNET_NO_NETWORKS},
-      {"internetPageTitle", isRevampEnabled ? IDS_OS_SETTINGS_REVAMP_INTERNET
-                                            : IDS_SETTINGS_INTERNET},
+      {"internetPageTitle", IDS_SETTINGS_INTERNET},
       {"internetSummaryButtonA11yLabel",
        IDS_SETTINGS_INTERNET_SUMMARY_BUTTON_ACCESSIBILITY_LABEL},
       {"internetToggleMobileA11yLabel",
@@ -1185,9 +1180,7 @@ void InternetSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int InternetSection::GetSectionNameMessageId() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? IDS_OS_SETTINGS_REVAMP_INTERNET
-             : IDS_SETTINGS_INTERNET;
+  return IDS_SETTINGS_INTERNET;
 }
 
 mojom::Section InternetSection::GetSection() const {
