@@ -16,39 +16,25 @@
 #include "base/run_loop.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
-#include "cc/raster/raster_buffer_provider.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "cc/test/pixel_test_output_surface.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/features.h"
-#include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
-#include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display/software_renderer.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
-#include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
-#include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/command_buffer/service/service_utils.h"
-#include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/config/gpu_info.h"
-#include "gpu/ipc/gpu_in_process_thread_service.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
-#include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "skia/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -302,7 +288,7 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   // Set up the client side context provider, etc
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kGLES2WithRaster, /*support_locking=*/false);
+          viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
   gpu::ContextResult result = child_context_provider_->BindToCurrentSequence();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
