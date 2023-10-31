@@ -9,7 +9,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 /**
  * Main entry point called once the page has loaded.

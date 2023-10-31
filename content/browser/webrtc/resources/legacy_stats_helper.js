@@ -5,7 +5,7 @@
 // This file contains helpers related to the non-standard legacy stats.
 // TODO(crbug.com/822696) remove legacy getStats() API.
 
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 // Specifies which stats should be drawn on the 'bweCompound' graph and how.
 export const bweCompoundGraphConfig = {

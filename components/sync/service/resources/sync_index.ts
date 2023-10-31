@@ -19,7 +19,7 @@ import './invalidations.js';
 import {assert} from 'chrome://resources/js/assert.js';
 // <if expr="chromeos_ash">
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 // </if>
 
 // Allow platform specific CSS rules.

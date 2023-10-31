@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {GetSsrcFromReport, SsrcInfoManager} from './ssrc_info_manager.js';
 import {generateStatsLabel} from './stats_helper.js';

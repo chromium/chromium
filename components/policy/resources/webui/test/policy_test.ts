@@ -4,7 +4,7 @@
 
 import './policy_test_table.js';
 
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {LevelNamesToValues, PolicyInfo, PolicyLevel, PolicyScope, PolicySource, PolicyTestBrowserProxy, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
 import {PolicyTestTableElement} from './policy_test_table.js';

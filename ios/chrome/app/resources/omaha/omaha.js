@@ -5,7 +5,7 @@
 import 'chrome://resources/js/ios/web_ui.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 
 /**

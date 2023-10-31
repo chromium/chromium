@@ -11,16 +11,14 @@
 // Each group has an expand/collapse button and is collapsed initially.
 //
 
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {TimelineDataSeries} from './data_series.js';
 import {peerConnectionDataStore} from './dump_creator.js';
+import {bweCompoundGraphConfig, createBweCompoundLegend, getLegacySsrcReportType, isLegacyStatBlocklisted, legacyDataConversionConfig} from './legacy_stats_helper.js';
 import {GetSsrcFromReport} from './ssrc_info_manager.js';
 import {generateStatsLabel} from './stats_helper.js';
 import {TimelineGraphView} from './timeline_graph_view.js';
-import {bweCompoundGraphConfig, createBweCompoundLegend,
-  legacyDataConversionConfig, getLegacySsrcReportType,
-  isLegacyStatBlocklisted} from './legacy_stats_helper.js';
 
 const STATS_GRAPH_CONTAINER_HEADING_CLASS = 'stats-graph-container-heading';
 
