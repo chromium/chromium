@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
+#include "components/commerce/content/browser/web_extractor_impl.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/country_code_checker.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
@@ -104,7 +105,8 @@ ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()
           ->GetForProfile(context),
       HistoryServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::EXPLICIT_ACCESS));
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      std::make_unique<commerce::WebExtractorImpl>());
 }
 
 bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserContext() const {

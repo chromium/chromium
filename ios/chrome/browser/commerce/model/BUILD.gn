@@ -42,6 +42,7 @@ static_library("shopping_service") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:shopping_service",
+    "//components/commerce/ios/browser:browser",
     "//components/keyed_service/ios",
     "//components/leveldb_proto",
     "//components/prefs",

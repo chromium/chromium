@@ -27,6 +27,7 @@
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/commerce/core/web_extractor.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -254,7 +255,8 @@ class ShoppingService : public KeyedService,
           discounts_proto_db,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
           parcel_tracking_proto_db,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      std::unique_ptr<commerce::WebExtractor> web_extractor);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;
@@ -713,6 +715,9 @@ class ShoppingService : public KeyedService,
   // A consent throttle that will hold callbacks until the specific consent is
   // obtained.
   unified_consent::ConsentThrottle bookmark_consent_throttle_;
+
+  // The object for local extractions of commerce information.
+  std::unique_ptr<commerce::WebExtractor> web_extractor_;
 
   // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
   //     See ConsentLevel::kSync documentation for details.

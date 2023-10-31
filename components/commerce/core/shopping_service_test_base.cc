@@ -371,6 +371,31 @@ void MockWebWrapper::RunJavascript(
       FROM_HERE, base::BindOnce(std::move(callback), mock_js_result_->Clone()));
 }
 
+base::Value* MockWebWrapper::GetMockExtractionResult() {
+  return mock_js_result_;
+}
+
+TestWebExtractor::TestWebExtractor() = default;
+
+TestWebExtractor::~TestWebExtractor() = default;
+
+void TestWebExtractor::ExtractMetaInfo(
+    WebWrapper* web_wrapper,
+    base::OnceCallback<void(const base::Value)> callback) {
+  MockWebWrapper* mock_web_wrapper = static_cast<MockWebWrapper*>(web_wrapper);
+
+  if (!mock_web_wrapper || !mock_web_wrapper->GetMockExtractionResult()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), base::Value()));
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     mock_web_wrapper->GetMockExtractionResult()->Clone()));
+}
+
 ShoppingServiceTestBase::ShoppingServiceTestBase()
     : local_or_syncable_bookmark_model_(
           bookmarks::TestBookmarkClient::CreateModel()),
@@ -397,7 +422,8 @@ void ShoppingServiceTestBase::SetUp() {
       identity_test_env_->identity_manager(), sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
-      nullptr, nullptr, nullptr, nullptr, nullptr);
+      nullptr, nullptr, nullptr, nullptr, nullptr,
+      std::make_unique<TestWebExtractor>());
 }
 
 void ShoppingServiceTestBase::TestBody() {}

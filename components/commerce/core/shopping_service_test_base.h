@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/web_extractor.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -164,11 +165,26 @@ class MockWebWrapper : public WebWrapper {
       const std::u16string& script,
       base::OnceCallback<void(const base::Value)> callback) override;
 
+  base::Value* GetMockExtractionResult();
+
  private:
   const GURL last_committed_url_;
   const bool is_off_the_record_;
   bool is_first_load_finished_{true};
   const raw_ptr<base::Value> mock_js_result_;
+};
+
+class TestWebExtractor : public WebExtractor {
+ public:
+  TestWebExtractor();
+  TestWebExtractor(const TestWebExtractor&) = delete;
+  TestWebExtractor operator=(const TestWebExtractor&) = delete;
+
+  ~TestWebExtractor() override;
+
+  void ExtractMetaInfo(
+      WebWrapper* web_wrapper,
+      base::OnceCallback<void(const base::Value)> callback) override;
 };
 
 class ShoppingServiceTestBase : public testing::Test {

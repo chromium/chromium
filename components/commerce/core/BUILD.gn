@@ -197,6 +197,8 @@ static_library("shopping_service") {
     "shopping_power_bookmark_data_provider.h",
     "shopping_service.cc",
     "shopping_service.h",
+    "web_extractor.cc",
+    "web_extractor.h",
     "web_wrapper.cc",
     "web_wrapper.h",
   ]

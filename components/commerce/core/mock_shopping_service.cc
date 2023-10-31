@@ -28,6 +28,7 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr,
                                 nullptr,
+                                nullptr,
                                 nullptr) {
   // Set up some defaults so tests don't have to explicitly set up each.
   SetIsReady(true);

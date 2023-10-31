@@ -9,6 +9,7 @@
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/commerce/ios/browser/web_extractor_impl.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
@@ -90,7 +91,8 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()
           ->GetForBrowserState(chrome_state),
       ios::HistoryServiceFactory::GetForBrowserState(
-          chrome_state, ServiceAccessType::EXPLICIT_ACCESS));
+          chrome_state, ServiceAccessType::EXPLICIT_ACCESS),
+      std::make_unique<commerce::WebExtractorImpl>());
 }
 
 bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {

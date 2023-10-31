@@ -107,7 +107,8 @@ ShoppingService::ShoppingService(
         discounts_proto_db,
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
         parcel_tracking_proto_db,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    std::unique_ptr<commerce::WebExtractor> web_extractor)
     : country_on_startup_(country_on_startup),
       locale_on_startup_(locale_on_startup),
       opt_guide_(opt_guide),
@@ -123,6 +124,7 @@ ShoppingService::ShoppingService(
                   sync_service,
                   /*require_sync_feature_enabled=*/!base::FeatureList::
                       IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))),
+      web_extractor_(std::move(web_extractor)),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
@@ -334,17 +336,14 @@ void ShoppingService::TryRunningLocalExtractionForProductInfo(
   // If there is both an entry in the cache and the local extraction fallback
   // needs to run, run it.
   if (it != product_info_cache_.end() &&
-      it->second->needs_local_extraction_run) {
+      it->second->needs_local_extraction_run && web_extractor_) {
     // Since we're about to run the JS, flip the flag in the cache.
     it->second->needs_local_extraction_run = false;
 
-    std::string script =
-        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-            IDR_QUERY_SHOPPING_META_JS);
-
     it->second->local_extraction_execution_start_time = base::Time::Now();
-    web->RunJavascript(
-        base::UTF8ToUTF16(script),
+
+    web_extractor_->ExtractMetaInfo(
+        web.get(),
         base::BindOnce(&ShoppingService::OnProductInfoLocalExtractionResult,
                        weak_ptr_factory_.GetWeakPtr(),
                        GURL(web->GetLastCommittedURL())));
