@@ -62,12 +62,13 @@ struct PortId;
 // 2) A thread-safe version of IPC::Sender, so we can safely send IPC from
 // worker thread (this TODO formerly referred to content::ThreadSafeSender
 // which no longer exists).
-class WorkerThreadDispatcher : public content::RenderThreadObserver,
-                               public IPC::Sender,
+class WorkerThreadDispatcher :
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-                               public mojom::EventDispatcher,
+    public content::RenderThreadObserver,
+    public IPC::Sender,
+    public mojom::EventDispatcher,
 #endif
-                               public NativeExtensionBindingsSystem::Delegate {
+    public NativeExtensionBindingsSystem::Delegate {
  public:
   WorkerThreadDispatcher();
 
@@ -85,9 +86,6 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   void Init(content::RenderThread* render_thread);
 
-  // IPC::Sender:
-  bool Send(IPC::Message* message) override;
-
   void AddWorkerData(
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
@@ -97,6 +95,9 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void RemoveWorkerData(int64_t service_worker_version_id);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  // IPC::Sender:
+  bool Send(IPC::Message* message) override;
+
   // Called when a service worker context was initialized.
   void DidInitializeContext(int64_t service_worker_version_id);
 
@@ -202,12 +203,10 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                                           base::Value::List event_args);
   void OnMessageReceivedOnWorkerThread(int worker_thread_id,
                                        const IPC::Message& message);
-#endif
 
   bool PostTaskToWorkerThread(int worker_thread_id, base::OnceClosure task);
   void PostTaskToIOThread(base::OnceClosure task);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // IPC handlers.
   void OnValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnDispatchOnConnect(int worker_thread_id,
@@ -229,14 +228,13 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   // Returns true if the task to each worker thread posts correctly.
   bool UpdateBindingsHelper(const absl::optional<ExtensionId>& extension_id);
 
-  // IPC sender. Belongs to the render thread, but thread safe.
-  scoped_refptr<IPC::SyncMessageFilter> message_filter_;
-
   using IDToTaskRunnerMap = std::map<base::PlatformThreadId, base::TaskRunner*>;
   IDToTaskRunnerMap task_runner_map_;
   base::Lock task_runner_map_lock_;
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  // IPC sender. Belongs to the render thread, but thread safe.
+  scoped_refptr<IPC::SyncMessageFilter> message_filter_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> service_worker_host_;

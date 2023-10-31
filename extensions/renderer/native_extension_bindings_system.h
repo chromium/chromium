@@ -38,6 +38,7 @@ class NativeExtensionBindingsSystem {
   class Delegate {
    public:
     virtual ScriptContextSetIterable* GetScriptContextSet() = 0;
+    virtual ~Delegate() = default;
   };
 
   explicit NativeExtensionBindingsSystem(

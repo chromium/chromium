@@ -151,13 +151,13 @@ WorkerThreadDispatcher* WorkerThreadDispatcher::Get() {
 void WorkerThreadDispatcher::Init(content::RenderThread* render_thread) {
   DCHECK(render_thread);
   DCHECK_EQ(content::RenderThread::Get(), render_thread);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   DCHECK(!message_filter_);
   message_filter_ = render_thread->GetSyncMessageFilter();
   io_task_runner_ = render_thread->GetIOTaskRunner();
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   main_thread_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-#endif
   render_thread->AddObserver(this);
+#endif
 }
 
 // static
@@ -378,13 +378,11 @@ void WorkerThreadDispatcher::PostTaskToIOThread(base::OnceClosure task) {
   bool task_posted = io_task_runner_->PostTask(FROM_HERE, std::move(task));
   DCHECK(task_posted) << "Could not PostTask IPC to IO thread.";
 }
-#endif
 
 bool WorkerThreadDispatcher::Send(IPC::Message* message) {
   return message_filter_->Send(message);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 mojom::EventRouter* WorkerThreadDispatcher::GetEventRouterOnIO() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!event_router_remote_) {
