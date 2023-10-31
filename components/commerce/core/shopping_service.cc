@@ -71,7 +71,7 @@ const char kOgTitle[] = "title";
 const char kOgType[] = "type";
 
 // Specific open graph values we're interested in.
-const char kOgTypeOgProduct[] = "og:product";
+const char kOgTypeOgProduct[] = "product";
 const char kOgTypeProductItem[] = "product.item";
 
 const long kToMicroCurrency = 1e6;
