@@ -40,10 +40,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
-#endif
-
 class BrowserActivityWatcher;
 class Profile;
 class ProfileManager;
@@ -56,6 +52,10 @@ class NetworkTimeTracker;
 namespace metrics {
 class MetricsService;
 class MetricsStateManager;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class PerUserStateManagerChromeOS;
+#endif
 }  // namespace metrics
 
 // ChromeMetricsServiceClient provides an implementation of MetricsServiceClient
