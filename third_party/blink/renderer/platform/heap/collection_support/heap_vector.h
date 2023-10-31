@@ -43,6 +43,26 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
     CheckType();
   }
 
+  template <
+      typename Proj,
+      typename = std::enable_if_t<
+          std::is_invocable_v<Proj, typename BaseVector::const_reference>>>
+  HeapVector(const HeapVector& other, Proj proj)
+      : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {
+    CheckType();
+  }
+
+  template <
+      typename U,
+      wtf_size_t otherSize,
+      typename Proj,
+      typename = std::enable_if_t<
+          std::is_invocable_v<Proj, typename BaseVector::const_reference>>>
+  HeapVector(const HeapVector<U, otherSize>& other, Proj proj)
+      : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {
+    CheckType();
+  }
+
   template <typename Collection,
             typename =
                 typename std::enable_if<std::is_class<Collection>::value>::type>
