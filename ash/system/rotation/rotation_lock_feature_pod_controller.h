@@ -14,13 +14,10 @@
 
 namespace ash {
 
-class FeaturePodButton;
 class FeatureTile;
 
-// Controller of a feature pod button that toggles rotation lock mode.
-// Pre-QsRevamp the button is toggled when rotation is locked.
-// Post-QsRevamp the tile is toggled when rotation is unlocked (i.e. auto-rotate
-// is enabled).
+// Controller of a feature tile that toggles rotation lock mode. The tile is
+// toggled when rotation is unlocked (i.e. auto-rotate is enabled).
 class ASH_EXPORT RotationLockFeaturePodController
     : public FeaturePodControllerBase,
       public ScreenOrientationController::Observer {
@@ -39,7 +36,6 @@ class ASH_EXPORT RotationLockFeaturePodController
   static bool CalculateButtonVisibility();
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -48,12 +44,9 @@ class ASH_EXPORT RotationLockFeaturePodController
   void OnUserRotationLockChanged() override;
 
  private:
-  void UpdateButton();
   void UpdateTile();
 
   // Owned by views hierarchy.
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
-      nullptr;
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<RotationLockFeaturePodController> weak_factory_{this};

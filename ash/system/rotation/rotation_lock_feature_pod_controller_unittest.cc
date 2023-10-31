@@ -4,7 +4,6 @@
 
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/unified/feature_tile.h"
@@ -12,17 +11,13 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/display/display_switches.h"
 
 namespace ash {
 
 class RotationLockFeaturePodControllerQsRevampTest : public AshTestBase {
  public:
-  RotationLockFeaturePodControllerQsRevampTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
-
+  RotationLockFeaturePodControllerQsRevampTest() = default;
   // AshTestBase:
   void SetUp() override {
     // The Display used for testing is not an internal display. This flag
@@ -44,7 +39,6 @@ class RotationLockFeaturePodControllerQsRevampTest : public AshTestBase {
     feature_tile_ = controller_->CreateTile();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<RotationLockFeaturePodController> controller_;
   std::unique_ptr<FeatureTile> feature_tile_;
 };

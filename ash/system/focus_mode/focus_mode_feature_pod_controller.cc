@@ -34,10 +34,6 @@ FocusModeFeaturePodController::~FocusModeFeaturePodController() {
   FocusModeController::Get()->RemoveObserver(this);
 }
 
-FeaturePodButton* FocusModeFeaturePodController::CreateButton() {
-  NOTREACHED();
-  return nullptr;
-}
 
 std::unique_ptr<FeatureTile> FocusModeFeaturePodController::CreateTile(
     bool compact) {

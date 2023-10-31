@@ -15,8 +15,8 @@ namespace ash {
 
 class UnifiedSystemTrayController;
 
-// Controller of locale feature pod button. The button appears in demo mode and
-// allows setting the language for demo mode content. To work on demo mode, see
+// Controller of locale feature tile, which appears in demo mode and allows
+// setting the language for demo mode content. To work on demo mode, see
 // instructions at go/demo-mode-g3-cookbook. To force the feature tile to show
 // in the emulator pass --qs-show-locale-tile.
 class ASH_EXPORT LocaleFeaturePodController : public FeaturePodControllerBase {
@@ -31,7 +31,6 @@ class ASH_EXPORT LocaleFeaturePodController : public FeaturePodControllerBase {
   ~LocaleFeaturePodController() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;

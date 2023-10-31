@@ -19,12 +19,11 @@
 
 namespace ash {
 
-class FeaturePodButton;
 class UnifiedSystemTrayController;
 
-// Controller of the feature pod button that allows users to toggle whether
-// Bluetooth is enabled or disabled, and that allows users to navigate to a more
-// detailed page with a Bluetooth device list.
+// Controller of the feature tile that allows users to toggle whether Bluetooth
+// is enabled or disabled, and that allows users to navigate to a more detailed
+// page with a Bluetooth device list.
 class ASH_EXPORT BluetoothFeaturePodController
     : public FeaturePodControllerBase,
       public bluetooth_config::mojom::SystemPropertiesObserver {
@@ -37,7 +36,6 @@ class ASH_EXPORT BluetoothFeaturePodController
   ~BluetoothFeaturePodController() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -63,16 +61,11 @@ class ASH_EXPORT BluetoothFeaturePodController
   std::u16string ComputeButtonSubLabel() const;
   std::u16string ComputeTooltip() const;
 
-  // Returns true if `button_` or `tile_` is enabled, depending on feature
-  // QsRevamp.
+  // Returns true if `tile_` is enabled, otherwise false.
   bool IsButtonEnabled() const;
 
-  // Returns true if `button_` or `tile_` is toggled, depending on feature
-  // QsRevamp.
+  // Returns true if `tile_` is toggled, otherwise false.
   bool IsButtonToggled() const;
-
-  // Updates |button_| state to reflect the cached Bluetooth state.
-  void UpdateButtonStateIfExists();
 
   // Updates `tile_` state to reflect the cached Bluetooth state.
   void UpdateTileStateIfExists();
@@ -92,8 +85,6 @@ class ASH_EXPORT BluetoothFeaturePodController
       bluetooth_config::mojom::BluetoothModificationState::
           kCannotModifyBluetooth;
   bluetooth_config::mojom::BluetoothSystemState system_state_;
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
-      nullptr;  // Owned by views hierarchy.
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ =
       nullptr;  // Owned by views hierarchy.
   raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;

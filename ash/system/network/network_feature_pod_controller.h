@@ -19,12 +19,11 @@
 
 namespace ash {
 
-class FeaturePodButton;
 class UnifiedSystemTrayController;
 
-// Controller of the feature pod button that allows users to toggle whether
-// certain network technologies are enabled or disabled, and that allows users
-// to navigate to a more detailed page with a network list.
+// Controller of the feature tile that allows users to toggle whether certain
+// network technologies are enabled or disabled, and that allows users to
+// navigate to a more detailed page with a network list.
 class ASH_EXPORT NetworkFeaturePodController
     : public network_icon::AnimationObserver,
       public FeaturePodControllerBase,
@@ -40,7 +39,6 @@ class ASH_EXPORT NetworkFeaturePodController
   ~NetworkFeaturePodController() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -69,12 +67,10 @@ class ASH_EXPORT NetworkFeaturePodController
   // Purges network icon cache and updates the button state.
   void PropagateThemeChanged();
 
-  // Updates |button_| state to reflect the current state of networks.
-  void UpdateButtonStateIfExists();
+  // Updates `tile_` state to reflect the current state of networks.
+  void UpdateTileStateIfExists();
 
   // Owned by the views hierarchy.
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
-      nullptr;
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
   raw_ptr<UnifiedSystemTrayController, DanglingUntriaged | ExperimentalAsh>
       tray_controller_;

@@ -14,11 +14,10 @@
 
 namespace ash {
 
-class FeaturePodButton;
 class FeatureTile;
 class UnifiedSystemTrayController;
 
-// Controller of IME feature pod button.
+// Controller of IME feature tile.
 class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
                                            public IMEObserver {
  public:
@@ -31,7 +30,6 @@ class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
   ~IMEFeaturePodController() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -46,8 +44,6 @@ class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
   const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
   // Owned by the views hierarchy.
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
-      nullptr;
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<IMEFeaturePodController> weak_factory_{this};

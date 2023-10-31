@@ -699,28 +699,7 @@ void UnifiedSystemTrayController::LoadIsExpandedPref() {
 }
 
 void UnifiedSystemTrayController::InitFeaturePods() {
-  AddFeaturePodItem(std::make_unique<NetworkFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<BluetoothFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<AccessibilityFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<QuietModeFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<RotationLockFeaturePodController>());
-  AddFeaturePodItem(std::make_unique<PrivacyScreenFeaturePodController>());
-  AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<NearbyShareFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<NightLightFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<CastFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<VPNFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<IMEFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<LocaleFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
-  if (media::ShouldEnableAutoFraming()) {
-    AddFeaturePodItem(std::make_unique<AutozoomFeaturePodController>());
-  }
-  // If you want to add a new feature pod item, add here.
-
-  quick_settings_metrics_util::RecordQsFeaturePodCount(
-      unified_view_->GetVisibleFeaturePodCount(),
-      Shell::Get()->tablet_mode_controller()->InTabletMode());
+  // TODO(b/251724646):  remove with `unified_view_`.
 }
 
 void UnifiedSystemTrayController::InitFeatureTiles() {
@@ -796,12 +775,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
 
 void UnifiedSystemTrayController::AddFeaturePodItem(
     std::unique_ptr<FeaturePodControllerBase> controller) {
-  DCHECK(unified_view_);
-  FeaturePodButton* button = controller->CreateButton();
-  button->SetExpandedAmount(IsExpanded() ? 1.0 : 0.0,
-                            false /* fade_icon_button */);
-  unified_view_->AddFeaturePodButton(button);
-  feature_pod_controllers_.push_back(std::move(controller));
+  // TODO(b/251724646):  remove with `unified_view_`.
 }
 
 void UnifiedSystemTrayController::ShowDetailedView(

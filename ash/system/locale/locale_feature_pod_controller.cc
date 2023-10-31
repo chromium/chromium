@@ -4,14 +4,12 @@
 
 #include "ash/system/locale/locale_feature_pod_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/locale_model.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -41,27 +39,8 @@ LocaleFeaturePodController::LocaleFeaturePodController(
 
 LocaleFeaturePodController::~LocaleFeaturePodController() = default;
 
-FeaturePodButton* LocaleFeaturePodController::CreateButton() {
-  DCHECK(!features::IsQsRevampEnabled());
-  auto* button = new FeaturePodButton(this, /*is_togglable=*/false);
-  const bool visible = IsButtonVisible();
-  button->SetVisible(visible);
-  if (visible) {
-    TrackVisibilityUMA();
-    button->SetVectorIcon(kUnifiedMenuLocaleIcon);
-    button->SetIconAndLabelTooltips(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE_TOOLTIP));
-    button->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE));
-    button->ShowDetailedViewArrow();
-    button->DisableLabelButtonFocus();
-    button->SetSubLabel(GetSubLabelText());
-  }
-  return button;
-}
-
 std::unique_ptr<FeatureTile> LocaleFeaturePodController::CreateTile(
     bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&LocaleFeaturePodController::OnIconPressed,
                           weak_factory_.GetWeakPtr()),

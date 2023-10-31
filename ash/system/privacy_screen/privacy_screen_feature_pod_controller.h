@@ -14,7 +14,6 @@
 
 namespace ash {
 
-class FeaturePodButton;
 class FeatureTile;
 
 // Controller of a feature pod button for toggling the built-in privacy screen.
@@ -31,22 +30,18 @@ class ASH_EXPORT PrivacyScreenFeaturePodController
       const PrivacyScreenFeaturePodController&) = delete;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
 
  private:
   void TogglePrivacyScreen();
-  void UpdateButton();
   void UpdateTile();
 
   // PrivacyScreenController::Observer:
   void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) override;
 
   // Owned by the views hierarchy.
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
-      nullptr;
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<PrivacyScreenFeaturePodController> weak_factory_{this};

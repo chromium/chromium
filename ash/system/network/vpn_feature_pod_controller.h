@@ -16,7 +16,7 @@ namespace ash {
 
 class UnifiedSystemTrayController;
 
-// Controller of vpn feature pod button.
+// Controller of vpn feature tile.
 class ASH_EXPORT VPNFeaturePodController : public FeaturePodControllerBase,
                                            public TrayNetworkStateObserver {
  public:
@@ -29,7 +29,6 @@ class ASH_EXPORT VPNFeaturePodController : public FeaturePodControllerBase,
   ~VPNFeaturePodController() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -43,8 +42,6 @@ class ASH_EXPORT VPNFeaturePodController : public FeaturePodControllerBase,
   const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
   // Owned by views hierarchy.
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
-      nullptr;
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<VPNFeaturePodController> weak_ptr_factory_{this};
