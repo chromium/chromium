@@ -3662,7 +3662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.SpeculationRules.FetchTime" units="ms"
-    expires_after="2023-12-10">
+    expires_after="2024-03-31">
   <owner>jbroman@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/speculation_rules/OWNERS</owner>
   <summary>
@@ -3672,7 +3672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.SpeculationRules.LoadOutcome"
-    enum="SpeculationRulesLoadOutcome" expires_after="2023-12-10">
+    enum="SpeculationRulesLoadOutcome" expires_after="2024-03-31">
   <owner>jbroman@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/speculation_rules/OWNERS</owner>
   <summary>
