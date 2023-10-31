@@ -313,8 +313,12 @@ public class HubLayout extends Layout {
         super.onTabCreated(
                 time, tabId, tabIndex, sourceTabId, newIsIncognito, background, originX, originY);
 
+        // Background tab creation does not trigger a Hub layout transition.
+        if (background) return;
+
         // Tablet Hub doesn't handle new tab animations.
-        if (background || DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            hideOnForegroundTabCreation(tabId);
             return;
         }
 
@@ -336,7 +340,17 @@ public class HubLayout extends Layout {
                         doneHiding();
                     }
                 });
-        // The animation will run as part of startHiding which will be called soon.
+
+        hideOnForegroundTabCreation(tabId);
+    }
+
+    private void hideOnForegroundTabCreation(int tabId) {
+        // TODO(crbug/1497472): In TabSwitcherLayout, the layout transition is triggered
+        // automatically by setting onTabSelecting() as an observer on the TabSwitcher.
+        // Consider a similar approach where an observer set on HubController can be invoked
+        // from inside the Hub to trigger the Hub to hide. Once this is fixed this method
+        // can be deleted.
+        startHiding(tabId);
     }
 
     @Override
