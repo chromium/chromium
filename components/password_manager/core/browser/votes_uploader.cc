@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/votes_uploader.h"
 
 #include <iostream>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -19,6 +20,7 @@
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
@@ -26,6 +28,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
@@ -292,6 +295,18 @@ void GenerateSyntheticRenderIdsAndAssignThem(PasswordForm& matched_form) {
       field_name_to_renderer_id);
 }
 
+// Search if the username (can be suggested or saved value in the save prompt)
+// can be found among text fields of the password form.
+bool IsUsernameInAlternativeUsernames(
+    const std::u16string& username,
+    const AlternativeElementVector& all_alternative_usernames) {
+  return base::ranges::any_of(
+      all_alternative_usernames,
+      [username](const AlternativeElement& alternative_username) {
+        return alternative_username.value == username;
+      });
+}
+
 }  // namespace
 
 SingleUsernameVoteData::SingleUsernameVoteData()
@@ -314,6 +329,7 @@ SingleUsernameVoteData::SingleUsernameVoteData(
                        &username_candidate_value);
   value_type = GetValueType(username_candidate_value, stored_credentials);
   prompt_edit = AutofillUploadContents::EDIT_UNSPECIFIED;
+  is_form_overrule = false;
 }
 
 SingleUsernameVoteData::SingleUsernameVoteData(
@@ -650,6 +666,8 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
       base::UmaHistogramBoolean(
           "PasswordManager.SingleUsername.PasswordFormHadUsernameField",
           vote_data.password_form_had_matching_username.value());
+      // TODO(crbug/1470586): Implement UMA metric logging the index in LRU
+      // cache if `IN_FORM_OVERRULE` is sent.
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -684,14 +702,23 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
 }
 
 void VotesUploader::CalculateUsernamePromptEditState(
-    const std::u16string& saved_username) {
+    const std::u16string& saved_username,
+    const AlternativeElementVector& all_alternative_usernames) {
   for (auto& vote_data : single_username_votes_data_) {
     if (!vote_data.username_candidate_value.empty()) {
       vote_data.prompt_edit = CalculateUsernamePromptEdit(
           saved_username, vote_data.username_candidate_value);
+      vote_data.is_form_overrule =
+          CalculateInFormOverrule(saved_username,
+                                  vote_data.username_candidate_value,
+                                  all_alternative_usernames) &&
+          base::FeatureList::IsEnabled(
+              features::kUsernameFirstFlowWithIntermediateValuesVoting);
     }
   }
   for (auto& [field_id, vote_data] : forgot_password_vote_data_) {
+    // For FPF, IN_FORM_OVERRULE votes are not sent, do not calculate
+    // `is_form_overrule`.
     vote_data.prompt_edit = CalculateUsernamePromptEdit(
         saved_username, vote_data.username_candidate_value);
   }
@@ -914,6 +941,7 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     vote_type = AutofillUploadContents::Field::STRONG;
   } else {
     const auto& prompt_edit = single_username.prompt_edit;
+    const auto& is_form_overrule = single_username.is_form_overrule;
     // There is no meaningful data on prompt edit, the vote should not be sent.
     if (prompt_edit == AutofillUploadContents::EDIT_UNSPECIFIED)
       return false;
@@ -925,9 +953,10 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     } else {
       type = autofill::NOT_USERNAME;
     }
-
-    if (prompt_edit == AutofillUploadContents::EDITED_POSITIVE ||
-        prompt_edit == AutofillUploadContents::EDITED_NEGATIVE) {
+    if (is_form_overrule) {
+      vote_type = AutofillUploadContents::Field::IN_FORM_OVERRULE;
+    } else if (prompt_edit == AutofillUploadContents::EDITED_POSITIVE ||
+               prompt_edit == AutofillUploadContents::EDITED_NEGATIVE) {
       vote_type = is_forgot_password_vote
                       ? AutofillUploadContents::Field::STRONG_FORGOT_PASSWORD
                       : AutofillUploadContents::Field::STRONG;
@@ -959,6 +988,34 @@ void VotesUploader::SetSingleUsernameVoteOnPasswordForm(
   single_username_data.set_prompt_edit(vote_data.prompt_edit);
 
   form_structure.AddSingleUsernameData(single_username_data);
+}
+
+bool VotesUploader::CalculateInFormOverrule(
+    const std::u16string& saved_username,
+    const std::u16string& potential_username,
+    const AlternativeElementVector& all_alternative_usernames) {
+  if (saved_username == suggested_username_) {
+    return false;
+  }
+  if (saved_username == potential_username &&
+      IsUsernameInAlternativeUsernames(suggested_username_,
+                                       all_alternative_usernames)) {
+    // Username found inside of the password form was suggested in the
+    // Save/Update prompt. However, user picked some text field outside of the
+    // password form as the username - positive IN_FORM_OVERRULE vote must be
+    // sent.
+    return true;
+  }
+  if (suggested_username_ == potential_username &&
+      IsUsernameInAlternativeUsernames(saved_username,
+                                       all_alternative_usernames)) {
+    // Username field found outside of the form was suggested in the
+    // Save/Update prompt. However, user picked some text field inside of the
+    // password form as the username - negative IN_FORM_OVERRULE vote must be
+    // sent.
+    return true;
+  }
+  return false;
 }
 
 AutofillUploadContents::SingleUsernamePromptEdit

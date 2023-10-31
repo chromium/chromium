@@ -2849,6 +2849,62 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
   Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
 }
 
+// Tests that when the save/update prompt suggests single username value and the
+// user edits username prompt to the value of one of the text fields found in
+// the password form negative in form overrule vote is sent.
+TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing,
+                            features::kUsernameFirstFlowWithIntermediateValues,
+                            features::
+                                kUsernameFirstFlowWithIntermediateValuesVoting,
+                            features::kUsernameFirstFlowStoreSeveralValues},
+      /*disabled_features=*/{});
+  CreateFormManager(submitted_form_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Simulate user input in a single text field in a single username form.
+  constexpr char16_t kPossibleUsername[] = u"possible_username";
+  PossibleUsernameData possible_username_data(
+      saved_match_.signon_realm, kSingleUsernameFieldRendererId,
+      kPossibleUsername, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions(
+      kSingleUsernameFormSignature, kSingleUsernameFieldRendererId,
+      kSingleUsernameFieldSignature);
+
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
+
+  // Simulate submitting a password form.
+  submitted_form_.fields[kPasswordFieldIndex].value = u"strongpassword";
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                               &possible_usernames));
+  form_manager_->SaveSuggestedUsernameValueToVotesUploader();
+
+  // Simulate the user modifying the username in the prompt.
+  form_manager_->OnUpdateUsernameFromPrompt(
+      submitted_form_.fields[kUsernameFieldIndex].value);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Expect a negative `IN_FORM_OVERRULE` vote on the username form.
+  ExpectSingleUsernameUpload(kSingleUsernameFormSignature,
+                             AutofillUploadContents::Field::IN_FORM_OVERRULE,
+                             autofill::NOT_USERNAME);
+#endif
+
+  // Expect upload for the password form. This upload is unrelated to UFF: it
+  // is a result of saving a new password on the password form.
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form_)),
+                         _, _, _, _, _, _));
+
+  form_manager_->Save();
+}
+
 // Tests that if prefilled username inside the password form has a matching
 // value with a field found outside of the password form the vote will be sent
 // correctly. In this test case, there is an intermediary field between them.
