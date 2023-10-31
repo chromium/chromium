@@ -7005,7 +7005,8 @@
       },
       'win11-arm64-blink-rel': {
         'mixins': [
-            'win_arm64',
+            'win11',
+            'arm64'
         ],
         'swarming': {
           'hard_timeout': 900,
