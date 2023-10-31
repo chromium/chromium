@@ -53,7 +53,6 @@ void InitializeDirectWrite() {
   tried_dwrite_initialize = true;
 
   TRACE_EVENT0("fonts", "gfx::InitializeDirectWrite");
-  SCOPED_UMA_HISTOGRAM_LONG_TIMER("DirectWrite.Fonts.Gfx.InitializeTime");
 
   Microsoft::WRL::ComPtr<IDWriteFactory> factory;
   CreateDWriteFactory(&factory);
