@@ -1,2 +1,13 @@
 # For CRD related changes
 per-file *crd*=file://chrome/browser/ash/app_mode/OWNERS
+
+# For reboot and powerwash. Please report issues at
+# https://issuetracker.google.com/issues/new?component=1206077 (internal) or at
+# https://issuetracker.google.com/issues/new?component=1185521 (public).
+per-file device_command_reboot_job*=file://chromeos/ash/components/policy/REMOTE_MANAGEMENT_OWNERS
+per-file device_command_remote_powerwash_job*=file://chromeos/ash/components/policy/REMOTE_MANAGEMENT_OWNERS
+
+# For refreshing machine certificate. Please report issues at
+# https://issuetracker.google.com/issues/new?component=1111632 (internal) or at
+# https://issuetracker.google.com/issues/new?component=1185302 (public).
+per-file device_command_refresh_machine_certificate_job*=file://chromeos/ash/components/policy/REMOTE_MANAGEMENT_OWNERS
