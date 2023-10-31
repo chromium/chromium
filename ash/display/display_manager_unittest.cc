@@ -1404,8 +1404,8 @@ TEST_F(DisplayManagerTest, UpdateDisplayZoomTest) {
                                       modes[1].size());
   display_manager()->UpdateDisplays();
 
-  // Since the display mode was changed, the zoom factor for the display is
-  // reset to the default of 1.
+  // Since the display mode was changed, the zoom factor for the display will
+  // be retrieved from cache. If not available in cache, default to 1.
   EXPECT_EQ(
       display_manager()->GetDisplayForId(info_1.id()).device_scale_factor(),
       1.f);
@@ -1425,7 +1425,7 @@ TEST_F(DisplayManagerTest, UpdateDisplayZoomTest) {
       zoom_factor_2);
 
   // Update the zoom factor for the second display.
-  float zoom_factor_3 = 1.5f;
+  float zoom_factor_3 = 1.25f;
   const display::ManagedDisplayInfo& info_2 = GetDisplayInfoAt(1);
   display_manager()->UpdateZoomFactor(info_2.id(), zoom_factor_3);
   EXPECT_EQ(display_manager()->GetDisplayInfo(info_2.id()).zoom_factor(),
@@ -1450,7 +1450,7 @@ TEST_F(DisplayManagerTest, UpdateDisplayZoomTest) {
 
   EXPECT_EQ(
       display_manager()->GetDisplayForId(info_1.id()).device_scale_factor(),
-      1.f);
+      zoom_factor_3);
   EXPECT_EQ(
       display_manager()->GetDisplayForId(info_2.id()).device_scale_factor(),
       zoom_factor_3 * display_2_dsf);
@@ -1488,7 +1488,7 @@ TEST_F(DisplayManagerTest, ZoomDisplay) {
   display_manager()->UpdateZoomFactor(info_1.id(),
                                       zoom_factors_1[zoom_factor_idx_1]);
 
-  // Make sure the chage was successful.
+  // Make sure the change was successful.
   EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(info_1.id()).zoom_factor(),
                   zoom_factors_1[zoom_factor_idx_1]);
 
@@ -1527,7 +1527,7 @@ TEST_F(DisplayManagerTest, ZoomDisplay) {
   display_manager()->UpdateZoomFactor(info_2.id(),
                                       zoom_factors_2[zoom_factor_idx_2]);
 
-  // Make sure the chage was successful.
+  // Make sure the change was successful.
   EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(info_2.id()).zoom_factor(),
                   zoom_factors_2[zoom_factor_idx_2]);
 
@@ -1560,6 +1560,76 @@ TEST_F(DisplayManagerTest, ZoomDisplay) {
                   1.f);
   EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(info_1.id()).zoom_factor(),
                   1.f);
+}
+
+TEST_F(DisplayManagerTest, ZoomFactorMapTest) {
+  // Initialize a display pair.
+  UpdateDisplay("2560x1440#1920x1080|1280x720");
+  reset();
+
+  ASSERT_EQ(1u, display_manager()->GetNumDisplays());
+
+  const display::ManagedDisplayInfo& info = GetDisplayInfoAt(0);
+  const display::ManagedDisplayInfo::ManagedDisplayModeList& modes =
+      info.display_modes();
+
+  // Set the display mode.
+  display::test::SetDisplayResolution(display_manager(), info.id(),
+                                      modes[0].size());
+  display_manager()->UpdateDisplays();
+
+  // Set the zoom factor.
+  float zoom_factor_1 = 1.2f;
+  display_manager()->UpdateZoomFactor(info.id(), zoom_factor_1);
+
+  // Make sure the change was successful.
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(info.id()).zoom_factor(),
+                  zoom_factor_1);
+
+  // Make sure zoom factor is stored in cache.
+  display::DisplaySizeToZoomFactorMap zoom_factor_map =
+      display_manager()->GetDisplayInfo(info.id()).zoom_factor_map();
+  const auto iter1 = zoom_factor_map.find(modes[0].size().ToString());
+  EXPECT_NE(iter1, zoom_factor_map.end());
+  EXPECT_EQ(iter1->second, zoom_factor_1);
+
+  // Set to a different display mode.
+  display::test::SetDisplayResolution(display_manager(), info.id(),
+                                      modes[1].size());
+  display_manager()->UpdateDisplays();
+
+  // If not available in cache, default zoom factor is 1.
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(info.id()).zoom_factor(),
+                  1.f);
+
+  // Set the zoom factor.
+  float zoom_factor_2 = 1.5f;
+  display_manager()->UpdateZoomFactor(info.id(), zoom_factor_2);
+
+  // Make sure the change was successful.
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(info.id()).zoom_factor(),
+                  zoom_factor_2);
+
+  // Make sure zoom factor is stored in cache.
+  zoom_factor_map =
+      display_manager()->GetDisplayInfo(info.id()).zoom_factor_map();
+  const auto iter2 = zoom_factor_map.find(modes[1].size().ToString());
+  EXPECT_NE(iter2, zoom_factor_map.end());
+  EXPECT_EQ(iter2->second, zoom_factor_2);
+
+  // Set back to previous display mode.
+  display::test::SetDisplayResolution(display_manager(), info.id(),
+                                      modes[0].size());
+  display_manager()->UpdateDisplays();
+
+  // Make sure zoom factor is retrieved from cache.
+  zoom_factor_map =
+      display_manager()->GetDisplayInfo(info.id()).zoom_factor_map();
+  const auto iter3 = zoom_factor_map.find(modes[0].size().ToString());
+  EXPECT_NE(iter3, zoom_factor_map.end());
+
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(info.id()).zoom_factor(),
+                  iter3->second);
 }
 
 TEST_F(DisplayManagerTest, TestDeviceScaleOnlyChange) {
@@ -3624,8 +3694,13 @@ TEST_F(DisplayManagerFontTest,
 TEST_F(DisplayManagerTest, CheckInitializationOfRotationProperty) {
   int64_t id = display_manager()->GetDisplayAt(0).id();
   display_manager()->RegisterDisplayProperty(
-      id, display::Display::ROTATE_90, nullptr, gfx::Size(), 1.0f, 1.0f, 60.f,
-      false, display::kVrrNotCapable, absl::nullopt);
+      id, display::Display::ROTATE_90, /*overscan_insets=*/nullptr,
+      /*resolution_in_pixels=*/gfx::Size(),
+      /*device_scale_factor=*/1.0f, /*display_zoom_factor=*/1.0f,
+      /*display_zoom_factor_map=*/{}, /*refresh_rate=*/60.f,
+      /*is_interlaced=*/false,
+      /*variable_refresh_rate_state=*/display::kVrrNotCapable,
+      /*vsync_rate_min=*/absl::nullopt);
 
   const display::ManagedDisplayInfo& info =
       display_manager()->GetDisplayInfo(id);

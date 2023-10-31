@@ -63,6 +63,7 @@ constexpr char kMirroringSourceId[] = "mirroring_source_id";
 constexpr char kMirroringDestinationIds[] = "mirroring_destination_ids";
 
 constexpr char kDisplayZoom[] = "display_zoom_factor";
+constexpr char kDisplayZoomMap[] = "display_zoom_factor_map";
 
 constexpr char kDisplayPowerAllOn[] = "all_on";
 constexpr char kDisplayPowerInternalOffExternalOn[] =
@@ -72,6 +73,8 @@ constexpr char kDisplayPowerInternalOnExternalOff[] =
 
 constexpr char kVariableRefreshRateState[] = "vrr_state";
 constexpr char kVsyncRateMin[] = "vsync_rate_min";
+
+constexpr double kDefaultDisplayZoomValue = 1.0;
 
 // This kind of boilerplates should be done by base::JSONValueConverter but it
 // doesn't support classes like gfx::Insets for now.
@@ -266,7 +269,13 @@ void LoadDisplayProperties(PrefService* local_state) {
     if (ValueToInsets(*dict_value, &insets))
       insets_to_set = &insets;
 
-    double display_zoom = dict_value->FindDouble(kDisplayZoom).value_or(1.0);
+    display::DisplaySizeToZoomFactorMap display_zoom_map;
+    if (const auto* display_zoom_dict = dict_value->FindDict(kDisplayZoomMap)) {
+      for (const auto iter : *display_zoom_dict) {
+        display_zoom_map[iter.first] =
+            iter.second.GetIfDouble().value_or(kDefaultDisplayZoomValue);
+      }
+    }
 
     display::VariableRefreshRateState variable_refresh_rate_state =
         display::kVrrNotCapable;
@@ -278,10 +287,13 @@ void LoadDisplayProperties(PrefService* local_state) {
     absl::optional<float> vsync_rate_min =
         dict_value->FindDouble(kVsyncRateMin);
 
+    const double display_zoom =
+        dict_value->FindDouble(kDisplayZoom).value_or(kDefaultDisplayZoomValue);
+
     GetDisplayManager()->RegisterDisplayProperty(
         id, rotation, insets_to_set, resolution_in_pixels, device_scale_factor,
-        display_zoom, refresh_rate, is_interlaced, variable_refresh_rate_state,
-        vsync_rate_min);
+        display_zoom, display_zoom_map, refresh_rate, is_interlaced,
+        variable_refresh_rate_state, vsync_rate_min);
   }
 }
 
@@ -570,6 +582,12 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
     }
 
     property_value.Set(kDisplayZoom, info.zoom_factor());
+
+    base::Value::Dict display_zoom_dict;
+    for (const auto& it : info.zoom_factor_map()) {
+      display_zoom_dict.Set(it.first, it.second);
+    }
+    property_value.Set(kDisplayZoomMap, std::move(display_zoom_dict));
 
     property_value.Set(kVariableRefreshRateState,
                        info.variable_refresh_rate_state());

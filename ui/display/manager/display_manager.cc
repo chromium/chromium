@@ -589,9 +589,18 @@ bool DisplayManager::SetDisplayMode(int64_t display_id,
         // synchronously updating the displays here.
         resolution_changed = true;
 
-        // Different resolutions allow different zoom factors to be set in the
-        // UI. To avoid confusion in the UI, reset the zoom factor to 1.0.
-        display_info_[display_id].set_zoom_factor(1.f);
+        // Retrieve the zoom factor corresponding to the display mode.
+        float zoom_factor = 1.f;
+        const DisplaySizeToZoomFactorMap& zoom_factor_map =
+            info.zoom_factor_map();
+        auto it = zoom_factor_map.find(display_mode.size().ToString());
+        if (it != zoom_factor_map.end()) {
+          zoom_factor = it->second;
+        }
+
+        // Need to access the original info because the one obtained at the
+        // beginning of the loop is a copy.
+        display_info_[display_id].set_zoom_factor(zoom_factor);
         break;
       }
       if (info.device_scale_factor() != display_mode.device_scale_factor()) {
@@ -636,6 +645,7 @@ void DisplayManager::RegisterDisplayProperty(
     const gfx::Size& resolution_in_pixels,
     float device_scale_factor,
     float display_zoom_factor,
+    const DisplaySizeToZoomFactorMap& display_zoom_factor_map,
     float refresh_rate,
     bool is_interlaced,
     VariableRefreshRateState variable_refresh_rate_state,
@@ -652,6 +662,10 @@ void DisplayManager::RegisterDisplayProperty(
   info.SetRotation(rotation, Display::RotationSource::USER);
   info.SetRotation(rotation, Display::RotationSource::ACTIVE);
   info.set_zoom_factor(display_zoom_factor);
+
+  for (const auto& it : display_zoom_factor_map) {
+    info.AddZoomFactorForSize(it.first, it.second);
+  }
 
   if (overscan_insets)
     info.SetOverscanInsets(*overscan_insets);
@@ -1603,6 +1617,10 @@ void DisplayManager::UpdateZoomFactor(int64_t display_id, float zoom_factor) {
   }
 
   iter->second.set_zoom_factor(zoom_factor);
+
+  ManagedDisplayMode mode;
+  GetActiveModeForDisplayId(display_id, &mode);
+  iter->second.AddZoomFactorForSize(mode.size().ToString(), zoom_factor);
 
   for (const auto& display : active_display_list_) {
     if (display.id() == display_id) {

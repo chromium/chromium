@@ -130,8 +130,9 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs,
           info.id(), info.GetRotation(Display::RotationSource::USER),
           /*overscan_insets=*/nullptr,
           /*resolution_in_pixels=*/gfx::Size(), info.device_scale_factor(),
-          info.zoom_factor(), info.refresh_rate(), info.is_interlaced(),
-          info.variable_refresh_rate_state(), info.vsync_rate_min());
+          info.zoom_factor(), info.zoom_factor_map(), info.refresh_rate(),
+          info.is_interlaced(), info.variable_refresh_rate_state(),
+          info.vsync_rate_min());
     }
   }
 

@@ -217,6 +217,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
       const gfx::Size& resolution_in_pixels,
       float device_scale_factor,
       float display_zoom_factor,
+      const DisplaySizeToZoomFactorMap& display_zoom_factor_map,
       float refresh_rate,
       bool is_interlaced,
       VariableRefreshRateState variable_refresh_rate_state,
