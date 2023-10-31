@@ -43,6 +43,18 @@ class PrerenderWebContentsDelegateImpl
       content::WebContents* portal_web_contents) override;
   void WebContentsBecamePortal(
       content::WebContents* portal_web_contents) override;
+  bool CanEnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void EnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void FullscreenStateChangedForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void ExitFullscreenModeForTab(content::WebContents*) override;
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override;
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,

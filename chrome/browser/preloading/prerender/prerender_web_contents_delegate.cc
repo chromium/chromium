@@ -86,6 +86,38 @@ void PrerenderWebContentsDelegateImpl::WebContentsBecamePortal(
   NOTREACHED_NORETURN();
 }
 
+bool PrerenderWebContentsDelegateImpl::CanEnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  // This should not be called for a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::EnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  // This should not be called for a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::FullscreenStateChangedForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  // This should not be called for a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::ExitFullscreenModeForTab(
+    content::WebContents*) {
+  // This should not be called for a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+bool PrerenderWebContentsDelegateImpl::IsFullscreenForTabOrPending(
+    const content::WebContents* web_contents) {
+  return false;
+}
+
 void PrerenderWebContentsDelegateImpl::OnDidBlockNavigation(
     content::WebContents* web_contents,
     const GURL& blocked_url,
