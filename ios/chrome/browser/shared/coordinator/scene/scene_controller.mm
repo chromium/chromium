@@ -2470,7 +2470,7 @@ void InjectNTP(Browser* browser) {
       };
     case START_LENS_FROM_INTENTS:
       return ^{
-        [weakSelf startLensWithEntryPoint:LensEntrypoint::Spotlight];
+        [weakSelf startLensWithEntryPoint:LensEntrypoint::Intents];
       };
     case FOCUS_OMNIBOX:
       return ^{
