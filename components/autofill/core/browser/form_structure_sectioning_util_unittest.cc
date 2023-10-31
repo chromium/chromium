@@ -274,7 +274,7 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
 // *is* sectionable) must not start a section to which the name <input> is then
 // added.
 TEST_F(FormStructureSectioningTest,
-       SelectFieldOfHiddenSectionDoesNotLeakIntoFollowingForm) {
+       SelectFieldOfHiddenSectionDoesNotLeakIntoFollowingSection) {
   base::test::ScopedFeatureList features(
       features::kAutofillUseParameterizedSectioning);
 
@@ -308,6 +308,59 @@ TEST_F(FormStructureSectioningTest,
   histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 2, 1);
   EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
               BucketsAre(Bucket(1, 1), Bucket(4, 1)));
+}
+
+// Tests that repeated sequences of state and country do not start a new
+// section. Consider the following form:
+//   <form>
+//     Name: <input>
+//     Address line 1: <input>
+//     Address line 2: <input>
+//     <div style="display: block">
+//       State: <select>...</select>
+//       Country: <select>...</select>
+//     </div>
+//     <div style="display: none">
+//       State: <select>...</select>
+//       Country: <select>...</select>
+//     </div>
+//     Phone: <input>
+//   </form>
+// The fields in the second <div> should not start a new section.
+TEST_F(FormStructureSectioningTest,
+       RepeatedSequenceOfStateCountryEtcDoesNotBreakSection) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillUseParameterizedSectioning);
+
+  auto fields = CreateFields({{.field_type = NAME_FULL},
+                              {.field_type = ADDRESS_HOME_LINE1},
+                              {.field_type = ADDRESS_HOME_LINE2},
+                              {.field_type = ADDRESS_HOME_STATE,
+                               .form_control_type = FormControlType::kSelectOne,
+                               .is_focusable = true},
+                              {.field_type = ADDRESS_HOME_COUNTRY,
+                               .form_control_type = FormControlType::kSelectOne,
+                               .is_focusable = true},
+                              {.field_type = ADDRESS_HOME_STATE,
+                               .form_control_type = FormControlType::kSelectOne,
+                               .is_focusable = false},
+                              {.field_type = ADDRESS_HOME_COUNTRY,
+                               .form_control_type = FormControlType::kSelectOne,
+                               .is_focusable = false},
+                              {.field_type = PHONE_HOME_WHOLE_NUMBER}});
+
+  base::HistogramTester histogram_tester;
+  AssignSectionsAndLogMetrics(fields);
+
+  // The evaluation order of the `Section::FromFieldIdentifier()` expressions
+  // does not matter, as all `FormFieldData::host_frame` are identical.
+  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+  EXPECT_THAT(GetSections(fields), testing::Each(Section::FromFieldIdentifier(
+                                       *fields[0], frame_token_ids)));
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00000000"));
+  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 1, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
+              BucketsAre(Bucket(8, 1)));
 }
 
 }  // namespace

@@ -634,11 +634,13 @@ TEST_F(FormStructureRationalizerTest,
           {"State", "state", ADDRESS_HOME_COUNTRY},
 
           // Second Section
+          {"Full Name", "fullName", NAME_FULL},
           {"Country", "country", ADDRESS_HOME_COUNTRY},
           {"city", "City", ADDRESS_HOME_CITY},
           {"State", "state", ADDRESS_HOME_COUNTRY},
 
           // Third Section
+          {"Full Name", "fullName", NAME_FULL},
           {"city", "City", ADDRESS_HOME_CITY},
           ToSelectOne(
               SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
@@ -648,16 +650,18 @@ TEST_F(FormStructureRationalizerTest,
               ToNotFocusable({"Country", "country2", ADDRESS_HOME_COUNTRY})),
       },
       /*run_heuristics=*/true);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(
-                  // First section.
-                  NAME_FULL, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                  ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STATE,
-                  // Second section
-                  ADDRESS_HOME_COUNTRY, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                  // Third section
-                  ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STATE,
-                  ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY));
+  EXPECT_THAT(
+      GetTypes(*form_structure),
+      ElementsAre(
+          // First section.
+          NAME_FULL, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
+          ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STATE,
+          // Second section
+          NAME_FULL, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_CITY,
+          ADDRESS_HOME_STATE,
+          // Third section
+          NAME_FULL, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STATE,
+          ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY));
 }
 
 TEST_F(FormStructureRationalizerTest,
