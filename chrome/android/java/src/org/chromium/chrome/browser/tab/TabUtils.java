@@ -20,6 +20,7 @@ import android.widget.ImageView.ScaleType;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
@@ -28,14 +29,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
@@ -48,7 +47,8 @@ import java.lang.annotation.RetentionPolicy;
  * Collection of utility methods that operates on Tab.
  */
 public class TabUtils {
-    public static final float THUMBNAIL_ASPECT_RATIO = 0.85f;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final float PORTRAIT_THUMBNAIL_ASPECT_RATIO = 0.85f;
 
     /**
      * Define the callers of NavigationControllerImpl#setUseDesktopUserAgent.
@@ -282,21 +282,20 @@ public class TabUtils {
      */
     public static float getTabThumbnailAspectRatio(
             Context context, BrowserControlsStateProvider browserControlsStateProvider) {
-        if ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                    || BuildInfo.getInstance().isAutomotive
-                    || ChromeFeatureList.sGridTabSwitcherLandscapeAspectRatioPhones.isEnabled())
-                && context.getResources().getConfiguration().orientation
-                        == Configuration.ORIENTATION_LANDSCAPE) {
+        if (context.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE) {
             assert browserControlsStateProvider != null;
             int toolbarHeightDp = (browserControlsStateProvider == null)
                     ? 0
                     : Math.round((float) browserControlsStateProvider.getTopControlsHeight()
                             / context.getResources().getDisplayMetrics().density);
+            // This should match the aspect ratio of a Tab's content area.
             return (context.getResources().getConfiguration().screenWidthDp * 1.f)
                     / (context.getResources().getConfiguration().screenHeightDp * 1.f
                             - toolbarHeightDp);
         }
-        return THUMBNAIL_ASPECT_RATIO;
+        // This is an experimentally determined value.
+        return PORTRAIT_THUMBNAIL_ASPECT_RATIO;
     }
 
     /**

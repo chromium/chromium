@@ -1375,7 +1375,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onViewWaiting(tabSwitcherViewMatcher())
                 .check(
                         ThumbnailAspectRatioAssertion.havingAspectRatio(
-                                TabUtils.THUMBNAIL_ASPECT_RATIO));
+                                TabUtils.PORTRAIT_THUMBNAIL_ASPECT_RATIO));
     }
 
     @Test

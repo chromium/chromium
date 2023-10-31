@@ -7639,21 +7639,6 @@
             ]
         }
     ],
-    "GridTabSwitcherLandscapeAspectRatioPhones": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GridTabSwitcherLandscapeAspectRatioPhones"
-                    ]
-                }
-            ]
-        }
-    ],
     "GwpAsanAndroid": [
         {
             "platforms": [

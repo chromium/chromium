@@ -10872,15 +10872,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"grid-tab-switcher-landscape-aspect-ratio-phones",
-     flag_descriptions::kGridTabSwitcherLandscapeAspectRatioPhonesName,
-     flag_descriptions::kGridTabSwitcherLandscapeAspectRatioPhonesDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kGridTabSwitcherLandscapeAspectRatioPhones)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"filling-across-affiliated-websites-android",
      flag_descriptions::kFillingAcrossAffiliatedWebsitesName,
      flag_descriptions::kFillingAcrossAffiliatedWebsitesDescription, kOsAndroid,

@@ -4328,12 +4328,6 @@ const char kGridTabSwitcherAndroidAnimationsDescription[] =
     "Run grid tab switcher shrink & expand animations in Android instead of "
     "using the compositor.";
 
-const char kGridTabSwitcherLandscapeAspectRatioPhonesName[] =
-    "Landscape aspect ratio for thumbnails on tab switcher";
-const char kGridTabSwitcherLandscapeAspectRatioPhonesDescription[] =
-    "Use a landscape aspect ratio for tab thumbnails on the grid tab switcher. "
-    "Phone only.";
-
 const char kHideTabOnTabSwitcherName[] = "Hide tab on tab switcher";
 const char kHideTabOnTabSwitcherDescription[] =
     "Hide the web contents of the foreground tab when on the tab switcher.";

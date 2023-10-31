@@ -4481,11 +4481,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "grid-tab-switcher-landscape-aspect-ratio-phones",
-    "owners": [ "ckitagawa@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "handwriting-gesture-editing",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 111

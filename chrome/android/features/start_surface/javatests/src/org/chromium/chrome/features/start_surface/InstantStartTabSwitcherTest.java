@@ -486,7 +486,10 @@ public class InstantStartTabSwitcherTest {
         View tabThumbnail = recyclerView.findViewById(org.chromium.chrome.test.R.id.tab_thumbnail);
         assertEquals(
                 tabThumbnail.getMeasuredHeight(),
-                (int) (tabThumbnail.getMeasuredWidth() * 1.0 / TabUtils.THUMBNAIL_ASPECT_RATIO),
+                (int)
+                        (tabThumbnail.getMeasuredWidth()
+                                * 1.0
+                                / TabUtils.PORTRAIT_THUMBNAIL_ASPECT_RATIO),
                 2);
 
         ActivityTestUtils.clearActivityOrientation(cta);
