@@ -442,6 +442,7 @@ export namespace BrowsingContext {
   export const CloseParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
+      promptUnload: z.boolean().default(false).optional(),
     })
   );
 }

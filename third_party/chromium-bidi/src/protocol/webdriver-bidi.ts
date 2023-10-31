@@ -338,6 +338,10 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type CloseParameters = {
     context: BrowsingContext.BrowsingContext;
+    /**
+     * @defaultValue `false`
+     */
+    promptUnload?: boolean;
   };
 }
 export namespace BrowsingContext {
