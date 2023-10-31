@@ -1,0 +1,190 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BookmarkBarDragDropType">
+  <int value="0" label="Drop single URL onto bar"/>
+  <int value="1" label="Drop single URL into folder"/>
+  <int value="2" label="Drop bookmark onto bar"/>
+  <int value="3" label="Drop bookmark into folder"/>
+  <int value="4" label="Drop folder onto bar"/>
+  <int value="5" label="Drop folder into folder"/>
+  <int value="6" label="Reorder bookmark on bar"/>
+  <int value="7" label="Reorder bookmark in folder"/>
+  <int value="8" label="Reorder folder on bar"/>
+  <int value="9" label="Reorder subfolder in folder"/>
+</enum>
+
+<enum name="BookmarkBarPrefAndState">
+  <summary>
+    The Boomarks bar pref state and whether the user is on the NTP when the
+    reading list is opened.
+  </summary>
+  <int value="0"
+      label="Bookmarks bar pref is set to shown and user is opening the
+             reading list from the NTP"/>
+  <int value="1"
+      label="Bookmarks bar pref is set to hidden and user is opening the
+             reading list from the NTP"/>
+  <int value="2"
+      label="Bookmarks bar pref is set to shown and user is not opening the
+             reading list from the NTP"/>
+</enum>
+
+<enum name="BookmarkEditSource">
+  <int value="0" label="Edited by a user"/>
+  <int value="1" label="Edited by an extension"/>
+  <int value="2" label="Edited by another source"/>
+</enum>
+
+<enum name="BookmarkFolderType">
+  <int value="0" label="Bookmarks Bar"/>
+  <int value="1" label="Other Bookmarks"/>
+  <int value="2" label="Mobile Bookmarks"/>
+  <int value="3" label="User Generated Folder"/>
+</enum>
+
+<enum name="BookmarkLaunchLocation">
+  <int value="0" label="Attached bookmark bar"/>
+  <int value="1"
+      label="(Obsolete) Detached (floating) bookmark bar. Deprecated: The
+             detached bookmark bar state no longer exists."/>
+  <int value="2" label="Bookmark bar subfolder"/>
+  <int value="3" label="Context menu"/>
+  <int value="4" label="Wrench menu"/>
+  <int value="5" label="Bookmark manager"/>
+  <int value="6" label="Omnibox suggestion"/>
+  <int value="7" label="Top application menu (Mac, etc.)"/>
+  <int value="8" label="Side panel folder"/>
+  <int value="9" label="Side panel subfolder"/>
+  <int value="10" label="Side panel reading list"/>
+  <int value="11" label="Reading list dialog"/>
+  <int value="12" label="Side panel context menu"/>
+</enum>
+
+<enum name="BookmarkManagerCommand">
+  <int value="0" label="Edit"/>
+  <int value="1" label="Copy URL (removed)"/>
+  <int value="2" label="Show in folder"/>
+  <int value="3" label="Delete"/>
+  <int value="4" label="Open in new tab"/>
+  <int value="5" label="Open in new window"/>
+  <int value="6" label="Open in incognito"/>
+  <int value="7" label="Undo"/>
+  <int value="8" label="Redo"/>
+  <int value="9" label="Open bookmark or folder (deprecated)"/>
+  <int value="10" label="Select all"/>
+  <int value="11" label="Deselect all"/>
+  <int value="12" label="Copy"/>
+  <int value="13" label="Cut"/>
+  <int value="14" label="Paste"/>
+  <int value="15" label="Sort"/>
+  <int value="16" label="AddBookmark"/>
+  <int value="17" label="AddFolder"/>
+  <int value="18" label="Import"/>
+  <int value="19" label="Export"/>
+  <int value="20" label="Help center"/>
+  <int value="21" label="Open bookmark (via double-click / enter)"/>
+  <int value="22" label="Open folder (via double-click / enter)"/>
+</enum>
+
+<enum name="BookmarksEntryPoint">
+  <int value="0" label="Accelerator(Ctrl+D)"/>
+  <int value="1" label="Gesture"/>
+  <int value="2" label="Space or Enter"/>
+  <int value="3" label="Mouse click"/>
+</enum>
+
+<enum name="BookmarksSidePanelSearchCTREvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Searched"/>
+</enum>
+
+<enum name="BookmarksSidePanelSortType">
+  <int value="0" label="Newest"/>
+  <int value="1" label="Oldest"/>
+  <int value="2" label="Last Opened"/>
+  <int value="3" label="Alphabetical"/>
+  <int value="4" label="Reverse Alphabetical"/>
+</enum>
+
+<enum name="BookmarksSidePanelViewType">
+  <int value="0" label="Compact view"/>
+  <int value="1" label="Visual view"/>
+</enum>
+
+<enum name="BookmarkType">
+  <int value="0" label="Normal"/>
+  <int value="1" label="Partner"/>
+  <int value="2" label="ReadingList"/>
+</enum>
+
+<enum name="MobileBookmarkManagerBookmarkRowDisplayPref">
+  <int value="0" label="Compact"/>
+  <int value="1" label="Visual"/>
+</enum>
+
+<enum name="MobileBookmarkManagerBookmarkRowSortOrder">
+  <int value="0" label="Chronological"/>
+  <int value="1" label="Reverse chronological"/>
+  <int value="2" label="Alphabetical"/>
+  <int value="3" label="Reverse alphabetical"/>
+  <int value="4" label="Recently used"/>
+  <int value="5" label="Manual"/>
+</enum>
+
+<enum name="MobileBookmarkManagerFilter">
+  <int value="0" label="Shopping"/>
+  <int value="1" label="Placeholder"/>
+</enum>
+
+<enum name="PowerBookmarkType">
+  <int value="0" label="Unspecified">
+    Unspecified power type, shouldn't be used.
+  </int>
+  <int value="1" label="Mock">Mock power type, used for testing.</int>
+  <int value="2" label="Note">
+    Note power type, used to take notes on webpages.
+  </int>
+</enum>
+
+<enum name="PriceTrackingState">
+  <int value="0" label="Price tracking shown"/>
+  <int value="1" label="Price tracking enabled"/>
+  <int value="2" label="Price tracking disabled"/>
+</enum>
+
+<enum name="StarEntryPointAction">
+  <int value="0" label="Add bookmark"/>
+  <int value="1" label="Edit bookmark"/>
+  <int value="2" label="Add to reading list"/>
+  <int value="3" label="Mark as read"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

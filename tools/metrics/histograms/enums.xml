@@ -9768,51 +9768,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="BodyConsumerBase::DidFetchDataLoadFailed"/>
 </enum>
 
-<enum name="BookmarkBarDragDropType">
-  <int value="0" label="Drop single URL onto bar"/>
-  <int value="1" label="Drop single URL into folder"/>
-  <int value="2" label="Drop bookmark onto bar"/>
-  <int value="3" label="Drop bookmark into folder"/>
-  <int value="4" label="Drop folder onto bar"/>
-  <int value="5" label="Drop folder into folder"/>
-  <int value="6" label="Reorder bookmark on bar"/>
-  <int value="7" label="Reorder bookmark in folder"/>
-  <int value="8" label="Reorder folder on bar"/>
-  <int value="9" label="Reorder subfolder in folder"/>
-</enum>
-
-<enum name="BookmarkBarPrefAndState">
-  <summary>
-    The Boomarks bar pref state and whether the user is on the NTP when the
-    reading list is opened.
-  </summary>
-  <int value="0"
-      label="Bookmarks bar pref is set to shown and user is opening the
-             reading list from the NTP"/>
-  <int value="1"
-      label="Bookmarks bar pref is set to hidden and user is opening the
-             reading list from the NTP"/>
-  <int value="2"
-      label="Bookmarks bar pref is set to shown and user is not opening the
-             reading list from the NTP"/>
-</enum>
-
 <enum name="BookmarkBarState">
   <int value="0" label="Bookmark bar hidden"/>
   <int value="1" label="Bookmark bar shown"/>
-</enum>
-
-<enum name="BookmarkEditSource">
-  <int value="0" label="Edited by a user"/>
-  <int value="1" label="Edited by an extension"/>
-  <int value="2" label="Edited by another source"/>
-</enum>
-
-<enum name="BookmarkFolderType">
-  <int value="0" label="Bookmarks Bar"/>
-  <int value="1" label="Other Bookmarks"/>
-  <int value="2" label="Mobile Bookmarks"/>
-  <int value="3" label="User Generated Folder"/>
 </enum>
 
 <enum name="BookmarkGUIDSource">
@@ -9829,87 +9787,12 @@ Called by update_bad_message_reasons.py.-->
       label="GUID cannot be inferred (possibly update with client tag)"/>
 </enum>
 
-<enum name="BookmarkLaunchLocation">
-  <int value="0" label="Attached bookmark bar"/>
-  <int value="1"
-      label="(Obsolete) Detached (floating) bookmark bar. Deprecated: The
-             detached bookmark bar state no longer exists."/>
-  <int value="2" label="Bookmark bar subfolder"/>
-  <int value="3" label="Context menu"/>
-  <int value="4" label="Wrench menu"/>
-  <int value="5" label="Bookmark manager"/>
-  <int value="6" label="Omnibox suggestion"/>
-  <int value="7" label="Top application menu (Mac, etc.)"/>
-  <int value="8" label="Side panel folder"/>
-  <int value="9" label="Side panel subfolder"/>
-  <int value="10" label="Side panel reading list"/>
-  <int value="11" label="Reading list dialog"/>
-  <int value="12" label="Side panel context menu"/>
-</enum>
-
-<enum name="BookmarkManagerCommand">
-  <int value="0" label="Edit"/>
-  <int value="1" label="Copy URL (removed)"/>
-  <int value="2" label="Show in folder"/>
-  <int value="3" label="Delete"/>
-  <int value="4" label="Open in new tab"/>
-  <int value="5" label="Open in new window"/>
-  <int value="6" label="Open in incognito"/>
-  <int value="7" label="Undo"/>
-  <int value="8" label="Redo"/>
-  <int value="9" label="Open bookmark or folder (deprecated)"/>
-  <int value="10" label="Select all"/>
-  <int value="11" label="Deselect all"/>
-  <int value="12" label="Copy"/>
-  <int value="13" label="Cut"/>
-  <int value="14" label="Paste"/>
-  <int value="15" label="Sort"/>
-  <int value="16" label="AddBookmark"/>
-  <int value="17" label="AddFolder"/>
-  <int value="18" label="Import"/>
-  <int value="19" label="Export"/>
-  <int value="20" label="Help center"/>
-  <int value="21" label="Open bookmark (via double-click / enter)"/>
-  <int value="22" label="Open folder (via double-click / enter)"/>
-</enum>
-
-<enum name="BookmarksEntryPoint">
-  <int value="0" label="Accelerator(Ctrl+D)"/>
-  <int value="1" label="Gesture"/>
-  <int value="2" label="Space or Enter"/>
-  <int value="3" label="Mouse click"/>
-</enum>
-
 <enum name="BookmarksGUIDDuplicates">
   <int value="0" label="Matching urls"/>
   <int value="1" label="Matching folders"/>
   <int value="2" label="Different urls"/>
   <int value="3" label="Different folders"/>
   <int value="4" label="Different types"/>
-</enum>
-
-<enum name="BookmarksSidePanelSearchCTREvent">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Searched"/>
-</enum>
-
-<enum name="BookmarksSidePanelSortType">
-  <int value="0" label="Newest"/>
-  <int value="1" label="Oldest"/>
-  <int value="2" label="Last Opened"/>
-  <int value="3" label="Alphabetical"/>
-  <int value="4" label="Reverse Alphabetical"/>
-</enum>
-
-<enum name="BookmarksSidePanelViewType">
-  <int value="0" label="Compact view"/>
-  <int value="1" label="Visual view"/>
-</enum>
-
-<enum name="BookmarkType">
-  <int value="0" label="Normal"/>
-  <int value="1" label="Partner"/>
-  <int value="2" label="ReadingList"/>
 </enum>
 
 <enum name="Boolean">
@@ -60570,25 +60453,6 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="PLATFORM_FAILURE"/>
 </enum>
 
-<enum name="MobileBookmarkManagerBookmarkRowDisplayPref">
-  <int value="0" label="Compact"/>
-  <int value="1" label="Visual"/>
-</enum>
-
-<enum name="MobileBookmarkManagerBookmarkRowSortOrder">
-  <int value="0" label="Chronological"/>
-  <int value="1" label="Reverse chronological"/>
-  <int value="2" label="Alphabetical"/>
-  <int value="3" label="Reverse alphabetical"/>
-  <int value="4" label="Recently used"/>
-  <int value="5" label="Manual"/>
-</enum>
-
-<enum name="MobileBookmarkManagerFilter">
-  <int value="0" label="Shopping"/>
-  <int value="1" label="Placeholder"/>
-</enum>
-
 <enum name="MobileDefaultBrowserState">
   <int value="0" label="No default"/>
   <int value="1" label="Chrome: System default"/>
@@ -69963,16 +69827,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="443" label="Port 443"/>
 </enum>
 
-<enum name="PowerBookmarkType">
-  <int value="0" label="Unspecified">
-    Unspecified power type, shouldn't be used.
-  </int>
-  <int value="1" label="Mock">Mock power type, used for testing.</int>
-  <int value="2" label="Note">
-    Note power type, used to take notes on webpages.
-  </int>
-</enum>
-
 <enum name="PowerButtonMenuActionType">
   <int value="0" label="Sign out"/>
   <int value="1" label="Power off"/>
@@ -72091,12 +71945,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 <enum name="PriceNotificationProductStatus">
   <int value="0" label="Product is Tracked"/>
   <int value="1" label="Product is Untracked"/>
-</enum>
-
-<enum name="PriceTrackingState">
-  <int value="0" label="Price tracking shown"/>
-  <int value="1" label="Price tracking enabled"/>
-  <int value="2" label="Price tracking disabled"/>
 </enum>
 
 <enum name="PrimaryCpuAbiBitness">
@@ -81437,13 +81285,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Rare"/>
   <int value="4" label="Restricted"/>
   <int value="5" label="Exempted"/>
-</enum>
-
-<enum name="StarEntryPointAction">
-  <int value="0" label="Add bookmark"/>
-  <int value="1" label="Edit bookmark"/>
-  <int value="2" label="Add to reading list"/>
-  <int value="3" label="Mark as read"/>
 </enum>
 
 <enum name="StartSurfaceState">

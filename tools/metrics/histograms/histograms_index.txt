@@ -15,6 +15,7 @@ tools/metrics/histograms/metadata/autofill/histograms.xml
 tools/metrics/histograms/metadata/background/histograms.xml
 tools/metrics/histograms/metadata/blink/histograms.xml
 tools/metrics/histograms/metadata/bluetooth/histograms.xml
+tools/metrics/histograms/metadata/bookmarks/enums.xml
 tools/metrics/histograms/metadata/bookmarks/histograms.xml
 tools/metrics/histograms/metadata/borealis/histograms.xml
 tools/metrics/histograms/metadata/browser/histograms.xml
