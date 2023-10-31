@@ -95,6 +95,24 @@ See also: [Class Diagram of Web Bluetooth through Bluetooth Android][Class]
 
 [Class]: https://sites.google.com/a/chromium.org/dev/developers/design-documents/bluetooth-design-docs/web-bluetooth-through-bluetooth-android-class-diagram
 
+## ChromeOS
+Within this directory, [BluetoothAdapter](https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/bluetooth_adapter.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f) exposes Bluetooth stack agnostic APIs for performing various operations and this is implemented by various platform specific classes. For ChromeOS, BluetoothAdapter is implemented by [BluetoothAdapterFloss](https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/floss/bluetooth_adapter_floss.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f) and [BluetoothAdapterBluez] (https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/bluez/bluetooth_adapter_bluez.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f).
+
+In addition to above classes, we have [BluetoothConnectionLogger](https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/chromeos/bluetooth_connection_logger.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f) and [BluetoothUtils](https://source.chromium.org/chromium/chromium/src/+/main:device/bluetooth/chromeos/bluetooth_utils.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f) classes for recording metrics on Bluetooth operations. BluetoothUtils is also used for ChromeOS-specific functionality such as filtering out Bluetooth devices of certain classes (ex: Phones) from the UI.
+
+### Bluetooth stacks
+Bluez and Fluoride are bluetooth stacks used in ChromeOS and Android respectively. Given the relatively small market segment for ChromeOS when compared to Android, device manufacturers do not always go through interoperability testing
+and validation on devices running ChromeOS.
+
+To ease this, a project has been undertaken to make the Android Bluetooth stack multiplatform and migrate ChromeOS
+from Bluez to Fluoride. This project is titled [Floss](https://sites.google.com/corp/google.com/flossproject/home) and is currently underway.
+
+### CrosBluetoothConfig
+
+Various Bluetooth UI surfaces in ChromeOS perform their operations by using APIs defined in
+[CrosBluetoothConfig] (https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/bluetooth_config/cros_bluetooth_config.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+
+CrosBluetoothConfig in turn utilizes classes in this directory to interact with the Bluetooth stack. It is usually preferrerd to use CrosBluetoothConfig API for performing Bluetooth related operations and direct interaction with adapters in this directory should only be necessary if more granular functionality is required.
 
 ## Testing
 See [test/README.md](test/README.md)
