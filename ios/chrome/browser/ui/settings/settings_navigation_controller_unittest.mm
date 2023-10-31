@@ -126,7 +126,6 @@ class SettingsNavigationControllerTest : public PlatformTest {
 // When navigation stack has more than one view controller,
 // -popViewControllerAnimated: successfully removes the top view controller.
 TEST_F(SettingsNavigationControllerTest, PopController) {
-  @autoreleasepool {
     SettingsNavigationController* settingsController =
         [SettingsNavigationController
             mainSettingsControllerForBrowser:browser_.get()
@@ -141,13 +140,11 @@ TEST_F(SettingsNavigationControllerTest, PopController) {
     EXPECT_NSEQ(viewController, poppedViewController);
     EXPECT_EQ(1U, [[settingsController viewControllers] count]);
     [settingsController cleanUpSettings];
-  }
 }
 
 // When the navigation stack has only one view controller,
 // -popViewControllerAnimated: returns false.
 TEST_F(SettingsNavigationControllerTest, DontPopRootController) {
-  @autoreleasepool {
     SettingsNavigationController* settingsController =
         [SettingsNavigationController
             mainSettingsControllerForBrowser:browser_.get()
@@ -156,7 +153,6 @@ TEST_F(SettingsNavigationControllerTest, DontPopRootController) {
 
     EXPECT_FALSE([settingsController popViewControllerAnimated:NO]);
     [settingsController cleanUpSettings];
-  }
 }
 
 // When the settings navigation stack has more than one view controller, calling
@@ -164,7 +160,6 @@ TEST_F(SettingsNavigationControllerTest, DontPopRootController) {
 // reveal the view controller underneath.
 TEST_F(SettingsNavigationControllerTest,
        PopWhenNavigationStackSizeIsGreaterThanOne) {
-  @autoreleasepool {
     SettingsNavigationController* settingsController =
         [SettingsNavigationController
             mainSettingsControllerForBrowser:browser_.get()
@@ -178,7 +173,6 @@ TEST_F(SettingsNavigationControllerTest,
     EXPECT_EQ(1U, [[settingsController viewControllers] count]);
     EXPECT_OCMOCK_VERIFY(mockDelegate_);
     [settingsController cleanUpSettings];
-  }
 }
 
 // When the settings navigation stack only has one view controller, calling
@@ -187,7 +181,6 @@ TEST_F(SettingsNavigationControllerTest,
 TEST_F(SettingsNavigationControllerTest,
        CloseSettingsWhenNavigationStackSizeIsOne) {
   base::UserActionTester user_action_tester;
-  @autoreleasepool {
     SettingsNavigationController* settingsController =
         [SettingsNavigationController
             mainSettingsControllerForBrowser:browser_.get()
@@ -199,13 +192,11 @@ TEST_F(SettingsNavigationControllerTest,
     EXPECT_EQ(1, user_action_tester.GetActionCount("MobileSettingsClose"));
     EXPECT_OCMOCK_VERIFY(mockDelegate_);
     [settingsController cleanUpSettings];
-  }
 }
 
 // Checks that metrics are correctly reported.
 TEST_F(SettingsNavigationControllerTest, Metrics) {
   base::UserActionTester user_action_tester;
-  @autoreleasepool {
     SettingsNavigationController* settingsController =
         [SettingsNavigationController
             mainSettingsControllerForBrowser:browser_.get()
@@ -217,7 +208,6 @@ TEST_F(SettingsNavigationControllerTest, Metrics) {
 
     EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
     [settingsController cleanUpSettings];
-  }
 }
 
 }  // namespace
