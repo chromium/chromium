@@ -1413,8 +1413,17 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     const size_t upload_image_stride = cc::MathUtil::CheckedRoundUp<size_t>(
         bytes_per_row, kDefaultUnpackAlignment);
 
-    const size_t resource_bit_depth =
+    size_t resource_bit_depth =
         static_cast<size_t>(plane_si_format.BitsPerPixel());
+    // BitsPerPixel calculates bit depth for multiple channels together. So for
+    // planar formats that represent UV channels we need to divide by the number
+    // of channels.
+    if (plane_si_format == viz::SinglePlaneFormat::kRG_88 ||
+        plane_si_format == viz::SinglePlaneFormat::kRG_1616) {
+      resource_bit_depth /= 2;
+    }
+
+    CHECK_LE(resource_bit_depth, 16u);
 
     // Data downshifting is needed if the resource bit depth is not enough.
     const bool needs_bit_downshifting = bits_per_channel > resource_bit_depth;
