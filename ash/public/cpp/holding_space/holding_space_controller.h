@@ -19,6 +19,7 @@ namespace ash {
 class HoldingSpaceClient;
 class HoldingSpaceControllerObserver;
 class HoldingSpaceModel;
+class HoldingSpaceTray;
 
 // Keeps track of all registered holding space models per user account and makes
 // sure the current active model belongs to the current active user.
@@ -51,6 +52,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
 
   void AddObserver(HoldingSpaceControllerObserver* observer);
   void RemoveObserver(HoldingSpaceControllerObserver* observer);
+
+  // Alerts observers that the given `HoldingSpaceTray` has changed the
+  // visibility of its bubble.
+  void OnHoldingSpaceTrayBubbleVisibilityChanged(const HoldingSpaceTray* tray,
+                                                 bool visible);
 
   // Adds a client and model to it's corresponding user account id in a map.
   void RegisterClientAndModelForUser(const AccountId& account_id,
