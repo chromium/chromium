@@ -5,6 +5,7 @@
 
 # pylint: disable=protected-access
 
+import datetime
 import os
 import sys
 import tempfile
@@ -320,17 +321,71 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
     self.result_map = {
         'pixel_integration_test': {
             'foo_test': {
-                tuple(['win']): [ct.ResultTupleType(ct.ResultStatus.FAIL, 'a')],
+                tuple(['win']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/1111',
+                                       datetime.date(2022, 1, 2)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/2222',
+                                       datetime.date(2022, 1, 1)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/3333',
+                                       datetime.date(2022, 1, 4)),
+                ],
                 tuple(['mac']): [
-                    ct.ResultTupleType(ct.ResultStatus.FAIL, 'b'),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL, 'd')
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/1111',
+                                       datetime.date(2022, 1, 5)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/2222',
+                                       datetime.date(2022, 1, 6)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/3333',
+                                       datetime.date(2022, 1, 3)),
                 ],
             },
             'bar_test': {
-                tuple(['win']): [ct.ResultTupleType(ct.ResultStatus.FAIL, 'c')],
+                tuple(['win']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/4444',
+                                       datetime.date(2022, 1, 9)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/5555',
+                                       datetime.date(2022, 1, 8)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/6666',
+                                       datetime.date(2022, 1, 7)),
+                ],
+            },
+            'baz_test': {
+                # This test config causes build fail on less than 2 consecutive
+                # days, and thus should not exist in the output.
+                tuple(['win']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/7777',
+                                       datetime.date(2021, 1, 10)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/8888',
+                                       datetime.date(2022, 1, 10)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/9999',
+                                       datetime.date(2023, 1, 10)),
+                ],
+                # This test config has less than 3 failed build, and thus should
+                # not exist in the output.
+                tuple(['mac']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/7777',
+                                       datetime.date(2022, 1, 10)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/8888',
+                                       datetime.date(2022, 1, 11)),
+                ],
             },
         },
     }
+    self.build_fail_total_number_threshold = 3
+    self.build_fail_consecutive_day_threshold = 2
 
     self.expectation_file = os.path.join(uu.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
                                          'pixel_expectations.txt')
@@ -351,8 +406,9 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
 
   def testGroupByTags(self) -> None:
     """Tests that threshold-based expectations work when grouping by tags."""
-    self._expectations.CreateExpectationsForAllResults(self.result_map, True,
-                                                       True)
+    self._expectations.CreateExpectationsForAllResults(
+        self.result_map, True, True, self.build_fail_total_number_threshold,
+        self.build_fail_consecutive_day_threshold)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ win ] foo_test [ Failure ]
@@ -366,8 +422,9 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
 
   def testNoGroupByTags(self) -> None:
     """Tests that threshold-based expectations work when not grouping by tags"""
-    self._expectations.CreateExpectationsForAllResults(self.result_map, False,
-                                                       True)
+    self._expectations.CreateExpectationsForAllResults(
+        self.result_map, False, True, self.build_fail_total_number_threshold,
+        self.build_fail_consecutive_day_threshold)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
@@ -384,21 +441,72 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
     self.result_map = {
         'pixel_integration_test': {
             'foo_test': {
-                tuple(['win', 'win10']):
-                [ct.ResultTupleType(ct.ResultStatus.FAIL, 'a')],
+                tuple(['win', 'win10']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/1111',
+                                       datetime.date(2022, 1, 2)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/2222',
+                                       datetime.date(2022, 1, 1)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/3333',
+                                       datetime.date(2022, 1, 4)),
+                ],
                 tuple(['mac']): [
-                    ct.ResultTupleType(ct.ResultStatus.FAIL, 'b'),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL, 'd')
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/1111',
+                                       datetime.date(2022, 1, 5)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/2222',
+                                       datetime.date(2022, 1, 6)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/3333',
+                                       datetime.date(2022, 1, 3)),
                 ],
             },
             'bar_test': {
-                tuple(['win', 'win10']):
-                [ct.ResultTupleType(ct.ResultStatus.FAIL, 'c')],
+                tuple(['win', 'win10']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/4444',
+                                       datetime.date(2022, 1, 9)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/5555',
+                                       datetime.date(2022, 1, 8)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/6666',
+                                       datetime.date(2022, 1, 7)),
+                ],
+            },
+            'baz_test': {
+                # This test config causes build fail on less than 2 consecutive
+                # days, and thus should not exist in the output.
+                tuple(['win']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/7777',
+                                       datetime.date(2021, 1, 10)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/8888',
+                                       datetime.date(2022, 1, 10)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/9999',
+                                       datetime.date(2023, 1, 10)),
+                ],
+                # This test config has less than 3 failed build, and thus should
+                # not exist in the output.
+                tuple(['mac']): [
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/7777',
+                                       datetime.date(2022, 1, 10)),
+                    ct.ResultTupleType(ct.ResultStatus.FAIL,
+                                       'http://ci.chromium.org/b/8888',
+                                       datetime.date(2022, 1, 11)),
+                ],
             },
         },
     }
-    self._expectations.CreateExpectationsForAllResults(self.result_map, False,
-                                                       False)
+    self._expectations.CreateExpectationsForAllResults(
+        self.result_map, False, False, self.build_fail_total_number_threshold,
+        self.build_fail_consecutive_day_threshold)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
@@ -715,6 +823,139 @@ class AssertCheckoutIsUpToDateUnittest(unittest.TestCase):
     }
     with self.assertRaises(RuntimeError):
       self._expectations.AssertCheckoutIsUpToDate()
+
+
+class OverFailedBuildThresholdUnittest(unittest.TestCase):
+  def setUp(self) -> None:
+    self.build_fail_total_number_threshold = 3
+
+  def testOverThreshold(self) -> None:
+    """Tests functionality when |result_tuple_list| passes
+    |build_fail_total_number_threshold|.
+
+    True is expected output on these inputs.
+    """
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date(2021, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/3333',
+                           datetime.date(2023, 1, 1)),
+    ]
+    self.assertTrue(
+        expectations.OverFailedBuildThreshold(
+            result_tuple_list, self.build_fail_total_number_threshold))
+
+  def testUnderThreshold(self) -> None:
+    """Tests functionality when |result_tuple_list| cannot pass
+       |build_fail_total_number_threshold|.
+
+    False is expected output on these inputs.
+    """
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date(2022, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 2)),
+    ]
+    self.assertFalse(
+        expectations.OverFailedBuildThreshold(
+            result_tuple_list, self.build_fail_total_number_threshold))
+
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date(2022, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 2)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 3)),
+    ]
+    self.assertFalse(
+        expectations.OverFailedBuildThreshold(
+            result_tuple_list, self.build_fail_total_number_threshold))
+
+
+class OverFailedBuildByDayThresholdUnittest(unittest.TestCase):
+  def setUp(self) -> None:
+    self.build_fail_consecutive_day_threshold = 3
+
+  def testOverThreshold(self) -> None:
+    """Tests functionality when |result_tuple_list| passes
+       |build_fail_consecutive_day_threshold|.
+
+    True is expected output on these inputs.
+    """
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date(2022, 1, 2)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/3333',
+                           datetime.date(2022, 1, 3)),
+    ]
+    self.assertTrue(
+        expectations.OverFailedBuildByDayThreshold(
+            result_tuple_list, self.build_fail_consecutive_day_threshold))
+
+  def testUnderThreshold(self) -> None:
+    """Tests functionality when |result_tuple_list| cannot pass
+       |build_fail_consecutive_day_threshold|.
+
+    False is expected output on these inputs.
+    """
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date(2022, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/3333',
+                           datetime.date(2022, 1, 1)),
+    ]
+    self.assertFalse(
+        expectations.OverFailedBuildByDayThreshold(
+            result_tuple_list, self.build_fail_consecutive_day_threshold))
+
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date(2022, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 2)),
+    ]
+    self.assertFalse(
+        expectations.OverFailedBuildByDayThreshold(
+            result_tuple_list, self.build_fail_consecutive_day_threshold))
+
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date(2022, 1, 1)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 2)),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/3333',
+                           datetime.date(2022, 1, 4)),
+    ]
+    self.assertFalse(
+        expectations.OverFailedBuildByDayThreshold(
+            result_tuple_list, self.build_fail_consecutive_day_threshold))
 
 
 if __name__ == '__main__':

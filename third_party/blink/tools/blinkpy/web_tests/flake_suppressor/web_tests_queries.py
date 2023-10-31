@@ -112,7 +112,8 @@ WITH
     (SELECT value FROM tr.tags
      WHERE key = "step_name") as step_name,
     (SELECT value FROM tr.variant
-     WHERE key = "builder") as builder
+     WHERE key = "builder") as builder,
+     DATE(partition_time) AS date
   FROM
     `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
     sheriff_rotations_ci_builds srcb
@@ -156,7 +157,8 @@ SELECT
   ft.builder,
   ft.step_name,
   ft.typ_expectations,
-  ft.typ_tags
+  ft.typ_tags,
+  ft.date
 FROM failed_tests ft
 LEFT JOIN passed_tests pt ON (ft.name = pt.name AND ft.id = pt.id)
 WHERE
@@ -190,7 +192,8 @@ WITH
     (SELECT value FROM tr.tags
      WHERE key = "step_name") as step_name,
     (SELECT value FROM tr.variant
-     WHERE key = "builder") as builder
+     WHERE key = "builder") as builder,
+     DATE(partition_time) AS date
   FROM
     `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
   WHERE
@@ -222,7 +225,8 @@ SELECT
   ut.builder,
   ut.step_name,
   ut.typ_expectations,
-  ut.typ_tags
+  ut.typ_tags,
+  ut.date,
 FROM unpassed_tests ut
 LEFT JOIN passed_tests pt ON (ut.name = pt.name AND ut.id = pt.id)
 WHERE

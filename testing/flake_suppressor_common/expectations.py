@@ -5,6 +5,8 @@
 
 import base64
 import collections
+import datetime
+from datetime import timedelta
 import os
 import posixpath
 import re
@@ -26,6 +28,66 @@ TAG_GROUP_REGEX = re.compile(r'# tags: \[([^\]]*)\]', re.MULTILINE | re.DOTALL)
 TestToUrlsType = Dict[str, List[str]]
 SuiteToTestsType = Dict[str, TestToUrlsType]
 TagOrderedAggregateResultType = Dict[ct.TagTupleType, SuiteToTestsType]
+
+
+def OverFailedBuildThreshold(failed_result_tuple_list: List[ct.ResultTupleType],
+                             build_fail_total_number_threshold: int) -> bool:
+  """Check if the number of failed build in |failed_result_tuple_list| is
+     equal to or more than |build_fail_total_number_threshold|.
+
+  Args:
+    failed_result_tuple_list: A list of ct.ResultTupleType failed test results.
+    build_fail_total_number_threshold: Threshold base on the number of failed
+      build caused by a test.
+
+  Returns:
+      Whether number of failed build in |failed_result_tuple_list| is equal to
+      or more than |build_fail_total_number_threshold|.
+  """
+  unique_build_ids = set()
+  for result in failed_result_tuple_list:
+    if '/' in result.build_url:
+      unique_build_ids.add(result.build_url.split('/')[-1])
+      if len(unique_build_ids) >= build_fail_total_number_threshold:
+        return True
+  return False
+
+
+def OverFailedBuildByDayThreshold(
+    failed_result_tuple_list: List[ct.ResultTupleType],
+    build_fail_consecutive_day_threshold: int) -> bool:
+  """Check if the max number of build fail in consecutive date
+     is equal to or more than |build_fail_consecutive_day_threshold|.
+
+  Args:
+    failed_result_tuple_list: A list of ct.ResultTupleType failed test result.
+    build_fail_consecutive_day_threshold: Threshold base on the number of
+      consecutive days that a test caused build fail.
+
+  Returns:
+      Whether the max number of build fail in consecutive date
+      is equal to or more than |build_fail_consecutive_day_threshold|.
+  """
+  dates = {t.date: False for t in failed_result_tuple_list}
+
+  for cur_date, is_checked in dates.items():
+    # A beginning point.
+    if not is_checked:
+      count = 1
+
+      while count < build_fail_consecutive_day_threshold:
+        new_date = cur_date + timedelta(days=count)
+        if new_date in dates:
+          count += 1
+          # Mark checked date.
+          dates[new_date] = True
+        else:
+          break
+
+      if count >= build_fail_consecutive_day_threshold:
+        return True
+
+  return False
 
 
 class ExpectationProcessor():
@@ -129,8 +191,10 @@ class ExpectationProcessor():
 
   def CreateExpectationsForAllResults(
       self, result_map: ct.AggregatedStatusResultsType, group_by_tags: bool,
-      include_all_tags: bool) -> None:
-    """Iterates over |result_map| and adds expectations for its results.
+      include_all_tags: bool, build_fail_total_number_threshold: int,
+      build_fail_consecutive_day_threshold: int) -> None:
+    """Iterates over |result_map|, selects tests that hit all
+       build-fail*-thresholds and adds expectations for their results.
 
     Args:
       result_map: Aggregated query results from results.AggregateResults to
@@ -141,12 +205,21 @@ class ExpectationProcessor():
           False, new expectations will be appended to the end of the file.
       include_all_tags: A boolean denoting whether all tags should be used for
           expectations or only the most specific ones.
+      build_fail_total_number_threshold: Threshold based on the number of
+          failed builds caused by a test. Add to the expectations, if actual
+          is equal to or more than this threshold. All build-fail*-thresholds
+          must be hit in order for a test to actually be suppressed.
+      build_fail_consecutive_day_threshold: Threshold based on the number of
+          consecutive days that a test caused build fail. Add to the
+          expectations, if the consecutive days that it caused build fail
+          are equal to or more than this. All build-fail*-thresholds
+          must be hit in order for a test to actually be suppressed.
     """
     for suite, test_map in result_map.items():
       if self.IsSuiteUnsupported(suite):
         continue
       for test, tag_map in test_map.items():
-        for typ_tags in tag_map.keys():
+        for typ_tags, result_tuple_list in tag_map.items():
           status = set()
           for test_result in tag_map[typ_tags]:
             if test_result.status == ct.ResultStatus.CRASH:
@@ -155,7 +228,11 @@ class ExpectationProcessor():
               status.add('Failure')
             elif test_result.status == ct.ResultStatus.ABORT:
               status.add('Timeout')
-          if len(status) > 0:
+          # Failed tests result must be over all threshold requirement.
+          if (status and OverFailedBuildThreshold(
+              result_tuple_list, build_fail_total_number_threshold)
+              and OverFailedBuildByDayThreshold(
+                  result_tuple_list, build_fail_consecutive_day_threshold)):
             status_list = list(status)
             status_list.sort()
             self.ModifyFileForResult(suite, test, typ_tags, '',
