@@ -330,7 +330,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api) override;
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting) override;
   void OnAuctionComplete(content::RenderFrameHost* render_frame_host,
                          content::InterestGroupManager::InterestGroupDataKey
                              winner_data_key) override;

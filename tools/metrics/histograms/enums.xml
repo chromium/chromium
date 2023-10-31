@@ -64460,6 +64460,7 @@ from previous Chrome versions.
   <int value="-676736440" label="ResetShortcutCustomizations:disabled"/>
   <int value="-676252846" label="ShimlessRMASkuDescription:disabled"/>
   <int value="-674804217" label="SoleIntegration:enabled"/>
+  <int value="-674654483" label="FencedFramesM120Features:enabled"/>
   <int value="-674265959" label="AppPreloadService:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
   <int value="-673149604" label="RelatedSearches:enabled"/>
@@ -66808,6 +66809,7 @@ from previous Chrome versions.
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
   <int value="455754036" label="MirroringService:disabled"/>
+  <int value="457035941" label="FencedFramesM120Features:disabled"/>
   <int value="457265823" label="NtpWideModules:enabled"/>
   <int value="457301531" label="SiteIsolationForGuests:disabled"/>
   <int value="457881889" label="enable-autoplay-muted-videos"/>

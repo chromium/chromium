@@ -774,10 +774,13 @@ BASE_FEATURE(kFencedFramesM119Features,
              "FencedFramesM119Features",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable the new fenced frame-related features in M120. (These are
-// conditionally dependent on other fenced frame-related feature flags being
-// enabled.)
+// TODO(crbug.com/1496372): Once the fenced frame M120 change is approved,
+// remove this flag. Enable the new fenced frame-related features in M120.
+// (These are conditionally dependent on other fenced frame-related feature
+// flags being enabled.)
 // * Support leaving interest group from ad components.
+// * Relax the attestation requirement of post-impression beacons from Protected
+// Audience only to either Protected Audience or Attribution Reporting.
 BASE_FEATURE(kFencedFramesM120Features,
              "FencedFramesM120Features",
              base::FEATURE_DISABLED_BY_DEFAULT);

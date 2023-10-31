@@ -218,7 +218,8 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api) override {
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting) override {
     if (!allow_list_) {
       return true;
     }

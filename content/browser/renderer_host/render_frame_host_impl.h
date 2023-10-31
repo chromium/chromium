@@ -4075,8 +4075,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Reporting API related runtime features are enabled and is needed for
   // integration with Attribution Reporting API.
   void SendFencedFrameReportingBeaconInternal(
-      const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
-          event_variant,
+      const FencedFrameReporter::DestinationVariant& event_variant,
       blink::FencedFrame::ReportingDestination destination,
       bool from_renderer,
       network::AttributionReportingRuntimeFeatures

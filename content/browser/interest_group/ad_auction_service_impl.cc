@@ -93,6 +93,11 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   return true;
 }
 
+// This function is used as a callback to verify
+// `InterestGroup::Ad::allowed_reporting_origins` are attested. These origins
+// are specified as part of the ads during `joinAdInterestGroup()` and
+// `updateAdInterestGroups()`. They receive reporting beacons sent by
+// `reportEvent()` when reporting to custom urls.
 bool AreAllowedReportingOriginsAttested(
     BrowserContext* browser_context,
     const std::vector<url::Origin>& origins) {
@@ -101,7 +106,8 @@ bool AreAllowedReportingOriginsAttested(
              ->browser()
              ->IsPrivacySandboxReportingDestinationAttested(
                  browser_context, origin,
-                 PrivacySandboxInvokingAPI::kProtectedAudience)) {
+                 PrivacySandboxInvokingAPI::kProtectedAudience,
+                 /*post_impression_reporting=*/true)) {
       return false;
     }
   }

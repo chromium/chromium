@@ -3375,26 +3375,47 @@ bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
 bool ChromeContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api) {
+    content::PrivacySandboxInvokingAPI invoking_api,
+    bool post_impression_reporting) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   DCHECK(privacy_sandbox_settings);
 
-  privacy_sandbox::PrivacySandboxAttestationsGatedAPI gated_api;
-  switch (invoking_api) {
-    case content::PrivacySandboxInvokingAPI::kProtectedAudience:
-      gated_api = privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-          kProtectedAudience;
-      break;
-    case content::PrivacySandboxInvokingAPI::kSharedStorage:
-      gated_api =
-          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage;
-      break;
+  if (invoking_api == content::PrivacySandboxInvokingAPI::kProtectedAudience) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesM120Features) &&
+        post_impression_reporting) {
+      // M120 and afterwards: For beacons sent by `reportEvent()` and automatic
+      // beacons, the destination is required to be attested for either
+      // Protected Audience or Attribution Reporting.
+      return privacy_sandbox_settings->IsEventReportingDestinationAttested(
+                 destination_origin,
+                 privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                     kProtectedAudience) ||
+             privacy_sandbox_settings->IsEventReportingDestinationAttested(
+                 destination_origin,
+                 privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                     kAttributionReporting);
+    } else {
+      // Before M120: The reporting destination is required to be attested for
+      // its invoking API only.
+      // M120 and afterwards: For beacons sent by `reportResult()` and
+      // `reportWin()`, the destination is required to be attested for Protected
+      // Audience only.
+      return privacy_sandbox_settings->IsEventReportingDestinationAttested(
+          destination_origin,
+          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+              kProtectedAudience);
+    }
+  } else if (invoking_api ==
+             content::PrivacySandboxInvokingAPI::kSharedStorage) {
+    return privacy_sandbox_settings->IsEventReportingDestinationAttested(
+        destination_origin,
+        privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kSharedStorage);
   }
 
-  return privacy_sandbox_settings->IsEventReportingDestinationAttested(
-      destination_origin, gated_api);
+  return false;
 }
 
 void ChromeContentBrowserClient::OnAuctionComplete(

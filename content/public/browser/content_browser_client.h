@@ -908,10 +908,21 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns whether |destination_origin| can receive beacons sent through
   // window.fence.reportEvent() or automatic beacons.
+  // Before M120: The reporting destination is required to be attested for its
+  // invoking API only.
+  // M120 and afterwards: If this is a post-impression reporting beacon invoked
+  // by Protected Audience API, the destination is required to be attested for
+  // either Protected Audience or Attribution Reporting, instead of Protected
+  // Audience only. This is because there are use cases that an adtech may need
+  // to measure Protected Audience ads, but not using any of the ads
+  // personalization or targeting features of Protected Audience. The adtech
+  // should be allowed to receive post-impression beacons if it is attested for
+  // Attribution Reporting.
   virtual bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api);
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting);
 
   virtual void OnAuctionComplete(
       RenderFrameHost* render_frame_host,

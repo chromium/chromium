@@ -75,6 +75,12 @@ specific_include_rules = {
   "browser_test_utils.cc": [
     "+ash/webui/grit/ash_webui_common_resources.h"
   ],
+  "fenced_frame_reporter_observer.cc": [
+    "+content/browser/fenced_frame/fenced_frame_reporter.h"
+  ],
+  "fenced_frame_reporter_observer.h": [
+    "+content/browser/fenced_frame/fenced_frame_reporter.h"
+  ],
   "test_shared_storage_header_observer.h": [
     "+content/browser/shared_storage/shared_storage_header_observer.h"
   ],

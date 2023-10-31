@@ -8,12 +8,15 @@
 #include <map>
 #include <set>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/common/content_export.h"
@@ -40,6 +43,12 @@ class RenderFrameHostImpl;
 struct DestinationEnumEvent {
   std::string type;
   std::string data;
+
+  // The equal to operator is defined in order to enable comparison of
+  // DestinationVariant.
+  bool operator==(const DestinationEnumEvent& other) const {
+    return std::tie(type, data) == std::tie(other.type, other.data);
+  }
 };
 
 // An event to be sent to a custom url.
@@ -47,6 +56,12 @@ struct DestinationEnumEvent {
 // Macros are substituted using the `ReportingMacros`.
 struct DestinationURLEvent {
   GURL url;
+
+  // The equal to operator is defined in order to enable comparison of
+  // DestinationVariant.
+  bool operator==(const DestinationURLEvent& other) const {
+    return url == other.url;
+  }
 };
 
 // Class that receives report events from fenced frames, and uses a
@@ -62,6 +77,21 @@ class CONTENT_EXPORT FencedFrameReporter
 
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
+  using DestinationVariant =
+      absl::variant<DestinationEnumEvent, DestinationURLEvent>;
+
+  // TODO(crbug.com/1492125): Once the CL that stops repeating checks for fenced
+  // frame reporting beacons is landed, this observer will be extended to
+  // observe whether the beacon is eventually sent or not.
+  class ObserverForTesting : public base::CheckedObserver {
+   public:
+    virtual void OnBeaconQueued(const DestinationVariant& event_variant,
+                                bool is_queued) = 0;
+  };
+
+  void AddObserverForTesting(ObserverForTesting* observer);
+  void RemoveObserverForTesting(const ObserverForTesting* observer);
 
   // Creates a FencedFrameReporter that only maps kSharedStorageSelectUrl
   // destinations, using the passed in map.
@@ -188,8 +218,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // In all other cases (including the fence.reportEvent() case), the navigation
   // id will be null.
   bool SendReport(
-      const absl::variant<DestinationEnumEvent, DestinationURLEvent>&
-          event_variant,
+      const DestinationVariant& event_variant,
       blink::FencedFrame::ReportingDestination reporting_destination,
       RenderFrameHostImpl* request_initiator_frame,
       network::AttributionReportingRuntimeFeatures
@@ -263,7 +292,7 @@ class CONTENT_EXPORT FencedFrameReporter
 
   struct PendingEvent {
     PendingEvent(
-        const absl::variant<DestinationEnumEvent, DestinationURLEvent>& event,
+        const DestinationVariant& event,
         const url::Origin& request_initiator,
         absl::optional<AttributionReportingData> attribution_reporting_data,
         int initiator_frame_tree_node_id);
@@ -276,7 +305,7 @@ class CONTENT_EXPORT FencedFrameReporter
 
     ~PendingEvent();
 
-    absl::variant<DestinationEnumEvent, DestinationURLEvent> event;
+    DestinationVariant event;
     url::Origin request_initiator;
     // The data necessary for attribution reporting. Will be `absl::nullopt` if
     // attribution reporting is disallowed in the initiator frame.
@@ -305,7 +334,8 @@ class CONTENT_EXPORT FencedFrameReporter
 
     // Pending report strings received while `reporting_url_map` was
     // absl::nullopt. Once the map is received, this is cleared, and reports are
-    // sent.
+    // sent. The events are used for post-impression reporting. They are
+    // from either `reportEvent()` calls or automatic beacons.
     std::vector<PendingEvent> pending_events;
   };
 
@@ -314,7 +344,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // Helper to send a report, used by both SendReport() and OnUrlMappingReady().
   bool SendReportInternal(
       const ReportingDestinationInfo& reporting_destination_info,
-      const absl::variant<DestinationEnumEvent, DestinationURLEvent>& event,
+      const DestinationVariant& event,
       blink::FencedFrame::ReportingDestination reporting_destination,
       const url::Origin& request_initiator,
       const absl::optional<AttributionReportingData>&
@@ -341,6 +371,11 @@ class CONTENT_EXPORT FencedFrameReporter
   void NotifyFencedFrameReportingBeaconFailed(
       const absl::optional<AttributionReportingData>&
           attribution_reporting_data);
+
+  // Notify the installed observers whether the beacon is queued to be sent or
+  // not.
+  void NotifyIsBeaconQueued(const DestinationVariant& event_variant,
+                            bool is_queued);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -396,6 +431,8 @@ class CONTENT_EXPORT FencedFrameReporter
 
   // Which API created this fenced frame reporter instance.
   PrivacySandboxInvokingAPI invoking_api_;
+
+  base::ObserverList<ObserverForTesting> observers_;
 };
 
 }  // namespace content
