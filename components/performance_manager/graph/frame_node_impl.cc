@@ -117,14 +117,122 @@ void FrameNodeImpl::OnFirstContentfulPaint(
     observer->OnFirstContentfulPaint(this, time_since_navigation_start);
 }
 
-const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
+void FrameNodeImpl::OnWebMemoryMeasurementRequested(
+    mojom::WebMemoryMeasurement::Mode mode,
+    OnWebMemoryMeasurementRequestedCallback callback) {
+  v8_memory::WebMeasureMemory(
+      this, mode, v8_memory::WebMeasureMemorySecurityChecker::Create(),
+      std::move(callback), mojo::GetBadMessageCallback());
+}
+
+const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_frame_host_proxy();
+  return frame_token();
+}
+
+content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browsing_instance_id();
+}
+
+content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return site_instance_id();
+}
+
+resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resource_context();
 }
 
 bool FrameNodeImpl::IsMainFrame() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !parent_frame_node_;
+}
+
+FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lifecycle_state();
+}
+
+bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return has_nonempty_beforeunload();
+}
+
+const GURL& FrameNodeImpl::GetURL() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return url();
+}
+
+bool FrameNodeImpl::IsCurrent() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_current();
+}
+
+bool FrameNodeImpl::GetNetworkAlmostIdle() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return network_almost_idle();
+}
+
+bool FrameNodeImpl::IsAdFrame() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_ad_frame();
+}
+
+bool FrameNodeImpl::IsHoldingWebLock() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_holding_weblock();
+}
+
+bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_holding_indexeddb_lock();
+}
+
+bool FrameNodeImpl::HadFormInteraction() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return had_form_interaction();
+}
+
+bool FrameNodeImpl::HadUserEdits() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return had_user_edits();
+}
+
+bool FrameNodeImpl::IsAudible() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_audible();
+}
+
+bool FrameNodeImpl::IsCapturingVideoStream() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_capturing_video_stream();
+}
+
+absl::optional<bool> FrameNodeImpl::IntersectsViewport() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return intersects_viewport();
+}
+
+FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return visibility();
+}
+
+const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return render_frame_host_proxy();
+}
+
+uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resident_set_kb_estimate();
+}
+
+uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_footprint_kb_estimate();
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
@@ -483,26 +591,6 @@ const ProcessNode* FrameNodeImpl::GetProcessNode() const {
   return process_node();
 }
 
-const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_token();
-}
-
-content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browsing_instance_id();
-}
-
-content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return site_instance_id();
-}
-
-resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context();
-}
-
 bool FrameNodeImpl::VisitChildFrameNodes(
     const FrameNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -557,46 +645,6 @@ const base::flat_set<const PageNode*> FrameNodeImpl::GetEmbeddedPageNodes()
   return UpcastNodeSet<PageNode>(embedded_page_nodes());
 }
 
-FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return lifecycle_state();
-}
-
-bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return has_nonempty_beforeunload();
-}
-
-const GURL& FrameNodeImpl::GetURL() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url();
-}
-
-bool FrameNodeImpl::IsCurrent() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_current();
-}
-
-bool FrameNodeImpl::GetNetworkAlmostIdle() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return network_almost_idle();
-}
-
-bool FrameNodeImpl::IsAdFrame() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_ad_frame();
-}
-
-bool FrameNodeImpl::IsHoldingWebLock() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_weblock();
-}
-
-bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_indexeddb_lock();
-}
-
 const base::flat_set<const WorkerNode*> FrameNodeImpl::GetChildWorkerNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -614,46 +662,6 @@ bool FrameNodeImpl::VisitChildDedicatedWorkers(
     }
   }
   return true;
-}
-
-bool FrameNodeImpl::HadFormInteraction() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return had_form_interaction();
-}
-
-bool FrameNodeImpl::HadUserEdits() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return had_user_edits();
-}
-
-bool FrameNodeImpl::IsAudible() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_audible();
-}
-
-bool FrameNodeImpl::IsCapturingVideoStream() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_capturing_video_stream();
-}
-
-absl::optional<bool> FrameNodeImpl::IntersectsViewport() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return intersects_viewport();
-}
-
-FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return visibility();
-}
-
-uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate();
-}
-
-uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate();
 }
 
 const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
@@ -833,14 +841,6 @@ void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
   network_almost_idle.SetAndMaybeNotify(frame_node, false);
   had_form_interaction.SetAndMaybeNotify(frame_node, false);
   had_user_edits.SetAndMaybeNotify(frame_node, false);
-}
-
-void FrameNodeImpl::OnWebMemoryMeasurementRequested(
-    mojom::WebMemoryMeasurement::Mode mode,
-    OnWebMemoryMeasurementRequestedCallback callback) {
-  v8_memory::WebMeasureMemory(
-      this, mode, v8_memory::WebMeasureMemorySecurityChecker::Create(),
-      std::move(callback), mojo::GetBadMessageCallback());
 }
 
 }  // namespace performance_manager

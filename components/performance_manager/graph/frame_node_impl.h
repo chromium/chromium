@@ -71,13 +71,33 @@ class FrameNodeImpl
   void OnNonPersistentNotificationCreated() override;
   void OnFirstContentfulPaint(
       base::TimeDelta time_since_navigation_start) override;
-  const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   void OnWebMemoryMeasurementRequested(
       mojom::WebMemoryMeasurement::Mode mode,
       OnWebMemoryMeasurementRequestedCallback callback) override;
 
-  // Partial FrameNodbase::TimeDelta time_since_navigatione implementation:
+  // Partial FrameNode implementation:
+  const blink::LocalFrameToken& GetFrameToken() const override;
+  content::BrowsingInstanceId GetBrowsingInstanceId() const override;
+  content::SiteInstanceId GetSiteInstanceId() const override;
+  resource_attribution::FrameContext GetResourceContext() const override;
   bool IsMainFrame() const override;
+  LifecycleState GetLifecycleState() const override;
+  bool HasNonemptyBeforeUnload() const override;
+  const GURL& GetURL() const override;
+  bool IsCurrent() const override;
+  bool GetNetworkAlmostIdle() const override;
+  bool IsAdFrame() const override;
+  bool IsHoldingWebLock() const override;
+  bool IsHoldingIndexedDBLock() const override;
+  bool HadFormInteraction() const override;
+  bool HadUserEdits() const override;
+  bool IsAudible() const override;
+  bool IsCapturingVideoStream() const override;
+  absl::optional<bool> IntersectsViewport() const override;
+  Visibility GetVisibility() const override;
+  const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
+  uint64_t GetResidentSetKbEstimate() const override;
+  uint64_t GetPrivateFootprintKbEstimate() const override;
 
   // Getters for const properties.
   FrameNodeImpl* parent_frame_node() const;
@@ -173,35 +193,15 @@ class FrameNodeImpl
   const FrameNode* GetParentFrameNode() const override;
   const PageNode* GetPageNode() const override;
   const ProcessNode* GetProcessNode() const override;
-  const blink::LocalFrameToken& GetFrameToken() const override;
-  content::BrowsingInstanceId GetBrowsingInstanceId() const override;
-  content::SiteInstanceId GetSiteInstanceId() const override;
-  resource_attribution::FrameContext GetResourceContext() const override;
   bool VisitChildFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetChildFrameNodes() const override;
   bool VisitOpenedPageNodes(const PageNodeVisitor& visitor) const override;
   const base::flat_set<const PageNode*> GetOpenedPageNodes() const override;
   bool VisitEmbeddedPageNodes(const PageNodeVisitor& visitor) const override;
   const base::flat_set<const PageNode*> GetEmbeddedPageNodes() const override;
-  LifecycleState GetLifecycleState() const override;
-  bool HasNonemptyBeforeUnload() const override;
-  const GURL& GetURL() const override;
-  bool IsCurrent() const override;
-  bool GetNetworkAlmostIdle() const override;
-  bool IsAdFrame() const override;
-  bool IsHoldingWebLock() const override;
-  bool IsHoldingIndexedDBLock() const override;
   const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
   bool VisitChildDedicatedWorkers(
       const WorkerNodeVisitor& visitor) const override;
-  bool HadFormInteraction() const override;
-  bool HadUserEdits() const override;
-  bool IsAudible() const override;
-  bool IsCapturingVideoStream() const override;
-  absl::optional<bool> IntersectsViewport() const override;
-  Visibility GetVisibility() const override;
-  uint64_t GetResidentSetKbEstimate() const override;
-  uint64_t GetPrivateFootprintKbEstimate() const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
 
   // Properties associated with a Document, which are reset when a
