@@ -8,8 +8,6 @@ source_set("configs") {
   sources = [
     "chrome_untrusted_web_ui_configs.cc",
     "chrome_untrusted_web_ui_configs.h",
-    "chrome_untrusted_web_ui_configs_common.cc",
-    "chrome_untrusted_web_ui_configs_common.h",
     "chrome_web_ui_configs.cc",
     "chrome_web_ui_configs.h",
   ]
@@ -26,17 +24,7 @@ source_set("configs") {
   ]
 
   if (is_mac || is_win || is_linux || is_chromeos || is_fuchsia) {
-    sources += [
-      "chrome_untrusted_web_ui_configs_desktop.cc",
-      "chrome_untrusted_web_ui_configs_desktop.h",
-    ]
-
-    deps += [
-      "//build:branding_buildflags",
-      "//chrome/browser/companion/core",
-      "//chrome/browser/companion/core/mojom:mojo_bindings",
-      "//chrome/browser/ui/webui/hats:hats_ui",
-    ]
+    deps += [ "//chrome/browser/ui/webui/hats:hats_ui" ]
   }
 
   # Includes Ash Chrome and Lacros Chrome
