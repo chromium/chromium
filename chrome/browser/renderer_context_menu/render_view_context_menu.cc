@@ -232,6 +232,7 @@
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
+#include "components/compose/core/browser/compose_metrics.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -2289,6 +2290,8 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
     auto* compose_client = GetChromeComposeClient();
     if (compose_client &&
         compose_client->ShouldTriggerContextMenu(render_frame_host, params_)) {
+      compose::LogComposeContextMenuCtr(
+          compose::ComposeContextMenuCtrEvent::kMenuItemDisplayed);
       menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
                                       IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
       // TODO(b/303646344): Remove new feature tag when no longer new.

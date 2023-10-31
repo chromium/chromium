@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/compose_metrics.h"
 
 namespace {
 // Passes the autofill `text` back into the `field` the dialog was opened on.
@@ -98,6 +99,10 @@ void ComposeManagerImpl::OpenCompose(
     std::optional<PopupScreenLocation> popup_screen_location,
     ComposeCallback callback) {
   CHECK(IsEnabled());
+  if (ui_entry_point == UiEntryPoint::kContextMenu) {
+    compose::LogComposeContextMenuCtr(
+        compose::ComposeContextMenuCtrEvent::kComposeOpened);
+  }
   client_->ShowComposeDialog(ui_entry_point, trigger_field,
                              popup_screen_location, std::move(callback));
 }

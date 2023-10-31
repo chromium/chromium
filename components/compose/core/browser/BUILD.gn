@@ -18,6 +18,8 @@ static_library("browser") {
     "compose_manager.h",
     "compose_manager_impl.cc",
     "compose_manager_impl.h",
+    "compose_metrics.cc",
+    "compose_metrics.h",
     "config.cc",
     "config.h",
   ]
