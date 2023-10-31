@@ -25,6 +25,7 @@ namespace content {
 
 class FileSystemAccessManagerImpl;
 class Lock;
+class RootLock;
 
 // This class is in charge of the creation of Locks. Locks restrict the access
 // to a specific file or directory, preventing unexpected concurrent access to
@@ -40,38 +41,6 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   using LockType = base::IdType32<class LockTypeTag>;
 
   using TakeLockCallback = base::OnceCallback<void(scoped_refptr<LockHandle>)>;
-
-  enum class EntryPathType {
-    // A path on the local file system. Files with these paths can be operated
-    // on by base::File.
-    kLocal,
-
-    // A path on an "external" file system. These paths can only be accessed via
-    // the filesystem abstraction in //storage/browser/file_system, and a
-    // storage::FileSystemURL of type storage::kFileSystemTypeExternal.
-    kExternal,
-
-    // A path from a sandboxed file system. These paths can be accessed by a
-    // storage::FileSystemURL of type storage::kFileSystemTypeTemporary.
-    kSandboxed,
-  };
-
-  struct EntryLocator {
-    static EntryLocator FromFileSystemURL(const storage::FileSystemURL& url);
-
-    EntryLocator(const EntryPathType& type,
-                 const base::FilePath& path,
-                 const absl::optional<storage::BucketLocator>& bucket_locator);
-    EntryLocator(const EntryLocator&);
-    ~EntryLocator();
-
-    bool operator<(const EntryLocator& other) const;
-
-    const EntryPathType type;
-    const base::FilePath path;
-    // Non-null iff `type` is kSandboxed.
-    const absl::optional<storage::BucketLocator> bucket_locator;
-  };
 
   // A handle to a `Lock` passed to the frame that holds the lock. The `Lock` is
   // kept alive as long as `LockHandle` is kept alive.
@@ -132,20 +101,47 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   [[nodiscard]] LockType GetAncestorLockTypeForTesting();
 
  private:
-  friend Lock;
+  friend RootLock;
 
-  Lock* TakeLockImpl(const EntryLocator& entry_locator, LockType lock_type);
+  enum class EntryPathType {
+    // A path on the local file system. Files with these paths can be operated
+    // on by base::File.
+    kLocal,
 
-  bool IsContentiousImpl(const EntryLocator& entry_locator, LockType lock_type);
+    // A path on an "external" file system. These paths can only be accessed via
+    // the filesystem abstraction in //storage/browser/file_system, and a
+    // storage::FileSystemURL of type storage::kFileSystemTypeExternal.
+    kExternal,
 
-  // Releases the lock on `entry_locator`. Called from the Lock destructor.
-  void ReleaseLock(const EntryLocator& entry_locator);
+    // A path from a sandboxed file system. These paths can be accessed by a
+    // storage::FileSystemURL of type storage::kFileSystemTypeTemporary.
+    kSandboxed,
+  };
 
-  Lock* GetExistingLock(const EntryLocator& entry_locator);
+  struct RootLocator {
+    static RootLocator FromFileSystemURL(const storage::FileSystemURL& url);
+
+    RootLocator(const EntryPathType& type,
+                const absl::optional<storage::BucketLocator>& bucket_locator);
+    RootLocator(const RootLocator&);
+    ~RootLocator();
+
+    bool operator<(const RootLocator& other) const;
+
+    const EntryPathType type;
+    // Non-null iff `type` is kSandboxed.
+    const absl::optional<storage::BucketLocator> bucket_locator;
+  };
+
+  // Releases the root lock for `root_locator`. Called from the RootLock.
+  void ReleaseRoot(const RootLocator& root_locator);
+
+  RootLock* GetRootLock(const RootLocator& root_locator);
+  RootLock* GetOrCreateRootLock(const RootLocator& root_locator);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::map<EntryLocator, std::unique_ptr<Lock>> locks_
+  std::map<RootLocator, std::unique_ptr<RootLock>> root_locks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   LockType::Generator lock_type_generator_;
