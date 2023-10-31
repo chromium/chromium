@@ -61,6 +61,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/constants.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -569,9 +570,12 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
       // enabled through a command line flag.
       if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kAllowSilentPush)) {
+        // Defaults to true since that is the more restrictive option.
+        bool user_visible_only = base::Contains(
+            origins_bypassing_user_visible_requirement, requesting_origin);
         notification_manager_.EnforceUserVisibleOnlyRequirements(
             requesting_origin, service_worker_registration_id,
-            std::move(message_handled_callback));
+            std::move(message_handled_callback), user_visible_only);
         message_handled_callback = base::OnceCallback<void(bool)>();
       }
       break;
@@ -854,6 +858,10 @@ void PushMessagingServiceImpl::SubscribeFromWorker(
     return;
   }
 
+  if (!options->user_visible_only) {
+    origins_bypassing_user_visible_requirement.insert(app_identifier.origin());
+  }
+
   DoSubscribe(std::move(app_identifier), std::move(options),
               std::move(register_callback),
               /* render_process_id= */ -1, /* render_frame_id= */ -1,
@@ -863,8 +871,13 @@ void PushMessagingServiceImpl::SubscribeFromWorker(
 blink::mojom::PermissionStatus PushMessagingServiceImpl::GetPermissionStatus(
     const GURL& origin,
     bool user_visible) {
-  if (!user_visible)
+  // Allows some origins to pass userVisibleOnly false to the push manager if
+  // they request it, but deny others.
+  if (!user_visible &&
+      !notification_manager_.ShouldSkipUserVisibleOnlyRequirements(
+          origin, /*requested_user_visible_only=*/!user_visible)) {
     return blink::mojom::PermissionStatus::DENIED;
+  }
 
   // Because the Push API is tied to Service Workers, many usages of the API
   // won't have an embedding origin at all. Only consider the requesting
@@ -1232,6 +1245,8 @@ void PushMessagingServiceImpl::UnsubscribeInternal(
       base::BindOnce(&PushMessagingServiceImpl::DidClearPushSubscriptionId,
                      weak_factory_.GetWeakPtr(), reason, app_id, sender_id,
                      std::move(callback)));
+
+  origins_bypassing_user_visible_requirement.erase(origin);
 }
 
 void PushMessagingServiceImpl::DidClearPushSubscriptionId(
@@ -1650,11 +1665,24 @@ void PushMessagingServiceImpl::UpdateSubscription(
         }
       },
       std::move(callback), profile_, app_identifier);
+
+  blink::mojom::PermissionStatus permission_status =
+      blink::mojom::PermissionStatus::GRANTED;
+
+  if (!options->user_visible_only) {
+    if (notification_manager_.ShouldSkipUserVisibleOnlyRequirements(
+            app_identifier.origin(), options->user_visible_only)) {
+      origins_bypassing_user_visible_requirement.insert(
+          app_identifier.origin());
+    } else {
+      permission_status = blink::mojom::PermissionStatus::DENIED;
+    }
+  }
   // Subscribe using the new subscription information, this will overwrite
   // the expiration time of |app_identifier|
   DoSubscribe(app_identifier, std::move(options), std::move(register_callback),
               -1 /* render_process_id */, -1 /* render_frame_id */,
-              blink::mojom::PermissionStatus::GRANTED);
+              permission_status);
 }
 
 void PushMessagingServiceImpl::DidUpdateSubscription(

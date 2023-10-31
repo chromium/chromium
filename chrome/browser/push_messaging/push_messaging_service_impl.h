@@ -491,6 +491,11 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   int render_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
 
+  // Tracks those that are attempting to bypass the user visible
+  // requirement on push notifications. E.g. they set userVisibleOnly to false
+  // on push registration.
+  std::set<GURL> origins_bypassing_user_visible_requirement;
+
   base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
 };
 
