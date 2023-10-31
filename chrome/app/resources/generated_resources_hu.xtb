@@ -4574,7 +4574,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4565917129334815774">Rendszernaplók eltárolása</translation>
 <translation id="4566170377336116390">Ha váltani szeretne a regisztrálás után, vissza kell állítania a gyári beállításokat (Powerwash) az eszközén.</translation>
 <translation id="4566417217121906555">Mikrofon némítása</translation>
-<translation id="4566762846886188693">Az Ön adatainak védelme érdekében a rendszer eltávolítja azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel az utóbbi időben. Ez nem állítja le az értesítéseket.</translation>
 <translation id="456717285308019641">Fordítani kívánt oldalnyelv</translation>
 <translation id="4567512141633030272">Másik bejelentkezési lehetőséget szeretne használni?</translation>
 <translation id="4567533462991917415">A beállítás után bármikor felvehet további személyeket. Bárki személyre szabhatja fiókját, és gondoskodhat adatainak biztonságáról.</translation>
@@ -4795,7 +4794,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4742334355511750246">Nem jeleníthetnek meg képeket</translation>
 <translation id="4742970037960872810">Kiemelés eltávolítása</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />További információ az alkalmazások frissítéséről<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">A címsávba beírt szöveget a rendszer elküldi az alapértelmezett keresőmotornak</translation>
 <translation id="4744268813103118742">Ugrás a webhelyre</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Webhely némításának feloldása}other{Webhelyek némításának feloldása}}</translation>

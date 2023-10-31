@@ -1110,6 +1110,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3266793032086590337">Value (hindi tumutugma)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Walang naka-block na site, kabilang ang mga kaugnay na site}=1{1 site ang naka-block, kabilang ang mga kaugnay na site}one{# site ang naka-block, kabilang ang mga kaugnay na site}other{# na site ang naka-block, kabilang ang mga kaugnay na site}}</translation>
 <translation id="3268451620468152448">Mga Bukas na Tab</translation>
+<translation id="3270041629388773465">Mas mabilis na mag-check out kapag naka-save ang iyong mga CVC</translation>
 <translation id="3270156322180235608">Paglalakbay sa himpapawid</translation>
 <translation id="3270847123878663523">&amp;I-undo ang Pagbabago sa Ayos</translation>
 <translation id="3271648667212143903">Gustong kumonekta ng <ph name="ORIGIN" /></translation>
@@ -1849,6 +1850,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4761104368405085019">Gamitin ang iyong mikropono</translation>
 <translation id="4761326898079498987">Suriin para sa higit pang detalye</translation>
 <translation id="4761869838909035636">Magpatakbo ng Pag-check sa Kaligtasan sa Chrome</translation>
+<translation id="4763196677855776703">Inihatid ang mga tuntunin at kundisyon ng <ph name="URL" /></translation>
 <translation id="4764680219299728632">Mga Range, Cooktop, at Oven</translation>
 <translation id="4764776831041365478">Ang webpage sa <ph name="URL" /> ay maaaring pansamantalang hindi gumagana o maaaring permanente itong inilipat sa isang bagong web address.</translation>
 <translation id="4766713847338118463">Dual staple bottom</translation>
@@ -2277,6 +2279,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5633259641094592098">Mga pelikulang cult at indie</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5635237618724097525">Mga smart phone</translation>
+<translation id="5635478143789726479">Mga tuntunin at kundisyon ng nagbebenta</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Mga Stereo System at Component</translation>
 <translation id="5644090287519800334">Pag-shift ng gilid 1 larawan X</translation>
@@ -2396,6 +2399,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5911110632211230665">Naka-block ang pagbubukas</translation>
 <translation id="59174027418879706">Pinagana</translation>
 <translation id="5918373444239520146">Mga Gadget at Portable na Electronic</translation>
+<translation id="5918847752193018339">Mas mabilis na mag-check out kapag naka-save ang iyong mga CVC. <ph name="LINK_BEGIN" />I-delete ang mga naka-save na panseguridad na code<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 ang ginagamit}one{# ang ginagamit}other{# ang ginagamit}}</translation>
 <translation id="592031860219554105">Ice skating</translation>
@@ -3473,6 +3477,7 @@ Mga karagdagang detalye:
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8041940743680923270">Gamitin ang pangkalahatang default (Tanungin)</translation>
 <translation id="8042577181291637092">Gumamit ng mga MIDI device?</translation>
+<translation id="8043255123207491407">Tingnan ang mga tuntunin at kundisyon ng nagbebenta</translation>
 <translation id="8046360364391076336">Mga Materyales at Kagamitang Pang-industriya</translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
 <translation id="8055534648776115597">Bokasyonal at ipinagpatuloy na edukasyon</translation>
@@ -3750,7 +3755,6 @@ Mga karagdagang detalye:
 <translation id="8576310925653847813">Mga home theater system</translation>
 <translation id="8577192028579836704">Karaniwang <ph name="TYPICAL_PRICE" /> ang lahat ng opsyon</translation>
 <translation id="8577348305244205642">Hindi available ang virtual card</translation>
-<translation id="8585615573162100611">Ihinto ang pagpapahintulot sa <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Kagamitan sa Squash at Racquetball</translation>
 <translation id="858637041960032120">Magdagdag ng numero ng telepono</translation>
 <translation id="8589998999637048520">Pinakamahusay na kalidad</translation>

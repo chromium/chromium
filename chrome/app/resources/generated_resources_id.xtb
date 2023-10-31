@@ -1898,6 +1898,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2435457462613246316">Tampilkan sandi</translation>
 <translation id="2436385001956947090">Salin &amp;link</translation>
 <translation id="2438853563451647815">Tidak terhubung ke printer</translation>
+<translation id="2439152382014731627">Reset sandi <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Memuat <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Lihat s&amp;umber</translation>
 <translation id="2440823041667407902">Akses lokasi</translation>
@@ -2048,6 +2049,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2541423446708352368">Tampilkan semua download</translation>
 <translation id="2541706104884128042">Waktu tidur baru disetel</translation>
 <translation id="2542050502251273923">Menyetel level proses debug pengelola koneksi jaringan dan layanan lainnya menggunakan ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Izin yang Anda berikan untuk "<ph name="APP_NAME" />" juga akan diberikan untuk aplikasi ini. <ph name="MANAGE_LINK" />}other{Izin yang Anda berikan untuk "<ph name="APP_NAME" />" juga akan diberikan untuk aplikasi ini. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Tab Ini</translation>
 <translation id="2546302722632337735">Jangan izinkan situs menggunakan ID untuk memutar konten yang dilindungi</translation>
 <translation id="2546991196809436099">Perbesar untuk membuat item pada layar lebih besar. Gunakan Penelusuran + Ctrl + M untuk mengaktifkan dan menonaktifkan kaca pembesar.</translation>
@@ -2490,6 +2492,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> akan segera dimulai dan direset</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Uji baterai, CPU, memori, konektivitas, dan lainnya</translation>
+<translation id="2885129935310217435">Ada tombol dengan nama yang sama. Pilih nama lain.</translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2885729872133513017">Terjadi error saat mendekode respons server.</translation>
 <translation id="2886119409731773154">Proses ini mungkin perlu waktu hingga 30 menit</translation>
@@ -4573,7 +4576,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4565917129334815774">Simpan log sistem</translation>
 <translation id="4566170377336116390">Jika ingin beralih setelah pendaftaran, Anda perlu mereset perangkat (powerwash) ke setelan pabrik.</translation>
 <translation id="4566417217121906555">Nonaktifkan mikrofon</translation>
-<translation id="4566762846886188693">Untuk melindungi data Anda, hapus izin dari situs yang tidak Anda buka baru-baru ini. Tindakan ini tidak menghentikan notifikasi.</translation>
 <translation id="456717285308019641">Bahasa halaman yang akan diterjemahkan</translation>
 <translation id="4567512141633030272">Opsi login salah?</translation>
 <translation id="4567533462991917415">Anda dapat menambahkan lebih banyak pengguna kapan saja setelah penyiapan selesai. Setiap pengguna dapat mempersonalisasi akunnya dan menjaga privasi datanya.</translation>
@@ -4794,7 +4796,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4742334355511750246">Tidak diizinkan menampilkan gambar</translation>
 <translation id="4742970037960872810">Hapus sorotan</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Pelajari cara mengupdate aplikasi<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Kata yang Anda ketik di kolom URL atau kotak penelusuran akan dikirim ke mesin telusur default Anda</translation>
 <translation id="4744268813103118742">Buka Situs</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Bunyikan audio situs}other{Bunyikan audio situs}}</translation>
@@ -8791,6 +8792,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7952708427581814389">Situs dapat meminta untuk melihat teks dan gambar di papan klip Anda</translation>
 <translation id="795282463722894016">Pemulihan selesai</translation>
 <translation id="7952904276017482715">ID yang diharapkan "<ph name="EXPECTED_ID" />", namun ID-nya adalah "<ph name="NEW_ID" />"</translation>
+<translation id="7953236668995583915">Muat ulang halaman ini untuk menerapkan setelan yang diperbarui di situs ini</translation>
 <translation id="7953669802889559161">Input</translation>
 <translation id="7953955868932471628">Kelola pintasan</translation>
 <translation id="7955105108888461311">Tanya secara langsung</translation>

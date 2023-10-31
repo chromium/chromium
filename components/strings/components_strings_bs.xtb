@@ -311,6 +311,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1574714699824202614">Potvrđivanje načina plaćanja</translation>
 <translation id="1576277203042721907">Uvidi u kupovinu</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Ne ističe</translation>
 <translation id="1583429793053364125">Došlo je do problema prilikom prikazivanja ove web stranice.</translation>
 <translation id="1584492003828271317">Hoće li oglas koji vidite dok pregledate biti personaliziran ovisi o ovoj postavci, oglasima koje predlaže web lokacija, vašim postavkama kolačića i o tome personalizira li oglase web lokacija koju pregledate.</translation>
 <translation id="1586541204584340881">Koje ekstenzije ste instalirali</translation>
@@ -973,6 +974,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2985306909656435243">Ako je omogućeno, Chromium će pohraniti kopiju vaše kartice na ovom uređaju za brže popunjavanje.</translation>
 <translation id="2985398929374701810">Unesite važeću adresu</translation>
 <translation id="2987034854559945715">Nema funkcija koje se podudaraju</translation>
+<translation id="2988216301273604645">Chrome ograničava količinu informacija koje web lokacije mogu koristiti kako bi vas pratile dok pregledate. Možete promijeniti postavke da odaberete vlastiti nivo zaštite.</translation>
 <translation id="2989742184762224133">Dvostruko spajanje na gornjoj strani</translation>
 <translation id="2991174974383378012">Dijeljenje s ovim web lokacijama</translation>
 <translation id="299122504639061328">Upravljajte zadanim pretraživačem i pretraživanjem web lokacija</translation>
@@ -1110,7 +1112,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3266793032086590337">Vrijednost (konflikt)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nije blokirana nijedna web lokacija, ni srodne web lokacije}=1{Blokirana je 1 web lokacija, uključujući srodne web lokacije}one{Blokirana je # web lokacija, uključujući srodne web lokacije}few{Blokirane su # web lokacije, uključujući srodne web lokacije}other{Blokirano je # web lokacija, uključujući srodne web lokacije}}</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
-<translation id="3270041629388773465">Brža naplata kada se spreme CVC-ovi</translation>
+<translation id="3270041629388773465">Nastavite na plaćanje brže kada su vaši CVC-ovi sačuvani</translation>
 <translation id="3270156322180235608">Putovanje avionom</translation>
 <translation id="3270847123878663523">&amp;Poništi preuređivanje</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> se želi povezati</translation>
@@ -1384,6 +1386,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3793574014653384240">Broj nedavnih padova aplikacija i uzroci</translation>
 <translation id="3795344968043407227">Indie i alternativna muzika</translation>
 <translation id="3799805948399000906">Font je zatražen</translation>
+<translation id="3801265110651850478">Pošalji zahtjev "Nemoj pratiti" uz saobraćaj pregledanja</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3806932344025766608">Napadači na web lokaciji koju pokušavate posjetiti vas mogu prevariti da instalirate softver ili otkrijete svoje podatke kao što su lozinka, broj telefona ili broj kreditne kartice. Chrome strogo preporučuje da se vratite na sigurne web lokacije. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Pružaoci telefonskih usluga</translation>
@@ -1654,6 +1657,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4331708818696583467">Nije sigurno</translation>
 <translation id="4333295216031073611">Lista za kupovinu</translation>
 <translation id="4333561522337981382">Upravljati prozorima na svim vašim ekranima</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="4340575312453649552">Ovaj oglas je koristio previše resursa za vaš uređaj, pa ga je Chrome uklonio.</translation>
 <translation id="4340810192899866471">Uvezi iz JSON fajla</translation>
 <translation id="4340982228985273705">Ovaj računar nije prepoznat kao računar kojim upravlja preduzeće stoga pravilo može automatski instalirati ekstenzije koje su hostirane na Chrome web trgovini. URL za ažuriranje Chrome web trgovine je "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1850,7 +1854,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4761104368405085019">Korištenje vašeg mikrofona</translation>
 <translation id="4761326898079498987">Pregledajte da vidite dodatne detalje</translation>
 <translation id="4761869838909035636">Pokrenite Sigurnosnu provjeru Chromea</translation>
-<translation id="4763196677855776703">Uvjete i odredbe prodavatelja <ph name="URL" /></translation>
+<translation id="4763196677855776703">Uslove i odredbe pruža prodavac <ph name="URL" /></translation>
 <translation id="4764680219299728632">Šporeti, ploče za kuhanje i rerne</translation>
 <translation id="4764776831041365478">Web stranica na <ph name="URL" /> je možda privremeno ugašena ili je trajno prebačena na novu web adresu.</translation>
 <translation id="4766713847338118463">Dvostruko spajanje na donjoj strani</translation>
@@ -2212,6 +2216,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5512812358367123529">Uredski namještaj</translation>
 <translation id="5513528801833998679">Koristi prijavu na uređaj</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">Većina web lokacija ne može koristiti kolačiće trećih strana kako bi vas pratile dok pregledate niti web lokacije mogu koristiti kolačiće trećih strana u anonimnom načinu rada.</translation>
 <translation id="5518670652865028077">Umjetnost i zabava</translation>
 <translation id="5519516356611866228">S vašim promjenama</translation>
 <translation id="5519696598216267194">Papir (unaprijed perforirani)</translation>
@@ -2279,7 +2284,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5633259641094592098">Kultni i indie filmovi</translation>
 <translation id="563371367637259496">Mobilna mreža</translation>
 <translation id="5635237618724097525">Pametni telefoni</translation>
-<translation id="5635478143789726479">Uvjeti i odredbe prodavatelja</translation>
+<translation id="5635478143789726479">Uslovi i odredbe prodavca</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereo sistemi i komponente</translation>
 <translation id="5644090287519800334">Pomak slike X sa strane 1</translation>
@@ -2399,7 +2404,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5911110632211230665">Otvaranje je blokirano</translation>
 <translation id="59174027418879706">Omogućeno</translation>
 <translation id="5918373444239520146">Elektronske i prenosive sprave</translation>
-<translation id="5918847752193018339">Brža naplata kada se spreme CVC-ovi. <ph name="LINK_BEGIN" />Brisanje spremljenih sigurnosnih kodova<ph name="LINK_END" /></translation>
+<translation id="5918847752193018339">Nastavite na plaćanje brže kada su vaši CVC-ovi sačuvani. <ph name="LINK_BEGIN" />Izbrišite sačuvane sigurnosne kodove<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 se koristi}one{# se koristi}few{# se koriste}other{# se koristi}}</translation>
 <translation id="592031860219554105">Klizanje na ledu</translation>
@@ -3114,6 +3119,7 @@ Dodatni detalji:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Obrađivači plaćanja</translation>
 <translation id="7367985555340314048">Teme koje vas zanimaju se zasnivaju na vašoj nedavnoj historiji pregledanja i koriste ih web lokacije da vam prikažu personalizirane oglase</translation>
+<translation id="7368169244533796604">Brisanje web lokacije</translation>
 <translation id="7372526636730851647">Foto papir (sjajni)</translation>
 <translation id="7372973238305370288">rezultat pretraživanja</translation>
 <translation id="7374461526650987610">Obrađivači protokola</translation>
@@ -3429,6 +3435,7 @@ Dodatni detalji:
 <translation id="7951415247503192394">(32-bitno)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">Dugme Upravljaj pretraživačima, aktivirajte da upravljate zadanim pretraživačem i pretraživanjem web lokacija</translation>
+<translation id="7953236668995583915">Ponovo učitajte stranicu da primijenite ažurirane postavke na ovoj web lokaciji</translation>
 <translation id="7953569069500808819">Uvez gornjeg ruba</translation>
 <translation id="7955105108888461311">Pitajte lično</translation>
 <translation id="7956713633345437162">Mobilne oznake</translation>
@@ -3477,7 +3484,7 @@ Dodatni detalji:
 <translation id="8041089156583427627">Pošaljite povratne informacije</translation>
 <translation id="8041940743680923270">Koristi opću zadanu postavku (pitaj)</translation>
 <translation id="8042577181291637092">Koristiti MIDI uređaje?</translation>
-<translation id="8043255123207491407">Pregledajte uvjete i odredbe prodavatelja</translation>
+<translation id="8043255123207491407">Pogledajte uslove i odredbe prodavca</translation>
 <translation id="8046360364391076336">Industrijski materijali i oprema</translation>
 <translation id="8052898407431791827">Kopirano u međumemoriju</translation>
 <translation id="8055534648776115597">Stručno i kontinuirano obrazovanje</translation>
@@ -3755,7 +3762,6 @@ Dodatni detalji:
 <translation id="8576310925653847813">Sistemi kućnih kina</translation>
 <translation id="8577192028579836704">Sve uobičajene opcije: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelna kartica nije dostupna</translation>
-<translation id="8585615573162100611">Ukini dozvolu <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Oprema za skvoš i reketbol</translation>
 <translation id="858637041960032120">Dodajte broj telefona</translation>
 <translation id="8589998999637048520">Najbolji kvalitet</translation>

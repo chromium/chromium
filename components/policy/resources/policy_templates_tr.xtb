@@ -2422,19 +2422,6 @@ Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa kullanıcı bu kay
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="305106159605171619">Kullanıcı aracısı kısaltma özelliği devre dışı bırakılmış ve alan denemeleri ya da kaynak denemeleri ile etkinleştirilmemiş.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Bu politika, yönetilen bir hesap, içerik alanında oturum açtıktan sonra oluşturulmuş yönetilen profile kullanıcıların mevcut tarama verilerini taşımalarına izin verilip verilmediğini kontrol eder.
-
-Bu politika ayarlanmazsa veya UserOptInData değerine ayarlanırsa kullanıcı, mevcut tarama verilerini yönetilen profile taşıyıp taşımayacağını seçebilir. Profil oluşturma iletişim kutusunda onay kutusu görünür ve varsayılan olarak kutunun işareti kaldırılmıştır.
-
-Bu politika, UserOptOutData değerine ayarlanırsa kullanıcı, mevcut tarama verilerini yönetilen profile taşıyıp taşımayacağını seçebilir. Profil oluşturma iletişim kutusunda onay kutusu görünür ve varsayılan olarak işaretlidir. Bu seçeneğe yalnızca yönetilen cihazlarda izin verilir.
-
-Bu politika, AlwaysSeparateData değerine ayarlanırsa kullanıcı, mevcut tarama verilerini yönetilen profile taşıyamaz. Profil oluşturma iletişim kutusunda onay kutusu görünmez.
-
-Mevcut tarama verilerini yönetilen profile taşımak, mevcut profilin yönetileceği anlamına gelir. Yeni profil oluşturulmaz.
-
-Mevcut tarama verilerinin yönetilen profile taşınmaması, yeni ve temiz bir profilin oluşturulacağı anlamına gelir. Mevcut tarama verileri, kullanıcının profil seçici aracılığıyla erişebileceği yönetilmeyen bir profilde kalır.
-
-Bu politikanın geçerli olması için <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> politikasının ayarlanması gerekir.</translation>
 <translation id="3063302084011279315">Ekran Kaydı'nı Devre Dışı Bırak</translation>
 <translation id="3063307261083019730"><ph name="CACHE_CONTROL_NO_STORE_NAME" /> başlığı içeren sayfaların geri-ileri önbellek içinde depolanmasına izin verme</translation>
 <translation id="3064530882228745118">Kerberos kimlik doğrulaması sırasında CNAME aramasını kullan</translation>
@@ -3237,9 +3224,18 @@ Bu politikanın ayarlanmadığı siteler için, ayarlanmışsa <ph name="DEFAULT
 <translation id="3701121231485832347"><ph name="MS_AD_NAME" /> tarafından yönetilen <ph name="PRODUCT_OS_NAME" /> cihazlara özgü ayarları kontrol eder.</translation>
 <translation id="3702518095257671450">Uzaktan onay</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Tek satırlı alanlar artık kullanılmamaktadır ve yakında kaldırılacaktır. Lütfen aşağıdaki çok satırlı metin kutusunu kullanın.)</translation>
+<translation id="3711561721191203926">Bu politika, Etkin değerine ayarlanırsa <ph name="PRIVATE_NETWORK_ACCESS" />
+kontrollerinin başarısız olması nedeniyle <ph name="DEV_TOOLS_NAME" /> içinde bir uyarı gösterilmesi gerektiğinde bunun yerine
+ana istek engellenir.
+
+Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="PRIVATE_NETWORK_ACCESS" /> uyarıları
+zorunlu kılınmaz ve istekler engellenmez.
+
+<ph name="PRIVATE_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/private-network-access/ sayfasına bakabilirsiniz.</translation>
 <translation id="3711895659073496551">Askıya al</translation>
 <translation id="3712861436661566358">Profil ayırmayı zorunlu kıl</translation>
 <translation id="3719826155360621982">Ana sayfa</translation>
+<translation id="3724039569609354541">Web sitelerinin ağ uç noktalarına istekte bulunup bulunamayacağını belirlerken varsayılan çalışma biçimini kullanın</translation>
 <translation id="372668389978450673">Bu politika doğru değerine ayarlanırsa veya yapılandırılmazsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, kullanıcı yöneticisinden yeni bir kişi eklemeye izin verir.
 
       Bu politika yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, kullanıcı yöneticisinden yeni bir kişi eklemeye izin vermez.
@@ -3699,6 +3695,7 @@ Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için 
 <translation id="408029843066770167">Google zaman hizmetini sorgulamaya izin ver</translation>
 <translation id="408076456549153854">Tarayıcıda oturum açmayı etkinleştir</translation>
 <translation id="4081127242481747676">Sensör ayarları</translation>
+<translation id="4082405593844340376">Daha özel ağ uç noktalarına yapılan isteklere kısıtlama uygulanıp uygulanmayacağını belirtir</translation>
 <translation id="4082498585300984671">Tıkla ve Ara Özelliğini Etkinleştirme</translation>
 <translation id="4082809879536562387">Beklemedeki bir güncellemenin uygulanması için bir <ph name="PRODUCT_OS_NAME" /> cihazın yeniden başlatılması gerektiğini belirten ilk bildirim ile <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> politikası tarafından belirtilen süre sonu arasındaki zamanı milisaniye cinsinden ayarlamanıza olanak tanır.
 
@@ -5506,6 +5503,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu politika, <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> ve <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" /> politikaları kullanılarak belirli URL kalıpları için geçersiz kılınabilir.
 
       Bu politika yalnızca site pano izni tarafından kontrol edilen pano işlemlerini etkiler; steril pano yazma işlemlerini veya güvenilir kopyalama ve yapıştırma işlemlerini etkilemez.</translation>
+<translation id="5650716720715977549">Daha özel ağ uç noktalarına yapılan isteklere kısıtlama uygula</translation>
 <translation id="5651538748810288218">Politikayı 1 değerine ayarlarsanız web siteleri, hareket ve ışık gibi sensörlere erişip bunları kullanabilir. Politikayı 2 değerine ayarlarsanız sensörlere erişim engellenir.
 
       Politikayı ayarlamadan bırakırsanız <ph name="ALLOW_SENSORS_POLICY_NAME" /> politikası geçerli olur. Kullanıcılar bu ayarı değiştirebilir.</translation>
@@ -9247,7 +9245,6 @@ yükleyicide "daha fazla bilgi" URL'si görünmez. Görünüyorsa https şeması
       Politika ayarlanmadan bırakılırsa politika açık kalır ve kullanıcılar bunu kapatamaz.</translation>
 <translation id="8789053142986648624">Yönetilen hesapların birincil hesap olması zorunlu tutulur ve hesap oluşturulurken kullanıcının mevcut verileri içe aktarmasına izin verilir.</translation>
 <translation id="8789338675663014675">Uzantılarla ilgili politikaları yapılandırır. Kullanıcının engellenen uzantıları, beyaz listeye alınmadığı sürece yüklemesine izin verilmez. Uzantıları <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> içinde belirterek bu uzantıların <ph name="PRODUCT_NAME" /> tarafından zorla otomatik olarak yüklenmesini de sağlayabilirsiniz. Zorunlu yüklenmiş uzantılar, engellenenler listesinde olup olmadıklarına bakılmaksızın yüklenir.</translation>
-<translation id="878964451356911302">Kullanıcılara, mevcut verilerini yönetilen profile taşımalarını öner ve taşımama seçeneği de sun</translation>
 <translation id="879697755145469671">Kapalı pencereyi algılama</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8799492680917278474">Bu politika ayarlanırsa, dakika cinsinden tanımlanmış olan süre geçtikten sonra uzaktan erişim bağlantıları otomatik olarak kesilir. Bu durum maksimum oturum süresi aşıldıktan sonra istemcinin tekrar bağlanmasına engel olmaz. Politikanın min/maks aralığında olmayan bir değere ayarlanması, ana makinenin başlamasına engel olabilir. Bu politika, uzaktan destek senaryolarını etkilemez.

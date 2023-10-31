@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Опције су доступне у дну екрана</translation>
 <translation id="7250468141469952378">Изабрали сте <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Одобрене су дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Блокирали сте сајтове да користе колачиће треће стране да би вас пратили док прегледате. Посетите подешавања да бисте <ph name="BEGIN_LINK" />управљали заштитом од праћења<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Обично блокирате обавештења. Да бисте их дозволили, додирните Детаљи.</translation>
 <translation id="7366415735885268578">Додајте сајт</translation>
 <translation id="7368695150573390554">Сви офлајн подаци ће бити избрисани</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајт}one{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајт}few{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајта}other{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајтова}}</translation>
 <translation id="857943718398505171">Дозвољено (препоручено)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
+<translation id="8649036394979866943">Chrome спречава већину сајтова да користе колачиће треће стране да би вас пратили док прегледате. Посетите подешавања да бисте <ph name="BEGIN_LINK" />управљали заштитом од праћења<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Обриши унос</translation>
 <translation id="8681886425883659911">Огласи су блокирани на сајтовима за које је познато да приказују огласе који ометају активности или обмањујуће огласе</translation>
 <translation id="868929229000858085">Претражите контакте</translation>

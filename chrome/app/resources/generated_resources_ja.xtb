@@ -4552,7 +4552,6 @@
 <translation id="4565917129334815774">システムログを保存</translation>
 <translation id="4566170377336116390">登録後に変更する場合は、デバイスを出荷時の設定にリセットする（Powerwash）必要があります。</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
-<translation id="4566762846886188693">データ保護のため、最近アクセスしていないサイトから権限を削除します。通知は停止されません。</translation>
 <translation id="456717285308019641">翻訳するページの言語</translation>
 <translation id="4567512141633030272">ログイン オプションが間違っている場合</translation>
 <translation id="4567533462991917415">セットアップが完了したら、いつでもユーザーを追加できます。ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
@@ -4773,7 +4772,6 @@
 <translation id="4742334355511750246">画像の表示を許可しないサイト</translation>
 <translation id="4742970037960872810">テキストの選択を解除</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />アプリケーションの更新方法を確認<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">アドレスバーまたは検索ボックスに入力した内容は、デフォルトの検索エンジンに送信されます</translation>
 <translation id="4744268813103118742">サイトに移動</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>

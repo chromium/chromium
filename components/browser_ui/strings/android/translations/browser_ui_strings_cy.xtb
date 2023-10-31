@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Mae opsiynau ar gael yn agos at waelod y sgrîn</translation>
 <translation id="7250468141469952378">Mae <ph name="ITEM_COUNT" /> wedi'u dewis</translation>
 <translation id="7260727271532453612">Caniateir <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Rydych wedi rhwystro gwefannau rhag defnyddio cwcis trydydd parti i'ch olrhain chi wrth i chi bori. Ewch i'r gosodiadau i <ph name="BEGIN_LINK" />reoli eich diogelwch olrhain<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Rydych fel arfer yn rhwystro hysbysiadau. I'w caniatáu, tapiwch Manylion.</translation>
 <translation id="7366415735885268578">Ychwanegu gwefan</translation>
 <translation id="7368695150573390554">Bydd unrhyw ddata all-lein yn cael eu dileu</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> wefan <ph name="FPS_OWNER" />}zero{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}two{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> wefan <ph name="FPS_OWNER" />}few{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}many{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}other{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Caniateir (argymhellir)</translation>
 <translation id="8609465669617005112">Symud i fyny</translation>
+<translation id="8649036394979866943">Mae Chrome yn cyfyngu ar y rhan fwyaf o wefannau rhag defnyddio cwcis trydydd parti i'ch olrhain wrth i chi bori. Ymweld â gosodiadau i <ph name="BEGIN_LINK" />reoli eich diogelwch olrhain<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Clirio mewnbwn</translation>
 <translation id="8681886425883659911">Mae hysbysebion yn cael eu rhwystro ar wefannau y gwyddys eu bod yn dangos hysbysebion ymwthiol neu gamarweiniol</translation>
 <translation id="868929229000858085">Chwilio eich cysylltiadau</translation>

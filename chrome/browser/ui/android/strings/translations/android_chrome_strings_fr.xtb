@@ -900,6 +900,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5753139477036638699">Vous pouvez lancer une recherche vocale dans Chrome</translation>
 <translation id="5754350196967618083">Impossible d'actualiser Discover</translation>
 <translation id="5755162682436943950">Déconnecté. Ouvre la boîte de dialogue pour se connecter et activer la synchronisation.</translation>
+<translation id="5759897675466110265">Impossible d'accéder au site ? Essayez d'autoriser temporairement les cookies tiers.</translation>
 <translation id="5763382633136178763">Onglets de navigation privée</translation>
 <translation id="5763514718066511291">Appuyez pour copier l'URL pour cette application</translation>
 <translation id="5765517223145864268">Donnez-nous votre avis ou <ph name="BEGIN_LINK" />modifiez vos paramètres<ph name="END_LINK" />.</translation>
@@ -1214,6 +1215,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="729975465115245577">Aucune application n'est installée sur votre appareil pour stocker le fichier de mots de passe.</translation>
 <translation id="7304072650267745798">Votre appareil Android peut inclure un paramètre similaire. Si ce paramètre est activé dans Chrome et sur votre appareil Android, une entreprise peut mesurer l'efficacité d'une annonce sur les sites Web que vous consultez et dans les applis que vous utilisez.</translation>
 <translation id="7304873321153398381">Hors connexion. Chrome ne parvient pas à vérifier vos mots de passe.</translation>
+<translation id="7313094438430838513">Protection contre le suivi</translation>
 <translation id="7313188324932846546">Appuyez ici pour configurer la synchronisation</translation>
 <translation id="7324354302972299151">Envoyer une requête "Do Not Track"</translation>
 <translation id="7332075081379534664">Connexion établie</translation>

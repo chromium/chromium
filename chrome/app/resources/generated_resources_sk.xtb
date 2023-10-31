@@ -4559,7 +4559,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4565917129334815774">Ukladať denníky systému</translation>
 <translation id="4566170377336116390">Ak budete chcieť po registrácii prejsť na iný spôsob, musíte obnoviť výrobné nastavenia zariadenia (funkcia Powerwash).</translation>
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
-<translation id="4566762846886188693">Ak chcete ochrániť svoje údaje, odstráňte povolenia z webov, ktoré ste v poslednom čase nenavštívili. Upozornenia sa tým nedeaktivujú.</translation>
 <translation id="456717285308019641">Jazyk stránok, ktorý chcete prekladať</translation>
 <translation id="4567512141633030272">Nesprávna možnosť prihlásenia?</translation>
 <translation id="4567533462991917415">Po nastavení môžete kedykoľvek pridať ďalších ľudí. Každá osoba si môže prispôsobiť účet a uchovať údaje v súkromí.</translation>
@@ -4780,7 +4779,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4742334355511750246">Nemôže zobrazovať obrázky</translation>
 <translation id="4742970037960872810">Odstrániť zvýraznenie</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ako aktualizovať aplikácie<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Text, ktorý zadáte v paneli s adresou alebo vyhľadávacom poli, sa odosiela vášmu predvolenému vyhľadávaču</translation>
 <translation id="4744268813103118742">Prejsť na web</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Zapnúť zvuk webu}few{Zapnúť zvuk webov}many{Zapnúť zvuk webov}other{Zapnúť zvuk webov}}</translation>

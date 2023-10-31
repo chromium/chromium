@@ -987,6 +987,7 @@
 <translation id="175772926354468439">থিম সক্ষম করুন</translation>
 <translation id="1757786065507923842">অভিভাবকের অনুমতির অনুরোধ সংক্রান্ত কারণে এটি করা যায়নি।</translation>
 <translation id="17584710573359123">Chrome ওয়েব স্টোরে দেখুন</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" />, <ph name="REMAPPING_OPTION" />-এ রিম্যাপ করা হয়েছে।</translation>
 <translation id="1761845175367251960"><ph name="NAME" />-এর অ্যাকাউন্ট</translation>
 <translation id="176272781006230109">শপিং করার জন্য সাজেশন</translation>
 <translation id="1763046204212875858">অ্যাপ্লিকেশন শর্টকাটগুলি তৈরি করুন</translation>
@@ -1366,6 +1367,7 @@
 <translation id="2037486735086318591">আপনার আশেপাশের ব্যক্তিদের থেকে ফাইল রিসিভ করতে বা পাঠাতে <ph name="FEATURE_NAME" /> সেট আপ করুন</translation>
 <translation id="2039464276165755892">অন্য কেউ শনাক্ত হলে বিজ্ঞপ্তি কন্টেন্ট লুকান</translation>
 <translation id="2040460856718599782">ওহো! আপনার যাচাইকরণের সময় কিছু ত্রুটি হয়েছিল৷ অনুগ্রহ করে আপনার লগ-ইন ক্রেডেনশিয়াল পরীক্ষা করে আবার চেষ্টা করুন৷</translation>
+<translation id="2040822390690632244">আপডেট, সহায়তা, ডেভেলপার বিকল্প</translation>
 <translation id="2040894699575719559">লোকেশন ব্লক করা হয়েছে</translation>
 <translation id="2041246176170574368">নিরাপত্তা আপডেট শীঘ্রই শেষ হবে। একটি নতুন Chromebook-এ $৫০ বা তার বেশি সেভ করুন।</translation>
 <translation id="2042279886444479655">অ্যাক্টিভ প্রোফাইল</translation>
@@ -2733,6 +2735,7 @@
 <translation id="3076977359333237641">আপনার সাইন-ইন ডেটা মুছে দেওয়া হয়েছে</translation>
 <translation id="3080933187214341848">এই নেটওয়ার্কটি আপনার অ্যাকাউন্টে সিঙ্ক করা নেই। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">এক্সটেনশন</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">আপনার নিরাপত্তা রক্ষা করতে অস্থায়ীভাবে ব্লক করুন</translation>
 <translation id="3083899879156272923">মাউসকে স্ক্রিনের মাঝখানে রেখে স্ক্রিন সরান</translation>
@@ -2892,6 +2895,7 @@
 <translation id="3229412050601871341">ডিভাইসের পাসওয়ার্ড</translation>
 <translation id="3230539834943294477">সহায়তা নিবন্ধ দেখুন অথবা ডিভাইসের সহায়তা খুঁজে দেখুন</translation>
 <translation id="3232168089952388105">আপনার ডিভাইস সম্পর্কে তথ্য শেয়ার করতে চান?</translation>
+<translation id="3232368113895801406">আপনার সুরক্ষা সম্পর্কিত পছন্দ আইসোলেটেড অ্যাপের ইনস্টলেশনের জন্য অনুমতি দেয় না। <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">ডানদিকে সারিবদ্ধ করুন</translation>
 <translation id="3232754137068452469">ওয়েব অ্যাপ</translation>
 <translation id="3233271424239923319">Linux অ্যাপ ও ফাইল ব্যাক-আপ করুন</translation>
@@ -4570,7 +4574,6 @@
 <translation id="4565917129334815774">সিস্টেম লগ সেভ করুন</translation>
 <translation id="4566170377336116390">এনরোল করার পরে পাল্টাতে চাইলে, আপনাকে ডিভাইস ফ্যাক্টরি রিসেট (পাওয়ারওয়াশ) করতে হবে।</translation>
 <translation id="4566417217121906555">মাইক্রোফোন মিউট করুন</translation>
-<translation id="4566762846886188693">আপনার ডেটা সুরক্ষিত রাখতে, এই সাইট থেকে অনুমতি সরিয়ে নেওয়া হয়েছে, যা সম্প্রতি দেখেননি। বিজ্ঞপ্তি বন্ধ করা হয় না।</translation>
 <translation id="456717285308019641">অনুবাদ করার জন্য পৃষ্ঠার ভাষা</translation>
 <translation id="4567512141633030272">সাইন-ইন বিকল্পটি ভুল?</translation>
 <translation id="4567533462991917415">সেট আপ করার পরেও যেকোনও সময় আরও লোকজন যোগ করতে পারবেন। প্রত্যেক ব্যক্তি নিজের অ্যাকাউন্ট পছন্দমতো সেট আপ করে ডেটা ব্যক্তিগত রাখতে পারবেন।</translation>
@@ -4603,6 +4606,7 @@
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-এ কোনও ডিভাইস সেভ করা নেই</translation>
 <translation id="4592891116925567110">স্টাইলাস ব্যবহার করে আঁকার অ্যাপ</translation>
 <translation id="4593021220803146968">&amp;এখানে যান <ph name="URL" /></translation>
+<translation id="4593962599442730215">আপনার পছন্দ পরিবর্তন করুন</translation>
 <translation id="4594218792629569101">আপনার তালিকার নিচে পৃষ্ঠাটি সরাতে "পড়া হয়েছে হিসেবে চিহ্নিত করুন" বিকল্পটি বেছে নিন</translation>
 <translation id="4594577641390224176">সিস্টেম সম্পর্কিত পৃষ্ঠা খুঁজছেন? দেখুন</translation>
 <translation id="4595560905247879544">অ্যাপ্লিকেশান এবং এক্সটেনশানগুলি শুধুমাত্র পরিচালক (<ph name="CUSTODIAN_NAME" />) দ্বারা পরিবর্তন করা যাবে।</translation>
@@ -4617,6 +4621,7 @@
 <translation id="460190672235687855">পাসওয়ার্ড দেখুন</translation>
 <translation id="4602466770786743961">আপনার ক্যামেরা এবং মাইক্রোফোন যেকোনো সময় অ্যাক্সেস করতে <ph name="HOST" /> কে মঞ্জুরি দেয়</translation>
 <translation id="4602776638371779614">ব্লুটুথ ডিভাইসের জন্য এই ট্যাবটি সক্রিয়ভাবে স্ক্যান করছে</translation>
+<translation id="4605026046465576953">আপনার কাছে আইসোলেটেড ওয়েব অ্যাপ চালানোর অনুমতি না থাকার কারণে এই অ্যাপ খোলা যাবে না</translation>
 <translation id="4606551464649945562">কোনও সাইটকে আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে বা ক্যামেরার অবস্থান ট্র্যাক করতে দেবেন না</translation>
 <translation id="4608500690299898628">&amp;সন্ধান করুন...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> এ সমস্যা হয়েছে</translation>
@@ -4741,6 +4746,7 @@
 <translation id="4693155481716051732">সুশি</translation>
 <translation id="4694024090038830733">অ্যাডমিনিস্ট্রেটরের দ্বারা প্রিন্টার কনফিগারেশন পরিচালিত হয়।</translation>
 <translation id="4694604912444486114">বাঁদর</translation>
+<translation id="4694820450536519583">অনুমতি</translation>
 <translation id="4695318956047767909">ডার্ক থিম, স্ক্রিন সেভার</translation>
 <translation id="4697071790493980729">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="4697551882387947560">যখন ব্রাউজিং সেশন সমাপ্ত হয়</translation>
@@ -4789,7 +4795,6 @@
 <translation id="4742334355511750246">ছবি দেখানোর অনুমতি দেওয়া হয়নি</translation>
 <translation id="4742970037960872810">হাইলাইট সরিয়ে দিন</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />অ্যাপ্লিকেশন কীভাবে আপডেট করতে হয় তা জানুন<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">অ্যাড্রেস বার অথবা সার্চ বক্সে আপনি যা টাইপ করেন সেটি আপনার ডিফল্ট সার্চ ইঞ্জিনে পাঠানো হয়</translation>
 <translation id="4744268813103118742">সাইটে যান</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{সাইট আনমিউট করুন}one{সাইট আনমিউট করুন}other{সাইট আনমিউট করুন}}</translation>
@@ -6661,6 +6666,7 @@
 <translation id="6264060420924719834">এই অ্যাপে অন্য সাইট থেকে পাওয়া ওয়েব কন্টেন্ট আছে</translation>
 <translation id="6264365405983206840">&amp;সকল বেছে নিন</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
+<translation id="6264520534872750757">ডিভাইসটি ব্যবহার করা চালিয়ে যান</translation>
 <translation id="6265159465845424232">Microsoft OneDrive-এ Microsoft-এর ফাইল কপি করা বা সরানোর আগে জিজ্ঞেস করুন</translation>
 <translation id="6265687851677020761">পোর্ট সরান</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />-এর সাথে কানেক্ট করা হচ্ছে</translation>
@@ -7426,6 +7432,7 @@
 <translation id="6876469544038980967">উপযোগী নয়</translation>
 <translation id="6878422606530379992">সেন্সর ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6880587130513028875">এই পৃষ্ঠাতে ছবিগুলি ব্লক করা হয়েছে৷</translation>
+<translation id="6881845890692344060">আপনার অ্যাডমিনিস্ট্রেটর লগ-আউট করেছেন। আপনিই এখন সবকিছু নিয়ন্ত্রণ করছেন।</translation>
 <translation id="6882210908253838664">কোনও সাইট কাজ না করলে আপনি সেটিকে থার্ড-পার্টি কুকি ব্যবহারের সাময়িক অনুমতি দিয়ে দেখতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">ওহো! সিস্টেম ডিভাইস কনফিগারেশন সংরক্ষণ করতে ব্যর্থ হয়েছে।</translation>
 <translation id="6884474387073389421">আপনি কি এই বেছে নেওয়া সাইন-ইন ডেটা সত্যিই মুছে দিতে চান?</translation>
@@ -8324,6 +8331,7 @@
 <translation id="7616214729753637086">ডিভাইস নথিভুক্ত করা হচ্ছে...</translation>
 <translation id="7617263010641145920">Play Store অ্যাপ চালু করুন</translation>
 <translation id="7617648809369507487">'কম শব্দযুক্ত মেসেজিং' বিকল্প ব্যবহার করুন</translation>
+<translation id="7619937211696316184">রক্ষণাবেক্ষণ করা হয়েছে</translation>
 <translation id="7621382409404463535">সিস্টেমটি ডিভাইস কনফিগারেশন সেভ করতে পারেনি।</translation>
 <translation id="7621480263311228380">আপনার সম্পর্কে এইসব সাইট যে তথ্য সেভ করেছে সেগুলি ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="7621595347123595643">আপনার পাসওয়ার্ড বা পিন ভুলে গেলে আপনি স্থানীয় ডেটা আগের অবস্থায় ফেরাতে পারবেন না।</translation>
@@ -9670,6 +9678,7 @@
 <translation id="8662795692588422978">লোকজন</translation>
 <translation id="8662911384982557515">আপনার হোম পৃষ্ঠাকে এতে পরিবর্তিত করুন: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome ওয়ালপেপার সেট করতে পারে না৷</translation>
+<translation id="8663051876219324457">অ্যাপ, ওয়েবসাইট এবং সিস্টেম পরিষেবাকে আপনার লোকেশন ব্যবহার করার অনুমতি দিন। আপনি কোথায় আছেন তা জানতে লোকেশন, আপনার মোবাইলের ওয়াই-ফাই, মোবাইল নেটওয়ার্ক ও সেন্সর ব্যবহার করতে পারে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" />-এ সবসময় একাধিক অটোমেটিক ডাউনলোড ব্লক করুন</translation>
 <translation id="8664389313780386848">পৃষ্ঠা উৎস &amp;দেখুন</translation>
 <translation id="8665110742939124773">আপনি একটি ভুল অ্যাক্সেস কোড লিখেছেন। আবার চেষ্টা করুন।</translation>
@@ -9762,6 +9771,7 @@
 <translation id="87254326763805752">পাসকী কনফার্ম করুন</translation>
 <translation id="8726206820263995930">সার্ভার থেকে নীতি সেটিংস নিয়ে আসার সময়ে ত্রুটি: <ph name="CLIENT_ERROR" />৷</translation>
 <translation id="8727043961453758442">Chrome থেকে সবচেয়ে বেশি সুবিধা পান</translation>
+<translation id="8727333994464775697">এই পৃষ্ঠায় যা দেখছেন তা কাস্টমাইজ করুন</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />অটোফিল মেটাডেটা<ph name="END_LINK1" /> পাঠান
           <ph name="LINE_BREAK" />
           (আপনার অটোফিল সংক্রান্ত ডেটা শেয়ার করা হবে না)</translation>

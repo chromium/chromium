@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Opções disponíveis perto da parte inferior da tela</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> itens selecionados</translation>
 <translation id="7260727271532453612">Permitidas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Você bloqueou o uso de cookies de terceiros para rastreamento durante a navegação. Acesse as configurações para <ph name="BEGIN_LINK" />gerenciar suas proteções antirrastreamento<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Você geralmente bloqueia notificações. Para permitir, toque em "Detalhes".</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7368695150573390554">Todos os dados off-line serão excluídos</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}one{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}other{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> sites de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
+<translation id="8649036394979866943">O Chrome impede que a maioria dos sites use cookies de terceiros para rastrear você durante a navegação. Acesse as configurações para <ph name="BEGIN_LINK" />gerenciar suas proteções antirrastreamento<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Limpar entrada</translation>
 <translation id="8681886425883659911">A publicidade é bloqueada em sites que mostram anúncios invasivos ou enganosos</translation>
 <translation id="868929229000858085">Pesquisar seus contatos</translation>

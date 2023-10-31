@@ -900,6 +900,7 @@
 <translation id="5753139477036638699">您可在 Chrome 中使用语音进行搜索</translation>
 <translation id="5754350196967618083">无法刷新“探索”</translation>
 <translation id="5755162682436943950">已退出。打开对话框即可登录并开启同步功能。</translation>
+<translation id="5759897675466110265">网站无法正常运行？尝试暂时允许使用第三方 Cookie</translation>
 <translation id="5763382633136178763">无痕模式标签页</translation>
 <translation id="5763514718066511291">点按即可复制该应用的网址</translation>
 <translation id="5765517223145864268">与我们分享您的体验。或者，<ph name="BEGIN_LINK" />更改您的设置<ph name="END_LINK" />。</translation>
@@ -1214,6 +1215,7 @@
 <translation id="729975465115245577">您的设备上没有可以存储密码文件的应用。</translation>
 <translation id="7304072650267745798">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了这项设置，相关公司或许就能在您访问的网站和使用的应用中衡量广告的效果。</translation>
 <translation id="7304873321153398381">设备已离线。Chrome 无法检查您的密码。</translation>
+<translation id="7313094438430838513">已开启跟踪保护</translation>
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
 <translation id="7332075081379534664">登录成功</translation>

@@ -1110,6 +1110,7 @@
 <translation id="3266793032086590337">Значення (конфліктне)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Не заблоковано на жодному сайті, зокрема на пов’язаних}=1{Заблоковано на 1 сайті, зокрема на пов’язаних}one{Заблоковано на # сайті, зокрема на пов’язаних}few{Заблоковано на # сайтах, зокрема на пов’язаних}many{Заблоковано на # сайтах, зокрема на пов’язаних}other{Заблоковано на # сайту, зокрема на пов’язаних}}</translation>
 <translation id="3268451620468152448">Відкриті вкладки</translation>
+<translation id="3270041629388773465">Оплачуйте покупки швидше за допомогою збережених кодів CVC</translation>
 <translation id="3270156322180235608">Авіаподорожі</translation>
 <translation id="3270847123878663523">&amp;Відмінити перевпорядкування</translation>
 <translation id="3271648667212143903">Сайт <ph name="ORIGIN" /> хоче підключитися</translation>
@@ -1849,6 +1850,7 @@
 <translation id="4761104368405085019">Використовувати ваш мікрофон</translation>
 <translation id="4761326898079498987">Переглянути деталі</translation>
 <translation id="4761869838909035636">Виконати перевірку безпеки Chrome</translation>
+<translation id="4763196677855776703">Умови використання, надані продавцем (<ph name="URL" />)</translation>
 <translation id="4764680219299728632">Кухонні плити, варильні поверхні й духові печі</translation>
 <translation id="4764776831041365478">Веб-сторінка за адресою <ph name="URL" /> може бути тимчасово недоступною або її назавжди переміщено на нову веб-адресу.</translation>
 <translation id="4766713847338118463">Двічі скріпити внизу</translation>
@@ -2277,6 +2279,7 @@
 <translation id="5633259641094592098">Культові й альтернативні фільми</translation>
 <translation id="563371367637259496">Мобільна</translation>
 <translation id="5635237618724097525">Смартфони</translation>
+<translation id="5635478143789726479">Умови використання продавця</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стереосистеми і їх компоненти</translation>
 <translation id="5644090287519800334">Горизонтальний зсув сторони 1 зображення</translation>
@@ -2396,6 +2399,7 @@
 <translation id="5911110632211230665">Неможливо відкрити</translation>
 <translation id="59174027418879706">Увімкнено</translation>
 <translation id="5918373444239520146">Гаджети й портативні електронні пристрої</translation>
+<translation id="5918847752193018339">Оплачуйте покупки швидше за допомогою збережених кодів CVC. <ph name="LINK_BEGIN" />Видалити збережені коди безпеки<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Використовується 1 файл}one{Використовується # файл}few{Використовуються # файли}many{Використовуються # файлів}other{Використовуються # файлу}}</translation>
 <translation id="592031860219554105">Катання на ковзанах</translation>
@@ -3473,6 +3477,7 @@
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8041940743680923270">Використовувати глобальне налаштування за умовчанням (Запитувати)</translation>
 <translation id="8042577181291637092">Використовувати пристрої MIDI?</translation>
+<translation id="8043255123207491407">Переглянути умови використання продавця</translation>
 <translation id="8046360364391076336">Промислові матеріали й обладнання</translation>
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
 <translation id="8055534648776115597">Професійно-технічна й післядипломна освіта</translation>
@@ -3750,7 +3755,6 @@
 <translation id="8576310925653847813">Системи домашнього кінотеатру</translation>
 <translation id="8577192028579836704">Зазвичай <ph name="TYPICAL_PRICE" /> для всіх варіантів</translation>
 <translation id="8577348305244205642">Віртуальна картка недоступна</translation>
-<translation id="8585615573162100611">Відкликати такий дозвіл: <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Обладнання для сквошу й ракетболу</translation>
 <translation id="858637041960032120">Додати тел.номер
 </translation>

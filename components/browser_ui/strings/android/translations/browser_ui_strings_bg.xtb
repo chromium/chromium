@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Опциите са в долната част на екрана</translation>
 <translation id="7250468141469952378">Избрани: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Достъпът до <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> е разрешен</translation>
+<translation id="7284451015630589124">Блокирали сте сайтовете така, че да не използват „бисквитки“ на трети страни, за да ви проследяват, докато сърфирате. Отворете настройките, за да <ph name="BEGIN_LINK" />управлявате защитата от проследяване<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Обикновено блокирате известията. За да разрешите, докоснете „Подробности“.</translation>
 <translation id="7366415735885268578">Добавяне на сайт</translation>
 <translation id="7368695150573390554">Всички офлайн данни ще бъдат изтрити</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{„Бисквитките“ са разрешени за <ph name="FPS_MEMBERS_COUNT" /> сайт на <ph name="FPS_OWNER" />}other{„Бисквитките“ са разрешени за <ph name="FPS_MEMBERS_COUNT" /> сайта на <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Разрешено (препоръчително)</translation>
 <translation id="8609465669617005112">Придвижване нагоре</translation>
+<translation id="8649036394979866943">Chrome ограничава повечето сайтове така, че да не използват „бисквитки“ на трети страни, за да ви проследяват, докато сърфирате. Отворете настройките, за да <ph name="BEGIN_LINK" />управлявате защитата от проследяване<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Изчистване на въведеното</translation>
 <translation id="8681886425883659911">Рекламите са блокирани на сайтовете, за които е известно, че показват натрапчиви или подвеждащи реклами</translation>
 <translation id="868929229000858085">Търсене в контактите ви</translation>

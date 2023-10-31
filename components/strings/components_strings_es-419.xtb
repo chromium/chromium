@@ -1111,6 +1111,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3266793032086590337">Valor (en conflicto)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{No se bloqueó ningún sitio, incluidos los sitios relacionados}=1{Se bloqueó 1 sitio, incluidos los sitios relacionados}other{Se bloquearon # sitios, incluidos los sitios relacionados}}</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
+<translation id="3270041629388773465">Guarda tus CVCs para finalizar tus compras más rápido</translation>
 <translation id="3270156322180235608">Vuelos</translation>
 <translation id="3270847123878663523">&amp;Deshacer Reorganizar</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> desea conectarse</translation>
@@ -1850,6 +1851,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4761104368405085019">Usar tu micrófono</translation>
 <translation id="4761326898079498987">Revisa las acciones para obtener más detalles</translation>
 <translation id="4761869838909035636">Ejecutar la Verificación de seguridad de Chrome</translation>
+<translation id="4763196677855776703">Términos y condiciones proporcionados por <ph name="URL" /></translation>
 <translation id="4764680219299728632">Cocinas, cocinas encimeras y hornos</translation>
 <translation id="4764776831041365478">Es posible que la página web en <ph name="URL" /> no funcione temporalmente o se haya trasladado de manera permanente a una nueva dirección web.</translation>
 <translation id="4766713847338118463">Grapas dobles en la parte inferior</translation>
@@ -2278,6 +2280,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5633259641094592098">Películas independientes y de culto</translation>
 <translation id="563371367637259496">Móvil</translation>
 <translation id="5635237618724097525">Smartphones</translation>
+<translation id="5635478143789726479">Términos y condiciones del vendedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Sistemas y componentes estéreo</translation>
 <translation id="5644090287519800334">Cambio en el eje X del lado 1 de la imagen</translation>
@@ -2397,6 +2400,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5911110632211230665">Se bloqueó la opción para abrir archivos</translation>
 <translation id="59174027418879706">Habilitado</translation>
 <translation id="5918373444239520146">Gadgets y dispositivos electrónicos portátiles</translation>
+<translation id="5918847752193018339">Guarda tus CVCs para finalizar tus compras más rápido. <ph name="LINK_BEGIN" />Borrar los códigos de seguridad guardados<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en uso}other{# en uso}}</translation>
 <translation id="592031860219554105">Patinaje sobre hielo</translation>
@@ -3474,6 +3478,7 @@ Detalles adicionales:
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="8041940743680923270">Usar configuración global predeterminada (Preguntar)</translation>
 <translation id="8042577181291637092">¿Quieres usar dispositivos MIDI?</translation>
+<translation id="8043255123207491407">Ver los términos y condiciones del vendedor</translation>
 <translation id="8046360364391076336">Materiales y equipos industriales</translation>
 <translation id="8052898407431791827">Se copió el elemento en el portapapeles</translation>
 <translation id="8055534648776115597">Enseñanza profesional y formación continua</translation>
@@ -3751,7 +3756,6 @@ Detalles adicionales:
 <translation id="8576310925653847813">Sistemas de Home Theater</translation>
 <translation id="8577192028579836704">El precio habitual de todas las opciones es <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">La tarjeta virtual no está disponible</translation>
-<translation id="8585615573162100611">Dejar de permitir <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Equipo para squash y raquetbol</translation>
 <translation id="858637041960032120">Agregar teléfono
 </translation>

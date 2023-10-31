@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Дэлгэцийн доод хэсэгт сонголт боломжтой</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />-г сонгосон</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г зөвшөөрсөн</translation>
+<translation id="7284451015630589124">Таныг үзэх үед хянахын тулд гуравдагч талын күүкиг ашиглахыг сайтуудаас блоклосон. <ph name="BEGIN_LINK" />Хяналтын хамгаалалтаа удирдахын<ph name="END_LINK" /> тулд тохиргоонд зочилно уу.</translation>
 <translation id="7302486331832100261">Та ихэвчлэн мэдэгдлийг хориглодог. Зөвшөөрөхийн тулд Дэлгэрэнгүй мэдээлэл дээр товшино уу.</translation>
 <translation id="7366415735885268578">Сайт нэмэх</translation>
 <translation id="7368695150573390554">Аливаа офлайн өгөгдлийг устгана</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}other{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}}</translation>
 <translation id="857943718398505171">Зөвшөөрөгдсөн (санал болгосон)</translation>
 <translation id="8609465669617005112">Дээш зөөх</translation>
+<translation id="8649036394979866943">Chrome таныг үзэх үед хянахын тулд ихэнх сайтыг гуравдагч талын күүкиг ашиглахыг хязгаарлана. <ph name="BEGIN_LINK" />Хяналтын хамгаалалтаа удирдахын<ph name="END_LINK" /> тулд тохиргоонд зочилно уу</translation>
 <translation id="8676374126336081632">Оролтыг цэвэрлэх</translation>
 <translation id="8681886425883659911">Төвөгтэй эсвэл төөрөгдүүлсэн зар үзүүлдэг сайтууд дээр зарыг блоклосон</translation>
 <translation id="868929229000858085">Харилцагчдаа хайх</translation>

@@ -311,6 +311,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1574714699824202614">Makseviisi kinnitamine</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Ei aegu</translation>
 <translation id="1583429793053364125">Veebilehe kuvamisel läks midagi valesti.</translation>
 <translation id="1584492003828271317">Sirvimisel kuvatavate reklaamide isikupärastamine oleneb sellest seadest, saidi soovitatud reklaamidest, teie küpsisefailide seadetest ja sellest, kas kuvatud sait isikupärastab reklaame.</translation>
 <translation id="1586541204584340881">Millised laiendused olete installinud</translation>
@@ -973,6 +974,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2985306909656435243">Kui see on lubatud, salvestab Chromium teie kaardi koopia vormide kiiremaks täitmiseks sellesse seadmesse.</translation>
 <translation id="2985398929374701810">Sisestage kehtiv aadress</translation>
 <translation id="2987034854559945715">Sobivaid funktsioone ei leitud</translation>
+<translation id="2988216301273604645">Chrome piirab teabe hulka, mida saidid saavad teie sirvimise ajal jälgida. Saate muuta oma seadeid, et valida oma kaitsetase.</translation>
 <translation id="2989742184762224133">Kaks kirjaklambrit ülal</translation>
 <translation id="2991174974383378012">Veebisaitidega jagamine</translation>
 <translation id="299122504639061328">Vaikeotsingumootori ja -saidiotsingu haldamine</translation>
@@ -1384,6 +1386,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3793574014653384240">Hiljutiste krahhide arv ja põhjused</translation>
 <translation id="3795344968043407227">Indie- ja alternatiivmuusika</translation>
 <translation id="3799805948399000906">Taotleti fonti</translation>
+<translation id="3801265110651850478">Saada sirvimisliikluse kohta taotlus „Ära jälgi”</translation>
 <translation id="380329542618494757">Nimi</translation>
 <translation id="3806932344025766608">Saidil, mida proovite külastada, võivad ründajad meelitada teid kahjulikku tarkvara installima või näiteks parooli, telefoni- või krediitkaardinumbrit avaldama. Chrome soovitab tungivalt turvalisse keskkonda naasta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Telefoniteenuse pakkujad</translation>
@@ -1654,6 +1657,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4331708818696583467">Pole turvaline</translation>
 <translation id="4333295216031073611">Ostunimekiri</translation>
 <translation id="4333561522337981382">hallata aknaid kõikidel teie ekraanidel.</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Aegub homme}other{Aegub # päeva pärast}}</translation>
 <translation id="4340575312453649552">See reklaam kasutas teie seadmes liiga palju ressursse, seetõttu Chrome eemaldas selle.</translation>
 <translation id="4340810192899866471">Impordi JSON-ist</translation>
 <translation id="4340982228985273705">Tuvastati, et tegemist ei ole ettevõtte hallatava arvutiga, seega saab reegel installida ainult Chrome'i veebipoes hostitavaid laiendusi. Chrome'i veebipoe värskenduse URL on „<ph name="CWS_UPDATE_URL" />”.</translation>
@@ -2212,6 +2216,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5512812358367123529">Kontorimööbel</translation>
 <translation id="5513528801833998679">Kasuta seadmesse sisselogimist</translation>
 <translation id="5515388687005870733">55 × 85 mm</translation>
+<translation id="5518352028556756716">Enamik saite ei saa kasutada kolmanda osapoole küpsisefaile teie sirvimise ajal jälgimiseks ja saidid ei saa inkognito režiimis kasutada kolmanda osapoole küpsisefaile.</translation>
 <translation id="5518670652865028077">Kunst ja meelelahutus</translation>
 <translation id="5519516356611866228">Koos teie tehtud muudatustega</translation>
 <translation id="5519696598216267194">Paber (augustatud)</translation>
@@ -3114,6 +3119,7 @@ Lisateave:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Maksetöötlejad</translation>
 <translation id="7367985555340314048">Huvipakkuvad teemad põhinevad teie hiljutisel sirvimisajalool ja saidid kasutavad neid teile isikupärastatud reklaamide näitamiseks.</translation>
+<translation id="7368169244533796604">Kustuta sait</translation>
 <translation id="7372526636730851647">Foto (läikega)</translation>
 <translation id="7372973238305370288">otsingutulemus</translation>
 <translation id="7374461526650987610">Protokollitöötlejad</translation>
@@ -3429,6 +3435,7 @@ Lisateave:
 <translation id="7951415247503192394">(32-bitine)</translation>
 <translation id="7952192831285741665">Euroopa EDP</translation>
 <translation id="7952327717479677595">Nupp Otsingumootorite haldamine, aktiveerige nupp vaikeotsingumootori ja -saidiotsingu haldamiseks</translation>
+<translation id="7953236668995583915">Laadige see leht uuesti, et rakendada värskendatud seaded sellel saidil</translation>
 <translation id="7953569069500808819">Õmblus ülaservas</translation>
 <translation id="7955105108888461311">Küsi isiklikult</translation>
 <translation id="7956713633345437162">Mobiili järjehoidjad</translation>
@@ -3755,7 +3762,6 @@ Lisateave:
 <translation id="8576310925653847813">Kodukinosüsteemid</translation>
 <translation id="8577192028579836704">Kõigi valikute tavaline hind on <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuaalkaart pole saadaval</translation>
-<translation id="8585615573162100611">Lõpeta <ph name="PERMISSION" /> lubamine</translation>
 <translation id="8586082901536468629">Squashi- ja reketpallivarustus</translation>
 <translation id="858637041960032120">Lisage telefoninumber</translation>
 <translation id="8589998999637048520">Parim kvaliteet</translation>

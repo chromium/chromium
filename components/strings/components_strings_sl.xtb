@@ -311,6 +311,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1574714699824202614">Preverjanje plačilnega sredstva</translation>
 <translation id="1576277203042721907">Vpogledi v Nakupovanje</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Ne poteče</translation>
 <translation id="1583429793053364125">Med prikazom spletne strani je prišlo do napake.</translation>
 <translation id="1584492003828271317">Ali je med brskanjem oglas, ki je prikazan, osebno prilagojen, je odvisno od te nastavitve, nastavitve oglasov, ki jih predlaga spletno mesto, nastavitev piškotkov in od tega, ali spletno mesto, ki si ga ogledujete, osebno prilagaja oglase.</translation>
 <translation id="1586541204584340881">Katere razširitve ste namestili</translation>
@@ -973,6 +974,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2985306909656435243">Če je to omogočeno, Chromium shrani kopijo kartice v tej napravi zaradi hitrejšega izpolnjevanja obrazcev.</translation>
 <translation id="2985398929374701810">Vnesite veljaven naslov</translation>
 <translation id="2987034854559945715">Ni ustreznih funkcij</translation>
+<translation id="2988216301273604645">Chrome omejuje količino podatkov, ki jih lahko spletna mesta uporabijo, da vam sledijo med brskanjem. Nastavitve lahko spremenite tako, da izberete svojo raven zaščite.</translation>
 <translation id="2989742184762224133">Dvojno spenjanje zgoraj</translation>
 <translation id="2991174974383378012">Deljenje s spletnimi mesti</translation>
 <translation id="299122504639061328">Upravljanje privzetega iskalnika in iskanja po spletnih mestih</translation>
@@ -1384,6 +1386,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3793574014653384240">Številke in vzroki razširitev, do katerih je prišlo nedavno</translation>
 <translation id="3795344968043407227">Indie in alternativna glasba</translation>
 <translation id="3799805948399000906">Zahtevana pisava</translation>
+<translation id="3801265110651850478">S prometom brskanja pošlji zahtevo »Do Not Track«</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3806932344025766608">Napadalci na spletnem mestu, ki ga poskušate obiskati, vas lahko zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so geslo, telefonska številka ali številka kreditne kartice. Chrome zelo priporoča, da se vrnete na varno. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Ponudniki telefonskih storitev</translation>
@@ -1654,6 +1657,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4331708818696583467">Ni varno</translation>
 <translation id="4333295216031073611">Nakupovalni seznam</translation>
 <translation id="4333561522337981382">Upravljati okna na vseh zaslonih</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
 <translation id="4340575312453649552">Ta oglas je uporabljal preveč sredstev za napravo, zato ga je Chrome odstranil.</translation>
 <translation id="4340810192899866471">Uvozi iz oblike JSON</translation>
 <translation id="4340982228985273705">Ta računalnik ni zaznan kot računalnik, ki ga upravlja podjetje, zato lahko pravilnik samodejno namesti samo razširitve, ki gostujejo v Spletni trgovini Chrome. URL za posodobitve v Spletni trgovini Chrome je »<ph name="CWS_UPDATE_URL" />«.</translation>
@@ -2212,6 +2216,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5512812358367123529">Pisarniško pohištvo</translation>
 <translation id="5513528801833998679">Uporaba prijave v napravi</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">Večina spletnih mest vam s piškotki tretjih oseb ne more slediti med brskanjem in spletna mesta ne morejo uporabljati piškotkov tretjih oseb v anonimnem načinu.</translation>
 <translation id="5518670652865028077">Umetnost in zabava</translation>
 <translation id="5519516356611866228">Z vašimi spremembami</translation>
 <translation id="5519696598216267194">Paper (Prepunched)</translation>
@@ -3114,6 +3119,7 @@ Dodatne podrobnosti:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Rutine za obravnavo plačil</translation>
 <translation id="7367985555340314048">Teme zanimanja temeljijo na nedavni zgodovini brskanja in jih spletna mesta uporabljajo za prikazovanje osebno prilagojenih oglasov.</translation>
+<translation id="7368169244533796604">Izbris spletnega mesta</translation>
 <translation id="7372526636730851647">Photo (Glossy)</translation>
 <translation id="7372973238305370288">rezultat iskanja</translation>
 <translation id="7374461526650987610">Rutine za obravnavanje protokolov</translation>
@@ -3429,6 +3435,7 @@ Dodatne podrobnosti:
 <translation id="7951415247503192394">(32-bitno)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">Gumb za upravljanje iskalnikov, aktivirajte, če želite upravljati privzeti iskalnik in iskanje po spletnih mestih</translation>
+<translation id="7953236668995583915">Znova naložite to stran, če želite uporabiti posodobljene nastavitve na tem spletnem mestu</translation>
 <translation id="7953569069500808819">Robni šiv zgoraj</translation>
 <translation id="7955105108888461311">Vprašajte osebno</translation>
 <translation id="7956713633345437162">Mobilni zaznamki</translation>
@@ -3755,7 +3762,6 @@ Dodatne podrobnosti:
 <translation id="8576310925653847813">Sistemi za domači kino</translation>
 <translation id="8577192028579836704">Vse možnosti običajno stanejo <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtualna kartica ni na voljo</translation>
-<translation id="8585615573162100611">Ne dovoli več tega: <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Oprema za skvoš</translation>
 <translation id="858637041960032120">Dodajte tel. št. </translation>
 <translation id="8589998999637048520">Najboljša kakovost</translation>

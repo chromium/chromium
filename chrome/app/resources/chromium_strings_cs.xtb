@@ -230,6 +230,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="549669000822060376">Počkejte prosím, než Chromium nainstaluje nejnovější aktualizace systému.</translation>
 <translation id="5496810170689441661">Chromium se pokouší upravit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="5527463683072221100">Otevírat soubory PDF v Chromiu</translation>
+<translation id="555273495373124701">Pokud data prohlížeče Chromium chcete synchronizovat mezi zařízeními, přihlaste se</translation>
 <translation id="5614091477838198795">Když zapnete tuto možnost, budete také odhlášeni z Chromia</translation>
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozici aktualizace prohlížeče Chromium}=1{Je k dispozici aktualizace prohlížeče Chromium}few{Již # dny je k dispozici aktualizace prohlížeče Chromium}many{Již # dne je k dispozici aktualizace prohlížeče Chromium}other{Již # dní je k dispozici aktualizace prohlížeče Chromium}}</translation>
 <translation id="5643865575100044307">Při zavření prohlížeče Chromium ze zařízení vždy vymazat data webů</translation>
@@ -368,6 +369,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7682601070171973634">Chromium zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně dat</translation>
 <translation id="7686590090926151193">Chromium není vaším výchozím prohlížečem</translation>
 <translation id="7689606757190482937">Synchronizujte a upravte si Chromium na různých zařízeních</translation>
+<translation id="7699779824407626136">Aktualizace prohlížeče Chromium</translation>
 <translation id="7745317241717453663">Ze zařízení budou smazány vaše údaje o prohlížení. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalační soubor nemohl vytvořit dočasný adresář. Zkontrolujte prosím volné místo na disku a povolení instalovat software.</translation>
 <translation id="7786760609782648049">Zrychlete svůj prohlížeč Chromium</translation>

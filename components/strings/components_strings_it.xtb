@@ -311,6 +311,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1574714699824202614">Verifica del metodo di pagamento in corso…</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Non ha scadenza</translation>
 <translation id="1583429793053364125">Si è verificato un problema durante la visualizzazione della pagina web.</translation>
 <translation id="1584492003828271317">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli annunci suggeriti dai siti, dalle impostazioni dei cookie e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
 <translation id="1586541204584340881">Le estensioni che hai installato</translation>
@@ -973,6 +974,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2985306909656435243">Se questa opzione viene attivata, Chromium memorizza una copia della carta sul dispositivo per velocizzare la compilazione dei moduli.</translation>
 <translation id="2985398929374701810">Inserisci un indirizzo valido</translation>
 <translation id="2987034854559945715">Nessuna funzionalità corrispondente</translation>
+<translation id="2988216301273604645">Chrome limita la quantità di informazioni che i siti possono usare per monitorare la tua navigazione. Puoi modificare le impostazioni per scegliere il tuo livello di protezione.</translation>
 <translation id="2989742184762224133">Doppia pinzatura in alto</translation>
 <translation id="2991174974383378012">Condivisione con i siti web</translation>
 <translation id="299122504639061328">Gestisci il motore di ricerca predefinito e la ricerca su siti</translation>
@@ -1381,6 +1383,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3793574014653384240">Numero e cause degli arresti anomali che si sono verificati di recente</translation>
 <translation id="3795344968043407227">Musica indie e alternativa</translation>
 <translation id="3799805948399000906">Nome carattere richiesto</translation>
+<translation id="3801265110651850478">Invia una richiesta "Do Not Track" con il tuo traffico di navigazione</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3806932344025766608">Gli utenti malintenzionati sul sito che stai cercando di visitare potrebbero indurti con l'inganno a installare software o a rivelare informazioni come la password, il numero di telefono o della carta di credito. Chrome consiglia vivamente di tornare indietro. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Fornitori di servizi di telefonia</translation>
@@ -1651,6 +1654,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4331708818696583467">Non sicuro</translation>
 <translation id="4333295216031073611">Lista della spesa</translation>
 <translation id="4333561522337981382">Gestire le finestre su tutti i tuoi schermi</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Scade domani}other{Scade tra # giorni}}</translation>
 <translation id="4340575312453649552">Questo annuncio usava troppe risorse per il tuo dispositivo, pertanto Chrome l'ha rimosso.</translation>
 <translation id="4340810192899866471">Importa da JSON</translation>
 <translation id="4340982228985273705">Questo computer sembra non essere gestito dall'azienda, pertanto la norma consente di installare automaticamente soltanto le estensioni ospitate sul Chrome Web Store. L'URL di aggiornamento del Chrome Web Store è "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2209,6 +2213,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5512812358367123529">Arredamento per ufficio</translation>
 <translation id="5513528801833998679">Usa accesso al dispositivo</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">La maggior parte dei siti non può utilizzare cookie di terze parti per monitorare la tua navigazione e i siti non possono utilizzare i cookie di terze parti in modalità di navigazione in incognito.</translation>
 <translation id="5518670652865028077">Arti e intrattenimento</translation>
 <translation id="5519516356611866228">Con le tue modifiche</translation>
 <translation id="5519696598216267194">Carta (preforata)</translation>
@@ -3110,6 +3115,7 @@ Ulteriori dettagli:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Gestori dei pagamenti</translation>
 <translation id="7367985555340314048">Gli argomenti di interesse si basano sulla tua recente cronologia di navigazione e sono utilizzati dai siti per mostrarti annunci personalizzati</translation>
+<translation id="7368169244533796604">Elimina sito</translation>
 <translation id="7372526636730851647">Foto (patinata)</translation>
 <translation id="7372973238305370288">risultato della ricerca</translation>
 <translation id="7374461526650987610">Gestori di protocollo</translation>
@@ -3425,6 +3431,7 @@ Ulteriori dettagli:
 <translation id="7951415247503192394">(a 32 bit)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">Pulsante Gestisci motori di ricerca, attiva per gestire il motore di ricerca predefinito e la ricerca su siti</translation>
+<translation id="7953236668995583915">Ricarica la pagina per applicare le impostazioni aggiornate a questo sito</translation>
 <translation id="7953569069500808819">Impuntura in alto</translation>
 <translation id="7955105108888461311">Chiedi di persona</translation>
 <translation id="7956713633345437162">Preferiti su disp. mobili</translation>
@@ -3752,7 +3759,6 @@ Ulteriori dettagli:
 <translation id="8576310925653847813">Sistemi home theater</translation>
 <translation id="8577192028579836704">Tutte le opzioni in genere <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Carta virtuale non disponibile</translation>
-<translation id="8585615573162100611">Non consentire più l'accesso a <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Attrezzature e articoli per squash e racquetball</translation>
 <translation id="858637041960032120">Aggiungi telefono</translation>
 <translation id="8589998999637048520">Migliore qualità</translation>

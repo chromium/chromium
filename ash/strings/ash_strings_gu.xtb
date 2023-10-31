@@ -116,12 +116,14 @@
 <translation id="1391102559483454063">ચાલુ</translation>
 <translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. તારીખો વચ્ચે નૅવિગેટ કરવા માટે, ઍરો કીનો ઉપયોગ કરો.</translation>
+<translation id="141170878022560212">વચ્ચેનું બટન</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ઇન્સ્ટૉલ કરેલી ઍપ</translation>
 <translation id="1414919006379339073">વર્તમાન વિન્ડો બંધ કરો</translation>
 <translation id="1415846719612499304">નેટવર્કની સૂચિ બતાવો. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">નોટિફિકેશન ક્રિયા કરવા માટે ઉપકરણને અનલૉક કરો</translation>
 <translation id="1420408895951708260">રાત્રિ પ્રકાશને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">હા</translation>
+<translation id="1435537621343861112">ડિક્ટેશન શરુ કરી શકતા નથી. તમારું માઇક બંધ છે.</translation>
 <translation id="1455242230282523554">ભાષા સેટિંગ બતાવો</translation>
 <translation id="1460620680449458626">વૉલ્યૂમ મ્યૂટ કરેલું છે.</translation>
 <translation id="14648076227129703">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
@@ -281,6 +283,7 @@
 <translation id="2086334242442703436">ઇમોજી પિકર ખોલો</translation>
 <translation id="2088116547584365419">ગેમ</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
+<translation id="2107581415810719320">અન્ય બટન <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">તમારો USB-C કેબલ Thunderboltને સપોર્ટ આપતો નથી. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="2108303511227308752">Alt કી + Backspace કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Delete કીનો ઉપયોગ કરવા માટે <ph name="LAUNCHER_KEY_NAME" /> કી + backspace કી દબાવો.</translation>
 <translation id="2126242104232412123">નવું ડેસ્ક</translation>

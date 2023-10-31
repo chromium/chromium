@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">ທາງ​ເລືອກ​ມີ​ໃຫ້​ໃກ້​ປຸ່ມ​ຂອງ​ໜ້າ​ຈໍ</translation>
 <translation id="7250468141469952378">ເລືອກ <ph name="ITEM_COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="7260727271532453612">ອະນຸຍາດ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ແລ້ວ</translation>
+<translation id="7284451015630589124">ທ່ານໄດ້ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ. ກະລຸນາເຂົ້າໄປການຕັ້ງຄ່າເພື່ອ <ph name="BEGIN_LINK" />ຈັດການການປົກປ້ອງການຕິດຕາມຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">ໂດຍປົກກະຕິແລ້ວທ່ານບລັອກການແຈ້ງເຕືອນ. ເພື່ອອະນຸຍາດ, ກະລຸນາແຕະລາຍລະອຽດ.</translation>
 <translation id="7366415735885268578">ເພີ່ມເວັບໄຊ</translation>
 <translation id="7368695150573390554">ຂໍ້ມູນອອບລາຍໃດກໍຕາມຈະຖືກລຶບອອກ</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ເວັບໄຊແລ້ວ}other{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ເວັບໄຊແລ້ວ}}</translation>
 <translation id="857943718398505171">ອະ​ນຸ​ຍາດ​ແລ້ວ (ແນະ​ນຳ​ໃຫ້)</translation>
 <translation id="8609465669617005112">ຍ້າຍຂຶ້ນ</translation>
+<translation id="8649036394979866943">Chrome ຈຳກັດບໍ່ໃຫ້ເວັບໄຊສ່ວນໃຫຍ່ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ. ກະລຸນາເຂົ້າໄປການຕັ້ງຄ່າເພື່ອ <ph name="BEGIN_LINK" />ຈັດການການປົກປ້ອງການຕິດຕາມຂອງທ່ານ<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">ລຶບການປ້ອນເຂົ້າ</translation>
 <translation id="8681886425883659911">ໂຄສະນາຖືກບລັອກຢູ່ໃນເວັບໄຊທີ່ຮູ້ຈັກເພື່ອສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ເຮັດໃຫ້ເຂົ້າໃຈຜິດ</translation>
 <translation id="868929229000858085">ຊອກຫາລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ</translation>

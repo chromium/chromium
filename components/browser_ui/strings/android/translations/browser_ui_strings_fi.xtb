@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Asetukset löytyvät näytön alalaidasta.</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valittu</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> sallittu</translation>
+<translation id="7284451015630589124">Olet estänyt sivustoja seuraamasta sinua verkossa kolmansien osapuolten evästeiden avulla. Siirry asetuksiin, niin voit <ph name="BEGIN_LINK" />ylläpitää seurannan estoa<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Estät yleensä ilmoitukset. Voit sallia ne valitsemalla Tiedot.</translation>
 <translation id="7366415735885268578">Lisää sivusto</translation>
 <translation id="7368695150573390554">Kaikki offline-data poistetaan</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-sivustolla}other{Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-sivustolla}}</translation>
 <translation id="857943718398505171">Sallittu (suositus)</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
+<translation id="8649036394979866943">Chrome estää useimpia sivustoja seuraamasta sinua selaamisen aikana kolmansien osapuolten evästeiden avulla. Siirry asetuksiin, niin voit <ph name="BEGIN_LINK" />ylläpitää seurannan estoa<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Tyhjennä teksti</translation>
 <translation id="8681886425883659911">Mainokset estetään sivustoilla, joiden tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="868929229000858085">Hae yhteystiedoistasi</translation>

@@ -2450,19 +2450,6 @@ El usuario puede establecer la imagen de avatar de cualquiera de estas opciones 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="305106159605171619">Se inhabilita la reducción de usuario-agente, y las pruebas de campo o de origen no la habilitan</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Esta política controla si los usuarios pueden incorporar datos de navegación existentes en un perfil administrado que se crea después de que acceda una cuenta administrada al área de contenido.
-
-Si estableces esta política como UserOptInData, el usuario podrá incorporar los datos de navegación existentes en el perfil administrado si lo desea. La casilla de verificación del diálogo de creación del perfil estará visible y desmarcada de forma predeterminada.
-
-Si estableces esta política como UserOptOutData, el usuario podrá incorporar los datos de navegación existentes en el perfil administrado si lo desea. La casilla de verificación del diálogo de creación del perfil estará visible y marcada de forma predeterminada. Esta opción solo se permite en dispositivos administrados.
-
-Si estableces esta política como AlwaysSeparateData, el usuario no podrá incorporar ningún dato de navegación existente al perfil administrado. La casilla de verificación del diálogo de creación del perfil no estará visible.
-
-Si se incorporan los datos de navegación existentes al perfil administrado, el perfil actual pasará a ser administrado. No se creará un perfil nuevo.
-
-Si no se incorporan los datos de navegación existentes al perfil administrado, se creará un nuevo perfil sin datos. Los datos de navegación existentes permanecerán en un perfil no administrado al que el usuario seguirá teniendo acceso a través del selector de perfiles.
-
-Para que esta política tenga efecto, se debe establecer la política <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="3063302084011279315">Inhabilitar Screencast</translation>
 <translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la memoria caché atrás/adelante</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
@@ -3263,9 +3250,18 @@ Si no estableces esta política para un sitio, se aplicará la política de <ph 
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos <ph name="PRODUCT_OS_NAME" /> administrados por <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Certificación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Pronto dejará de estar disponible el campo de una línea y desaparecerá. Empieza a usar el cuadro de texto de varias líneas que se encuentra a continuación).</translation>
+<translation id="3711561721191203926">Si habilitas esta política, cada vez que se deba mostrar
+una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a errores en las verificaciones de <ph name="PRIVATE_NETWORK_ACCESS" />, se
+bloqueará la solicitud principal.
+
+Si la inhabilitas o no la estableces, no se aplicarán
+todas las advertencias de <ph name="PRIVATE_NETWORK_ACCESS" /> y no se bloquearán las solicitudes.
+
+Para conocer las restricciones de <ph name="PRIVATE_NETWORK_ACCESS" />, consulta https://wicg.github.io/private-network-access/.</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712861436661566358">Aplicar de manera forzosa la separación de perfiles</translation>
 <translation id="3719826155360621982">Página principal</translation>
+<translation id="3724039569609354541">Utilizar el comportamiento predeterminado al decidir si los sitios web pueden hacer solicitudes a extremos de red</translation>
 <translation id="372668389978450673">Si estableces esta política como verdadera o no la configuras, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> permitirán que se agregue una nueva persona desde el Administrador de usuarios.
 
       Si la estableces como falsa, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se agregue una nueva persona desde el Administrador de usuarios.
@@ -3724,6 +3720,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 <translation id="408029843066770167">Permitir consultas a un servicio de hora de Google</translation>
 <translation id="408076456549153854">Habilitar el acceso en el navegador</translation>
 <translation id="4081127242481747676">Configuración de los sensores</translation>
+<translation id="4082405593844340376">Especificar si se deben aplicar restricciones a las solicitudes a extremos de red más privados</translation>
 <translation id="4082498585300984671">Habilita la función Llamar con un clic</translation>
 <translation id="4082809879536562387">Te permite establecer el período, en milisegundos, entre la primera notificación en la que se solicita reiniciar un dispositivo con <ph name="PRODUCT_OS_NAME" /> para aplicar una actualización pendiente y la finalización del período especificado en la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
 
@@ -5577,6 +5574,7 @@ Cuando se establece para el kiosco de <ph name="PRODUCT_OS_NAME" />, esta polít
       Esta política puede anularse para patrones de URL específicos a través de las políticas <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Esta política solo afecta las operaciones del portapapeles que están controladas por el permiso para sitios del portapapeles. No afecta las interacciones seguras del portapapeles.</translation>
+<translation id="5650716720715977549">Aplicar restricciones a las solicitudes a extremos de red más privados</translation>
 <translation id="5651538748810288218">Si la estableces en 1, los sitios web podrán acceder a los sensores y usarlos, como los de movimiento y luz. Si la estableces en 2, se negará el acceso a los sensores.
 
       Si no la estableces, se aplicará la política <ph name="ALLOW_SENSORS_POLICY_NAME" />, pero los usuarios podrán cambiar esta configuración.</translation>
@@ -9419,7 +9417,6 @@ de forma predeterminada a partir de M119.
       Si no la estableces, la política estará activada, y los usuarios no podrán desactivarla.</translation>
 <translation id="8789053142986648624">Una cuenta administrada debe ser una cuenta principal y el usuario puede importar datos existentes cuando cree la cuenta</translation>
 <translation id="8789338675663014675">Configura las políticas relacionadas con las extensiones. El usuario no está autorizado a instalar las extensiones bloqueadas a menos que se encuentren en la lista de elementos permitidos. También puedes forzar <ph name="PRODUCT_NAME" /> a instalar automáticamente las extensiones. Para hacerlo, especifícalas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones incluidas en la lista de elementos permitidos se instalan aunque también aparezcan en la lista de elementos bloqueados.</translation>
-<translation id="878964451356911302">Sugerirles a los usuarios que incorporen sus datos existentes en el perfil administrado</translation>
 <translation id="879697755145469671">No detecta ventanas cubiertas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8799492680917278474">Si estableces esta política, las conexiones de acceso remoto se desconectarán de forma automática después de que transcurra el tiempo (en minutos) definido en la política. Esta acción no impide que el cliente se reconecte después de que se alcance la duración máxima de la sesión. Si estableces la política en un valor que está fuera del rango establecido, es posible que el host no se inicie. Esta política no influye en los diferentes escenarios de asistencia remota.

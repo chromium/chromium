@@ -1884,6 +1884,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="2436385001956947090">Copiază &amp;linkul</translation>
 <translation id="2438853563451647815">Neconectat la imprimantă</translation>
+<translation id="2439152382014731627">Resetează parola <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Se încarcă <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Afișează s&amp;ursa</translation>
 <translation id="2440823041667407902">Accesul la locație</translation>
@@ -2034,6 +2035,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2541423446708352368">Afișați toate descărcările</translation>
 <translation id="2541706104884128042">A fost setată o nouă oră de culcare</translation>
 <translation id="2542050502251273923">Setează nivelul de remediere a erorilor al managerului conexiunilor de rețea și al altor servicii folosind ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> se vor acorda și pentru această aplicație. <ph name="MANAGE_LINK" />}few{Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> se vor acorda și pentru aceste aplicații. <ph name="MANAGE_LINK" />}other{Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> se vor acorda și pentru aceste aplicații. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Această filă</translation>
 <translation id="2546302722632337735">Nu permite site-urilor să folosească identificatori pentru a reda conținut protejat</translation>
 <translation id="2546991196809436099">Mărește pentru a face mai mari elementele de pe ecran. Folosește tasta de căutare + Ctrl + M pentru a activa și a dezactiva lupa.</translation>
@@ -2476,6 +2478,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> va reporni și se va reseta imediat</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Testează bateria, procesorul, memoria, conectivitatea și altele</translation>
+<translation id="2885129935310217435">Există un buton cu același nume. Alege altul.</translation>
 <translation id="2885378588091291677">Manager de activități</translation>
 <translation id="2885729872133513017">A apărut o problemă la decodarea răspunsului serverului.</translation>
 <translation id="2886119409731773154">Poate dura până la 30 de minute</translation>
@@ -4558,7 +4561,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4565917129334815774">Stochează jurnalele de sistem</translation>
 <translation id="4566170377336116390">Dacă vrei să schimbi acest lucru după înregistrare, va trebui să revii cu dispozitivul la setările din fabrică (funcția powerwash).</translation>
 <translation id="4566417217121906555">Dezactivează sunetul microfonului</translation>
-<translation id="4566762846886188693">Pentru a-ți proteja datele, elimină permisiunile de pe site-urile pe care nu le-ai accesat recent. Nu oprește notificările.</translation>
 <translation id="456717285308019641">Limba paginii de tradus</translation>
 <translation id="4567512141633030272">Opțiune de conectare greșită?</translation>
 <translation id="4567533462991917415">După configurare, poți oricând să adaugi mai multe persoane. Fiecare persoană poate să-și personalizeze contul și să-și păstreze datele private.</translation>
@@ -4779,7 +4781,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4742334355511750246">Nu au permisiunea de a afișa imagini</translation>
 <translation id="4742970037960872810">Elimină evidențierea</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Află cum să actualizezi aplicații<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Textul pe care îl introduci în bara de adrese sau în caseta de căutare este trimis la motorul de căutare prestabilit</translation>
 <translation id="4744268813103118742">Accesează site-ul</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activează sunetul pentru site}few{Activează sunetul pentru site-uri}other{Activează sunetul pentru site-uri}}</translation>
@@ -8779,6 +8780,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7952708427581814389">Site-urile pot solicita permisiunea să vadă text și imagini din clipboard</translation>
 <translation id="795282463722894016">Restabilire finalizată</translation>
 <translation id="7952904276017482715">ID-ul așteptat era „<ph name="EXPECTED_ID" />”, dar ID-ul a fost „<ph name="NEW_ID" />”</translation>
+<translation id="7953236668995583915">Reîncarcă pagina pentru a aplica setările actualizate pe acest site</translation>
 <translation id="7953669802889559161">Metode de introducere a textului</translation>
 <translation id="7953955868932471628">Gestionați comenzile rapide</translation>
 <translation id="7955105108888461311">Întreabă în persoană</translation>

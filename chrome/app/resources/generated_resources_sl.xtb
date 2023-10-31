@@ -1901,6 +1901,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="2436385001956947090">Kopiraj &amp;povezavo</translation>
 <translation id="2438853563451647815">Povezava s tiskalnikom ni vzpostavljena</translation>
+<translation id="2439152382014731627">Ponastavitev gesla za napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Nalaganje: <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Ogled v&amp;ira</translation>
 <translation id="2440823041667407902">Dostop do lokacije</translation>
@@ -2051,6 +2052,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2541423446708352368">Pokaži vse prenose</translation>
 <translation id="2541706104884128042">Nastavljen je nov čas za spanje</translation>
 <translation id="2542050502251273923">Nastavi raven odpravljanja napak upravitelja omrežnih povezav in drugih storitev, ki uporabljajo ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Dovoljenja, ki jih omogočite za aplikacijo »<ph name="APP_NAME" />«, bodo omogočena tudi za to aplikacijo. <ph name="MANAGE_LINK" />}one{Dovoljenja, ki jih omogočite za aplikacijo »<ph name="APP_NAME" />«, bodo omogočena tudi za te aplikacije. <ph name="MANAGE_LINK" />}two{Dovoljenja, ki jih omogočite za aplikacijo »<ph name="APP_NAME" />«, bodo omogočena tudi za te aplikacije. <ph name="MANAGE_LINK" />}few{Dovoljenja, ki jih omogočite za aplikacijo »<ph name="APP_NAME" />«, bodo omogočena tudi za te aplikacije. <ph name="MANAGE_LINK" />}other{Dovoljenja, ki jih omogočite za aplikacijo »<ph name="APP_NAME" />«, bodo omogočena tudi za te aplikacije. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Ta zavihek</translation>
 <translation id="2546302722632337735">Spletnim mestom ne dovoli uporabe identifikatorjev za predvajanje zaščitene vsebine</translation>
 <translation id="2546991196809436099">Povečajte sliko, če želite povečati elemente na zaslonu. Če želite vklopiti ali izklopiti lupo, pritisnite tipko za iskanje + Ctrl + M.</translation>
@@ -2493,6 +2495,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2882943222317434580">Izdelek <ph name="IDS_SHORT_PRODUCT_NAME" /> se bo v kratkem znova zagnal in ponastavil</translation>
 <translation id="2883470649061584386">Vir</translation>
 <translation id="2884070497102362193">Preizkusite baterijo, CPE, pomnilnik, povezljivost in drugo</translation>
+<translation id="2885129935310217435">Obstaja gumb z enakim imenom. Izberite drugo.</translation>
 <translation id="2885378588091291677">Upravitelj opravil</translation>
 <translation id="2885729872133513017">Pri dekodiranju odziva strežnika je prišlo do težave.</translation>
 <translation id="2886119409731773154">To lahko traja do 30 minut.</translation>
@@ -4576,7 +4579,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4565917129334815774">Shrani sistemske dnevnike</translation>
 <translation id="4566170377336116390">Če želite po včlanitvi preklopiti, boste morali napravo ponastaviti na tovarniške nastavitve (postopek Powerwash).</translation>
 <translation id="4566417217121906555">Izklopi mikrofon</translation>
-<translation id="4566762846886188693">Zaradi zaščite podatkov odstranite dovoljenja za spletna mesta, ki jih nedavno niste obiskali. Prikazovanje obvestil se ne ustavi.</translation>
 <translation id="456717285308019641">Jezik strani za prevajanje</translation>
 <translation id="4567512141633030272">Napačna možnost prijave?</translation>
 <translation id="4567533462991917415">Po nastavitvi lahko dodate več ljudi. Vsak lahko individualno prilagodi svoj račun in poskrbi za zasebnost podatkov.</translation>
@@ -4797,7 +4799,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4742334355511750246">Ni dovoljeno prikazovanje slik</translation>
 <translation id="4742970037960872810">Odstrani označitev</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Preberite, kako posodobite aplikacije<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Kar vnesete v naslovno vrstico ali iskalno polje, se pošlje privzetemu iskalniku</translation>
 <translation id="4744268813103118742">Na spletno mesto</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Vklopi zvok spletnega mesta}one{Vklopi zvok spletnih mest}two{Vklopi zvok spletnih mest}few{Vklopi zvok spletnih mest}other{Vklopi zvok spletnih mest}}</translation>
@@ -8803,6 +8804,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7952708427581814389">Spletna mesta lahko zahtevajo ogled besedila in slik v odložišču</translation>
 <translation id="795282463722894016">Obnovitev je končana</translation>
 <translation id="7952904276017482715">Pričakovani ID je »<ph name="EXPECTED_ID" />«, toda ID je bil »<ph name="NEW_ID" />«</translation>
+<translation id="7953236668995583915">Znova naložite to stran, če želite uporabiti posodobljene nastavitve na tem spletnem mestu</translation>
 <translation id="7953669802889559161">Načini vnosa</translation>
 <translation id="7953955868932471628">Upravljanje bližnjic</translation>
 <translation id="7955105108888461311">Vprašajte osebno</translation>

@@ -1883,6 +1883,7 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2436385001956947090">複製連結(&amp;L)</translation>
 <translation id="2438853563451647815">未連上印表機</translation>
+<translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="2439626940657133600">正在載入<ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="2440823041667407902">位置資訊存取權</translation>
@@ -2033,6 +2034,7 @@
 <translation id="2541423446708352368">顯示所有下載內容</translation>
 <translation id="2541706104884128042">已設定新的就寢時間</translation>
 <translation id="2542050502251273923">使用 ff_debug 設定網路連線管理員和其他服務的偵錯等級。</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{如果你將權限授予「<ph name="APP_NAME" />」，這個應用程式也會取得同樣的權限。<ph name="MANAGE_LINK" />}other{如果你將權限授予「<ph name="APP_NAME" />」，這些應用程式也會取得同樣的權限。<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">這個分頁</translation>
 <translation id="2546302722632337735">禁止網站使用 ID 來播放受保護的內容</translation>
 <translation id="2546991196809436099">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。</translation>
@@ -2475,6 +2477,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 即將重新啟動並進行重設</translation>
 <translation id="2883470649061584386">動態消息</translation>
 <translation id="2884070497102362193">測試電池、CPU、記憶體、連線能力等等</translation>
+<translation id="2885129935310217435">已有名稱相同的按鈕，請選擇其他名稱。</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2885729872133513017">解碼伺服器回應時發生問題。</translation>
 <translation id="2886119409731773154">這項作業最多可能需要 30 分鐘才能完成</translation>
@@ -4556,7 +4559,6 @@
 <translation id="4565917129334815774">儲存系統記錄</translation>
 <translation id="4566170377336116390">如果要在完成註冊後切換裝置，必須將裝置恢復原廠設定 (Powerwash)。</translation>
 <translation id="4566417217121906555">將麥克風設為靜音</translation>
-<translation id="4566762846886188693">為保護你的資料，系統會將權限從你最近未曾造訪的網站中移除。這不會停止通知。</translation>
 <translation id="456717285308019641">要翻譯的網頁語言</translation>
 <translation id="4567512141633030272">登入選項有誤？</translation>
 <translation id="4567533462991917415">設定完成後，你可以隨時新增更多使用者。每位使用者都可以建立個人專屬的帳戶，並保護資料的私密性。</translation>
@@ -4777,7 +4779,6 @@
 <translation id="4742334355511750246">不得顯示圖片</translation>
 <translation id="4742970037960872810">移除醒目顯示</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">你在網址列/搜尋框中輸入的內容，會傳送至預設的搜尋引擎。</translation>
 <translation id="4744268813103118742">前往網站</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
@@ -8771,6 +8772,7 @@
 <translation id="7952708427581814389">網站可以要求查看剪貼簿上的文字和圖片</translation>
 <translation id="795282463722894016">還原完成</translation>
 <translation id="7952904276017482715">預期的 ID 為「<ph name="EXPECTED_ID" />」，但實際的 ID 為「<ph name="NEW_ID" />」</translation>
+<translation id="7953236668995583915">重新載入這個頁面，即可將更新後的設定套用到此網站</translation>
 <translation id="7953669802889559161">輸入法</translation>
 <translation id="7953955868932471628">管理快速鍵</translation>
 <translation id="7955105108888461311">要求存取權</translation>

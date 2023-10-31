@@ -1881,6 +1881,7 @@
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="2436385001956947090">Копирај линк</translation>
 <translation id="2438853563451647815">Није повезано са штампачем</translation>
+<translation id="2439152382014731627">Ресетујте лозинку за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> се учитава</translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
 <translation id="2440823041667407902">Приступ локацији</translation>
@@ -2031,6 +2032,7 @@
 <translation id="2541423446708352368">Прикажи све преузете ставке</translation>
 <translation id="2541706104884128042">Подешено је ново време за спавање</translation>
 <translation id="2542050502251273923">Подешава ниво отклањања грешака менаџера мрежне везе и других услуга помоћу ставке ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Дозволе које одобрите за апликацију <ph name="APP_NAME" /> ће важити и за ову апликацију. <ph name="MANAGE_LINK" />}one{Дозволе које одобрите за апликацију <ph name="APP_NAME" /> ће важити и за ове апликације. <ph name="MANAGE_LINK" />}few{Дозволе које одобрите за апликацију <ph name="APP_NAME" /> ће важити и за ове апликације. <ph name="MANAGE_LINK" />}other{Дозволе које одобрите за апликацију <ph name="APP_NAME" /> ће важити и за ове апликације. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Ова картица</translation>
 <translation id="2546302722632337735">Не дозволи сајтовима да користе идентификаторе за пуштање заштићеног садржаја</translation>
 <translation id="2546991196809436099">Увећајте приказ да бисте увећали ставке на екрану. Користите тастер за претрагу + Ctrl + M да бисте укључили или искључили лупу.</translation>
@@ -2473,6 +2475,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ће се одмах поново покренути и ресетовати</translation>
 <translation id="2883470649061584386">Фид</translation>
 <translation id="2884070497102362193">Тестирајте батерију, процесор, меморију, везу и друго</translation>
+<translation id="2885129935310217435">Постоји дугме са истим називом. Одаберите други.</translation>
 <translation id="2885378588091291677">Менаџер задатака</translation>
 <translation id="2885729872133513017">Дошло је до проблема при декодирању одговора сервера.</translation>
 <translation id="2886119409731773154">То може да потраје до 30 минута</translation>
@@ -4555,7 +4558,6 @@
 <translation id="4565917129334815774">Складишти евиденције система</translation>
 <translation id="4566170377336116390">Ако желите да промените после регистрације, морате да ресетујете уређај на фабричка подешавања (powerwash).</translation>
 <translation id="4566417217121906555">Искључи звук микрофона</translation>
-<translation id="4566762846886188693">Да бисте заштитили податке, уклоните дозволе за сајтове које нисте недавно посећивали. То не зауставља обавештења.</translation>
 <translation id="456717285308019641">Језик странице са кога желите да преводите</translation>
 <translation id="4567512141633030272">Погрешна опција за пријављивање?</translation>
 <translation id="4567533462991917415">Увек можете да додате још људи после подешавања. Свака особа може да персонализује налог и чува приватност података.</translation>
@@ -4776,7 +4778,6 @@
 <translation id="4742334355511750246">Није им дозвољено да приказују слике</translation>
 <translation id="4742970037960872810">Уклони истицање</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Сазнајте како да ажурирате апликације<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Оно што уносите у траку за адресу или оквир за претрагу шаље се подразумеваном претраживачу</translation>
 <translation id="4744268813103118742">Иди на сајт</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Укључи звук сајта}one{Укључи звук сајтова}few{Укључи звук сајтова}other{Укључи звук сајтова}}</translation>
@@ -8778,6 +8779,7 @@
 <translation id="7952708427581814389">Сајтови могу да траже да виде текст и слике у привременој меморији</translation>
 <translation id="795282463722894016">Враћање је завршено</translation>
 <translation id="7952904276017482715">Очекивао се ИД „<ph name="EXPECTED_ID" />“, али ИД је био „<ph name="NEW_ID" />“</translation>
+<translation id="7953236668995583915">Поново учитајте ову страницу да бисте применили ажурирана подешавања на овај сајт</translation>
 <translation id="7953669802889559161">Уноси</translation>
 <translation id="7953955868932471628">Управљај пречицама</translation>
 <translation id="7955105108888461311">Затражи лично</translation>

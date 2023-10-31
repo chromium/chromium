@@ -115,6 +115,7 @@
 <translation id="2910701580606108292">સાઇટને સંરક્ષિત કન્ટેન્ટ ચલાવવાની મંજૂરી આપતા પહેલાંં પૂછો</translation>
 <translation id="2932883381142163287">દુરુપયોગ જણાવો</translation>
 <translation id="2968755619301702150">પ્રમાણપત્ર દર્શક</translation>
+<translation id="2979365474350987274">ત્રીજા પક્ષની કુકી મર્યાદિત છે</translation>
 <translation id="3008272652534848354">પરવાનગીઓ રીસેટ કરો</translation>
 <translation id="301521992641321250">ઑટોમૅટિક રીતે બ્લૉક થયું</translation>
 <translation id="3069226013421428034">ચોક્કસ સાઇટ માટે ત્રીજા પક્ષ દ્વારા સાઇન-ઇનને મંજૂરી આપો.</translation>
@@ -355,6 +356,7 @@
 <translation id="7243308994586599757">સ્ક્રીનના તળિયા નજીક વિકલ્પો ઉપલબ્ધ છે</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />ની પસંદગી કરી</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ની મંજૂરી આપી</translation>
+<translation id="7284451015630589124">તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી તમે સાઇટને બ્લૉક કરી છે. <ph name="BEGIN_LINK" />તમારા ટ્રૅકિંગની સુરક્ષાને મેનેજ કરવા<ph name="END_LINK" /> સેટિંગની મુલાકાત લો.</translation>
 <translation id="7302486331832100261">તમે સામાન્ય રીતે નોટિફિકેશનને બ્લૉક કરો છો. મંજૂરી આપવા માટે, વિગતો પર ટૅપ કરો.</translation>
 <translation id="7366415735885268578">એક સાઇટ ઉમેરો</translation>
 <translation id="7368695150573390554">ઑફલાઇન હોય એવો બધો ડેટા ડિલીટ કરવામાં આવશે</translation>
@@ -433,6 +435,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" />ની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}one{<ph name="FPS_OWNER" />ની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}other{<ph name="FPS_OWNER" />ની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}}</translation>
 <translation id="857943718398505171">મંજૂર (ભલામણ કરેલ)</translation>
 <translation id="8609465669617005112">ઉપર ખસેડો</translation>
+<translation id="8649036394979866943">તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે Chrome મોટાભાગની સાઇટને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી મર્યાદિત કરે છે. <ph name="BEGIN_LINK" />તમારા ટ્રૅકિંગની સુરક્ષાને મેનેજ કરવા<ph name="END_LINK" /> સેટિંગની મુલાકાત લો</translation>
 <translation id="8676374126336081632">ઇનપુટ સાફ કરો</translation>
 <translation id="8681886425883659911">ખલેલ પાડતી અથવા ગેરમાર્ગે દોરતી જાહેરાતો બતાવવા માટે જાણીતી સાઇટ પર જાહેરાતો બ્લૉક કરવામાં આવે છે</translation>
 <translation id="868929229000858085">તમારા સંપર્કો શોધો</translation>

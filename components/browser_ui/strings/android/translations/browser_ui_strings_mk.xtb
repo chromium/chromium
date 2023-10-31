@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Достапни се опции на дното на екранот</translation>
 <translation id="7250468141469952378">Избрани ставки: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> се одобрени.</translation>
+<translation id="7284451015630589124">Блокиравте сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате. Одете во поставките за да <ph name="BEGIN_LINK" />управувате со вашата „Заштита од следење“<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Вообичаено ги блокирате известувањата. За да ги дозволите, допрете „Детали“.</translation>
 <translation id="7366415735885268578">Додајте сајт</translation>
 <translation id="7368695150573390554">Ќе се избришат сите офлајн податоци</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајт на <ph name="FPS_OWNER" />}one{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајт на <ph name="FPS_OWNER" />}other{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајтови на <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
+<translation id="8649036394979866943">Chrome ограничува повеќето сајтови да користат колачиња од трети страни за да ве следат додека прелистувате. Одете во поставките за да <ph name="BEGIN_LINK" />управувате со вашата „Заштита од следење“<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Јасно внесување</translation>
 <translation id="8681886425883659911">Рекламите се блокирани на сајтови за кои е познато дека прикажуваат нападни или лажни реклами</translation>
 <translation id="868929229000858085">Пребарајте ги контактите</translation>

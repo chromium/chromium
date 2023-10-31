@@ -37,6 +37,19 @@
 <translation id="1021462144002396313">Políticas de <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">ID de extensiones que el usuario no debe poder instalar (o * para incluirlas todas)</translation>
 <translation id="102492767056134033">Establecer el estado predeterminado del teclado en pantalla en la pantalla de inicio de sesión</translation>
+<translation id="1026335125982730097">Permite definir una lista de patrones de URL donde se especifica qué sitios pueden establecer cookies.
+
+          Los patrones de URL pueden ser una sola URL que indique que el sitio puede usar cookies en todos los sitios de nivel superior.
+
+          Estos patrones también pueden ser dos URLs delimitadas por una coma. En esos casos, la primera URL especifica el sitio en el que se debe permitir el uso de cookies y la segunda URL especifica el sitio de nivel superior en el que se debe aplicar el primer valor.
+
+          Si usas dos URLs, puedes utilizar un asterisco (*) como primer valor del par, pero no como segundo valor. Si utilizas un asterisco (*) como primer valor, todos los sitios podrán usar cookies cuando la segunda URL sea el sitio de nivel superior.
+
+          Si no se asigna ningún valor a esta política, se usará para todos los sitios el valor predeterminado global especificado en las políticas <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> o <ph name="BLOCK_THIRD_PARTY_COOKIES_POLICY_NAME" /> (si se han definido dichas políticas) o en la configuración personal del usuario (si no se han definido dichas políticas).
+
+          Consulta también las políticas <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Ten en cuenta que no puede haber patrones de URL en conflicto entre estas tres políticas, ya que no se especifica cuál de ellas tiene prioridad.
+
+          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="102658870205613876">Configuración de ventanas emergentes</translation>
 <translation id="1027000705181149370">Especifica si las cookies de autenticación establecidas por un proveedor de identidad SAML durante el inicio de sesión deberían transferirse al perfil del usuario.
 
@@ -142,6 +155,7 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
           Si a esta política se le asigna el valor false, la función de voces de conversión de texto a voz de red mejorada en Enunciar selección siempre estarán inhabilitadas.
 
           Si a esta política se le asigna el valor true o no se le asigna ningún valor, el usuario podrá habilitar o inhabilitar la función de voces de conversión de texto a voz de red mejorada en Enunciar selección.</translation>
+<translation id="1137479817584930805">Permitir que se guarden imágenes directamente en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /></translation>
 <translation id="1138294736309071213">Esta política solo se encuentra activa en el modo de venta.
 
       Permite determinar el tiempo que debe transcurrir antes de que se muestre el protector de pantalla en la página de inicio de sesión para dispositivos que se encuentren en el modo de venta.
@@ -195,6 +209,7 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
 
       Si se le asigna el valor "False", no aparecerá la casilla "Permitir siempre" y el usuario verá un mensaje de confirmación cada vez que se invoque un protocolo externo.</translation>
 <translation id="1181598794547737681">Habilitar la interfaz del cuadro de descargas</translation>
+<translation id="1184531093651606913">Impide que las extensiones se carguen desde la línea de comandos</translation>
 <translation id="1184562656144537588">Manifest V2 solo está habilitado para extensiones de instalación forzada</translation>
 <translation id="11903325225202653">Si se le asigna el valor "true" a esta política, el modo Contraste alto permanece activado. Si se le asigna el valor "false", el modo Contraste alto permanece desactivado.
 
@@ -2102,6 +2117,10 @@ Si se inhabilita esta política, los usuarios no podrán añadir cuentas de Kerb
 
       Si no se establece, el cambio de alimentación en picos está desactivado en un principio. Los usuarios no pueden cambiar esta opción.</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores antiguos</translation>
+<translation id="2774906947252258544">La lista de bloqueados controla qué tipos de instalación de extensiones no están permitidos.
+
+Si se asigna el valor "command_line" a una extensión, se impedirá que se cargue
+dicha extensión desde la línea de comandos.</translation>
 <translation id="2780840673734667062">Inhabilitar el inicio de sesión con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borrar datos de navegación al salir</translation>
 <translation id="2787173078141616821">Proporcionar información sobre el estado de Android</translation>
@@ -2302,6 +2321,7 @@ Si se habilita esta política, el menú de aplicaciones/la tecla de búsqueda po
       Las URL deben tener una estructura de HTTPS (por ejemplo, https://example.com).
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2971096666394658693">El menú contextual tendrá una opción de menú para compartir imágenes con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2976429807269247880">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Forzar la implementación antigua</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de incorporación del Asistente</translation>
@@ -2397,19 +2417,6 @@ Si esta política se habilita o no se define, el usuario podrá establecer la im
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="305106159605171619">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Esta política controla si los usuarios pueden llevar los datos de navegación previos a un perfil gestionado creado después de que una cuenta gestionada inicie sesión en el área de contenido.
-
-Si no se define esta política o se le asigna el valor UserOptInData, el usuario podrá elegir si quiere llevar o no los datos de navegación al perfil gestionado. La casilla del cuadro de diálogo de creación del perfil será visible y estará desmarcada de forma predeterminada.
-
-Si se asigna el valor UserOptOutData a esta política, el usuario podrá elegir si quiere llevar o no los datos de navegación previos al perfil gestionado. La casilla del cuadro de diálogo de creación del perfil será visible y estará marcada de forma predeterminada. Esta opción solo está permitida en dispositivos gestionados.
-
-Si se asigna el valor AlwaysSeparateData a esta política, el usuario no podrá llevar los datos de navegación previos al perfil gestionado. La casilla del cuadro de diálogo de creación del perfil no será visible.
-
-Si se llevan los datos de navegación previos al perfil gestionado, el perfil actual pasará a estar gestionado. No se creará ningún perfil.
-
-Si no se llevan los datos de navegación previos al perfil gestionado, se creará un perfil nuevo y limpio. Los datos de navegación previos permanecerán en un perfil no gestionado al que el usuario podrá seguir accediendo mediante el selector de perfiles.
-
-Esta política requiere que se configure la política <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> para que entre en vigor.</translation>
 <translation id="3063302084011279315">Inhabilitar Grabación de pantalla</translation>
 <translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la caché de páginas completas.</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación Kerberos</translation>
@@ -3193,9 +3200,15 @@ Si esta política no se establece para un sitio, se le aplicará la de <ph name=
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos con <ph name="PRODUCT_OS_NAME" /> gestionados con <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Confirmación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (el campo de una línea está obsoleto y desaparecerá en el futuro; a partir de ahora, debes utilizar el campo de varias líneas que aparece más abajo).</translation>
+<translation id="3711561721191203926">Si se habilita esta política, cuando deba mostrarse una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a un fallo en las comprobaciones de <ph name="PRIVATE_NETWORK_ACCESS" />, se bloqueará la solicitud principal.
+
+Si se inhabilita esta política o no se define, no se implementarán obligatoriamente las advertencias de <ph name="PRIVATE_NETWORK_ACCESS" /> ni se bloquearán las solicitudes.
+
+Consulta https://wicg.github.io/private-network-access/ para saber las restricciones de <ph name="PRIVATE_NETWORK_ACCESS" />.</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712861436661566358">Implementar obligatoriamente la separación de perfiles</translation>
 <translation id="3719826155360621982">Página principal</translation>
+<translation id="3724039569609354541">Usar el comportamiento predeterminado para definir si los sitios web pueden enviar solicitudes a los puntos finales de red</translation>
 <translation id="372668389978450673">Si se le asigna el valor true a esta política o no se configura, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> permitirán añadir una nueva persona del Administrador de usuarios.
 
       Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán añadir una nueva persona del Administrador de usuarios.
@@ -3650,6 +3663,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 <translation id="408029843066770167">Permitir consultas a un servicio de hora de Google</translation>
 <translation id="408076456549153854">Habilitar inicio de sesión en el navegador</translation>
 <translation id="4081127242481747676">Configuración de sensores</translation>
+<translation id="4082405593844340376">Especifica si se deben aplicar restricciones a las solicitudes a puntos finales más privados de la red</translation>
 <translation id="4082498585300984671">Habilitar la función Clic de llamada</translation>
 <translation id="4082809879536562387">Permite definir el periodo (en milisegundos) que transcurre entre la primera notificación que avisa de que un dispositivo <ph name="PRODUCT_OS_NAME" /> debe reiniciarse para aplicar una actualización pendiente y la finalización del periodo especificado en la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
 
@@ -5439,6 +5453,7 @@ Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habili
       Esta política se puede anular para patrones de URL específicos usando las políticas <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Esta política solo afecta a las operaciones de portapapeles controladas por el permiso de portapapeles de sitios. No afecta a las operaciones de copiar y pegar depuradas o de confianza.</translation>
+<translation id="5650716720715977549">Aplicar restricciones a las solicitudes a puntos finales más privados de la red</translation>
 <translation id="5651538748810288218">Si se le asigna el valor 1 a esta política, los sitios web podrán usar y acceder a los sensores, como los de luz o movimiento. Si se le asigna el valor 2 a esta política, se denegará el acceso a los sensores.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ALLOW_SENSORS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
@@ -6262,6 +6277,7 @@ ADVERTENCIA: Ten cuidado al cambiar este ajuste, ya que podría interferir en ot
 <translation id="6371561334154580937">Muestra el cuadro de diálogo de cierre de sesión cuando se cierra la última ventana.</translation>
 <translation id="6372105930898423193">Permite volver a habilitar la función AppCache aunque esté desactivada de forma predeterminada.</translation>
 <translation id="6373299801585455337">Habilitar los informes sobre la CPU del dispositivo</translation>
+<translation id="6374945506685352202">Lista de bloqueados de tipos de instalación de extensiones</translation>
 <translation id="6376540107659524656">Inhabilitar SSH en la aplicación del sistema Terminal</translation>
 <translation id="6376659517206731212">Puede ser obligatoria</translation>
 <translation id="6377031865393559909">Permitir que los usuarios usen plantillas de escritorio</translation>
@@ -6676,6 +6692,7 @@ Si se inhabilita esta política o no se define, se ignorará la política del KD
 En <ph name="MS_WIN_NAME" />, la política del KDC se respeta siempre.</translation>
 <translation id="6658245400435704251">Especifica el número de segundos hasta los que un dispositivo puede retrasar aleatoriamente la descarga de una actualización desde el momento en el que esta se envío al servidor por primera vez. El dispositivo puede dedicar una parte de este tiempo al propio proceso de actualización y el resto a realizar las comprobaciones necesarias. En cualquier caso, el límite superior de la dispersión es un periodo de tiempo constante, para que el dispositivo no se quede bloqueado mientras descarga una actualización.</translation>
 <translation id="6659537776197644458">No activar flujos de autenticación para la sincronización de contraseñas</translation>
+<translation id="6659877981632400997">El menú contextual no tendrá una opción de menú para compartir imágenes con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Habilitar los informes en la nube de un perfil gestionado</translation>
 <translation id="6665670272107384733">Definir la frecuencia con la que el usuario debe introducir la contraseña para utilizar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para mostrar la contraseña en las pantallas de inicio de sesión y bloqueo</translation>
@@ -6845,6 +6862,9 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="6819838337315703072">Si se activa la compatibilidad con aplicaciones <ph name="LINUX_OS_NAME" />, al habilitar la política se enviará información sobre el uso de las aplicaciones <ph name="LINUX_OS_NAME" /> al servidor.
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se enviará información de uso.</translation>
+<translation id="6820251681466503297">Esta política controla si el usuario puede guardar imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> directamente desde el menú contextual.
+Si se habilita esta política o no se le asigna ningún valor, el usuario podrá guardar imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> desde el menú contextual. Si se inhabilita esta política, los usuarios no podrán ver esa opción en el menú contextual.
+Esta política no impide que los usuarios puedan guardar imágenes en <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> de otras formas distintas a la utilización del menú contextual.</translation>
 <translation id="6821870597514407499">El elemento <ph name="WEBVIEW_TAG_NAME" /> de aplicaciones de Chrome permite un comportamiento que se está eliminando de <ph name="PRODUCT_NAME" />.
 
 El comportamiento anterior permite el evento <ph name="NEWWINDOW_EVENT_NAME" /> de <ph name="WEBVIEW_TAG_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) para vincular la nueva ventana a un elemento <ph name="WEBVIEW_TAG_NAME" /> en una ventana de aplicación independiente del elemento <ph name="WEBVIEW_TAG_NAME" /> de origen. Con el nuevo comportamiento, se seguirá permitiendo esta vinculación, pero se invalidará la referencia a la ventana devuelta desde la llamada a <ph name="WINDOW_OPEN_NAME" /> en el elemento <ph name="WEBVIEW_TAG_NAME" /> de origen.
@@ -8328,6 +8348,11 @@ Los usuarios no pueden editar ni inhabilitar las entradas de búsquedas en el si
 
 En caso de conflicto con un acceso directo creado por el usuario con anterioridad, se respetará la configuración del usuario. Sin embargo, los usuarios seguirán pudiendo activar la opción creada por la política escribiendo "@" en la barra de búsqueda. Por ejemplo, si el usuario ya ha definido "trabajo" como acceso directo a URL1 y la política define "trabajo" como acceso directo a URL2, al escribir "trabajo" en la barra de búsqueda se iniciará la búsqueda en URL1 y al escribir "@trabajo" la iniciará en URL2.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
+<translation id="8036284429246268475">Si se habilita esta política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> compruebe si los nombres de usuario y las contraseñas introducidos forman parte de alguna filtración de datos.
+
+      Si se asigna un valor a esta política, los usuarios no podrán modificarlo en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, se permitirá la comprobación de filtraciones de credenciales, pero el usuario podrá desactivarla.
+
+      Este comportamiento no se activará si Navegación segura está inhabilitada (tanto si la ha inhabilitado una política como si lo ha hecho el usuario). Para activar Navegación segura de forma forzosa, se debe usar la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o la política <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Inhabilitar <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
 <translation id="8044493735196713914">Notificar modo de inicio de dispositivo</translation>
 <translation id="80453040817068401">Habilitar la disponibilidad del navegador <ph name="LACROS_NAME" /></translation>
@@ -9173,7 +9198,6 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si no se le asigna ningún valor a esta política, implica que está activada y los usuarios no pueden desactivarla.</translation>
 <translation id="8789053142986648624">Una cuenta gestionada debe ser principal y el usuario puede importar datos previos al crearla</translation>
 <translation id="8789338675663014675">Configura políticas relacionadas con extensiones. Los usuarios no pueden instalar extensiones bloqueadas, a menos que se incluyan en la lista de permitidas. Puedes hacer que <ph name="PRODUCT_NAME" /> realice automáticamente instalaciones forzadas de extensiones especificándolas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones de instalación forzada se instalarán, independientemente de si están incluidas o no en la lista de bloqueadas.</translation>
-<translation id="878964451356911302">Sugerir a los usuarios que lleven sus datos al perfil gestionado, pero darles la opción de no hacerlo</translation>
 <translation id="879697755145469671">No detectar ventanas tapadas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8799492680917278474">Si esta política se habilita, las conexiones de acceso remoto se desconectarán automáticamente después de que hayan pasado el número de minutos definido en la política. Esto no evita que el cliente pueda volver a conectarse después de que se haya alcanzado la duración máxima de la sesión. La asignación de un valor que no esté dentro del intervalo mínimo/máximo puede evitar que el host se inicie. Esta política no afecta a las situaciones de asistencia remota.

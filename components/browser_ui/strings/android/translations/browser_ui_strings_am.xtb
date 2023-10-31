@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ተመርጠዋል</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> እና <ph name="PERMISSION_2" /> ተፈቅደዋል</translation>
+<translation id="7284451015630589124">በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ ጣቢያዎችን አግደዋል። <ph name="BEGIN_LINK" />የእርስዎን የመከታተል ጥበቃዎች ለማስተዳደር<ph name="END_LINK" /> ቅንብሮች ይጎብኙ።</translation>
 <translation id="7302486331832100261">ማሳወቂያዎችን ብዙውን ጊዜ ያግዳሉ። ለመፍቀድ፣ ዝርዝሮች ላይ መታ ያድርጉ።</translation>
 <translation id="7366415735885268578">አንድ ጣቢያ ያክሉ</translation>
 <translation id="7368695150573390554">ማንኛውም ከመስመር ውጭ ውሂብ ይሰረዛል</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}one{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}other{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያዎች የተፈቀዱ ኩኪዎች}}</translation>
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
 <translation id="8609465669617005112">ወደላይ አውጣ</translation>
+<translation id="8649036394979866943">Chrome በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ አብዛኛዎቹን ጣቢያዎች ይገድባል። <ph name="BEGIN_LINK" />የእርስዎን የመከታተል ጥበቃዎች ለማስተዳደር<ph name="END_LINK" /> ቅንብሮችን ይጎብኙ</translation>
 <translation id="8676374126336081632">ግቤቱን አጽዳ</translation>
 <translation id="8681886425883659911">ማስታወቂያዎች ጣልቃ ገቢ ወይም አሳሳች ማስታወቂያዎችን በማሳየት በሚታወቁ ጣቢያዎች ላይ ታግደዋል</translation>
 <translation id="868929229000858085">እውቂያዎችዎን ይፈልጉ</translation>

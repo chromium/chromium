@@ -1893,6 +1893,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="2436385001956947090">Kopier &amp;linken</translation>
 <translation id="2438853563451647815">Ikke koblet til skriveren</translation>
+<translation id="2439152382014731627">Tilbakestill <ph name="DEVICE_TYPE" />-passordet</translation>
 <translation id="2439626940657133600">Laster inn <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="2440823041667407902">Posisjonstilgang</translation>
@@ -2043,6 +2044,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2541423446708352368">Vis alle nedlastinger</translation>
 <translation id="2541706104884128042">Ny sengetid er angitt</translation>
 <translation id="2542050502251273923">Angir feilsøkingsnivået for tjenesten for behandling av nettverkstilkoblinger og andre tjenester som bruker ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Tillatelser du gir «<ph name="APP_NAME" />», blir også gitt til denne appen. <ph name="MANAGE_LINK" />}other{Tillatelser du gir «<ph name="APP_NAME" />», blir også gitt til disse appene. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Denne fanen</translation>
 <translation id="2546302722632337735">Ikke la nettsteder bruke identifikatorer til å spille av beskyttet innhold</translation>
 <translation id="2546991196809436099">Zoom inn for å gjøre elementer på skjermen større. Bruk søketasten + Ctrl + M for å slå på og av lupen.</translation>
@@ -2485,6 +2487,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> startes på nytt og tilbakestilles øyeblikkelig</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Test batteri, prosessor, minne, tilkoblinger med mer</translation>
+<translation id="2885129935310217435">Det finnes en knapp med dette navnet. Velg et annet.</translation>
 <translation id="2885378588091291677">Oppgavebehandling</translation>
 <translation id="2885729872133513017">Det oppsto et problem ved dekoding av tjenerrespons.</translation>
 <translation id="2886119409731773154">Dette kan ta opptil 30 minutter</translation>
@@ -4565,7 +4568,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4565917129334815774">Lagre systemlogger</translation>
 <translation id="4566170377336116390">Hvis du vil endre dette etter registreringen, må du tilbakestille enheten til fabrikkstandard (utføre en powerwash).</translation>
 <translation id="4566417217121906555">Slå av mikrofonen</translation>
-<translation id="4566762846886188693">For å beskytte dataene dine bør du fjerne tillatelser fra nettsteder du ikke har besøkt i det siste. Stopper ikke varsler.</translation>
 <translation id="456717285308019641">Sidespråket du vil oversette</translation>
 <translation id="4567512141633030272">Feil påloggingsalternativ?</translation>
 <translation id="4567533462991917415">Du kan alltid legge til flere personer etter at konfigureringen er fullført. Hver person kan gi kontoen sin personlig preg og holde dataene sine private.</translation>
@@ -4786,7 +4788,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4742334355511750246">Nettsteder som ikke har lov til å vise bilder</translation>
 <translation id="4742970037960872810">Fjern markering</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Finn ut hvordan du oppdaterer programmer<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Det du skriver i adressefeltet eller søkefeltet, sendes til standardsøkemotoren</translation>
 <translation id="4744268813103118742">Gå til nettstedet</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Slå på lyden for nettstedet}other{Slå på lyden for nettstedene}}</translation>
@@ -8783,6 +8784,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7952708427581814389">Nettsteder kan be om å få se tekst og bilder på utklippstavlen din</translation>
 <translation id="795282463722894016">Gjenopprettingen er fullført</translation>
 <translation id="7952904276017482715">Den forventede ID-en var «<ph name="EXPECTED_ID" />», men den faktiske ID-en var «<ph name="NEW_ID" />»</translation>
+<translation id="7953236668995583915">Last inn denne siden på nytt for å ta i bruk de oppdaterte innstillingene dine på dette nettstedet</translation>
 <translation id="7953669802889559161">Inndatametoder</translation>
 <translation id="7953955868932471628">Administrer snarveier</translation>
 <translation id="7955105108888461311">Spør fysisk</translation>

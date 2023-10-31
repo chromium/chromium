@@ -1894,6 +1894,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2436385001956947090">Копиране на &amp;връзката</translation>
 <translation id="2438853563451647815">Няма връзка с принтера</translation>
+<translation id="2439152382014731627">Задаване на нова парола за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Зарежда се <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">&amp;Преглед на изходния код</translation>
 <translation id="2440823041667407902">Достъп до местоположението</translation>
@@ -2044,6 +2045,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2541423446708352368">Показване на всички изтегляния</translation>
 <translation id="2541706104884128042">Зададено е ново време за сън</translation>
 <translation id="2542050502251273923">Посредством ff_debug се задава нивото за отстраняване на грешки на системата за управление на връзката с мрежата, както и на други услуги.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Разрешенията, които дадете на <ph name="APP_NAME" />, ще бъдат предоставени и на това приложение. <ph name="MANAGE_LINK" />}other{Разрешенията, които дадете на <ph name="APP_NAME" />, ще бъдат предоставени и на тези приложения. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Този раздел</translation>
 <translation id="2546302722632337735">Да не се разрешава на сайтовете да използват идентификатори с цел възпроизвеждане на защитено съдържание</translation>
 <translation id="2546991196809436099">Увеличете мащаба, за да уголемите елементите на екрана. Използвайте клавиша „търсене“ + Ctrl + M, за да включите или изключите лупата.</translation>
@@ -2486,6 +2488,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> незабавно ще се рестартира и настройките му ще се нулират</translation>
 <translation id="2883470649061584386">Емисия</translation>
 <translation id="2884070497102362193">Тестване на батерията, процесора, паметта, свързаността и др.</translation>
+<translation id="2885129935310217435">Има бутон със същото име. Моля, изберете друго.</translation>
 <translation id="2885378588091291677">Диспечер на задачите</translation>
 <translation id="2885729872133513017">Възникна проблем при декодирането на отговора от сървъра.</translation>
 <translation id="2886119409731773154">Това може да отнеме до 30 минути</translation>
@@ -4570,7 +4573,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4565917129334815774">Съхраняване на системните регистрационни файлове</translation>
 <translation id="4566170377336116390">Ако след регистрирането искате да използвате устройството за други цели, ще трябва да възстановите фабричните му настройки (чрез Powerwash).</translation>
 <translation id="4566417217121906555">Заглушаване на микрофона</translation>
-<translation id="4566762846886188693">С цел защита на данните ви се премахват разрешенията за сайтовете, които не сте посещавали наскоро. Известията не се спират.</translation>
 <translation id="456717285308019641">Изходен език на страницата</translation>
 <translation id="4567512141633030272">Неправилна опция за вход в профила?</translation>
 <translation id="4567533462991917415">След настройването можете да добавяте още хора по всяко време. Всеки човек има възможност да персонализира профила си и да запази данните си частни.</translation>
@@ -4791,7 +4793,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4742334355511750246">Сайтове без разрешение за показване на изображения</translation>
 <translation id="4742970037960872810">Премахване на открояването</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Научете как да актуализирате приложения<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Данните, които въвеждате в адресната лента или полето за търсене, се изпращат до основната ви търсеща машина</translation>
 <translation id="4744268813103118742">Към сайта</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Включване отново на звука на сайта}other{Включване отново на звука на сайтовете}}</translation>
@@ -8790,6 +8791,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7952708427581814389">Сайтовете могат да извеждат запитвания за преглед на текста и изображенията в буферната памет</translation>
 <translation id="795282463722894016">Възстановяването завърши</translation>
 <translation id="7952904276017482715">Очакваният идентификационен номер е <ph name="EXPECTED_ID" />, но той бе <ph name="NEW_ID" /></translation>
+<translation id="7953236668995583915">Презаредете страницата, за да приложите актуализираните настройки за този сайт</translation>
 <translation id="7953669802889559161">Въвеждане</translation>
 <translation id="7953955868932471628">Управление на преките пътища</translation>
 <translation id="7955105108888461311">Питане лично</translation>

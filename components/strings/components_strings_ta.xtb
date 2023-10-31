@@ -1107,6 +1107,7 @@
 <translation id="3266793032086590337">மதிப்பு (முரண்பாடு)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{தொடர்புடைய தளங்கள் உட்பட தளங்கள் எதுவும் தடுக்கப்படவில்லை}=1{தொடர்புடைய தளங்கள் உட்பட 1 தளம் தடுக்கப்பட்டுள்ளது}other{தொடர்புடைய தளங்கள் உட்பட # தளங்கள் தடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="3268451620468152448">திறந்த தத்தல்கள்</translation>
+<translation id="3270041629388773465">உங்கள் CVCகள் சேமிக்கப்பட்டதும் விரைவாக செக் அவுட் செய்யலாம்</translation>
 <translation id="3270156322180235608">வான்வழிப் பயணம்</translation>
 <translation id="3270847123878663523">&amp;மறுவரிசைப்படுத்தலைச் செயல்தவிர்</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> இணைய விரும்புகிறது</translation>
@@ -1845,6 +1846,7 @@
 <translation id="4761104368405085019">உங்கள் மைக்ரோஃபோனைப் பயன்படுத்தலாம்</translation>
 <translation id="4761326898079498987">மேலும் விவரங்களுக்குச் சரிபார்க்கவும்</translation>
 <translation id="4761869838909035636">Chrome பாதுகாப்புச் சரிபார்ப்பை இயக்கு</translation>
+<translation id="4763196677855776703">விதிமுறைகளையும் நிபந்தனைகளையும் வழங்குவது: <ph name="URL" /></translation>
 <translation id="4764680219299728632">ரேஞ்ச், அடுப்பு &amp; ஓவன்</translation>
 <translation id="4764776831041365478"><ph name="URL" /> இல் உள்ள வலைப்பக்கமானது தற்காலிகமாக இயங்காமல் இருக்கலாம் அல்லது அது ஒரு புதிய வலை முகவரிக்கு நிரந்தரமாக நகர்த்தப்பட்டிருக்கலாம்.</translation>
 <translation id="4766713847338118463">டூயல் ஸ்டேப்பில் பாட்டம்</translation>
@@ -2273,6 +2275,7 @@
 <translation id="5633259641094592098">கல்ட் &amp; இண்டீ திரைப்படங்கள்</translation>
 <translation id="563371367637259496">மொபைல்</translation>
 <translation id="5635237618724097525">ஸ்மார்ட் ஃபோன்கள்</translation>
+<translation id="5635478143789726479">விற்பனையாளரின் விதிமுறைகளும் நிபந்தனைகளும்</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">ஸ்டீரியோ சிஸ்டங்கள் &amp; பாகங்கள்</translation>
 <translation id="5644090287519800334">சைடு 1 இமேஜ் X ஷிஃப்ட்</translation>
@@ -2392,6 +2395,7 @@
 <translation id="5911110632211230665">ஃபைல்களைத் திறப்பது தடுக்கப்பட்டுள்ளது</translation>
 <translation id="59174027418879706">இயக்கப்பட்டது</translation>
 <translation id="5918373444239520146">கேட்ஜெட்டுகள் &amp; போர்டபிள் எலக்ட்ரானிக்ஸ்</translation>
+<translation id="5918847752193018339">உங்கள் CVCகள் சேமிக்கப்பட்டதும் விரைவாக செக் அவுட் செய்யலாம். <ph name="LINK_BEGIN" />சேமிக்கப்பட்ட பாதுகாப்புக் குறியீடுகளை நீக்கு<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{ஒரு குக்கீ பயன்படுத்தப்படுகிறது}other{# குக்கீகள் பயன்படுத்தப்படுகின்றன}}</translation>
 <translation id="592031860219554105">பனிச்சறுக்கு</translation>
@@ -3468,6 +3472,7 @@
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="8041940743680923270">முழுமையான இயல்புநிலையைப் பயன்படுத்து (கேள்)</translation>
 <translation id="8042577181291637092">MIDI சாதனங்களைப் பயன்படுத்த வேண்டுமா?</translation>
+<translation id="8043255123207491407">விற்பனையாளரின் விதிமுறைகளையும் நிபந்தனைகளையும் காட்டு</translation>
 <translation id="8046360364391076336">தொழிற்துறைப் பொருட்கள் &amp; உபகரணங்கள்</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="8055534648776115597">தொழில்முறை &amp; தொடர் கல்வி</translation>
@@ -3745,7 +3750,6 @@
 <translation id="8576310925653847813">ஹோம் தியேட்டர் சிஸ்டங்கள்</translation>
 <translation id="8577192028579836704">அனைத்து விருப்பங்களும் வழக்கமாக <ph name="TYPICAL_PRICE" /> விலையில்</translation>
 <translation id="8577348305244205642">விர்ச்சுவல் கார்டு கிடைக்கவில்லை</translation>
-<translation id="8585615573162100611"><ph name="PERMISSION" /> அனுமதியை நிறுத்து</translation>
 <translation id="8586082901536468629">ஸ்குவாஷ் &amp; ரேக்கெட்பால் உபகரணங்கள்</translation>
 <translation id="858637041960032120">ஃபோன் எண்ணைச் சேர்</translation>
 <translation id="8589998999637048520">சிறந்த தரம்</translation>

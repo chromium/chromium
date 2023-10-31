@@ -2387,19 +2387,6 @@ Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="305106159605171619">Verringerung des User-Agents ist deaktiviert und wurde nicht durch Feld- oder Ursprungstests aktiviert.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Mit dieser Richtlinie wird festgelegt, ob Nutzer vorhandene Browserdaten in ein verwaltetes Profil importieren dürfen, das nach der Anmeldung mit einem verwalteten Konto im Inhaltsbereich erstellt wurde.
-
-Wenn diese Richtlinie nicht konfiguriert oder auf „UserOptInData“ gesetzt ist, kann der Nutzer auswählen, ob vorhandene Browserdaten in das verwaltete Profil übernommen werden sollen. Das entsprechende Kästchen im Dialogfeld zur Profilerstellung ist standardmäßig sichtbar und nicht markiert.
-
-Wenn diese Richtlinie auf „UserOptOutData“ gesetzt ist, kann der Nutzer auswählen, ob vorhandene Browserdaten in das verwaltete Profil übernommen werden sollen. Das entsprechende Kästchen im Dialogfeld zur Profilerstellung ist standardmäßig sichtbar und markiert. Diese Option ist nur auf verwalteten Geräten zulässig.
-
-Ist die Richtlinie auf „AlwaysSeparateData“ gesetzt, können Nutzer keine vorhandenen Browserdaten in das verwaltete Profil importieren. Das entsprechende Kästchen im Dialogfeld zur Profilerstellung ist dann nicht sichtbar.
-
-Wenn Nutzer vorhandene Browserdaten in das verwaltete Profil importieren, wird das aktuelle Profil zu einem verwalteten Profil. Es wird dann kein neues Profil erstellt.
-
-Wenn vorhandene Browserdaten nicht in das verwaltete Profil übernommen werden, wird ein neues Profil erstellt. Die vorhandenen Browserdaten verbleiben in einem nicht verwalteten Profil, auf das der Nutzer weiterhin über die Profilauswahl zugreifen kann.
-
-Damit diese Richtlinie wirksam wird, muss die Richtlinie „<ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" />“ konfiguriert sein.</translation>
 <translation id="3063302084011279315">Screencast deaktivieren</translation>
 <translation id="3063307261083019730">Seiten mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ dürfen nicht im Back-Forward-Cache gespeichert werden.</translation>
 <translation id="3064530882228745118">CNAME-Suche bei der Kerberos-Authentifizierung verwenden</translation>
@@ -3179,9 +3166,15 @@ Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlini
 <translation id="3701121231485832347">Legt die Einstellungen für mit <ph name="MS_AD_NAME" /> verwaltete <ph name="PRODUCT_OS_NAME" />-Geräte fest.</translation>
 <translation id="3702518095257671450">Remote-Attestierung</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutze das mehrzeilige Textfeld unten.</translation>
+<translation id="3711561721191203926">Wenn diese Richtlinie aktiviert ist und aufgrund fehlgeschlagener <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen in <ph name="DEV_TOOLS_NAME" /> eine Warnung angezeigt werden sollte, wird stattdessen die Hauptanfrage blockiert.
+
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine <ph name="PRIVATE_NETWORK_ACCESS" />-Warnungen erzwungen und Anfragen nicht blockiert.
+
+Informationen zu Einschränkungen für <ph name="PRIVATE_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/private-network-access/.</translation>
 <translation id="3711895659073496551">Suspend-Modus</translation>
 <translation id="3712861436661566358">Profiltrennung erzwingen</translation>
 <translation id="3719826155360621982">Startseite</translation>
+<translation id="3724039569609354541">Standardverhalten anwenden, wenn festgelegt wird, ob Websites Anfragen an Netzwerkendpunkte senden können</translation>
 <translation id="372668389978450673">Wenn diese Richtlinie auf „wahr“ gesetzt oder nicht konfiguriert ist, können neue Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.
 
       Ist sie auf „falsch“ gesetzt, können keine neuen Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.
@@ -3634,6 +3627,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
 <translation id="408029843066770167">Abfragen an einen Google-Dienst für die Zeiteinstellung zulassen</translation>
 <translation id="408076456549153854">Browseranmeldung aktivieren</translation>
 <translation id="4081127242481747676">Sensoreinstellungen</translation>
+<translation id="4082405593844340376">Gibt an, ob Einschränkungen auf Anfragen an eher private Netzwerk-Endpunkte angewendet werden sollen</translation>
 <translation id="4082498585300984671">Funktion "Zum Anrufen klicken" aktivieren</translation>
 <translation id="4082809879536562387">Diese Richtlinie ermöglicht, den Zeitraum zwischen der ersten Benachrichtigung zum Neustart eines <ph name="PRODUCT_OS_NAME" />-Geräts, um ein ausstehendes Update anzuwenden, und dem Ende des durch die Richtlinie „<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />“ vorgegebenen Zeitraums in Millisekunden festzulegen.
 
@@ -5406,6 +5400,7 @@ Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk festgelegt ist, w
       Die Richtlinie kann für bestimmte URL-Muster überschrieben werden. Hierfür stehen die Richtlinien „<ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />“ zur Verfügung.
 
       Diese Richtlinie bezieht sich nur auf Aktionen in der Zwischenablage, die in der entsprechenden Websiteberechtigung konfiguriert werden. Sie hat keinerlei Auswirkung auf unformatierte Inhalte in der Zwischenablage oder vertrauenswürdige Kopieren/Einfügen-Vorgänge.</translation>
+<translation id="5650716720715977549">Einschränkungen auf Anfragen an eher private Netzwerk-Endpunkte anwenden</translation>
 <translation id="5651538748810288218">Wenn die Richtlinie auf 1 gesetzt ist, dürfen Websites auf Sensoren wie Bewegungs- und Lichtsensoren zugreifen und diese nutzen. Ist sie auf 2 gesetzt, wird der Zugriff auf alle Sensoren verweigert.
 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ALLOW_SENSORS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
@@ -9095,7 +9090,6 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
       Ist die Richtlinie nicht konfiguriert, ist sie aktiviert und kann von Nutzern nicht deaktiviert werden.</translation>
 <translation id="8789053142986648624">Ein verwaltetes Konto muss ein primäres Konto sein; Nutzer können bestehende Daten bei seiner Erstellung importieren</translation>
 <translation id="8789338675663014675">Hiermit werden erweiterungsbezogene Richtlinien konfiguriert. Blockierte Erweiterungen können vom Nutzer nur installiert werden, wenn diese in der Zulassungsliste enthalten sind. Wenn du die automatische Installation von bestimmten Erweiterungen durch <ph name="PRODUCT_NAME" /> erzwingen möchtest, kannst du die Erweiterungen in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> angeben. Erweiterungen mit erzwungener Installation werden immer installiert, unabhängig davon, ob sie blockiert sind.</translation>
-<translation id="878964451356911302">Dem Nutzer vorschlagen, seine vorhandenen Daten in das verwaltete Profil zu importieren – der Nutzer hat die Möglichkeit, dies abzulehnen</translation>
 <translation id="879697755145469671">Überdeckte Fenster nicht erkennen</translation>
 <translation id="8798099450830957504">Standardeinstellung</translation>
 <translation id="8799492680917278474">Wenn diese Richtlinie konfiguriert wird, werden Verbindungen per Remotezugriff automatisch nach Ablauf der in der Richtlinie festgelegten Dauer (in Minuten) getrennt. Der Client wird nicht daran gehindert, eine neue Verbindung herzustellen, nachdem die maximale Sitzungsdauer überschritten wurde. Wird die Richtlinie auf einen Wert festgelegt, der nicht zwischen dem Höchst- und dem Mindestwert liegt, kann der Host möglicherweise nicht starten. Diese Richtlinie wirkt sich nicht auf die Remote-Unterstützung aus.

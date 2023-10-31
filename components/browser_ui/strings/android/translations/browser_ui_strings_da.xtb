@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Du finder indstillingerne nederst på skærmen</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
+<translation id="7284451015630589124">Du har blokeret websites, så de ikke kan bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere din sporingsbeskyttelse<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Du blokerer som regel notifikationer. Tryk på Info for at give tilladelse.</translation>
 <translation id="7366415735885268578">Tilføj et website</translation>
 <translation id="7368695150573390554">Alle offlinedata slettes</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}one{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}other{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> websites tilhørende <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
 <translation id="8609465669617005112">Flyt op</translation>
+<translation id="8649036394979866943">Chrome begrænser de fleste websites fra at bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere din sporingsbeskyttelse<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8681886425883659911">Annoncer blokeres på websites, som er kendt for at vise påtrængende eller vildledende annoncer</translation>
 <translation id="868929229000858085">Søg blandt dine kontakter</translation>

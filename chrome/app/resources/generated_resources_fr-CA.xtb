@@ -976,6 +976,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="175772926354468439">Activer le thème</translation>
 <translation id="1757786065507923842">Échec de la demande d'autorisation parentale.</translation>
 <translation id="17584710573359123">Afficher dans la boutique en ligne Chrome Web Store</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> remappé à <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Comptes de <ph name="NAME" /></translation>
 <translation id="176272781006230109">suggestions de magasinage</translation>
 <translation id="1763046204212875858">Créer des raccourcis vers des applications</translation>
@@ -1354,6 +1355,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2037486735086318591">Configurez le <ph name="FEATURE_NAME" /> pour échanger des fichiers avec des personnes à proximité</translation>
 <translation id="2039464276165755892">Masquer le contenu des notifications lorsque quelqu'un d'autre regarde votre écran</translation>
 <translation id="2040460856718599782">Oups... Nous n'avons pas réussi à vous authentifier. Veuillez vérifier vos authentifiants de connexion, puis réessayer.</translation>
+<translation id="2040822390690632244">Mises à jour, aide, options pour les développeurs</translation>
 <translation id="2040894699575719559">Lieu bloqué</translation>
 <translation id="2041246176170574368">Les mises à jour de sécurité cessent bientôt. Économisez 50 $ ou plus sur un nouveau Chromebook.</translation>
 <translation id="2042279886444479655">Profils actifs</translation>
@@ -2718,6 +2720,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3076977359333237641">Vos données de connexion ont été supprimées</translation>
 <translation id="3080933187214341848">Ce réseau n'est pas synchronisé avec votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> — <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">extensions</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Bloquée temporairement afin de protéger votre confidentialité</translation>
 <translation id="3083899879156272923">Déplacer l'écran pour laisser le pointeur de la souris au centre de l'écran</translation>
@@ -2877,6 +2880,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3229412050601871341">Mot de passe de l'appareil</translation>
 <translation id="3230539834943294477">Affichez des articles d'aide ou recherchez une assistance pour l'appareil</translation>
 <translation id="3232168089952388105">Partager des renseignements sur votre appareil?</translation>
+<translation id="3232368113895801406">Vos préférences de sécurité n'autorisent pas l'installation d'applications isolées. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Aligner à droite</translation>
 <translation id="3232754137068452469">Application Web</translation>
 <translation id="3233271424239923319">Sauvegarder les applications et les fichiers Linux</translation>
@@ -4554,7 +4558,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4565917129334815774">Stocker les journaux système</translation>
 <translation id="4566170377336116390">Si vous souhaitez changer d'appareil après l'inscription, vous devrez le réinitialiser à ses paramètres par défaut (Powerwash).</translation>
 <translation id="4566417217121906555">Désactiver le microphone</translation>
-<translation id="4566762846886188693">Pour protéger vos données, retirez les autorisations des sites que vous n'avez pas visités récemment. Cela n'arrête pas les notifications.</translation>
 <translation id="456717285308019641">Langue de la page à traduire</translation>
 <translation id="4567512141633030272">Mauvaise option de connexion?</translation>
 <translation id="4567533462991917415">Vous pouvez toujours ajouter des gens après la configuration. Et chaque personne peut personnaliser son compte et garder ses données privées.</translation>
@@ -4587,6 +4590,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="459204634473266369">Aucun appareil enregistré dans <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Application de dessin avec stylet</translation>
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>
+<translation id="4593962599442730215">Modifier vos préférences</translation>
 <translation id="4594218792629569101">Sélectionnez « Marquer comme lu » pour déplacer la page au bas de votre liste</translation>
 <translation id="4594577641390224176">Vous recherchez la page à propos du système? Consultez</translation>
 <translation id="4595560905247879544">Les applications et les extensions ne peuvent être modifiées que par le gestionnaire (<ph name="CUSTODIAN_NAME" />).</translation>
@@ -4601,6 +4605,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="460190672235687855">Afficher les mots de passe</translation>
 <translation id="4602466770786743961">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra et à votre microphone</translation>
 <translation id="4602776638371779614">Cet onglet analyse activement des appareils Bluetooth</translation>
+<translation id="4605026046465576953">Cette application ne peut pas être ouverte, car vous n'êtes pas autorisé à exécuter des applications Web isolées</translation>
 <translation id="4606551464649945562">Ne pas autoriser les sites à créer une carte 3D de votre environnement ni à faire le suivi de la position de l'appareil photo</translation>
 <translation id="4608500690299898628">Rec&amp;hercher...</translation>
 <translation id="4610162781778310380">Le plugiciel <ph name="PLUGIN_NAME" /> a rencontré une erreur</translation>
@@ -4724,6 +4729,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694024090038830733">La configuration de l'imprimante relève de l'administrateur.</translation>
 <translation id="4694604912444486114">Singe</translation>
+<translation id="4694820450536519583">autorisations</translation>
 <translation id="4695318956047767909">Thème sombre, écran de veille</translation>
 <translation id="4697071790493980729">Aucun résultat</translation>
 <translation id="4697551882387947560">Lorsque la session de navigation se termine</translation>
@@ -4772,7 +4778,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4742334355511750246">Non autorisés à afficher des images</translation>
 <translation id="4742970037960872810">Retirer la surbrillance</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Découvrir comment mettre à jour des applications<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Ce que vous tapez dans la barre d'adresse ou le champ de recherche est envoyé à votre moteur de recherche par défaut</translation>
 <translation id="4744268813103118742">Accéder au site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Réactiver le son sur le site}one{Réactiver le son sur le site}other{Réactiver le son sur les sites}}</translation>
@@ -6642,6 +6647,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6264060420924719834">Cette application comporte du contenu Web provenant d'autres sites</translation>
 <translation id="6264365405983206840">Tout &amp;sélectionner</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
+<translation id="6264520534872750757">Continuer à utiliser l'appareil</translation>
 <translation id="6265159465845424232">Demander avant de copier ou de déplacer des fichiers Microsoft vers Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Supprimer le port</translation>
 <translation id="6266532094411434237">Connexion à <ph name="DEVICE" /> en cours…</translation>
@@ -7407,6 +7413,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6876469544038980967">Pas utile</translation>
 <translation id="6878422606530379992">Capteurs autorisés</translation>
 <translation id="6880587130513028875">Les images sont bloquées sur cette page.</translation>
+<translation id="6881845890692344060">Votre administrateur s'est déconnecté. Vous avez le contrôle maintenant.</translation>
 <translation id="6882210908253838664">Si un site ne fonctionne pas, vous pouvez essayer de lui donner l'autorisation temporaire d'utiliser des témoins tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Oups! Le système n'a pas réussi à enregistrer la configuration de l'appareil.</translation>
 <translation id="6884474387073389421">Voulez-vous vraiment supprimer les données de connexion sélectionnées?</translation>
@@ -8304,6 +8311,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7616214729753637086">Enregistrement de l'appareil en cours…</translation>
 <translation id="7617263010641145920">Activer le Play Store</translation>
 <translation id="7617648809369507487">Activer l'affichage discret</translation>
+<translation id="7619937211696316184">La maintenance est terminée</translation>
 <translation id="7621382409404463535">Le système n'a pas réussi à enregistrer la configuration de l'appareil.</translation>
 <translation id="7621480263311228380">Non autorisé à utiliser les renseignements enregistrés à votre sujet</translation>
 <translation id="7621595347123595643">Vous ne pourrez pas récupérer les données locales si vous oubliez votre mot de passe ou votre NIP.</translation>
@@ -9650,6 +9658,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8662795692588422978">Personnes</translation>
 <translation id="8662911384982557515">Changer la page d'accueil pour la page suivante : <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome ne peut pas utiliser ce fichier comme fond d'écran.</translation>
+<translation id="8663051876219324457">Autorisez les applications, les sites Web et les services système à utiliser votre position. Les services de localisation peuvent utiliser des sources comme le Wi-Fi, les réseaux cellulaires et les capteurs pour estimer la position de votre appareil. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Toujours bloquer les téléchargements automatiques multiples de <ph name="HOST" /></translation>
 <translation id="8664389313780386848">&amp;Afficher le code source de la page</translation>
 <translation id="8665110742939124773">Vous avez entré un code d'accès incorrect. Réessayez.</translation>
@@ -9742,6 +9751,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="87254326763805752">Confirmer la clé d'accès</translation>
 <translation id="8726206820263995930">Une erreur est survenue lors de la récupération des paramètres des politiques sur le serveur : <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Tirez le meilleur parti de Chrome</translation>
+<translation id="8727333994464775697">Personnalisez ce que vous voyez sur cette page</translation>
 <translation id="8727751378406387165">Envoyez des <ph name="BEGIN_LINK1" />métadonnées de remplissage automatique<ph name="END_LINK1" />
           <ph name="LINE_BREAK" /> (vos données de remplissage automatique ne seront pas partagées)</translation>
 <translation id="8729133765463465108">Utiliser l'appareil photo pour numériser le code QR</translation>

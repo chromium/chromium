@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Опциялар экранның төменгі жағында тұрады</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> таңдалды</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> және <ph name="PERMISSION_2" /> үшін рұқсат етілген.</translation>
+<translation id="7284451015630589124">Сіз сайттарды браузерді пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын пайдаланудан блоктадыңыз. <ph name="BEGIN_LINK" />Бақылаудан қорғау параметрлерін реттеу<ph name="END_LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="7302486331832100261">Әдетте хабарландыруларға тыйым саласыз. Рұқсат беру үшін "Мәліметтер" түймесін түртіңіз.</translation>
 <translation id="7366415735885268578">Сайтты енгізу</translation>
 <translation id="7368695150573390554">Кез келген офлайн деректер жойылады.</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookie файлдары мына сайтта рұқсат етілді: <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />.}other{Cookie файлдары мына сайттарда рұқсат етілді: <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />.}}</translation>
 <translation id="857943718398505171">Рұқсат етілген (ең дұрысы)</translation>
 <translation id="8609465669617005112">Жоғары қарай жылжыту</translation>
+<translation id="8649036394979866943">Chrome браузері сайттардың көпшілігіне браузерді пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын пайдалануға шектеу қояды. <ph name="BEGIN_LINK" />Бақылаудан қорғау параметрлерін реттеу<ph name="END_LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="8676374126336081632">Енгізілгенді өшіру</translation>
 <translation id="8681886425883659911">Мазалайтын немесе жалған ақпаратты жарнамаларды көрсететіні белгілі сайттарда жарнамалар блокталған</translation>
 <translation id="868929229000858085">Контактілеріңізді іздеңіз</translation>

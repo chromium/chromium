@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Opsi terdapat di dekat bagian bawah layar</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> dipilih</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> diizinkan</translation>
+<translation id="7284451015630589124">Anda memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola fitur anti-pelacakan<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Anda biasanya memblokir notifikasi. Untuk mengizinkan, ketuk Detail.</translation>
 <translation id="7366415735885268578">Tambahkan situs</translation>
 <translation id="7368695150573390554">Semua data offline akan dihapus</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookie diizinkan untuk <ph name="FPS_MEMBERS_COUNT" /> situs di <ph name="FPS_OWNER" />}other{Cookie diizinkan untuk <ph name="FPS_MEMBERS_COUNT" /> situs di <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Diizinkan (disarankan)</translation>
 <translation id="8609465669617005112">Berpindah ke atas</translation>
+<translation id="8649036394979866943">Chrome membatasi sebagian besar situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola fitur anti-pelacakan<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Hapus masukan</translation>
 <translation id="8681886425883659911">Iklan diblokir di situs yang dikenal menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="868929229000858085">Telusuri kontak Anda</translation>

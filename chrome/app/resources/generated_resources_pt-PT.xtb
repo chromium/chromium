@@ -4561,7 +4561,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4565917129334815774">Armazenar registos do sistema</translation>
 <translation id="4566170377336116390">Se quiser mudar depois da inscrição, tem de fazer uma reposição de fábrica (Powerwash) do dispositivo.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
-<translation id="4566762846886188693">Para proteger os seus dados, remova as autorizações de sites que não visitou recentemente. Esta ação não para as notificações.</translation>
 <translation id="456717285308019641">Idioma da página a traduzir</translation>
 <translation id="4567512141633030272">Opção de início de sessão errada?</translation>
 <translation id="4567533462991917415">Pode sempre adicionar mais pessoas após a configuração. Cada pessoa pode personalizar a respetiva conta e manter os dados privados.</translation>
@@ -4782,7 +4781,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4742334355511750246">Sem autorização para mostrar imagens</translation>
 <translation id="4742970037960872810">Remover realce</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saiba como atualizar aplicações<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">O que escreve na barra de endereço ou na caixa de pesquisa é enviado para o motor de pesquisa predefinido</translation>
 <translation id="4744268813103118742">Ir para o site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Reativar som do site}other{Reativar som dos sites}}</translation>

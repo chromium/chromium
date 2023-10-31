@@ -1883,6 +1883,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2436385001956947090">Copia &amp;link</translation>
 <translation id="2438853563451647815">Nessun collegamento alla stampante</translation>
+<translation id="2439152382014731627">Reimposta la password di <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Caricamento di <ph name="WINDOW_TITLE" /> in corso…</translation>
 <translation id="2440604414813129000">Visualizza &amp;sorgente</translation>
 <translation id="2440823041667407902">Accesso alla posizione</translation>
@@ -2033,6 +2034,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2541423446708352368">Mostra tutti i download</translation>
 <translation id="2541706104884128042">Nuova ora di dormire impostata</translation>
 <translation id="2542050502251273923">Consente di impostare il livello di debug del gestore della connessione di rete e di altri servizi usando ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Le autorizzazioni consentite per "<ph name="APP_NAME" />" saranno consentite anche per questa app. <ph name="MANAGE_LINK" />}other{Le autorizzazioni consentite per "<ph name="APP_NAME" />" saranno consentite anche per queste app. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Questa scheda</translation>
 <translation id="2546302722632337735">Non consentire ai siti di usare identificatori per riprodurre contenuti protetti</translation>
 <translation id="2546991196809436099">Aumenta lo zoom per ingrandire gli elementi sullo schermo. Premi il tasto per la ricerca + Ctrl + M per attivare e disattivare l'ingrandimento.</translation>
@@ -2475,6 +2477,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> verrà riavviato e ripristinato tra poco</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Testa batteria, CPU, memoria, connettività e altro ancora</translation>
+<translation id="2885129935310217435">Esiste un pulsante con lo stesso nome. Scegline un altro.</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">Si è verificato un problema durante la decodifica della risposta del server.</translation>
 <translation id="2886119409731773154">L'operazione potrebbe richiedere fino a 30 minuti</translation>
@@ -4557,7 +4560,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4565917129334815774">Archivia log di sistema</translation>
 <translation id="4566170377336116390">Se vuoi effettuare il passaggio dopo la registrazione, dovrai ripristinare i dati di fabbrica (Powerwash) del dispositivo.</translation>
 <translation id="4566417217121906555">Disattiva microfono</translation>
-<translation id="4566762846886188693">Per proteggere i tuoi dati, rimuovi le autorizzazioni dei siti che non hai visitato di recente. Le notifiche non vengono interrotte.</translation>
 <translation id="456717285308019641">Lingua della pagina da tradurre</translation>
 <translation id="4567512141633030272">Opzione di accesso sbagliata?</translation>
 <translation id="4567533462991917415">Puoi aggiungere altre persone in qualsiasi momento dopo la configurazione. Ogni persona potrà personalizzare il proprio account e tenere privati i dati.</translation>
@@ -4778,7 +4780,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4742334355511750246">Non possono mostrare immagini</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Scopri come aggiornare le applicazioni<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Il testo digitato nella barra degli indirizzi o nella casella di ricerca viene inviato al tuo motore di ricerca predefinito</translation>
 <translation id="4744268813103118742">Vai al sito</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>
@@ -8773,6 +8774,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7952708427581814389">I siti possono chiedere di vedere testo e immagini negli appunti</translation>
 <translation id="795282463722894016">Ripristino completato</translation>
 <translation id="7952904276017482715">ID previsto: "<ph name="EXPECTED_ID" />", ID rilevato: "<ph name="NEW_ID" />"</translation>
+<translation id="7953236668995583915">Ricarica la pagina per applicare le impostazioni aggiornate a questo sito</translation>
 <translation id="7953669802889559161">Metodi di immissione</translation>
 <translation id="7953955868932471628">Gestisci scorciatoie</translation>
 <translation id="7955105108888461311">Chiedi di persona</translation>

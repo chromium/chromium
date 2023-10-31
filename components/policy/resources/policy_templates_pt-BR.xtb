@@ -37,6 +37,19 @@
 <translation id="1021462144002396313">Políticas do <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">IDs de extensão que devem ser impedidos de serem instalados pelo usuário (ou * para todos)</translation>
 <translation id="102492767056134033">Definir o estado padrão do teclado na tela, na tela de login</translation>
+<translation id="1026335125982730097">Permite definir uma lista com padrões de URL que especificam quais sites podem definir cookies.
+
+          Os padrões de URL podem ser um único URL indicando que o site pode usar cookies em todos os sites de nível superior.
+
+          Os padrões também podem ser dois URLs separados por vírgula. O primeiro caso especifica o site que precisa de permissão para usar cookies. O segundo especifica o site de nível superior em que o primeiro valor tem que ser aplicado.
+
+          Se você usar um par de URLs, o primeiro valor terá suporte a *, mas o segundo não. O uso de * no primeiro valor indica que todos os sites podem usar cookies quando o segundo URL é o site de nível superior.
+
+          Se esta política não for definida, o valor padrão global será usado para todos os sites. Esse valor será o mesmo das políticas <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> ou <ph name="BLOCK_THIRD_PARTY_COOKIES_POLICY_NAME" />, caso estejam definidas, ou da configuração pessoal do usuário.
+
+          Consulte também as políticas <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Observe que não pode haver padrões de URL conflitantes entre essas três políticas, já que não foi especificado qual delas tem prioridade.
+
+          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="102658870205613876">Configurações de pop-ups</translation>
 <translation id="1027000705181149370">Especifica se os cookies de autenticação definidos por um IdP de SAML durante o login devem ser transferidos para o perfil do usuário.
 
@@ -144,6 +157,7 @@ Se a política for ativada, os usuários poderão usar o hardware de dispositivo
           Se esta política for definida como falsa, o recurso de vozes aprimoradas da conversão de texto em voz da rede no Selecionar para ouvir ficará sempre desativado.
 
           Se a política for definida como verdadeira ou deixada sem definição, o recurso poderá ser ativado ou desativado pelo usuário.</translation>
+<translation id="1137479817584930805">Permitir o salvamento de imagens diretamente no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /></translation>
 <translation id="1138294736309071213">Esta política é ativa somente no modo de varejo. Determina o tempo antes do protetor de tela ser mostrado na tela de login para os dispositivos no modo de varejo. O valor da política deve ser especificado em milésimos de segundos.</translation>
 <translation id="1143257335984030879">Esta política controla a disponibilidade do recurso da lista de compras.
       Se for ativada, os usuários vão receber uma interface para monitorar o preço do produto mostrado na página atual. O produto é mostrado no painel lateral de favoritos.
@@ -193,6 +207,7 @@ Se a política for ativada, os usuários poderão usar o hardware de dispositivo
 
       Se esta política for definida como falsa, a caixa de seleção "Sempre permitir" não será exibida, e o usuário precisará confirmar sempre que um protocolo externo for invocado.</translation>
 <translation id="1181598794547737681">Ativar interface de download em balão</translation>
+<translation id="1184531093651606913">Impede que extensões sejam carregadas na linha de comando</translation>
 <translation id="1184562656144537588">O Manifest v2 está ativado apenas para extensões forçadas</translation>
 <translation id="11903325225202653">Se esta política for definida como verdadeira, o modo de alto contraste permanece ativado. Se esta política for definida como falsa, o modo de alto contraste será desativado.
 
@@ -2150,6 +2165,10 @@ Se esta política for desativada, os usuários não poderão adicionar contas do
 
       Se a política não for definida, a economia de energia no período de pico será desativada inicialmente. Não é possível mudar essa configuração.</translation>
 <translation id="2773288106548584039">Suporte a navegadores legados</translation>
+<translation id="2774906947252258544">A lista de bloqueio controla quais tipos de extensão não poderão ser instalados.
+
+Definir "command_line" impede que uma extensão seja carregada na
+linha de comando.</translation>
 <translation id="2780840673734667062">Desativar o login com mais Contas do Google</translation>
 <translation id="2784880732336446591">Remover dados de navegação ao sair</translation>
 <translation id="2787173078141616821">Informações de relatório sobre o status do Android</translation>
@@ -2353,6 +2372,7 @@ comportamento das teclas de função, e essa configuração não poderá ser mod
       Os URLs precisam ter um esquema HTTPS, como "https://example.com".
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2971096666394658693">O menu de contexto terá um item de menu para compartilhar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2976429807269247880">Configurações de comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado</translation>
 <translation id="2979696534869541158">Forçar implementação antiga</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
@@ -2448,19 +2468,6 @@ Se a política for ativada ou não for definida, o usuário poderá definir a im
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="305106159605171619">A redução do user agent foi desativada e não foi ativada por testes de campo e de origem.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Essa política controla se os usuários têm permissão para migrar dados de navegação para um perfil gerenciado criado após o login de uma conta gerenciada na área de conteúdo.
-
-Se a política for deixada sem definição ou for definida como UserOptInData, o usuário poderá escolher se quer trazer os dados de navegação para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil fica visível e desmarcada por padrão.
-
-Se esta política for definida como UserOptOutData, o usuário poderá escolher se quer usar os dados de navegação já existentes para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil fica visível e marcada por padrão. Além disso, a opção só é permitida em dispositivos gerenciados.
-
-Se esta política for definida como AlwaysSeparateData, o usuário não poderá transferir os dados de navegação existentes para o perfil gerenciado. A caixa de seleção na caixa de diálogo de criação de perfil não estará visível.
-
-A transferência de dados de navegação para o perfil gerenciado significa que o perfil atual passa a ser gerenciado. Nenhum perfil novo será criado.
-
-Não transferir os dados de navegação para o perfil gerenciado significa que um novo perfil limpo será criado. Os dados de navegação vão permanecer em um perfil não gerenciado, que ainda poderá ser acessado pelo usuário no seletor de perfis.
-
-Esta política exige que a <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> seja definida para ter efeito.</translation>
 <translation id="3063302084011279315">Desativar o Screencast</translation>
 <translation id="3063307261083019730">Não permitir que as páginas com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam armazenadas no cache de avanço e retorno.</translation>
 <translation id="3064530882228745118">Usar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
@@ -6437,6 +6444,7 @@ resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="6371561334154580937">Mostrar a caixa de diálogo para saída na última janela fechada.</translation>
 <translation id="6372105930898423193">Permite que o recurso AppCache seja reativado mesmo se estiver desativado por padrão.</translation>
 <translation id="6373299801585455337">Ativar relatórios de informações da CPU do dispositivo</translation>
+<translation id="6374945506685352202">Lista de bloqueio para tipos de instalação de extensões</translation>
 <translation id="6376540107659524656">Desativar SSH no app Terminal System</translation>
 <translation id="6376659517206731212">Pode ser obrigatória</translation>
 <translation id="6377031865393559909">Permitir que os usuários usem modelos de espaço de trabalho</translation>
@@ -6859,6 +6867,7 @@ Desativar a política ou deixá-la sem definição faz com que a política de KD
 No <ph name="MS_WIN_NAME" />, a política de KDC sempre é respeitada.</translation>
 <translation id="6658245400435704251">Especifica o número de segundos que um dispositivo pode chegar a atrasar aleatoriamente o download de uma atualização a partir do momento em que a atualização foi lançada no servidor. O dispositivo pode esperar uma parte desse intervalo de tempo em tempo cronológico e o restante contado em número de verificações de atualizações. Em todo caso, a dispersão tem como limite máximo uma quantidade constante de tempo para que o dispositivo nunca fique parado indefinidamente esperando para fazer o download de uma atualização.</translation>
 <translation id="6659537776197644458">Não acionar fluxos de autenticação para a sincronização de senhas</translation>
+<translation id="6659877981632400997">O menu de contexto não terá um item de menu para compartilhar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Ativar os relatórios de nuvem do perfil gerenciado</translation>
 <translation id="6665670272107384733">Definir com que frequência o usuário precisa digitar a senha para usar o desbloqueio rápido</translation>
 <translation id="6667586534922258705">Exibir o botão "mostrar senha" na tela de login e de bloqueio</translation>
@@ -7028,6 +7037,9 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="6819838337315703072">Se a compatibilidade com apps <ph name="LINUX_OS_NAME" /> estiver ativada, definir a política como "Ativada" enviará informações sobre o uso dos apps <ph name="LINUX_OS_NAME" /> ao servidor.
 
       Se a política for definida como "Desativada" ou deixada sem definição, as informações de uso não serão enviadas.</translation>
+<translation id="6820251681466503297">Esta política controla se o usuário tem permissão para salvar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> diretamente do menu de contexto.
+Se a política for ativada ou deixada sem definição, o usuário poderá usar o menu de contexto para salvar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />. Se ela for desativada, a opção no menu de contexto não estará disponível.
+Esta política não impede que os usuários salvem imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> de outras formas.</translation>
 <translation id="6821870597514407499">A <ph name="WEBVIEW_TAG_NAME" /> em apps do Chrome permite um
 comportamento que está sendo removido do
 <ph name="PRODUCT_NAME" />.
@@ -8549,6 +8561,11 @@ Os usuários não podem editar ou desativar entradas de pesquisa no site definid
 
 Em caso de conflito com um atalho já criado pelo usuário, a configuração do usuário é respeitada. No entanto, os usuários ainda podem acionar a opção criada pela política digitando "@" na barra de pesquisa. Por exemplo, se o usuário já definiu "trabalho" como um atalho para URL1, e a política define "trabalho" como um atalho para URL2, digitar "trabalho" na barra de pesquisa vai acionar uma pesquisa para URL1, mas digitar "@trabalho" vai acionar uma pesquisa para URL2.</translation>
 <translation id="8035570672225663428">Permitir que o modelo de carregamento adaptável controle o processo de carregamento para prolongar a duração da bateria</translation>
+<translation id="8036284429246268475">Se a política for ativada, os usuários poderão permitir que o <ph name="PRODUCT_NAME" /> verifique se os nomes de usuário e as senhas usados foram comprometidos em um vazamento.
+
+      Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se ela for deixada sem definição, a verificação de vazamento de credenciais será permitida, mas os usuários poderão desativá-la.
+
+      Esse comportamento não será acionado se a Navegação segura for desativada, seja por uma política ou pelo usuário. Para forçar o uso do Navegação segura, use a política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou a <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Desativar o <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> em todas as páginas da Web</translation>
 <translation id="8044493735196713914">Informar modo de inicialização do dispositivo</translation>
 <translation id="80453040817068401">Disponibilizar o navegador <ph name="LACROS_NAME" /></translation>
@@ -9402,7 +9419,6 @@ por padrão a partir da versão M119.
       Se a política não for definida, ela será ativada e não poderá ser desativada pelos usuários.</translation>
 <translation id="8789053142986648624">Uma conta gerenciada precisa ser a principal. O usuário pode importar dados existentes no momento da criação da conta</translation>
 <translation id="8789338675663014675">Configura políticas relacionadas a extensões. O usuário não tem permissão para instalar extensões bloqueadas, a menos que tenham sido colocadas na lista de permissões. Você também pode forçar o <ph name="PRODUCT_NAME" /> a instalar extensões automaticamente especificando-as na <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Extensões de instalação forçada são instaladas independentemente de estarem ou não na lista de bloqueio.</translation>
-<translation id="878964451356911302">Sugerir aos usuários que transfiram os dados no perfil gerenciado e oferecer a opção de negar a transferência</translation>
 <translation id="879697755145469671">Não detectar janelas cobertas</translation>
 <translation id="8798099450830957504">Padrão</translation>
 <translation id="8799492680917278474">Se esta política for definida, as conexões de acesso remoto serão encerradas automaticamente quando o número de minutos definido na política for excedido. Isso não impede que o cliente se reconecte após a duração máxima da sessão ter sido alcançada. Se a política for definida com um valor que não está no intervalo mínimo/máximo, o host poderá não ser iniciado. Esta política não afeta situações de suporte remoto.

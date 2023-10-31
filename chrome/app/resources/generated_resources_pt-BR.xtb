@@ -1899,6 +1899,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2435457462613246316">Mostrar senha</translation>
 <translation id="2436385001956947090">Copiar link</translation>
 <translation id="2438853563451647815">Impressora não conectada</translation>
+<translation id="2439152382014731627">Redefinir senha do <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Carregando <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Exibir &amp;código fonte</translation>
 <translation id="2440823041667407902">Acesso ao local</translation>
@@ -2049,6 +2050,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2541423446708352368">Mostrar todos os downloads</translation>
 <translation id="2541706104884128042">Nova hora de dormir definida</translation>
 <translation id="2542050502251273923">Configura o nível de depuração do gerenciador de conexão de rede e outros serviços usando ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para este app. <ph name="MANAGE_LINK" />}one{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para este app. <ph name="MANAGE_LINK" />}other{As permissões concedidas a <ph name="APP_NAME" /> também serão dadas para estes apps. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Esta guia</translation>
 <translation id="2546302722632337735">Não permitir que os sites usem identificadores para abrir conteúdo protegido</translation>
 <translation id="2546991196809436099">Aumente o zoom para ampliar os itens na tela. Use Pesquisa + Ctrl + M para ativar e desativar a lupa.</translation>
@@ -2490,6 +2492,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> será reiniciado e redefinido temporariamente</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Testar bateria, CPU, memória, conectividade e muito mais</translation>
+<translation id="2885129935310217435">Há um botão com o mesmo nome. Escolha outro.</translation>
 <translation id="2885378588091291677">Gerenciador de tarefas</translation>
 <translation id="2885729872133513017">Ocorreu um problema ao decodificar a resposta do servidor.</translation>
 <translation id="2886119409731773154">Isso pode levar até 30 minutos</translation>
@@ -4574,7 +4577,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4565917129334815774">Armazenar registros de sistema</translation>
 <translation id="4566170377336116390">Se você quiser trocar depois do registro, será necessário redefinir o dispositivo para a configuração original (Powerwash).</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
-<translation id="4566762846886188693">Para proteger seus dados, remova permissões de sites que você não acessou recentemente. Não interrompe notificações.</translation>
 <translation id="456717285308019641">Idioma de origem da página</translation>
 <translation id="4567512141633030272">Opção de login errada?</translation>
 <translation id="4567533462991917415">É possível adicionar mais pessoas a qualquer momento após a configuração. Cada uma delas pode personalizar a própria conta e manter os dados privados.</translation>
@@ -4795,7 +4797,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4742334355511750246">Bloquear a exibição de imagens</translation>
 <translation id="4742970037960872810">Remover destaque</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saiba como atualizar aplicativos<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">O que você digita na barra de endereço ou na caixa de pesquisa é enviado ao seu mecanismo de pesquisa padrão</translation>
 <translation id="4744268813103118742">Acessar o site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Ativar som do site}one{Ativar som do site}other{Ativar som dos sites}}</translation>
@@ -8796,6 +8797,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7952708427581814389">Os sites podem pedir para acessar texto e imagens na sua área de transferência</translation>
 <translation id="795282463722894016">Restauração concluída</translation>
 <translation id="7952904276017482715">O código esperado era "<ph name="EXPECTED_ID" />", mas o instalado foi "<ph name="NEW_ID" />"</translation>
+<translation id="7953236668995583915">Atualize a página para aplicar as configurações atualizadas ao site</translation>
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7953955868932471628">Gerenciar atalhos</translation>
 <translation id="7955105108888461311">Perguntar diretamente</translation>

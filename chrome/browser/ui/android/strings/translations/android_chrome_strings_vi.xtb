@@ -900,6 +900,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5753139477036638699">Bạn có thể dùng giọng nói để tìm kiếm trên Chrome</translation>
 <translation id="5754350196967618083">Không thể làm mới tính năng Khám phá</translation>
 <translation id="5755162682436943950">Đã đăng xuất. Mở hộp thoại để đăng nhập và bật tính năng đồng bộ hoá.</translation>
+<translation id="5759897675466110265">Trang web không hoạt động? Hãy thử tạm thời cho phép cookie của bên thứ ba</translation>
 <translation id="5763382633136178763">Thẻ ẩn danh</translation>
 <translation id="5763514718066511291">Nhấn để sao chép URL cho ứng dụng này</translation>
 <translation id="5765517223145864268">Cho chúng tôi biết về trải nghiệm của bạn. Hoặc <ph name="BEGIN_LINK" />thay đổi các chế độ cài đặt của bạn<ph name="END_LINK" />.</translation>
@@ -1214,6 +1215,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="729975465115245577">Thiết bị của bạn không có ứng dụng để lưu trữ tệp mật khẩu.</translation>
 <translation id="7304072650267745798">Thiết bị Android của bạn có thể có chế độ cài đặt tương tự. Nếu bạn bật chế độ cài đặt này trong Chrome và trên thiết bị Android, một công ty có thể đo lường mức độ hiệu quả của quảng cáo trên những trang web bạn truy cập và ứng dụng bạn dùng.</translation>
 <translation id="7304873321153398381">Không có kết nối mạng. Chrome không thể kiểm tra mật khẩu của bạn.</translation>
+<translation id="7313094438430838513">Chống theo dõi</translation>
 <translation id="7313188324932846546">Nhấn để thiết lập quá trình đồng bộ hóa</translation>
 <translation id="7324354302972299151">Gửi yêu cầu "Không theo dõi"</translation>
 <translation id="7332075081379534664">Đăng nhập thành công</translation>
@@ -1343,6 +1345,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7887174313503389866">Xem hướng dẫn về các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật. Để có thêm lựa chọn, hãy chuyển đến từng phần cài đặt cụ thể.</translation>
 <translation id="7896724475402191389">Nội dung dành cho người trẻ – tắt</translation>
 <translation id="7903184275147100332">Quá trình này có thể mất ít phút</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">Đã cài đặt ứng dụng</translation>
 <translation id="7919123827536834358">Tự động dịch những ngôn ngữ này</translation>
 <translation id="7926975587469166629">Biệt hiệu của thẻ</translation>

@@ -1883,6 +1883,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
 <translation id="2436385001956947090">&amp;Link kopiëren</translation>
 <translation id="2438853563451647815">Niet verbonden met printer</translation>
+<translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-wachtwoord resetten</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> laden</translation>
 <translation id="2440604414813129000">Br&amp;on bekijken</translation>
 <translation id="2440823041667407902">Locatietoegang</translation>
@@ -2033,6 +2034,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2541423446708352368">Alle downloads tonen</translation>
 <translation id="2541706104884128042">Nieuwe bedtijd ingesteld</translation>
 <translation id="2542050502251273923">Hiermee stel je het foutopsporingsniveau in voor netwerkverbindingsbeheer en andere services die ff_debug gebruiken.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor deze app. <ph name="MANAGE_LINK" />}other{Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor deze apps. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Dit tabblad</translation>
 <translation id="2546302722632337735">Niet toestaan dat sites ID's gebruiken om beveiligde content af te spelen</translation>
 <translation id="2546991196809436099">Zoom in om items op het scherm groter te maken. Gebruik Zoeken + Ctrl + M om het vergrootglas aan en uit te zetten.</translation>
@@ -2475,6 +2477,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> wordt zo meteen opnieuw gestart en opnieuw ingesteld.</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Test onder meer je batterij, CPU, geheugen en connectiviteit</translation>
+<translation id="2885129935310217435">Er is al een knop met dezelfde naam. Kies een andere naam.</translation>
 <translation id="2885378588091291677">Taakbeheer</translation>
 <translation id="2885729872133513017">Er is een probleem opgetreden bij het decoderen van de serverreactie.</translation>
 <translation id="2886119409731773154">Dit kan tot 30 minuten duren</translation>
@@ -4556,7 +4559,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4565917129334815774">Systeemlogboeken opslaan</translation>
 <translation id="4566170377336116390">Als je na het inschrijven wilt wisselen, moet je de fabrieksinstellingen terugzetten (powerwash) op je apparaat.</translation>
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
-<translation id="4566762846886188693">Ter bescherming van je gegevens de rechten verwijderen voor sites die je niet recent hebt bezocht. Hiermee worden meldingen niet gestopt.</translation>
 <translation id="456717285308019641">Paginataal om te vertalen</translation>
 <translation id="4567512141633030272">Verkeerde inlogoptie?</translation>
 <translation id="4567533462991917415">Je kunt na het instellen altijd meer mensen toevoegen. Elke persoon kan zijn of haar account personaliseren en gegevens privé houden.</translation>
@@ -4776,7 +4778,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4742334355511750246">Geen toestemming om afbeeldingen te bekijken</translation>
 <translation id="4742970037960872810">Markering verwijderen</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Meer informatie over hoe je apps updatet<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Wat je in de adresbalk of het zoekvak typt, wordt naar je standaard zoekmachine gestuurd</translation>
 <translation id="4744268813103118742">Naar site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Geluid van site aanzetten}other{Geluid van sites aanzetten}}</translation>
@@ -8766,6 +8767,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
 <translation id="795282463722894016">Herstellen voltooid</translation>
 <translation id="7952904276017482715">Verwachte ID '<ph name="EXPECTED_ID" />', maar ID is '<ph name="NEW_ID" />'</translation>
+<translation id="7953236668995583915">Laad deze pagina opnieuw om je geüpdatete instellingen toe te passen op deze site</translation>
 <translation id="7953669802889559161">Invoermethoden</translation>
 <translation id="7953955868932471628">Sneltoetsen beheren</translation>
 <translation id="7955105108888461311">Persoonlijk vragen</translation>

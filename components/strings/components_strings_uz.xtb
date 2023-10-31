@@ -1109,6 +1109,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3266793032086590337">Qiymat (ziddiyatli)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Hech qaysi sayt bloklanmagan, jumladan aloqador saytlar}=1{1 ta sayt bloklangan, jumladan aloqador saytlar}other{# ta sayt bloklangan, jumladan aloqador saytlar}}</translation>
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
+<translation id="3270041629388773465">Saqlangan CVC kodlar yordamida tezkor toʻlang</translation>
 <translation id="3270156322180235608">Avia sayohatlar</translation>
 <translation id="3270847123878663523">&amp;Qayta tartiblashni bekor qilish</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> qurilmangizga ulanmoqchi</translation>
@@ -1848,6 +1849,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4761104368405085019">Mikrofoningizni ishlatish</translation>
 <translation id="4761326898079498987">Batafsil maʼlumot uchun koʻrib chiqing</translation>
 <translation id="4761869838909035636">Chrome Xavfsizlik tekshiruvini bajarish</translation>
+<translation id="4763196677855776703">Foydalanish shartlarini <ph name="URL" /> taqdim qilgan</translation>
 <translation id="4764680219299728632">Muzlatkichlar, pishirish panellari va pechlar</translation>
 <translation id="4764776831041365478"><ph name="URL" /> manzilidagi veb-sahifa vaqtinchalik ishlamayapti yoki boshqa manzilga butunlay ko‘chirilgan.</translation>
 <translation id="4766713847338118463">Quyidan ikki marta steplerlash</translation>
@@ -2277,6 +2279,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5633259641094592098">Kult va indi filmlar</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5635237618724097525">Smartfonlar</translation>
+<translation id="5635478143789726479">Sotuvchining foydalanish shartlari</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereo tizimlar va komponentlar</translation>
 <translation id="5644090287519800334">Tasvirning old tomondagi X oʻqidagi siljish</translation>
@@ -2396,6 +2399,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5911110632211230665">Bloklangan fayllarni ochish</translation>
 <translation id="59174027418879706">Yoqilgan</translation>
 <translation id="5918373444239520146">Gadjetlar va ixcham elektronika</translation>
+<translation id="5918847752193018339">Saqlangan CVC kodlar yordamida tezkor toʻlang. <ph name="LINK_BEGIN" />Saqlangan xavfsizlik kodlarini oʻchirish<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 ta cookie-fayl}other{ # ta cookie-fayl}}</translation>
 <translation id="592031860219554105">Konkida yugurish</translation>
@@ -3474,6 +3478,7 @@ Batafsil axborot:
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="8041940743680923270">Global parametrdan foydalanish (so‘ralsin)</translation>
 <translation id="8042577181291637092">MIDI qurilmalardan foydalanilsinmi?</translation>
+<translation id="8043255123207491407">Sotuvchining foydalanish shartlari</translation>
 <translation id="8046360364391076336">Sanoat materiallari va jihozlari</translation>
 <translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="8055534648776115597">Taʼtildagi va davomiy taʼlim</translation>
@@ -3751,7 +3756,6 @@ Batafsil axborot:
 <translation id="8576310925653847813">Uy kinoteatri tizimlari</translation>
 <translation id="8577192028579836704">Odatiy narxdagi barcha variantlar: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtual karta mavjud emas</translation>
-<translation id="8585615573162100611"><ph name="PERMISSION" /> ruxsati bekor qilinsin</translation>
 <translation id="8586082901536468629">Skvosh va raketbol jihozlari</translation>
 <translation id="858637041960032120">Raqam qo‘shing</translation>
 <translation id="8589998999637048520">Eng sifatli</translation>

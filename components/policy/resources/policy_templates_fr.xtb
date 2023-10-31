@@ -2394,19 +2394,6 @@ Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="305106159605171619">La réduction user-agent est désactivée et ne peut pas être activée par les essais Field-Trials et Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Cette règle détermine si l'utilisateur est autorisé ou non à importer des données de navigation dans un profil géré créé après qu'un compte géré s'est connecté dans la zone de contenu.
-
-Si cette règle est définie sur "UserOptInData" ou n'est pas configurée, l'utilisateur peut choisir d'importer ou non les données de navigation existantes dans le profil géré. La case à cocher dans la boîte de dialogue de création de profil est visible et décochée par défaut.
-
-Si cette règle est définie sur "UserOptOutData", l'utilisateur peut choisir d'importer ou non les données de navigation existantes dans le profil géré. La case à cocher dans la boîte de dialogue de création de profil est visible et cochée par défaut. Cette option n'est autorisée que sur les appareils gérés.
-
-Si cette règle est définie sur "AlwaysSeparateData", l'utilisateur ne peut pas importer les données de navigation existantes dans le profil géré. La case à cocher dans la boîte de dialogue de création de profil n'est pas visible.
-
-Si les données de navigation existantes sont importées dans le profil géré, le profil actuel devient géré. Aucun profil n'est créé.
-
-Si les données de navigation existantes ne sont pas importées dans le profil géré, un profil est créé. Les données de navigation existantes resteront dans un profil non géré, auquel l'utilisateur pourra toujours accéder à l'aide de l'outil de sélection du profil.
-
-Cette règle nécessite que la règle <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> soit définie.</translation>
 <translation id="3063302084011279315">Désactiver l'enregistreur d'écran</translation>
 <translation id="3063307261083019730">Interdire le stockage des pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dans le cache amélioré.</translation>
 <translation id="3064530882228745118">Utiliser la consultation CNAME lors de l'authentification Kerberos</translation>
@@ -3183,9 +3170,15 @@ Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAU
 <translation id="3701121231485832347">Contrôle les paramètres propres aux appareils <ph name="PRODUCT_OS_NAME" /> gérés par <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestation à distance</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Le champ constitué d'une seule ligne est abandonné et va être supprimé prochainement. Utilisez à la place la zone de texte à plusieurs lignes ci-dessous.)</translation>
+<translation id="3711561721191203926">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans <ph name="DEV_TOOLS_NAME" /> en raison de l'échec des vérifications <ph name="PRIVATE_NETWORK_ACCESS" />.
+
+Si cette règle est désactivée ou n'est pas configurée, tous les avertissements <ph name="PRIVATE_NETWORK_ACCESS" /> ne sont pas appliqués et les requêtes ne sont pas bloquées.
+
+Pour connaître les restrictions concernant <ph name="PRIVATE_NETWORK_ACCESS" />, consultez https://wicg.github.io/private-network-access/.</translation>
 <translation id="3711895659073496551">Arrêter</translation>
 <translation id="3712861436661566358">Activer la séparation des profils</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
+<translation id="3724039569609354541">Utiliser le comportement par défaut pour déterminer si des sites Web peuvent envoyer des requêtes aux points de terminaison du réseau</translation>
 <translation id="372668389978450673">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent l'ajout d'une personne depuis le gestionnaire d'utilisateurs.
 
       Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'ajout d'une personne depuis le gestionnaire d'utilisateurs.
@@ -3637,6 +3630,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="408029843066770167">Autoriser l'envoi de requêtes à un service horaire de Google</translation>
 <translation id="408076456549153854">Activer la connexion au navigateur</translation>
 <translation id="4081127242481747676">Paramètres des capteurs</translation>
+<translation id="4082405593844340376">Indique si des restrictions doivent être appliquées aux requêtes adressées à des points de terminaison plus privés du réseau</translation>
 <translation id="4082498585300984671">Activer la fonctionnalité Click to Call</translation>
 <translation id="4082809879536562387">Vous permet de définir le délai, en millisecondes, entre la première notification vous avertissant qu'un appareil <ph name="PRODUCT_OS_NAME" /> doit être redémarré pour l'application d'une mise à jour en attente et la fin du délai spécifié par la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
 
@@ -5422,6 +5416,7 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
       Pour les formats d'URL spécifiques, cette règle peut être remplacée par les règles <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Cette règle affecte uniquement les opérations contrôlées par l'autorisation accordée à un site d'utiliser le presse-papiers. Elle n'affecte pas les écritures nettoyées dans le presse-papiers ni les opérations copier et coller sécurisées.</translation>
+<translation id="5650716720715977549">Appliquer des restrictions aux requêtes adressées à des points de terminaison plus privés du réseau</translation>
 <translation id="5651538748810288218">Si cette règle est définie sur "1", les sites Web peuvent accéder aux capteurs (de mouvement et de lumière, par exemple) et les utiliser. Si elle est définie sur "2", l'accès aux capteurs est refusé.
 
       Si elle n'est pas configurée, la règle <ph name="ALLOW_SENSORS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -9120,7 +9115,6 @@ Si cette règle n'est pas configurée, aucun mot de passe enregistré n'est impo
       Si cette règle n'est pas configurée, elle est activée, et les utilisateurs ne peuvent pas la désactiver.</translation>
 <translation id="8789053142986648624">L'utilisateur peut importer des données existantes au moment de la création d'un compte géré seulement s'il s'agit d'un compte principal.</translation>
 <translation id="8789338675663014675">Permet de configurer les règles relatives aux extensions. L'utilisateur n'est pas autorisé à installer des extensions bloquées, à moins qu'elles aient été ajoutées à la liste blanche. Vous pouvez également forcer <ph name="PRODUCT_NAME" /> à installer automatiquement des extensions en les spécifiant dans <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Cette méthode permet d'installer des extensions inscrites sur la liste de blocage.</translation>
-<translation id="878964451356911302">Donner le choix aux utilisateurs d'importer ou non leurs données existantes dans le profil géré</translation>
 <translation id="879697755145469671">Ne pas détecter une fenêtre recouverte</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8799492680917278474">Si cette règle est activée, les connexions d'accès à distance se termineront automatiquement une fois le nombre de minutes défini écoulé. Cela n'empêche pas le client de se reconnecter après avoir atteint la durée maximale de session. Si la durée définie dans cette règle n'est pas comprise dans les limites indiquées, l'hôte risque de ne pas démarrer. Cette règle ne concerne pas les cas d'assistance à distance.

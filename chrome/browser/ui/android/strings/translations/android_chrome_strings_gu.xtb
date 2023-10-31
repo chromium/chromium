@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">આ સાઇટનો અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
 <translation id="1145536944570833626">અસ્તિત્વમાંના ડેટાને ડિલીટ કરો.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો.</translation>
+<translation id="115483310321669804"><ph name="PASSWORD" /> પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1174479719160874822">સ્ક્રીન નાની થાય ત્યારે દરેક વખતે Chrome, મોબાઇલ સાઇટની વિનંતી કરશે</translation>
 <translation id="1177863135347784049">કસ્ટમ</translation>
@@ -149,6 +150,7 @@
 <translation id="1779766957982586368">વિન્ડો બંધ કરો</translation>
 <translation id="1791662854739702043">ઇન્સ્ટોલ કરેલું</translation>
 <translation id="1792959175193046959">ડિફૉલ્ટ ડાઉનલોડ સ્થાનને કોઈપણ સમયે બદલો</translation>
+<translation id="1796666869097395659">પછીથી ટૅબ પર પાછા ફરવા માટે તેને નાનું કરો</translation>
 <translation id="1807246157184219062">આછું</translation>
 <translation id="1810845389119482123">સિંકનું પ્રારંભિક સેટઅપ પૂર્ણ થયું નથી</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> પર <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />નો ઉપયોગ કરવાનું ચાલુ રાખી શકાતું નથી</translation>
@@ -1215,6 +1217,7 @@
 <translation id="729975465115245577">તમારા ઉપકરણ પાસે પાસવર્ડ ફાઇલને સ્ટોર કરવા માટેની ઍપ નથી.</translation>
 <translation id="7304072650267745798">તમારા Android ડિવાઇસમાં કદાચ આના જેવું કોઈ સેટિંગ શામેલ હોઈ શકે. જો Chromeમાં અને તમારા Android ડિવાઇસ પર આ સેટિંગ ચાલુ કરેલું હોય, તો કંપની તમે મુલાકાત લો છો તેવી સમગ્ર વેબસાઇટ પર અને તમે ઉપયોગ કરો છો તેવી ઍપ પર જાહેરાતની અસરકારકતાની માપણી કરી શકે છે.</translation>
 <translation id="7304873321153398381">ઑફલાઇન. Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી.</translation>
+<translation id="7313094438430838513">ટ્રૅકિંગ સંરક્ષણ</translation>
 <translation id="7313188324932846546">સિંકની સુવિધા સેટઅપ કરવાનો પ્રયાસ કરો</translation>
 <translation id="7324354302972299151">“Do Not Track"ની વિનંતી મોકલો</translation>
 <translation id="7332075081379534664">સાઇન-ઇન કરવામાં સફળ રહ્યાં</translation>
@@ -1344,6 +1347,7 @@
 <translation id="7887174313503389866">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોની મુલાકાત લો. વધુ વિકલ્પો માટે, વ્યક્તિગત સેટિંગ પર જાઓ.</translation>
 <translation id="7896724475402191389">બાળકો માટે કન્ટેન્ટ - બંધ છે</translation>
 <translation id="7903184275147100332">આમાં એક મિનિટ લાગી શકે છે</translation>
+<translation id="7907478394153853634">Lorem ipsum</translation>
 <translation id="7914399737746719723">ઍપ ઇન્સ્ટૉલ કરી</translation>
 <translation id="7919123827536834358">આ ભાષાઓનો ઑટોમૅટિક રીતે અનુવાદ કરો</translation>
 <translation id="7926975587469166629">કાર્ડનું ઉપનામ</translation>

@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Izinketho ziyatholakala eduze kwangaphansi kwesikrini</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> kukhethiwe</translation>
 <translation id="7260727271532453612">I-<ph name="PERMISSION_1" /> ne-<ph name="PERMISSION_2" /> kuvunyelwe</translation>
+<translation id="7284451015630589124">Uvimbe amasayithi ekusebenziseni amakhukhi ongahlangene ngqo ukuze akulandelele njengoba ubhrawuza. Vakashela amasethingi ukuze <ph name="BEGIN_LINK" />uphathe ukuvikela kwakho kokulandela<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Uvamise ukuvimba izaziso. Ukuze uvumele, thepha imininingwane.</translation>
 <translation id="7366415735885268578">Engeza isayithi</translation>
 <translation id="7368695150573390554">Noma iyiphi idatha engekho ku-inthanethi izosulwa</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Amakhukhi avunyelwe kusayithi eli-<ph name="FPS_MEMBERS_COUNT" /> lika-<ph name="FPS_OWNER" />}one{Amakhukhi avunyelwe kumasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> ka-<ph name="FPS_OWNER" />}other{Amakhukhi avunyelwe kumasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> ka-<ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Kuvunyelwe (kunconyiwe)</translation>
 <translation id="8609465669617005112">Hambisa phezulu</translation>
+<translation id="8649036394979866943">I-Chrome ikhawulela amasayithi amaningi ekusebenziseni amakhukhi ongahlangene ngqo ukuze akulandelele njengoba ubhrawuza Vakashela amasethingi ukuze <ph name="BEGIN_LINK" />uphathe ukuvikela kwakho kokulandela<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Sula okokufaka</translation>
 <translation id="8681886425883659911">Izikhangiso zivinjelwe kumasayithi aziwa ngokubonisa izikhangiso ezizivelelayo noma ezidukisayo</translation>
 <translation id="868929229000858085">Sesha oxhumana nabo</translation>

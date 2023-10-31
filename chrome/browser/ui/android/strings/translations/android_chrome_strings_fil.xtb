@@ -900,6 +900,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5753139477036638699">Puwede mong gamitin ang iyong boses para maghanap sa Chrome</translation>
 <translation id="5754350196967618083">Hindi ma-refresh ang Discover</translation>
 <translation id="5755162682436943950">Naka-sign out. Binubuksan ang dialog para mag-sign in at i-on ang pag-sync.</translation>
+<translation id="5759897675466110265">Hindi gumagana ang site? Subukang pansamantalang payagan ang third-party na cookies</translation>
 <translation id="5763382633136178763">Mga tab na incognito</translation>
 <translation id="5763514718066511291">I-tap upang kopyahin ang URL para sa app na ito</translation>
 <translation id="5765517223145864268">Sabihin sa amin ang iyong karanasan. O <ph name="BEGIN_LINK" />baguhin ang iyong mga setting<ph name="END_LINK" />.</translation>
@@ -1214,6 +1215,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="729975465115245577">Walang app sa iyong device upang ma-store ang file ng mga password.</translation>
 <translation id="7304072650267745798">Posibleng may kasamang katulad na setting ang iyong Android device. Kung naka-on ang setting na ito sa Chrome at sa iyong Android device, posibleng masukat ng kumpanya ang pagiging epektibo ng ad sa lahat ng binibisita mong website at ginagamit mong app.</translation>
 <translation id="7304873321153398381">Offline. Hindi masuri ng Chrome ang iyong mga password.</translation>
+<translation id="7313094438430838513">Proteksyon sa pagsubaybay</translation>
 <translation id="7313188324932846546">Mag-tap para i-set up ang pag-sync</translation>
 <translation id="7324354302972299151">Magpadala ng request na “Do Not Track”</translation>
 <translation id="7332075081379534664">Matagumpay ang pag-sign in</translation>

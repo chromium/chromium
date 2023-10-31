@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Možnosti so na voljo pri dnu zaslona</translation>
 <translation id="7250468141469952378">Št. izbranih: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dovoljeno: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Spletnim mestom ste blokirali uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati zaščito pred sledenjem<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Obvestila običajno blokirate. Če želite to omogočiti, se dotaknite Podrobnosti.</translation>
 <translation id="7366415735885268578">Dodajanje spletnega mesta</translation>
 <translation id="7368695150573390554">Vsi podatki brez povezave bodo izbrisani</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletno mesto <ph name="FPS_OWNER" />.}one{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletno mesto <ph name="FPS_OWNER" />.}two{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletni mesti <ph name="FPS_OWNER" />.}few{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletna mesta <ph name="FPS_OWNER" />.}other{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletnih mest <ph name="FPS_OWNER" />.}}</translation>
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
+<translation id="8649036394979866943">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati zaščito pred sledenjem<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Izbriši vnos</translation>
 <translation id="8681886425883659911">Oglasi so blokirani na spletnih mestih, za katera je znano, da prikazujejo vsiljive ali zavajajoče oglase.</translation>
 <translation id="868929229000858085">Iskanje po stikih</translation>

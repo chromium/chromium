@@ -1110,6 +1110,7 @@
 <translation id="3266793032086590337">අගය (ගැටුම්කාරී)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{අදාළ අඩවි ඇතුළුව, කිසිදු අඩවියක් අවහිර කර නැත}=1{අදාළ අඩවි ඇතුළුව, 1 අඩවියක් අවහිර කර ඇත}one{අදාළ අඩවි ඇතුළුව, අඩවි #ක් අවහිර කර ඇත}other{අදාළ අඩවි ඇතුළුව, අඩවි #ක් අවහිර කර ඇත}}</translation>
 <translation id="3268451620468152448">ටැබ විවෘත කරන්න</translation>
+<translation id="3270041629388773465">ඔබේ CVC සුරැකී ඇති විට ඉතා වේගයෙන් ගෙවා පිටවන්න</translation>
 <translation id="3270156322180235608">ගුවන් ගමන</translation>
 <translation id="3270847123878663523">යළි ඇණවුම් කිරීම &amp;පසුගමනය කරන්න</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> හට සම්බන්ධ වීමට අවශ්‍යයි</translation>
@@ -1849,6 +1850,7 @@
 <translation id="4761104368405085019">මයික්‍රොෙෆෝනය භාවිතා කරන්න</translation>
 <translation id="4761326898079498987">වැඩිදුර විස්තර සඳහා සමාලෝචනය කරන්න</translation>
 <translation id="4761869838909035636">Chrome ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
+<translation id="4763196677855776703"><ph name="URL" /> විසින් සපයනු ලබන නියමයන් සහ කොන්දේසි</translation>
 <translation id="4764680219299728632">රේන්ජර්ස්, කුක් ටොප්ස් සහ අවන්</translation>
 <translation id="4764776831041365478"><ph name="URL" /> හි වෙබ් පිටුව තාවකාලිකව ක්‍රියා නොකරයි නැතහොත් එය ස්ථිරවම වෙනත් වෙබ් ලිපිනයක් වෙත ගෙනගොස් ඇත.</translation>
 <translation id="4766713847338118463">පහළට දෙවරක් ස්ටේපල්</translation>
@@ -2277,6 +2279,7 @@
 <translation id="5633259641094592098">කල්ට් සහ ඉන්ඩී චිත්‍රපට</translation>
 <translation id="563371367637259496">ජංගම</translation>
 <translation id="5635237618724097525">ස්මාර්ට් දුරකථන</translation>
+<translation id="5635478143789726479">විකුණුම්කරුගේ නියමයන් සහ කොන්දේසි</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">ස්ටීරියෝ පද්ධති සහ කොටස්</translation>
 <translation id="5644090287519800334">පැත්ත 1 රූප X වැඩ මුරය</translation>
@@ -2396,6 +2399,7 @@
 <translation id="5911110632211230665">විවෘත කිරීම අවහිරයි</translation>
 <translation id="59174027418879706">සබලයි</translation>
 <translation id="5918373444239520146">ගැජට් සහ එහා මෙහා ගෙනයා හැකි ඉලෙක්ට්‍රොනික්</translation>
+<translation id="5918847752193018339">ඔබේ CVC සුරැකී ඇති විට ඉතා වේගයෙන් ගෙවා පිටවන්න. <ph name="LINK_BEGIN" />සුරැකි ආරක්ෂක කේත මකන්න<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1ක් භාවිතයේ ඇත}one{#ක් භාවිතයේ ඇත}other{#ක් භාවිතයේ ඇත}}</translation>
 <translation id="592031860219554105">හිමමත ලිස්සායාම</translation>
@@ -3473,6 +3477,7 @@
 <translation id="8041089156583427627">ප්‍රතිපෝෂණ යවන්න</translation>
 <translation id="8041940743680923270">ගෝලීය පෙරනිමිය භාවිතා කරන්න(අසන්න)</translation>
 <translation id="8042577181291637092">MIDI උපාංග භාවිත කරන්න ද?</translation>
+<translation id="8043255123207491407">විකුණුම්කරුගේ නියමයන් සහ කොන්දේසි බලන්න</translation>
 <translation id="8046360364391076336">කාර්මික අමුද්‍රව්‍ය සහ උපකරණ</translation>
 <translation id="8052898407431791827">පසුරු පුවරුවට පිටපත් කරන ලදි</translation>
 <translation id="8055534648776115597">වෘත්තීය සහ අඛණ්ඩ අධ්‍යාපනය</translation>
@@ -3750,7 +3755,6 @@
 <translation id="8576310925653847813">හෝම් තියටර් පද්ධති</translation>
 <translation id="8577192028579836704">සියලු විකල්ප නියමානුකූලව <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">අතථ්‍ය කාඩ්පත ලබා ගත නොහැකිය</translation>
-<translation id="8585615573162100611"><ph name="PERMISSION" /> හට ඉඩ දීම නවත්වන්න</translation>
 <translation id="8586082901536468629">ස්කොෂ් සහ රැකට්පන්දු උපකරණ</translation>
 <translation id="858637041960032120">දුරකථන අංකය එක් කරන්න</translation>
 <translation id="8589998999637048520">ඉහළම ගුණත්වය</translation>

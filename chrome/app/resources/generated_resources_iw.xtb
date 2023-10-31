@@ -4573,7 +4573,6 @@
 <translation id="4565917129334815774">אחסון יומני מערכת</translation>
 <translation id="4566170377336116390">‏אם רוצים להחליף אחרי הרישום, צריך לבצע איפוס להגדרות המקוריות (Powerwash) במכשיר.</translation>
 <translation id="4566417217121906555">השתקת המיקרופון</translation>
-<translation id="4566762846886188693">כדי להגן על הנתונים שלך, צריך להסיר הרשאות מאתרים שלא נכנסת אליהם לאחרונה. המערכת ממשיכה לשלוח התראות.</translation>
 <translation id="456717285308019641">שפת הדף שיש לתרגם</translation>
 <translation id="4567512141633030272">אפשרות הכניסה שגויה?</translation>
 <translation id="4567533462991917415">תמיד אפשר להוסיף עוד אנשים לאחר ההגדרה. כל משתמש יכול להתאים אישית את החשבון שלו ולהגן על פרטיות הנתונים.</translation>
@@ -4794,7 +4793,6 @@
 <translation id="4742334355511750246">לא מורשים להציג תמונות</translation>
 <translation id="4742970037960872810">הסרת ההדגשה</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />איך לעדכן אפליקציות<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">הטקסט שמקלידים בסרגל הכתובות או בתיבת החיפוש יישלח למנוע החיפוש שמוגדר כברירת מחדל</translation>
 <translation id="4744268813103118742">לאתר</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ביטול ההשתקה של האודיו באתר}one{ביטול ההשתקה של האודיו באתרים}two{ביטול ההשתקה של האודיו באתרים}other{ביטול ההשתקה של האודיו באתרים}}</translation>
@@ -8330,7 +8328,7 @@
 <translation id="7615365294369022248">אירעה שגיאה בהוספת חשבון</translation>
 <translation id="7616214729753637086">רישום המכשיר מתבצע...</translation>
 <translation id="7617263010641145920">‏הפעלה של חנות Play</translation>
-<translation id="7617648809369507487">שימוש במצב שקט יותר של התראות</translation>
+<translation id="7617648809369507487">שימוש בהצגת התראות שקטה יותר</translation>
 <translation id="7619937211696316184">פעולות התחזוקה הסתיימו</translation>
 <translation id="7621382409404463535">המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
 <translation id="7621480263311228380">לאתר אין הרשאה להשתמש במידע עליך שנשמר בו</translation>

@@ -4544,7 +4544,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4565917129334815774">Przechowuj dzienniki systemowe</translation>
 <translation id="4566170377336116390">Jeśli po zarejestrowaniu urządzenia zdecydujesz się zmienić jego tryb, konieczne będzie przywrócenie go do ustawień fabrycznych (użycie funkcji Powerwash).</translation>
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
-<translation id="4566762846886188693">Aby chronić swoje dane, usuwaj uprawnienia witryn, których ostatnio nie odwiedzasz. Funkcja nie wyłącza powiadomień.</translation>
 <translation id="456717285308019641">Język strony do przetłumaczenia</translation>
 <translation id="4567512141633030272">Nieprawidłowa opcja logowania?</translation>
 <translation id="4567533462991917415">Po ukończeniu konfiguracji zawsze możesz dodać więcej osób. Każda osoba może spersonalizować swoje konto i zachować prywatność swoich danych.</translation>
@@ -4765,7 +4764,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4742334355511750246">Nie zezwolono na wyświetlanie obrazów</translation>
 <translation id="4742970037960872810">Usuń podświetlenie</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Dowiedz się, jak zaktualizować aplikacje<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">To, co piszesz na pasku adresu lub w polu wyszukiwania, jest wysyłane do domyślnej wyszukiwarki</translation>
 <translation id="4744268813103118742">Przejdź do witryny</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Wyłącz wyciszenie strony}few{Wyłącz wyciszenie stron}many{Wyłącz wyciszenie stron}other{Wyłącz wyciszenie stron}}</translation>

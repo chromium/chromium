@@ -1110,6 +1110,7 @@
 <translation id="3266793032086590337">Valeur (conflit)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Aucun site bloqué, y compris les sites connexes}=1{1 site bloqué, y compris les sites connexes}one{# site bloqué, y compris les sites connexes}other{# sites bloqués, y compris les sites connexes}}</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
+<translation id="3270041629388773465">Payer plus rapidement lorsque vos codes CVC sont enregistrés</translation>
 <translation id="3270156322180235608">Voyage en avion</translation>
 <translation id="3270847123878663523">&amp;Annuler la réorganisation</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> veut se connecter</translation>
@@ -1849,6 +1850,7 @@
 <translation id="4761104368405085019">Utiliser votre microphone</translation>
 <translation id="4761326898079498987">Examinez la notification pour plus de détails</translation>
 <translation id="4761869838909035636">Effectuer une vérification de sécurité de Chrome</translation>
+<translation id="4763196677855776703">Conditions d'utilisation fournies par <ph name="URL" /></translation>
 <translation id="4764680219299728632">Cuisinières, surfaces de cuisson et fours</translation>
 <translation id="4764776831041365478">Il se peut que la page Web à l'adresse <ph name="URL" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une autre adresse Web.</translation>
 <translation id="4766713847338118463">Double agrafe en bas</translation>
@@ -2277,6 +2279,7 @@
 <translation id="5633259641094592098">Films cultes et indépendants</translation>
 <translation id="563371367637259496">Cellulaire</translation>
 <translation id="5635237618724097525">Téléphones intelligents</translation>
+<translation id="5635478143789726479">Conditions d'utilisation du marchand</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Systèmes et composants stéréophoniques</translation>
 <translation id="5644090287519800334">Décalage X de l'image côté 1</translation>
@@ -2396,6 +2399,7 @@
 <translation id="5911110632211230665">Ouverture bloquée</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5918373444239520146">Gadgets et appareils électroniques portatifs</translation>
+<translation id="5918847752193018339">Payer plus rapidement lorsque vos codes CVC sont enregistrés. <ph name="LINK_BEGIN" />Supprimer les codes de sécurité enregistrés<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en cours d'utilisation}one{# en cours d'utilisation}other{# en cours d'utilisation}}</translation>
 <translation id="592031860219554105">Patin à glace</translation>
@@ -3473,6 +3477,7 @@ Détails supplémentaires :
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8041940743680923270">Utiliser le paramètre global par défaut (« Demander »)</translation>
 <translation id="8042577181291637092">Utiliser des appareils MIDI?</translation>
+<translation id="8043255123207491407">Voir les conditions d'utilisation du marchand</translation>
 <translation id="8046360364391076336">Équipements et matériaux industriels</translation>
 <translation id="8052898407431791827">Copiée dans le presse-papiers</translation>
 <translation id="8055534648776115597">Formations professionnelles et continues</translation>
@@ -3750,7 +3755,6 @@ Détails supplémentaires :
 <translation id="8576310925653847813">Chaînes de cinéma maison</translation>
 <translation id="8577192028579836704">Prix habituel de toutes les options : <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Votre carte virtuelle n'est plus valide</translation>
-<translation id="8585615573162100611">Arrêter l'autorisation : <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Équipement de squash et de racquetball</translation>
 <translation id="858637041960032120">Ajouter un numéro de téléphone</translation>
 <translation id="8589998999637048520">Meilleure qualité</translation>

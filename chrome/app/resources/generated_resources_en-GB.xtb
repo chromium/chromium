@@ -4576,7 +4576,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4565917129334815774">Store system logs</translation>
 <translation id="4566170377336116390">If you want to switch after enrolment, you will need to factory reset (powerwash) your device.</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
-<translation id="4566762846886188693">To protect your data, remove permissions from sites you haven't visited in recently. Doesn't stop notifications.</translation>
 <translation id="456717285308019641">Page language to translate</translation>
 <translation id="4567512141633030272">Wrong sign-in option?</translation>
 <translation id="4567533462991917415">You can always add more people after setup. Each person can personalise their account and keep data private.</translation>
@@ -4797,7 +4796,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4742334355511750246">Not allowed to show images</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Find out how to update applications<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">What you type in the address bar or search box is sent to your default search engine</translation>
 <translation id="4744268813103118742">Go to site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Unmute site}other{Unmute sites}}</translation>

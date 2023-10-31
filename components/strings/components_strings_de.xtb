@@ -1109,6 +1109,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3266793032086590337">Wert (Konflikt)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Keine Websites blockiert, einschließlich ähnlicher Websites}=1{1 Website blockiert, einschließlich ähnlicher Websites}other{# Websites blockiert, einschließlich ähnlicher Websites}}</translation>
 <translation id="3268451620468152448">Geöffnete Tabs</translation>
+<translation id="3270041629388773465">Schneller bezahlen mit gespeicherten CVCs</translation>
 <translation id="3270156322180235608">Flugreisen</translation>
 <translation id="3270847123878663523">&amp;Neu anordnen rückgängig machen</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> möchte eine Verbindung herstellen</translation>
@@ -1846,6 +1847,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4761104368405085019">Mikrofon verwenden</translation>
 <translation id="4761326898079498987">Weitere Informationen erhältst du hier</translation>
 <translation id="4761869838909035636">Chrome-Sicherheitscheck ausführen</translation>
+<translation id="4763196677855776703">Nutzungsbedingungen von <ph name="URL" /></translation>
 <translation id="4764680219299728632">Herde, Kochfelder und Öfen</translation>
 <translation id="4764776831041365478">Die Webseite unter <ph name="URL" /> ist eventuell vorübergehend nicht verfügbar oder wurde dauerhaft an eine neue Webadresse verschoben.</translation>
 <translation id="4766713847338118463">Zwei Heftklammern unten</translation>
@@ -2274,6 +2276,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5633259641094592098">Kultklassiker und Indie-Filme</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5635237618724097525">Smartphones</translation>
+<translation id="5635478143789726479">Nutzungsbedingungen des Verkäufers</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereoanlagen und ‑komponenten</translation>
 <translation id="5644090287519800334">Seite 1 – X-Verschiebung des Bilds</translation>
@@ -2393,6 +2396,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5911110632211230665">Öffnen blockiert</translation>
 <translation id="59174027418879706">Aktiviert</translation>
 <translation id="5918373444239520146">Gadgets und tragbare Elektrogeräte</translation>
+<translation id="5918847752193018339">Mit gespeicherten CVCs kannst du schneller bezahlen. <ph name="LINK_BEGIN" />Gespeicherte Sicherheitscodes löschen<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 wird verwendet}other{# werden verwendet}}</translation>
 <translation id="592031860219554105">Eislaufen</translation>
@@ -3470,6 +3474,7 @@ Weitere Details:
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8041940743680923270">Globalen Standard verwenden (Fragen)</translation>
 <translation id="8042577181291637092">MIDI-Geräte verwenden?</translation>
+<translation id="8043255123207491407">Nutzungsbedingungen des Verkäufers ansehen</translation>
 <translation id="8046360364391076336">Industriematerialien und ‑geräte</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8055534648776115597">Aus- und Weiterbildung</translation>
@@ -3745,7 +3750,6 @@ Weitere Details:
 <translation id="8576310925653847813">Heimkinosysteme</translation>
 <translation id="8577192028579836704">Alle Optionen; in der Regel <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelle Karte nicht verfügbar</translation>
-<translation id="8585615573162100611">Berechtigung „<ph name="PERMISSION" />“ widerrufen</translation>
 <translation id="8586082901536468629">Squash- und Racquetballausrüstung</translation>
 <translation id="858637041960032120">Weitere Nummer
 </translation>

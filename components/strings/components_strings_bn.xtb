@@ -1111,6 +1111,7 @@
 <translation id="3266793032086590337">মান (ম্যাচ করছে না)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{সম্পর্কিত সাইট সহ কোনও সাইট ব্লক করা নেই}=1{সম্পর্কিত সাইট সহ ১টি সাইট ব্লক করা আছে}one{সম্পর্কিত সাইট সহ #টি সাইট ব্লক করা আছে}other{সম্পর্কিত সাইট সহ #টি সাইট ব্লক করা আছে}}</translation>
 <translation id="3268451620468152448">ওপেন ট্যাব</translation>
+<translation id="3270041629388773465">আপনার CVC সেভ করা থাকলে আরও দ্রুত চেক-আউট হয়ে যায়</translation>
 <translation id="3270156322180235608">আকাশপথে ভ্রমণ</translation>
 <translation id="3270847123878663523">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
@@ -1850,6 +1851,7 @@
 <translation id="4761104368405085019">আপনার মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="4761326898079498987">আরও বিবরণের জন্য পর্যালোচনা করুন</translation>
 <translation id="4761869838909035636">'Chrome নিরাপত্তা সংক্রান্ত পরীক্ষা' চালান</translation>
+<translation id="4763196677855776703"><ph name="URL" />-এর মাধ্যমে নিয়ম ও শর্তাবলী দেওয়া হয়েছে</translation>
 <translation id="4764680219299728632">রেঞ্জ, কুকটপ ও ওভেন</translation>
 <translation id="4764776831041365478"><ph name="URL" />-এ ওয়েবপৃষ্ঠাটি অস্থায়ীভাবে ডাউন থাকতে পারে অথবা এটি স্থায়ীভাবে কোনো নতুন ওয়েব অ্যাড্রেসে সরানো হয়ে থাকতে পারে৷</translation>
 <translation id="4766713847338118463">নিচে ডুয়াল স্টেপল</translation>
@@ -2278,6 +2280,7 @@
 <translation id="5633259641094592098">কাল্ট এবং ইন্ডি সিনেমা</translation>
 <translation id="563371367637259496">মোবাইল</translation>
 <translation id="5635237618724097525">স্মার্ট ফোন</translation>
+<translation id="5635478143789726479">বিক্রেতার নিয়ম ও শর্তাবলী</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">স্টিরিও সিস্টেম ও কম্পোনেন্ট</translation>
 <translation id="5644090287519800334">সাইড 1 ছবি X শিফ্ট</translation>
@@ -2397,6 +2400,7 @@
 <translation id="5911110632211230665">ফাইল খোলার অনুমতি নেই</translation>
 <translation id="59174027418879706">সক্ষমিত</translation>
 <translation id="5918373444239520146">গ্যাজেট ও পোর্টেবল ইলেকট্রনিক্স</translation>
+<translation id="5918847752193018339">আপনার CVC সেভ করা থাকলে আরও দ্রুত চেক-আউট হয়ে যায়। <ph name="LINK_BEGIN" />সেভ করা নিরাপত্তা কোড মুছুন<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{১টি ব্যবহৃত হচ্ছে}one{#টি ব্যবহৃত হচ্ছে}other{#টি ব্যবহৃত হচ্ছে}}</translation>
 <translation id="592031860219554105">বরফের ওপর স্কেটিং</translation>
@@ -3473,6 +3477,7 @@
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8041940743680923270">বিশ্বব্যাপী ডিফল্ট ব্যবহার করুন (জানতে চান)</translation>
 <translation id="8042577181291637092">MIDI ডিভাইস ব্যবহার করবেন?</translation>
+<translation id="8043255123207491407">বিক্রেতার নিয়ম ও শর্তাবলী দেখুন</translation>
 <translation id="8046360364391076336">শিল্প সামগ্রী ও যন্ত্রপাতি</translation>
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="8055534648776115597">বৃত্তিমূলক ও অব্যাহত শিক্ষা</translation>
@@ -3750,7 +3755,6 @@
 <translation id="8576310925653847813">হোম থিয়েটার সিস্টেম</translation>
 <translation id="8577192028579836704">সব বিকল্প সাধারণত <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ভার্চুয়াল কার্ড উপলভ্য নেই</translation>
-<translation id="8585615573162100611"><ph name="PERMISSION" />-এ অনুমতি দিতে চাই না</translation>
 <translation id="8586082901536468629">স্কোয়াশ ও রেকেটবলের সরঞ্জাম</translation>
 <translation id="858637041960032120">ফোননম্বর জুড়ুন</translation>
 <translation id="8589998999637048520">সেরা কোয়ালিটি</translation>

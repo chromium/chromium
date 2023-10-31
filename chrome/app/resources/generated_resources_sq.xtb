@@ -4555,7 +4555,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4565917129334815774">Ruaj evidencat e sistemit</translation>
 <translation id="4566170377336116390">Nëse dëshiron ta ndryshosh pas regjistrimit, do të të duhet ta rivendosësh pajisjen tënde në gjendje fabrike (Powerwash).</translation>
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
-<translation id="4566762846886188693">Për të mbrojtur të dhënat e tua, hiq lejet nga sajtet që nuk i ke vizituar së fundi. Kjo nuk i ndalon njoftimet.</translation>
 <translation id="456717285308019641">Faqja "Gjuha në të cilën do të përkthehet"</translation>
 <translation id="4567512141633030272">Opsioni i gabuar i identifikimit?</translation>
 <translation id="4567533462991917415">Mund të shtosh gjithmonë persona të tjerë pas konfigurimit. Çdo person mund ta personalizojë llogarinë e vet dhe t'i mbajë të dhënat private.</translation>
@@ -4776,7 +4775,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4742334355511750246">Nuk lejohen të shfaqin imazhe</translation>
 <translation id="4742970037960872810">Hiq theksimin</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Mëso se si të përditësosh aplikacionet<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Ato që shkruan në shiritin e adresës ose në kutinë e kërkimit dërgohen te motori i parazgjedhur i kërkimit</translation>
 <translation id="4744268813103118742">Shko tek sajti</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Aktivizo zërin e sajtit}other{Aktivizo zërin e sajteve}}</translation>

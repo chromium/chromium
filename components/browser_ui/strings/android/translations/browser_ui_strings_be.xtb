@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Параметры знаходзяцца ў ніжняй частцы экрана</translation>
 <translation id="7250468141469952378">Выбрана: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Дазволены <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Вы заблакіравалі для сайтаў магчымасць выкарыстоўваць староннія файлы cookie, якія дазваляюць адсочваць вашы дзеянні ў інтэрнэце. Кіраваць <ph name="BEGIN_LINK" />абаронай ад адсочвання<ph name="END_LINK" /> можна ў наладах.</translation>
 <translation id="7302486331832100261">Звычайна вы блакіруеце апавяшчэнні. Каб дазволіць іх, націсніце "Падрабязнасці".</translation>
 <translation id="7366415735885268578">Дадаванне сайта</translation>
 <translation id="7368695150573390554">Усе пазасеткавыя даныя будуць выдалены</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}one{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}few{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="FPS_OWNER" />}many{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="FPS_OWNER" />}other{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дазволена (рэкамендуецца)</translation>
 <translation id="8609465669617005112">Перамясціць уверх</translation>
+<translation id="8649036394979866943">Выкарыстанне старонніх файлаў cookie, якія дазваляюць адсочваць вашы дзеянні ў інтэрнэце, абмежавана ў Chrome для большасці сайтаў. Кіраваць <ph name="BEGIN_LINK" />абаронай ад адсочвання<ph name="END_LINK" /> можна ў наладах.</translation>
 <translation id="8676374126336081632">Ачысціць поле ўводу</translation>
 <translation id="8681886425883659911">На сайтах, якія паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман, рэклама блакіруецца</translation>
 <translation id="868929229000858085">Пошук у кантактах</translation>

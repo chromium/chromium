@@ -311,6 +311,7 @@
 <translation id="1574714699824202614">የክፍያ ዘዴን በማረጋገጥ ላይ</translation>
 <translation id="1576277203042721907">የሸመታ ግንዛቤዎች</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">ጊዜው አላለፈም</translation>
 <translation id="1583429793053364125">ይህን ድረ-ገፅ በማሳየት ላይ ሳለ የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="1584492003828271317">በሚያስሱበት ጊዜ የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ መሆን አለመሆኑ በዚህ ቅንብር፣ በጣቢያ የተጠቆሙ ማስታወቂያዎች፣ በእርስዎ የኩኪ ቅንብሮች እና እየተመለከቱት ያለው ጣቢያ ማስታወቂያዎችን ግላዊነት የሚያላብስ ከሆነ በሚሉት ላይ ይወሰናል</translation>
 <translation id="1586541204584340881">የትኛዎቹ ቅጥያዎች ናቸው እርስዎ የጫኑት</translation>
@@ -973,6 +974,7 @@
 <translation id="2985306909656435243">ከነቃ Chromium ለተሻለ የቅጽ አሞላል ፍጥነት ሲባል በዚህ መሣሪያ ላይ ያለው የካርድዎን ቅጂ ያከማቻል።</translation>
 <translation id="2985398929374701810">የሚሰራ አድራሻ ያስገቡ</translation>
 <translation id="2987034854559945715">ምንም ተዛማጅ ባህሪያት የሉም</translation>
+<translation id="2988216301273604645">Chrome በማሰስ ላይ እንዳሉ ጣቢያዎች እርስዎን ለመከታተል ሊጠቀሙት የሚችሉትን የመረጃ መጠን ይገድባል። የራስዎን የጥበቃ ደረጃ ለመምረጥ የእርስዎን ቅንብሮች መለወጥ ይችላሉ።</translation>
 <translation id="2989742184762224133">ድርብ ከላይ ስቴፕለር ምታ</translation>
 <translation id="2991174974383378012">ከድረ ገጾች ጋር ማጋራት</translation>
 <translation id="299122504639061328">ነባሪ የፍለጋ ፕሮግራምዎን እና የጣቢያ ፍለጋዎን ያቀናብሩ</translation>
@@ -1383,6 +1385,7 @@
 <translation id="3793574014653384240">በቅርቡ ያጋጠሙ ብልሽቶች ብዛት እና ምክንያታቸው</translation>
 <translation id="3795344968043407227">ነፃ እና አማራጭ ሙዚቃ</translation>
 <translation id="3799805948399000906">ቅርጸ-ቁምፊ ተጠይቋል</translation>
+<translation id="3801265110651850478">በአሰሳ ትራፊክዎ «Do Not Track» ጥያቄ ይላኩ</translation>
 <translation id="380329542618494757">ስም</translation>
 <translation id="3806932344025766608">ለመጎብኘት በሚሞክሩበት ጣቢያ ላይ ያሉ ጥቃት አድራሾች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ ይለፍ ቃል፣ ስልክ ወይም የክሬዲት ካርድ ቁጥር ያሉ ነገሮችን እንዲገልጹ ሊሸውዱዎት ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">የስልክ ግልጋሎት ሰጪዎች</translation>
@@ -1653,6 +1656,7 @@
 <translation id="4331708818696583467">ደህንነቱ አልተጠበቀም</translation>
 <translation id="4333295216031073611">የሚገዙ ነገሮች ዝርዝር</translation>
 <translation id="4333561522337981382">በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ማስተዳደር</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{ነገ ጊዜው ያበቃል}one{በ# ቀን ውስጥ ጊዜው ያበቃል}other{በ# ቀናት ውስጥ ጊዜው ያበቃል}}</translation>
 <translation id="4340575312453649552">ይህ ማስታወቂያ ለመሣሪያዎ በጣም ብዙ ሀብቶችን ተጠቅሟል፣ ስለዚህ Chrome አስወግደውታል።</translation>
 <translation id="4340810192899866471">ከJSON አምጣ</translation>
 <translation id="4340982228985273705">ይህ ኮምፒውተር እንደ በድርጅት የሚተዳደር ሆኖ አይታይም፣ ስለዚህ መመሪያ በChrome የድር ማከማቻ ላይ የሚስተናገዱ ቅጥያዎችን ብቻ በራስ-ሰር ነው መጫን የሚችለው። የChrome ድር ማከማቻው ዝማኔ ዩአርኤል «<ph name="CWS_UPDATE_URL" />» ነው።</translation>
@@ -2211,6 +2215,7 @@
 <translation id="5512812358367123529">የቢሮ ዕቃዎች</translation>
 <translation id="5513528801833998679">የመሣሪያ በመለያ መግባትን ተጠቀም</translation>
 <translation id="5515388687005870733">55 x 85 ሚሜ</translation>
+<translation id="5518352028556756716">አብዛኛዎቹ ጣቢያዎች በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን መጠቀም አይችሉም እና ጣቢያዎች በማንነት የማያሳውቅ ሁነታ ውስጥ የሦስተኛ ወገን ኩኪዎችን መጠቀም አይችሉም።</translation>
 <translation id="5518670652865028077">ስነ ጥበቦች እና መዝናኛ</translation>
 <translation id="5519516356611866228">ከእርስዎ ለውጦች ጋር</translation>
 <translation id="5519696598216267194">ወረቀት (ቀድሞ የተመታ)</translation>
@@ -3113,6 +3118,7 @@
 <translation id="7366117520888504990">198 x 275 ሚሜ</translation>
 <translation id="7366362069757178916">የክፍያ ተቆጣጣሪዎች</translation>
 <translation id="7367985555340314048">የዝንባሌዎች ርዕሶች በቅርብ ጊዜ የአሰሳ ታሪክዎ ላይ የተመሰረቱ ናቸው እና ግላዊነት የተላበሱ ማስታወቂያዎችን ለእርስዎ ለማሳየት በጣቢያዎች ጥቅም ላይ ይውላሉ</translation>
+<translation id="7368169244533796604">ጣቢያ ሰርዝ</translation>
 <translation id="7372526636730851647">ፎቶ (አንጸባራቂ)</translation>
 <translation id="7372973238305370288">የፍለጋ ውጤት</translation>
 <translation id="7374461526650987610">የፕሮቶኮል ተቆጣጣሪዎች</translation>
@@ -3428,6 +3434,7 @@
 <translation id="7951415247503192394">(32-ቢት)</translation>
 <translation id="7952192831285741665">የአውሮፓ EDP</translation>
 <translation id="7952327717479677595">የፍለጋ ፕሮግራሞች አዝራርን ያስተዳድሩ፣ ነባሪ የፍለጋ ፕሮግራምዎን እና የጣቢያ ፍለጋዎን ለማስተዳደር ያግብሩ</translation>
+<translation id="7953236668995583915">በዚህ ጣቢያ ላይ የተዘመኑ ቅንብሮችዎን ለመተግበር ይህን ገፅ እንደገና ይጫኑ</translation>
 <translation id="7953569069500808819">ከላይ ጫፍን ስፋ</translation>
 <translation id="7955105108888461311">በአካል ጠይቅ</translation>
 <translation id="7956713633345437162">የተንቀሳቃሽ ስልክ ዕልባቶች</translation>
@@ -3754,7 +3761,6 @@
 <translation id="8576310925653847813">የቤት ትያትር ስርዓቶች</translation>
 <translation id="8577192028579836704">ሁሉም አማራጮች መደበኛ <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">ምናባዊ ካርድ አይገኝም</translation>
-<translation id="8585615573162100611"><ph name="PERMISSION" /> መፍቀድ አቁም</translation>
 <translation id="8586082901536468629">የስኳሽ እና ራኬት ኳስ መሣሪያዎች</translation>
 <translation id="858637041960032120">ስልክ ቁጥር ያክሉ
 </translation>

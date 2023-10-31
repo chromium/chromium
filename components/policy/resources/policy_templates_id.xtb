@@ -37,6 +37,19 @@
 <translation id="1021462144002396313">Kebijakan <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">ID ekstensi yang tidak diizinkan dipasang pengguna (atau * untuk semua)</translation>
 <translation id="102492767056134033">Menyetel status default keyboard di layar di layar masuk</translation>
+<translation id="1026335125982730097">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menyetel cookie.
+
+          Pola URL dapat berupa URL tunggal yang menunjukkan bahwa situs mungkin menggunakan cookie di semua situs tingkat atas.
+
+          Pola juga dapat berupa dua URL yang dipisahkan oleh koma. URL pertama menentukan situs yang harus diizinkan untuk menggunakan cookie. URL kedua menentukan situs tingkat atas tempat nilai pertama harus diterapkan.
+
+          Jika Anda menggunakan sepasang URL, nilai pertama dalam pasangan tersebut mendukung *, tetapi nilai kedua tidak. Penggunaan * untuk nilai pertama menunjukkan bahwa semua situs mungkin menggunakan cookie jika URL kedua adalah situs tingkat atas.
+
+          Jika kebijakan ini tidak disetel, nilai default global akan digunakan untuk semua situs, baik dari kebijakan <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> maupun <ph name="BLOCK_THIRD_PARTY_COOKIES_POLICY_NAME" /> jika disetel, atau konfigurasi pribadi pengguna jika tidak disetel.
+
+          Lihat juga kebijakan <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Perlu diketahui bahwa tidak boleh ada pola URL yang bertentangan antara tiga kebijakan ini, dan tidak ditentukan kebijakan mana yang akan diprioritaskan.
+
+          Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukan nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="102658870205613876">Setelan pop-up</translation>
 <translation id="1027000705181149370">Menentukan apakah cookie autentikasi yang ditetapkan oleh IdP SAML selama proses masuk harus ditransfer ke profil pengguna atau tidak.
 
@@ -144,6 +157,7 @@ Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan hardware di per
           Jika kebijakan ini disetel ke salah (false), fitur suara text-to-speech enhanced network di fitur Klik untuk Diucapkan akan selalu dinonaktifkan.
 
           Jika kebijakan ini disetel ke benar (true) atau tidak disetel, fitur suara text-to-speech enhanced network di fitur Klik untuk Diucapkan dapat diaktifkan atau dinonaktifkan oleh pengguna.</translation>
+<translation id="1137479817584930805">Mengizinkan penyimpanan gambar langsung ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /></translation>
 <translation id="1138294736309071213">Kebijakan ini aktif dalam mode eceran saja.
 
       Menentukan durasi sebelum tirai layar ditampilkan di layar masuk dalam mode eceran.
@@ -197,6 +211,7 @@ Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan hardware di per
 
       Jika kebijakan ini ditetapkan ke Salah, kotak centang "Selalu izinkan" tidak akan ditampilkan dan pengguna akan diminta untuk mengonfirmasi setiap kali protokol eksternal dipanggil.</translation>
 <translation id="1181598794547737681">Aktifkan UI balon download</translation>
+<translation id="1184531093651606913">Blokir ekstensi agar tidak dimuat dari command line</translation>
 <translation id="1184562656144537588">Manifes v2 hanya diaktifkan untuk ekstensi yang diinstal otomatis</translation>
 <translation id="11903325225202653">Jika kebijakan ditetapkan ke Benar (True), Mode kontras tinggi akan tetap diaktifkan. Jika kebijakan ditetapkan ke Salah (False), Mode kontras tinggi akan tetap dinonaktifkan.
 
@@ -2154,6 +2169,10 @@ Jika kebijakan ini dinonaktifkan, pengguna tidak dapat menambahkan akun Kerberos
 
       Jika tidak disetel, pengaktifan daya baterai akan nonaktif terlebih dahulu. Pengguna tidak dapat mengubah setelan ini.</translation>
 <translation id="2773288106548584039">Dukungan Browser Lama</translation>
+<translation id="2774906947252258544">Daftar yang tidak diizinkan mengontrol jenis penginstalan ekstensi yang tidak diizinkan.
+
+Menyetel "command_line" akan memblokir ekstensi agar tidak dimuat dari
+command line.</translation>
 <translation id="2780840673734667062">Nonaktifkan login dengan Akun Google tambahan</translation>
 <translation id="2784880732336446591">Menghapus Data Penjelajahan saat Keluar</translation>
 <translation id="2787173078141616821">Informasi laporan tentang status Android</translation>
@@ -2359,6 +2378,7 @@ perilaku tombol fungsi, dan setelan ini tidak akan dapat diubah oleh pengguna.</
       URL harus berisi skema HTTPS, misalnya "https://example.com".
 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2971096666394658693">Menu konteks akan memiliki item menu untuk membagikan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2976429807269247880">Setelan perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="2979696534869541158">Paksa implementasi lama</translation>
 <translation id="2985927503455169394">Gunakan mode default pengalaman aktivasi Asisten</translation>
@@ -2454,19 +2474,6 @@ Pengguna dapat menyetel gambar avatar dari salah satu opsi ini jika kebijakan in
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="305106159605171619">Pengurangan Agen Pengguna dinonaktifkan, dan tidak diaktifkan oleh Uji Coba Kolom atau Uji Coba Asal.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Kebijakan ini mengontrol apakah pengguna diizinkan menyimpan data penjelajahan yang sudah ada ke profil terkelola yang dibuat setelah akun terkelola login di area konten.
-
-Jika kebijakan ini tidak disetel atau disetel ke UserOptInData, pengguna dapat memilih apakah akan menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil akan terlihat dan tidak dicentang secara default.
-
-Jika kebijakan ini disetel ke UserOptOutData, pengguna dapat memilih apakah akan menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil akan terlihat dan dicentang secara default. Opsi ini hanya diizinkan di perangkat terkelola.
-
-Jika kebijakan ini disetel ke AlwaysSeparateData, pengguna tidak dapat menyimpan data penjelajahan yang sudah ada ke profil terkelola. Kotak centang dalam dialog pembuatan profil tidak akan terlihat.
-
-Jika data penjelajahan yang ada dipindahkan ke profil terkelola, berarti profil saat ini akan menjadi profil terkelola. Tidak ada profil baru yang akan dibuat.
-
-Dengan tidak memindahkan data penjelajahan yang ada ke profil terkelola, artinya profil bersih baru akan dibuat. Data penjelajahan yang sudah ada akan tetap berada di profil yang tidak dikelola, yang masih dapat diakses oleh pengguna melalui pemilih profil.
-
-Kebijakan ini mengharuskan kebijakan <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> disetel agar dapat diterapkan.</translation>
 <translation id="3063302084011279315">Nonaktifkan Screencast</translation>
 <translation id="3063307261083019730">Larang halaman dengan header <ph name="CACHE_CONTROL_NO_STORE_NAME" /> disimpan di back-forward cache.</translation>
 <translation id="3064530882228745118">Gunakan pencarian CNAME selama autentikasi Kerberos</translation>
@@ -6456,6 +6463,7 @@ di layar <ph name="LOG_IN" />.</translation>
 <translation id="6371561334154580937">Tampilkan dialog logout saat jendela terakhir ditutup.</translation>
 <translation id="6372105930898423193">Mengizinkan fitur AppCache untuk diaktifkan ulang meskipun dinonaktifkan secara default</translation>
 <translation id="6373299801585455337">Aktifkan pelaporan info CPU perangkat</translation>
+<translation id="6374945506685352202">Daftar yang tidak diizinkan untuk jenis penginstalan ekstensi</translation>
 <translation id="6376540107659524656">Nonaktifkan SSH di Terminal System App</translation>
 <translation id="6376659517206731212">Bisa Jadi Wajib</translation>
 <translation id="6377031865393559909">Izinkan pengguna menggunakan template desktop</translation>
@@ -6879,6 +6887,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, kebijakan KDC akan diabai
 Di <ph name="MS_WIN_NAME" />, kebijakan KDC selalu dipatuhi.</translation>
 <translation id="6658245400435704251">Menentukan jumlah waktu (dalam detik) sebuah perangkat dapat menunda download pembaruannya secara acak dari saat pembaruan tersebut pertama kali didorong ke server. Perangkat dapat menunggu dengan sebagian dari waktu ini dari segi prediksi waktu penyelesaian tugas dan sisa waktunya dari segi jumlah pemeriksaan pembaruan. Dalam keadaan apa pun, penyebaran dibatasi dengan jumlah waktu yang konstan sehingga perangkat tidak akan terus menunggu download pembaruan selamanya.</translation>
 <translation id="6659537776197644458">Jangan picu alur autentikasi untuk sinkronisasi sandi</translation>
+<translation id="6659877981632400997">Menu konteks tidak akan memiliki item menu untuk membagikan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Aktifkan pelaporan cloud profil terkelola</translation>
 <translation id="6665670272107384733">Setel seberapa sering pengguna harus memasukkan sandi untuk menggunakan buka kunci cepat.</translation>
 <translation id="6667586534922258705">Memperlihatkan tombol tampilkan sandi pada layar login dan layar kunci</translation>
@@ -7048,6 +7057,9 @@ Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
 <translation id="6819838337315703072">Jika dukungan aplikasi <ph name="LINUX_OS_NAME" /> aktif, menyetel kebijakan ke Aktif akan mengirimkan kembali informasi penggunaan aplikasi <ph name="LINUX_OS_NAME" /> ke server.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada penggunaan informasi yang dilaporkan.</translation>
+<translation id="6820251681466503297">Kebijakan ini mengontrol apakah pengguna diizinkan untuk menyimpan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> langsung dari menu konteks.
+Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan diizinkan menyimpan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> dari menu konteks. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melihat opsi tersebut di menu konteks.
+Kebijakan ini tidak mencegah pengguna menyimpan gambar ke <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> menggunakan cara lain selain menu konteks.</translation>
 <translation id="6821870597514407499"><ph name="WEBVIEW_TAG_NAME" /> Aplikasi Chrome memungkinkan
 perilaku yang sedang dalam proses dihapus dari
 <ph name="PRODUCT_NAME" />.
@@ -8565,6 +8577,11 @@ Pengguna tidak dapat mengedit atau menonaktifkan entri penelusuran situs yang di
 
 Jika terjadi konflik dengan pintasan yang sebelumnya dibuat oleh pengguna, setelan pengguna akan diterapkan. Namun, pengguna tetap dapat memicu opsi yang dibuat oleh kebijakan dengan mengetik "@" di kotak penelusuran. Misalnya, jika pengguna telah menetapkan "kerja" sebagai pintasan ke URL1 dan kebijakan menetapkan "kerja" sebagai pintasan ke URL2, mengetik "kerja" di kotak penelusuran akan memicu penelusuran ke URL1, tetapi mengetik "@kerja" di kotak penelusuran akan memicu penelusuran ke URL2.</translation>
 <translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
+<translation id="8036284429246268475">Jika kebijakan disetel ke Aktif, pengguna dapat membuat <ph name="PRODUCT_NAME" /> memeriksa apakah nama pengguna dan sandi yang dimasukkan adalah bagian dari kebocoran.
+
+      Jika kebijakan disetel, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pemeriksaan kebocoran kredensial akan diizinkan, tetapi pengguna dapat menonaktifkannya.
+
+      Perilaku ini tidak akan dipicu jika Safe Browsing dinonaktifkan (oleh kebijakan ataupun pengguna). Untuk mengaktifkan paksa Safe Browsing, gunakan kebijakan <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> atau <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Nonaktifkan <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> di semua halaman web</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
 <translation id="80453040817068401">Menjadikan browser <ph name="LACROS_NAME" /> tersedia</translation>
@@ -9416,7 +9433,6 @@ secara default mulai M119.
       Tidak menyetel kebijakan sama artinya dengan mengaktifkan kebijakan, dan pengguna tidak dapat menonaktifkannya.</translation>
 <translation id="8789053142986648624">Akun terkelola harus berupa akun utama dan pengguna dapat mengimpor data yang ada pada saat pembuatannya</translation>
 <translation id="8789338675663014675">Mengonfigurasi kebijakan terkait ekstensi. Pengguna tidak diizinkan untuk menginstal ekstensi yang diblokir kecuali tercantum dalam daftar yang diizinkan. Selain itu, Anda juga dapat memaksa <ph name="PRODUCT_NAME" /> agar otomatis menginstal ekstensi dengan menentukannya dalam <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Ekstensi yang diinstal otomatis akan diinstal meskipun ada dalam daftar yang tidak diizinkan.</translation>
-<translation id="878964451356911302">Menyarankan kepada pengguna untuk memindahkan data mereka yang sudah ada di profil terkelola dan memberi mereka pilihan untuk tidak melakukannya</translation>
 <translation id="879697755145469671">Jangan deteksi jendela yang tertutup</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8799492680917278474">Jika kebijakan ini disetel, koneksi akses jarak jauh akan otomatis terputus setelah jumlah menit yang ditentukan di kebijakan telah dilalui. Ini tidak akan mencegah klien menghubungkan kembali setelah durasi sesi maksimum tercapai. Menyetel kebijakan ke nilai yang tidak ada dalam rentang minimum/maksimum dapat mencegah host dimulai. Kebijakan ini tidak memengaruhi skenario dukungan jarak jauh.

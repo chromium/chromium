@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Valkostir eru neðst á skjánum</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valin</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> leyft</translation>
+<translation id="7284451015630589124">Þú lokaðir á getu vefsvæða til að nota fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn. Farðu í stillingar til að <ph name="BEGIN_LINK" />hafa umsjón með rakningarvörn þinni<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Þú lokar yfirleitt á tilkynningar. Ýttu á „Upplýsingar“ til að leyfa þær.</translation>
 <translation id="7366415735885268578">Bæta vefsvæði við</translation>
 <translation id="7368695150573390554">Öllum gögnum utan nets verður eytt</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Fótspor leyfð fyrir <ph name="FPS_MEMBERS_COUNT" /> vefsvæði sem <ph name="FPS_OWNER" /> á}one{Fótspor leyfð fyrir <ph name="FPS_MEMBERS_COUNT" /> vefsvæði sem <ph name="FPS_OWNER" /> á}other{Fótspor leyfð fyrir <ph name="FPS_MEMBERS_COUNT" /> vefsvæði sem <ph name="FPS_OWNER" /> á}}</translation>
 <translation id="857943718398505171">Leyft (ráðlagt)</translation>
 <translation id="8609465669617005112">Færa upp</translation>
+<translation id="8649036394979866943">Chrome takmarkar getu flestra vefsvæða til að nota fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn. Farðu í stillingar til að <ph name="BEGIN_LINK" />hafa umsjón með rakningarvörn þinni<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Hreinsa innslátt</translation>
 <translation id="8681886425883659911">Lokað er fyrir auglýsingar á vefsvæðum sem eru þekkt fyrir að birta ágengar eða villandi auglýsingar</translation>
 <translation id="868929229000858085">Leita í tengiliðum</translation>

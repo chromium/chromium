@@ -900,6 +900,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5753139477036638699">Gallwch ddefnyddio'ch llais i chwilio yn Chrome</translation>
 <translation id="5754350196967618083">Methu ag adnewyddu Darganfod</translation>
 <translation id="5755162682436943950">Rydych wedi'ch allgofnodi. Yn agor deialog i fewngofnodi a throi cysoni ymlaen.</translation>
+<translation id="5759897675466110265">Gwefan ddim yn gweithio? Rhowch gynnig ar ganiatáu cwcis trydydd parti</translation>
 <translation id="5763382633136178763">Tabiau Anhysbys</translation>
 <translation id="5763514718066511291">Tapiwch i gopïo'r URL ar gyfer yr ap hwn</translation>
 <translation id="5765517223145864268">Dywedwch wrthym am eich profiad. Neu <ph name="BEGIN_LINK" />newidiwch eich gosodiadau<ph name="END_LINK" />.</translation>
@@ -1343,6 +1344,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7887174313503389866">Cymerwch daith dywysedig o reolyddion diogelwch a phreifatrwydd allweddol. Am ragor o opsiynau, ewch i osodiadau unigol.</translation>
 <translation id="7896724475402191389">Cynnwys ar gyfer meddyliau ifanc - wedi'i ddiffodd</translation>
 <translation id="7903184275147100332">Gall hyn gymryd munud</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">Gosodwyd ap</translation>
 <translation id="7919123827536834358">Cyfieithu'r ieithoedd hyn yn awtomatig</translation>
 <translation id="7926975587469166629">Llysenw cerdyn</translation>
