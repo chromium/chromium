@@ -119,22 +119,22 @@ absl::optional<std::vector<uint8_t>> GenerateSignature(
       serialized_authenticator_data.size() + client_data_hash.size();
   ScopedCFTypeRef<CFMutableDataRef> sig_input(
       CFDataCreateMutable(kCFAllocatorDefault, capacity));
-  CFDataAppendBytes(sig_input, serialized_authenticator_data.data(),
+  CFDataAppendBytes(sig_input.get(), serialized_authenticator_data.data(),
                     serialized_authenticator_data.size());
-  CFDataAppendBytes(sig_input, client_data_hash.data(),
+  CFDataAppendBytes(sig_input.get(), client_data_hash.data(),
                     client_data_hash.size());
   ScopedCFTypeRef<CFErrorRef> err;
   ScopedCFTypeRef<CFDataRef> sig_data(
       Keychain::GetInstance().KeyCreateSignature(
           private_key, kSecKeyAlgorithmECDSASignatureMessageX962SHA256,
-          sig_input, err.InitializeInto()));
+          sig_input.get(), err.InitializeInto()));
   if (!sig_data) {
-    LOG(ERROR) << "SecKeyCreateSignature failed: " << err;
+    LOG(ERROR) << "SecKeyCreateSignature failed: " << err.get();
     return absl::nullopt;
   }
   return std::vector<uint8_t>(
-      CFDataGetBytePtr(sig_data),
-      CFDataGetBytePtr(sig_data) + CFDataGetLength(sig_data));
+      CFDataGetBytePtr(sig_data.get()),
+      CFDataGetBytePtr(sig_data.get()) + CFDataGetLength(sig_data.get()));
 }
 
 // SecKeyRefToECPublicKey converts a SecKeyRef for a public key into an
@@ -146,12 +146,12 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
   ScopedCFTypeRef<CFDataRef> data_ref(
       SecKeyCopyExternalRepresentation(public_key_ref, err.InitializeInto()));
   if (!data_ref) {
-    LOG(ERROR) << "SecCopyExternalRepresentation failed: " << err;
+    LOG(ERROR) << "SecCopyExternalRepresentation failed: " << err.get();
     return nullptr;
   }
-  base::span<const uint8_t> key_data =
-      base::make_span(CFDataGetBytePtr(data_ref),
-                      base::checked_cast<size_t>(CFDataGetLength(data_ref)));
+  base::span<const uint8_t> key_data = base::make_span(
+      CFDataGetBytePtr(data_ref.get()),
+      base::checked_cast<size_t>(CFDataGetLength(data_ref.get())));
   auto key = P256PublicKey::ParseX962Uncompressed(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), key_data);
   if (!key) {

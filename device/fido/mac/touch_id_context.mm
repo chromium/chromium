@@ -40,14 +40,14 @@ bool ExecutableHasKeychainAccessGroupEntitlement(
   }
 
   base::apple::ScopedCFTypeRef<CFTypeRef> entitlement_value_cftype(
-      SecTaskCopyValueForEntitlement(task, CFSTR("keychain-access-groups"),
-                                     nullptr));
+      SecTaskCopyValueForEntitlement(task.get(),
+                                     CFSTR("keychain-access-groups"), nullptr));
   if (!entitlement_value_cftype) {
     return false;
   }
 
   NSArray* entitlement_value_nsarray = base::apple::CFToNSPtrCast(
-      base::apple::CFCast<CFArrayRef>(entitlement_value_cftype));
+      base::apple::CFCast<CFArrayRef>(entitlement_value_cftype.get()));
   if (!entitlement_value_nsarray) {
     return false;
   }
@@ -66,16 +66,17 @@ bool CanCreateSecureEnclaveKeyPairBlocking() {
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(params, kSecAttrKeyType,
+  CFDictionarySetValue(params.get(), kSecAttrKeyType,
                        kSecAttrKeyTypeECSECPrimeRandom);
-  CFDictionarySetValue(params, kSecAttrKeySizeInBits,
+  CFDictionarySetValue(params.get(), kSecAttrKeySizeInBits,
                        base::apple::NSToCFPtrCast(@256));
-  CFDictionarySetValue(params, kSecAttrTokenID, kSecAttrTokenIDSecureEnclave);
-  CFDictionarySetValue(params, kSecAttrIsPermanent, kCFBooleanFalse);
+  CFDictionarySetValue(params.get(), kSecAttrTokenID,
+                       kSecAttrTokenIDSecureEnclave);
+  CFDictionarySetValue(params.get(), kSecAttrIsPermanent, kCFBooleanFalse);
 
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key(
-      Keychain::GetInstance().KeyCreateRandomKey(params,
+      Keychain::GetInstance().KeyCreateRandomKey(params.get(),
                                                  cferr.InitializeInto()));
   return !!private_key;
 }
@@ -173,7 +174,7 @@ void TouchIdContext::PromptTouchId(const std::u16string& reason,
   // for biometrics or device password.
   base::apple::ScopedCFTypeRef<SecAccessControlRef> access_control =
       CreateDefaultAccessControl();
-  [context_ evaluateAccessControl:access_control
+  [context_ evaluateAccessControl:access_control.get()
                         operation:LAAccessControlOperationUseKeySign
                   localizedReason:base::SysUTF16ToNSString(reason)
                             reply:^(BOOL success, NSError* error) {

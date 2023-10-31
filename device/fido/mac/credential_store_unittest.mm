@@ -78,10 +78,10 @@ TEST_F(CredentialStoreTest, CreateCredential) {
   ASSERT_TRUE(result) << "CreateCredential failed";
   Credential credential = std::move(result->first);
   EXPECT_EQ(credential.credential_id.size(), 32u);
-  EXPECT_NE(credential.private_key, nullptr);
+  EXPECT_TRUE(credential.private_key);
   base::apple::ScopedCFTypeRef<SecKeyRef> public_key =
       std::move(result->second);
-  EXPECT_NE(public_key, nullptr);
+  EXPECT_TRUE(public_key);
   EXPECT_EQ(
       credential.metadata,
       CredentialMetadata(CredentialMetadata::CurrentVersion(), kUser.id,

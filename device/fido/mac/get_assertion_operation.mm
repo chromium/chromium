@@ -145,8 +145,9 @@ GetAssertionOperation::ResponseForCredential(const Credential& credential,
   AuthenticatorData authenticator_data = MakeAuthenticatorData(
       credential.metadata.sign_counter_type, request_.rp_id,
       /*attested_credential_data=*/absl::nullopt, has_uv);
-  absl::optional<std::vector<uint8_t>> signature = GenerateSignature(
-      authenticator_data, request_.client_data_hash, credential.private_key);
+  absl::optional<std::vector<uint8_t>> signature =
+      GenerateSignature(authenticator_data, request_.client_data_hash,
+                        credential.private_key.get());
   if (!signature) {
     FIDO_LOG(ERROR) << "GenerateSignature failed";
     return absl::nullopt;
