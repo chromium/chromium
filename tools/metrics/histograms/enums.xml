@@ -43543,6 +43543,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Aggressive"/>
 </enum>
 
+<!-- If any update to the enum values here is made, the relevant google3 metrics update must also be made to ensure compatibility. Example: cl/576730646-->
+
 <enum name="IMEEditorStates">
   <int value="0" label="NATIVE_UI_SHOWN_OPPORTUNITY"/>
   <int value="1" label="NATIVE_UI_SHOWN"/>
