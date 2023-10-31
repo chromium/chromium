@@ -7771,6 +7771,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowScrollSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAllowScrollSettings)},
 
+    {"enable-fast-ink-for-software-cursor",
+     flag_descriptions::kEnableFastInkForSoftwareCursorName,
+     flag_descriptions::kEnableFastInkForSoftwareCursorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableFastInkForSoftwareCursor)},
+
     {"enable-neural-palm-adaptive-hold",
      flag_descriptions::kEnableNeuralPalmAdaptiveHoldName,
      flag_descriptions::kEnableNeuralPalmAdaptiveHoldDescription, kOsCrOS,

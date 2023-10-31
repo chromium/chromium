@@ -68120,6 +68120,7 @@ from previous Chrome versions.
       label="OmniboxMostVisitedTilesDynamicSpacing:enabled"/>
   <int value="1111871757" label="ForceUnifiedConsentBump:enabled"/>
   <int value="1112051724" label="DetectingHeavyPages:enabled"/>
+  <int value="1112243997" label="EnableFastInkForSoftwareCursor:disabled"/>
   <int value="1112817963" label="WebViewConnectionlessSafeBrowsing:enabled"/>
   <int value="1112890211" label="SwapAndroidShareHubRows:enabled"/>
   <int value="1113196543" label="ShowManagedUi:disabled"/>
@@ -69699,6 +69700,7 @@ from previous Chrome versions.
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858523835" label="VerifyDidCommitParams:enabled"/>
   <int value="1859864175" label="AppDeduplicationServiceFondue:enabled"/>
+  <int value="1860349258" label="EnableFastInkForSoftwareCursor:enabled"/>
   <int value="1860597983" label="AndroidSpellChecker:disabled"/>
   <int value="1860955818" label="PowerScheduler:enabled"/>
   <int value="1861067469" label="SystemJapanesePhysicalTyping:disabled"/>

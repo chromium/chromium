@@ -122,8 +122,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
 
   const gfx::ImageSkia& GetCursorImageForTest() const;
 
-  bool CanEnableMotionBlur() const;
-
   base::ObserverList<Observer> observers_;
 
   raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> container_ =
@@ -158,7 +156,7 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   std::unique_ptr<CursorWindowDelegate> delegate_;
   views::UniqueWidgetPtr cursor_view_widget_;
 
-  const bool is_cursor_motion_blur_enabled_;
+  const bool is_fast_ink_enabled_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       scoped_container_observer_{this};
 };

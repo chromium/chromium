@@ -2939,6 +2939,12 @@ BASE_FEATURE(kUseOneSharedImageForFastInkHostResources,
              "UseOneSharedImageForFastInkHostResources",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable fast ink for software cursor. Fast ink provides a low-latency
+// cursor with possible tearing artifacts.
+BASE_FEATURE(kEnableFastInkForSoftwareCursor,
+             "EnableFastInkForSoftwareCursor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreContextualNudgesEnabled() {
@@ -3284,6 +3290,10 @@ bool IsFaceMLSwaEnabled() {
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOnSchoolDevice);
+}
+
+bool IsFastInkForSoftwareCursorEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFastInkForSoftwareCursor);
 }
 
 bool IsFastPairEnabled() {

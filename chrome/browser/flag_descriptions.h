@@ -3490,6 +3490,9 @@ extern const char kEnableEdidBasedDisplayIdsDescription[];
 extern const char kEnableExternalKeyboardsInDiagnosticsAppName[];
 extern const char kEnableExternalKeyboardsInDiagnosticsAppDescription[];
 
+extern const char kEnableFastInkForSoftwareCursorName[];
+extern const char kEnableFastInkForSoftwareCursorDescription[];
+
 extern const char kEnableGetDebugdLogsInParallelName[];
 extern const char kEnableGetDebugdLogsInParallelDescription[];
 

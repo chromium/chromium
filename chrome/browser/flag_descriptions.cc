@@ -6065,6 +6065,13 @@ const char kEnableExternalKeyboardsInDiagnosticsAppDescription[] =
     "Shows external keyboards in the Diagnostics App's input section. Requires "
     "#enable-input-in-diagnostics-app to be enabled.";
 
+const char kEnableFastInkForSoftwareCursorName[] =
+    "Enable fast ink for software cursor";
+const char kEnableFastInkForSoftwareCursorDescription[] =
+    "When enabled, software cursor will use fast ink to display cursor with "
+    "minimal latency. "
+    "However, it might also cause tearing artifacts.";
+
 const char kEnableGetDebugdLogsInParallelName[] =
     "Enable getting debug daemon logs in parallel for feedback";
 const char kEnableGetDebugdLogsInParallelDescription[] =

@@ -72,7 +72,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshDebugShortcuts[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshDeveloperShortcuts[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshDisableTouchExplorationMode[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshEnableCursorMotionBlur[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshEnableMagnifierKeyScroller[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -2623,6 +2623,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-fast-ink-for-software-cursor",
+    "owners": ["yichenz@chromium.org", "cros-sw-perf@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-federated-service",
     "owners": [ "alanlxl@chromium.org", "amoylan@chromium.org"],
     "expiry_milestone": 122
