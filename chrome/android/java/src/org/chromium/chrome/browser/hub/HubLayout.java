@@ -4,19 +4,29 @@
 
 package org.chromium.chrome.browser.hub;
 
-import android.animation.AnimatorSet;
+import static org.chromium.chrome.browser.hub.HubLayoutConstants.EXPAND_NEW_TAB_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubLayoutConstants.FADE_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubLayoutConstants.TIMEOUT_MS;
+import static org.chromium.chrome.browser.hub.HubLayoutConstants.TRANSLATE_DURATION_MS;
+
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -34,7 +44,9 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.Collections;
@@ -50,11 +62,6 @@ import java.util.Collections;
  * capture and animations it may transiently host a {@link StaticTabSceneLayer}.
  */
 public class HubLayout extends Layout {
-    // Copied from TabSwitcherLayout.
-    private static final long TRANSLATE_DURATION_MS = 300L;
-    private static final long FADE_DURATION_MS = 325L;
-    private static final long TIMEOUT_MS = 250L;
-
     private SceneLayer mCurrentSceneLayer;
     /** Scene layer to facilitate thumbnail capture prior to starting a transition animation. */
     private StaticTabSceneLayer mTabSceneLayer;
@@ -227,8 +234,8 @@ public class HubLayout extends Layout {
 
         super.startHiding(nextTabId);
 
-        // Use the NEW_TAB animation if it is already prepared.
-        if (getCurrentAnimationType() == HubLayoutAnimationType.NEW_TAB) {
+        // Use the EXPAND_NEW_TAB animation if it is already prepared.
+        if (getCurrentAnimationType() == HubLayoutAnimationType.EXPAND_NEW_TAB) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::queueAnimation);
             return;
         }
@@ -335,11 +342,39 @@ public class HubLayout extends Layout {
 
         mCurrentSceneLayer = mEmptySceneLayer;
 
-        // TODO(crbug/1487209): Replace this with a real animation.
-        HubLayoutAnimator newTabAnimator =
-                new HubLayoutAnimator(HubLayoutAnimationType.NEW_TAB, new AnimatorSet(), null);
+        @ColorInt
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), newIsIncognito);
+        SyncOneshotSupplierImpl<ShrinkExpandAnimationData> animationDataSupplier =
+                new SyncOneshotSupplierImpl<>();
         HubLayoutAnimatorProvider animatorProvider =
-                new PresetHubLayoutAnimatorProvider(newTabAnimator);
+                ShrinkExpandHubLayoutAnimationFactory.createNewTabAnimatorProvider(
+                        mHubController.getContainerView(),
+                        animationDataSupplier,
+                        backgroundColor,
+                        EXPAND_NEW_TAB_DURATION_MS);
+
+        // TODO(crbug/1492207): Supply this from HubController so it can look like the animation
+        // originated from wherever on the Hub was clicked. The originX/originY data here is stale
+        // because it comes from the compositorView which we are masking.
+        int x = Math.round(originX);
+        int y = Math.round(originY);
+        Rect initialRect = new Rect(x, y, x + 1, y + 1);
+
+        // TODO(crbug/1492207): Final rect should be the rect of the tab area not the whole screen.
+        Resources resources = getContext().getResources();
+        Configuration configuration = resources.getConfiguration();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        int width = ViewUtils.dpToPx(displayMetrics, configuration.screenWidthDp);
+        int height = ViewUtils.dpToPx(displayMetrics, configuration.screenHeightDp);
+        Rect finalRect = new Rect(0, 0, width, height);
+
+        animationDataSupplier.set(
+                new ShrinkExpandAnimationData(
+                        initialRect,
+                        finalRect,
+                        /* thumbnailSize= */ null,
+                        /* useFallbackAnimation= */ false));
+
         mCurrentAnimationRunner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
         mCurrentAnimationRunner.addListener(

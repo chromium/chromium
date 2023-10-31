@@ -31,6 +31,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimationFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImpl.java",
   ]
@@ -96,6 +98,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimatorProviderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImplUnitTest.java",
   ]
   deps = [
@@ -104,6 +107,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base/test:test_support_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/hub:factory_java",
     "//chrome/browser/hub:java",

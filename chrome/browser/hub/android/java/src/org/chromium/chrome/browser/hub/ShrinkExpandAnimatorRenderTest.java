@@ -106,7 +106,21 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
         setupShrinkExpandImageView(startValue);
         ShrinkExpandAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
 
-        stepThroughAnimation("expand_rect", animator, startValue, endValue, ANIMATION_STEPS);
+        Rect startValueCopy = new Rect(startValue);
+        Rect endValueCopy = new Rect(endValue);
+
+        // Verify changing rects after doesn't cause ShrinkExpandAnimator to behave differently.
+        startValue.left = 0;
+        startValue.right = 10;
+        startValue.top = 0;
+        startValue.bottom = 10;
+        endValue.left = 100;
+        endValue.right = 200;
+        endValue.top = 100;
+        endValue.bottom = 200;
+
+        stepThroughAnimation(
+                "expand_rect", animator, startValueCopy, endValueCopy, ANIMATION_STEPS);
     }
 
     @Test

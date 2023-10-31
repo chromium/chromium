@@ -434,7 +434,7 @@ public class HubLayoutUnitTest {
                 LayoutType.BROWSING,
                 NEW_TAB_ID,
                 /* skipStartHiding= */ true,
-                HubLayoutAnimationType.NEW_TAB);
+                HubLayoutAnimationType.EXPAND_NEW_TAB);
         verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
     }
 

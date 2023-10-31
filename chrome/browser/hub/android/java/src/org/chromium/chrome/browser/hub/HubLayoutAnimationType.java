@@ -9,14 +9,18 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * The type of animation the {@link HubLayout} is playing.
- */
-@IntDef({HubLayoutAnimationType.NONE, HubLayoutAnimationType.FADE_IN,
-        HubLayoutAnimationType.FADE_OUT, HubLayoutAnimationType.SHRINK_TAB,
-        HubLayoutAnimationType.EXPAND_TAB, HubLayoutAnimationType.TRANSLATE_UP,
-        HubLayoutAnimationType.TRANSLATE_DOWN, HubLayoutAnimationType.NEW_TAB,
-        HubLayoutAnimationType.COUNT})
+/** The type of animation the {@link HubLayout} is playing. */
+@IntDef({
+    HubLayoutAnimationType.NONE,
+    HubLayoutAnimationType.FADE_IN,
+    HubLayoutAnimationType.FADE_OUT,
+    HubLayoutAnimationType.SHRINK_TAB,
+    HubLayoutAnimationType.EXPAND_TAB,
+    HubLayoutAnimationType.TRANSLATE_UP,
+    HubLayoutAnimationType.TRANSLATE_DOWN,
+    HubLayoutAnimationType.EXPAND_NEW_TAB,
+    HubLayoutAnimationType.COUNT
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface HubLayoutAnimationType {
     /** Show the Hub immediately with no transition. */
@@ -33,8 +37,10 @@ public @interface HubLayoutAnimationType {
     int TRANSLATE_UP = 5;
     /** Translate the entire Hub Android view downward. */
     int TRANSLATE_DOWN = 6;
-    /** Hide by playing an animation showing a new Tab. */
-    int NEW_TAB = 7;
+
+    /** Hide by playing an animation expanding to show a new Tab. */
+    int EXPAND_NEW_TAB = 7;
+
     /** Must be last. */
     int COUNT = 8;
 }

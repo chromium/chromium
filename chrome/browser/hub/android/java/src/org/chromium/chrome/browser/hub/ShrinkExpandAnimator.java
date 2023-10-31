@@ -48,8 +48,9 @@ public class ShrinkExpandAnimator {
         assert mView.getTranslationX() == 0.0f;
         assert mView.getTranslationY() == 0.0f;
 
-        mInitialRect = initialRect;
-        mFinalRect = finalRect;
+        // Copy these rects to ensure they aren't re-used.
+        mInitialRect = new Rect(initialRect);
+        mFinalRect = new Rect(finalRect);
         mImageMatrix = new Matrix();
     }
 

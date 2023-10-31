@@ -18,6 +18,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationType.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimatorProvider.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutConstants.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutDependencyHolder.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManager.java",
@@ -30,6 +31,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayout.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegate.java",
     "android/java/src/org/chromium/chrome/browser/hub/ScrimController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageView.java",
   ]
@@ -57,6 +59,7 @@ android_library_factory("factory_java") {
     "internal/android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimationFactory.java",
     "internal/android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
   ]
 }

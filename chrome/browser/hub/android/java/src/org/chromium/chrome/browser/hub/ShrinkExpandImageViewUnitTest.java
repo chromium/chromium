@@ -12,6 +12,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.MathUtils.EPSILON;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -19,6 +21,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -42,8 +45,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(Mode.PAUSED)
 public class ShrinkExpandImageViewUnitTest {
-    private static final float FLOAT_TOLERANCE = 0.001f;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private ActivityController<Activity> mActivityController;
@@ -96,21 +97,37 @@ public class ShrinkExpandImageViewUnitTest {
         int top = 50;
         int width = 70;
         int height = 1000;
-        mShrinkExpandImageView.reset(new Rect(left, top, left + width, top + height));
+        Rect rect = new Rect(left, top, left + width, top + height);
+        mShrinkExpandImageView.reset(rect);
 
-        assertEquals(1.0f, mShrinkExpandImageView.getScaleX(), FLOAT_TOLERANCE);
-        assertEquals(1.0f, mShrinkExpandImageView.getScaleY(), FLOAT_TOLERANCE);
-        assertEquals(0.0f, mShrinkExpandImageView.getTranslationX(), FLOAT_TOLERANCE);
-        assertEquals(0.0f, mShrinkExpandImageView.getTranslationY(), FLOAT_TOLERANCE);
-        assertTrue(mShrinkExpandImageView.getImageMatrix().isIdentity());
-        assertNull(mShrinkExpandImageView.getBitmap());
+        assertReset(rect, /* keepingBitmap= */ false);
+    }
 
-        FrameLayout.LayoutParams layoutParams =
-                (FrameLayout.LayoutParams) mShrinkExpandImageView.getLayoutParams();
-        assertEquals(left, layoutParams.leftMargin);
-        assertEquals(top, layoutParams.topMargin);
-        assertEquals(width, layoutParams.width);
-        assertEquals(height, layoutParams.height);
+    @Test
+    @SmallTest
+    public void testResetKeepingBitmap() {
+        mRootView.addView(mShrinkExpandImageView);
+        ShadowLooper.runUiThreadTasks();
+        mRootView.layout(0, 0, 100, 100);
+
+        mShrinkExpandImageView.setScaleX(1.5f);
+        mShrinkExpandImageView.setScaleY(2.0f);
+        mShrinkExpandImageView.setTranslationX(3.0f);
+        mShrinkExpandImageView.setTranslationY(3.0f);
+        Matrix m = new Matrix();
+        m.setTranslate(40, 60);
+        mShrinkExpandImageView.setImageMatrix(m);
+        mShrinkExpandImageView.setImageBitmap(mBitmap);
+        assertEquals(mBitmap, mShrinkExpandImageView.getBitmap());
+
+        int left = 100;
+        int top = 50;
+        int width = 70;
+        int height = 1000;
+        Rect rect = new Rect(left, top, left + width, top + height);
+        mShrinkExpandImageView.resetKeepingBitmap(rect);
+
+        assertReset(rect, /* keepingBitmap= */ true);
     }
 
     @Test
@@ -263,5 +280,25 @@ public class ShrinkExpandImageViewUnitTest {
 
         mShrinkExpandImageView.runOnNextLayoutRunnables();
         verify(mRunnable1, times(1)).run();
+    }
+
+    private void assertReset(@NonNull Rect rect, boolean keepingBitmap) {
+        assertEquals(1.0f, mShrinkExpandImageView.getScaleX(), EPSILON);
+        assertEquals(1.0f, mShrinkExpandImageView.getScaleY(), EPSILON);
+        assertEquals(0.0f, mShrinkExpandImageView.getTranslationX(), EPSILON);
+        assertEquals(0.0f, mShrinkExpandImageView.getTranslationY(), EPSILON);
+        assertTrue(mShrinkExpandImageView.getImageMatrix().isIdentity());
+        if (keepingBitmap) {
+            assertEquals(mBitmap, mShrinkExpandImageView.getBitmap());
+        } else {
+            assertNull(mShrinkExpandImageView.getBitmap());
+        }
+
+        FrameLayout.LayoutParams layoutParams =
+                (FrameLayout.LayoutParams) mShrinkExpandImageView.getLayoutParams();
+        assertEquals(rect.left, layoutParams.leftMargin);
+        assertEquals(rect.top, layoutParams.topMargin);
+        assertEquals(rect.width(), layoutParams.width);
+        assertEquals(rect.height(), layoutParams.height);
     }
 }
