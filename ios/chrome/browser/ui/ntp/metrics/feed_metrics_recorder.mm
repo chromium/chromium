@@ -223,6 +223,19 @@ using feed::FeedUserActionType;
     self.followingPreviousTimeInFeedGV =
         self.prefService->GetDouble(kLongFollowingFeedVisitTimeAggregateKey);
 
+    // TODO(crbug.com/1497419) This scenario can happen (this is very rare)
+    // because key kLongFeedVisitTimeAggregateKey was moved out of
+    // NSUserDefaults later than kLongDiscoverFeedVisitTimeAggregateKey and
+    // kLongFollowingFeedVisitTimeAggregateKey. Clean this code in the future.
+    if (self.previousTimeInFeedForGoodVisitSession <
+            self.discoverPreviousTimeInFeedGV ||
+        self.previousTimeInFeedForGoodVisitSession <
+            self.followingPreviousTimeInFeedGV) {
+      self.previousTimeInFeedForGoodVisitSession =
+          std::max(self.discoverPreviousTimeInFeedGV,
+                   self.followingPreviousTimeInFeedGV);
+    }
+
     // Checks if there is a timestamp in PrefService for when a user clicked
     // on an article in order to be able to trigger a non-short click
     // interaction.
@@ -1265,10 +1278,10 @@ using feed::FeedUserActionType;
       break;
   }
 
-  DCHECK(self.followingPreviousTimeInFeedGV <=
-         self.previousTimeInFeedForGoodVisitSession);
-  DCHECK(self.discoverPreviousTimeInFeedGV <=
-         self.previousTimeInFeedForGoodVisitSession);
+  DCHECK_LE(self.followingPreviousTimeInFeedGV,
+            self.previousTimeInFeedForGoodVisitSession);
+  DCHECK_LE(self.discoverPreviousTimeInFeedGV,
+            self.previousTimeInFeedForGoodVisitSession);
 
   return self.previousTimeInFeedForGoodVisitSession;
 }
