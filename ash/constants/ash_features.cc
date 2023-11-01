@@ -2499,6 +2499,12 @@ BASE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode,
              "FeatureManagementFeatureAwareDeviceDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabled the demo mode session to close GMSCore windows which disrupt
+// the attract loop videos.
+BASE_FEATURE(kDemoModeGMSCoreWindowCloser,
+             "DemoModeGMSCoreWindowCloser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the shutdown confirmation bubble from the login shelf view.
 BASE_FEATURE(kShutdownConfirmationBubble,
              "ShutdownConfirmationBubble",
@@ -3269,6 +3275,10 @@ bool IsAudioSourceFetcherResamplingEnabled() {
   // TODO(b/245617354): Once ready, enable this feature under
   // kProjectorBleedingEdgeExperience flag as well.
   return base::FeatureList::IsEnabled(kAudioSourceFetcherResampling);
+}
+
+bool IsDemoModeGMSCoreWindowCloserEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeGMSCoreWindowCloser);
 }
 
 bool IsEcheSWAEnabled() {
