@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 
 #include <stdint.h>
+#include <algorithm>
 #include <array>
 #include <limits>
 #include <map>
@@ -13,11 +14,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -26,6 +29,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
@@ -34,6 +38,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
@@ -42,6 +47,67 @@
 namespace performance_manager::metrics {
 
 namespace {
+
+// Convenience aliases for page and system CPU result types.
+using PageCPUResult = PageTimelineMonitor::PageCPUUsageVector;
+using SystemCPUResult = absl::optional<PressureSample>;
+
+using PageCPUCallback = base::OnceCallback<void(PageCPUResult)>;
+using SystemCPUCallback = base::OnceCallback<void(SystemCPUResult)>;
+using CPUResultCallback =
+    base::OnceCallback<void(PageCPUResult, SystemCPUResult)>;
+
+// Returns a pair of callbacks to pass to PageTimelineMonitor and CPUProbe,
+// respectively. Once both callbacks have been invoked, their arguments will be
+// passed to `result_callback`.
+std::pair<PageCPUCallback, SystemCPUCallback> GetCPUCallbacks(
+    CPUResultCallback result_callback) {
+  // Create a BarrierCallback that fires after receiving 2 sets of results
+  // packed into variants. When triggered it unpacks the results from the
+  // variants and passes them to `result_callback`.
+  using AnyCPUResult = absl::variant<PageCPUResult, SystemCPUResult>;
+  auto unpack_results = [](CPUResultCallback result_callback,
+                           std::vector<AnyCPUResult> all_results) {
+    absl::optional<PageCPUResult> page_result;
+    absl::optional<SystemCPUResult> system_result;
+    for (AnyCPUResult& result : all_results) {
+      absl::visit(base::Overloaded{
+                      [&](PageCPUResult result) {
+                        CHECK(!page_result.has_value());
+                        page_result = std::move(result);
+                      },
+                      [&](SystemCPUResult result) {
+                        CHECK(!system_result.has_value());
+                        system_result = std::move(result);
+                      },
+                  },
+                  std::move(result));
+    }
+    CHECK(page_result.has_value());
+    CHECK(system_result.has_value());
+    std::move(result_callback)
+        .Run(std::move(page_result.value()), std::move(system_result.value()));
+  };
+  auto barrier_callback = base::BarrierCallback<AnyCPUResult>(
+      2, base::BindOnce(std::move(unpack_results), std::move(result_callback)));
+
+  // Return callbacks that take a Page or System result, wrap it in a
+  // variant, and pass it to the BarrierCallback. Each owns a copy of the
+  // BarrierCallback that shares state.
+  PageCPUCallback page_callback = base::BindOnce(
+      [](base::RepeatingCallback<void(AnyCPUResult)> callback,
+         PageCPUResult page_result) {
+        callback.Run(AnyCPUResult(page_result));
+      },
+      barrier_callback);
+  SystemCPUCallback system_callback = base::BindOnce(
+      [](base::RepeatingCallback<void(AnyCPUResult)> callback,
+         SystemCPUResult system_result) {
+        callback.Run(AnyCPUResult(system_result));
+      },
+      barrier_callback);
+  return std::make_pair(std::move(page_callback), std::move(system_callback));
+}
 
 using PageMeasurementBackgroundState =
     PageTimelineMonitor::PageMeasurementBackgroundState;
@@ -80,11 +146,13 @@ PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
 
 }  // namespace
 
-PageTimelineMonitor::PageTimelineMonitor()
+PageTimelineMonitor::PageTimelineMonitor(bool enable_system_cpu_probe)
     // These counters are initialized to a random value due to privacy concerns,
     // so that we cannot tie either the startup time of a specific tab or the
     // recording time of a specific slice to the browser startup time.
-    : slice_id_counter_(base::RandInt(1, 32767)) {
+    : slice_id_counter_(base::RandInt(1, 32767)),
+      system_cpu_probe_(enable_system_cpu_probe ? CpuProbe::Create()
+                                                : nullptr) {
   collect_slice_timer_.Start(
       FROM_HERE,
       performance_manager::features::kPageTimelineStateIntervalTime.Get(), this,
@@ -95,6 +163,9 @@ PageTimelineMonitor::PageTimelineMonitor()
       FROM_HERE, base::Minutes(2),
       base::BindRepeating(&PageTimelineMonitor::CollectPageResourceUsage,
                           weak_factory_.GetWeakPtr(), base::DoNothing()));
+  if (system_cpu_probe_) {
+    system_cpu_probe_->StartSampling();
+  }
 }
 
 PageTimelineMonitor::~PageTimelineMonitor() = default;
@@ -120,14 +191,21 @@ PageTimelineMonitor::PageNodeInfo::GetPageState() {
 
 void PageTimelineMonitor::CollectPageResourceUsage(
     base::OnceClosure done_closure) {
-  CalculatePageCPUUsage(
+  auto [page_cpu_callback, system_cpu_callback] = GetCPUCallbacks(
       base::BindOnce(&PageTimelineMonitor::OnPageResourceUsageResult,
                      weak_factory_.GetWeakPtr())
           .Then(std::move(done_closure)));
+  CalculatePageCPUUsage(std::move(page_cpu_callback));
+  if (system_cpu_probe_) {
+    system_cpu_probe_->RequestSample(std::move(system_cpu_callback));
+  } else {
+    std::move(system_cpu_callback).Run(absl::nullopt);
+  }
 }
 
 void PageTimelineMonitor::OnPageResourceUsageResult(
-    const PageCPUUsageVector& page_cpu_usage) {
+    PageCPUUsageVector page_cpu_usage,
+    absl::optional<PressureSample> system_cpu) {
   // Calculate the overall CPU usage.
   double total_cpu_usage = 0;
   for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
@@ -152,7 +230,7 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kCPUInterventionEvaluationLogging)) {
-    LogCPUInterventionMetrics(page_cpu_usage, now,
+    LogCPUInterventionMetrics(page_cpu_usage, system_cpu, now,
                               CPUInterventionSuffix::kBaseline);
     bool is_cpu_over_threshold =
         (100 * total_cpu_usage / base::SysInfo::NumberOfProcessors() >
@@ -161,7 +239,7 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
       CHECK(!log_cpu_on_delay_timer_.IsRunning());
       if (is_cpu_over_threshold) {
         time_of_last_cpu_threshold_exceeded_ = now;
-        LogCPUInterventionMetrics(page_cpu_usage, now,
+        LogCPUInterventionMetrics(page_cpu_usage, system_cpu, now,
                                   CPUInterventionSuffix::kImmediate);
 
         // Only logged delayed metrics when using the new CPU monitor.
@@ -300,7 +378,7 @@ void PageTimelineMonitor::CheckDelayedCPUInterventionMetrics() {
 }
 
 void PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult(
-    const PageCPUUsageVector& page_cpu_usage) {
+    PageCPUUsageVector page_cpu_usage) {
   CHECK(performance_manager::features::kUseResourceAttributionCPUMonitor.Get());
   double total_cpu_usage = 0;
   for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
@@ -310,13 +388,15 @@ void PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult(
   if (100 * total_cpu_usage / base::SysInfo::NumberOfProcessors() >
       performance_manager::features::kThresholdChromeCPUPercent.Get()) {
     // Still over the threshold so we should log .Delayed UMA metrics.
-    LogCPUInterventionMetrics(page_cpu_usage, base::TimeTicks::Now(),
+    LogCPUInterventionMetrics(page_cpu_usage, absl::nullopt,
+                              base::TimeTicks::Now(),
                               CPUInterventionSuffix::kDelayed);
   }
 }
 
 void PageTimelineMonitor::LogCPUInterventionMetrics(
     const PageCPUUsageVector& page_cpu_usage,
+    const absl::optional<PressureSample>& system_cpu,
     const base::TimeTicks now,
     CPUInterventionSuffix histogram_suffix) {
   std::vector<double> background_cpu_usage;
@@ -355,40 +435,63 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
   }
   CHECK(suffix);
 
+  const int total_background_cpu_percent =
+      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
   base::UmaHistogramPercentage(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalBackgroundCPU.",
                     suffix}),
-      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors());
+      total_background_cpu_percent);
   base::UmaHistogramCounts1000(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalBackgroundTabCount.",
                     suffix}),
       background_tab_count);
-  base::UmaHistogramPercentage(
-      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
-                    "AverageBackgroundCPU.",
-                    suffix}),
-      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors() /
-          background_tab_count);
+  if (background_tab_count) {
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "AverageBackgroundCPU.",
+                      suffix}),
+        total_background_cpu_percent / background_tab_count);
+  }
 
   // Log basic foreground UMA metrics.
+  const int total_foreground_cpu_percent =
+      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
   base::UmaHistogramPercentage(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalForegroundCPU.",
                     suffix}),
-      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors());
+      total_foreground_cpu_percent);
   base::UmaHistogramCounts1000(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalForegroundTabCount.",
                     suffix}),
       foreground_tab_count);
-  base::UmaHistogramPercentage(
-      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
-                    "AverageForegroundCPU.",
-                    suffix}),
-      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors() /
-          foreground_tab_count);
+  if (foreground_tab_count) {
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "AverageForegroundCPU.",
+                      suffix}),
+        total_foreground_cpu_percent / foreground_tab_count);
+  }
+
+  // Log comparisons with system CPU.
+  if (system_cpu.has_value()) {
+    const int system_cpu_percent = system_cpu->cpu_utilization * 100;
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "System.",
+                      suffix}),
+        system_cpu_percent);
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "NonChrome.",
+                      suffix}),
+        std::max(system_cpu_percent - total_background_cpu_percent -
+                     total_foreground_cpu_percent,
+                 0));
+  }
 
   // Log derived background UMA metrics.
   if (histogram_suffix == CPUInterventionSuffix::kBaseline) {
@@ -441,14 +544,14 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
 }
 
 void PageTimelineMonitor::CalculatePageCPUUsage(
-    base::OnceCallback<void(const PageCPUUsageVector&)> callback) {
+    base::OnceCallback<void(PageCPUUsageVector)> callback) {
   cpu_monitor_.UpdateCPUMeasurements(
       base::BindOnce(&PageTimelineMonitor::OnCPUUsageResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PageTimelineMonitor::OnCPUUsageResult(
-    base::OnceCallback<void(const PageCPUUsageVector&)> callback,
+    base::OnceCallback<void(PageCPUUsageVector)> callback,
     const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map) {
   // Calculate the overall CPU usage.
   PageCPUUsageVector page_cpu_usage;

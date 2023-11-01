@@ -94,6 +94,32 @@ each histogram.
 </histogram>
 
 <histogram
+    name="PerformanceManager.PerformanceInterventions.CPU.NonChrome.{Timing}"
+    units="%" expires_after="2024-01-01">
+  <owner>agale@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded {Timing}, with the percentage of CPU used by non-Chrome processes
+    on the system over the past 2 minutes. This is calculated from other
+    PerformanceManager.PerformanceInterventions.CPU.* histograms: NonChrome =
+    System - (TotalBackgroundCPU + TotalForegroundCPU).
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceManager.PerformanceInterventions.CPU.System.{Timing}"
+    units="%" expires_after="2024-01-01">
+  <owner>agale@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded {Timing}, with the percentage of CPU used by all processes on the
+    system over the past 2 minutes.
+  </summary>
+</histogram>
+
+<histogram
     name="PerformanceManager.PerformanceInterventions.CPU.TopNBackgroundCPU.{N}.{Timing}"
     units="%" expires_after="2024-04-28">
   <owner>agale@chromium.org</owner>
