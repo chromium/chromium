@@ -10532,6 +10532,21 @@
             ]
         }
     ],
+    "NewTabSearchEngineUrlAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NewTabSearchEngineUrlAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoAppCompatClearInChildren": [
         {
             "platforms": [
