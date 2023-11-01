@@ -491,15 +491,15 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
   crosapi::mojom::KeystoreType keystore_type =
       crosapi::mojom::KeystoreType::kDevice;
   EXTENSION_FUNCTION_VALIDATE(params->options.scope !=
-                              api::enterprise_platform_keys::SCOPE_NONE);
+                              api::enterprise_platform_keys::Scope::kNone);
   switch (params->options.scope) {
-    case api::enterprise_platform_keys::SCOPE_USER:
+    case api::enterprise_platform_keys::Scope::kUser:
       keystore_type = crosapi::mojom::KeystoreType::kUser;
       break;
-    case api::enterprise_platform_keys::SCOPE_MACHINE:
+    case api::enterprise_platform_keys::Scope::kMachine:
       keystore_type = crosapi::mojom::KeystoreType::kDevice;
       break;
-    case api::enterprise_platform_keys::SCOPE_NONE:
+    case api::enterprise_platform_keys::Scope::kNone:
       NOTREACHED();
   }
 
@@ -507,14 +507,15 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
   crosapi::mojom::KeystoreSigningAlgorithmName algorithm =
       crosapi::mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115;
   if (params->options.register_key.has_value()) {
-    EXTENSION_FUNCTION_VALIDATE(params->options.register_key->algorithm !=
-                                api::enterprise_platform_keys::ALGORITHM_NONE);
+    EXTENSION_FUNCTION_VALIDATE(
+        params->options.register_key->algorithm !=
+        api::enterprise_platform_keys::Algorithm::kNone);
     switch (params->options.register_key->algorithm) {
-      case api::enterprise_platform_keys::ALGORITHM_RSA:
+      case api::enterprise_platform_keys::Algorithm::kRsa:
         algorithm =
             crosapi::mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115;
         break;
-      case api::enterprise_platform_keys::ALGORITHM_ECDSA: {
+      case api::enterprise_platform_keys::Algorithm::kEcdsa: {
         // Older versions of Ash default to RSA. If ECDSA is specified but the
         // Keystore would use RSA instead, return an error.
         const std::string version_error = ValidateCrosapi(
@@ -525,7 +526,7 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
         algorithm = crosapi::mojom::KeystoreSigningAlgorithmName::kEcdsa;
         break;
       }
-      case api::enterprise_platform_keys::ALGORITHM_NONE:
+      case api::enterprise_platform_keys::Algorithm::kNone:
         NOTREACHED();
     }
   }

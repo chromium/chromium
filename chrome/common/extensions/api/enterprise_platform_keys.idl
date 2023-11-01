@@ -6,7 +6,7 @@
 // install certificates for these keys. The certificates will be managed by the
 // platform and can be used for TLS authentication, network access or by other
 // extension through $(ref:platformKeys chrome.platformKeys).
-[platforms = ("chromeos", "lacros")]
+[platforms = ("chromeos", "lacros"), modernised_enums]
 namespace enterprise.platformKeys {
   [nocompile, noinline_doc] dictionary Token {
     // Uniquely identifies this <code>Token</code>.
