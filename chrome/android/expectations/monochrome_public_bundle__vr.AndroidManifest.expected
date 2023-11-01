@@ -19,7 +19,7 @@
     </dist:delivery>  # DIFF-ANCHOR: ea157ece
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: aac219ae
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
   <uses-split android:name="chrome"/>
   <application/>
 </manifest>

@@ -8,8 +8,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.chromium.android_webview.devui">
 
-    <uses-sdk android:minSdkVersion="24" />
-
     <!-- This should only be merged to Monochrome manifest -->
     <!--suppress HardcodedText -->
     <application>

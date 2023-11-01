@@ -11,7 +11,7 @@
   <dist:module dist:onDemand="false" dist:title="@string/cablev2_authenticator_module_title">  # DIFF-ANCHOR: 4362cefb
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 4362cefb
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
   <uses-split android:name="chrome"/>
   <application/>
 </manifest>
