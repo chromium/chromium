@@ -111,7 +111,7 @@ class Component {
 
   const std::vector<GURL>& crx_diffurls() const { return crx_diffurls_; }
 
-  bool diff_update_failed() const { return !!diff_error_code_; }
+  bool diff_update_failed() const { return diff_error_code_; }
 
   ErrorCategory error_category() const { return error_category_; }
   int error_code() const {
