@@ -343,8 +343,12 @@ def CheckPolicyAtomicGroupsHistograms(input_api, output_api):
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
                .getElementsByTagName('enum'))
-  atomic_group_enum = [e for e in enums
-                 if e.getAttribute('name') == 'PolicyAtomicGroups'][0]
+  atomic_group_enums = [e for e in enums
+                        if e.getAttribute('name') == 'PolicyAtomicGroups']
+  if not atomic_group_enums:
+    return results
+
+  atomic_group_enum = atomic_group_enums[0]
   atomic_group_enum_ids = frozenset(int(e.getAttribute('value'))
                               for e in atomic_group_enum
                                 .getElementsByTagName('int'))
