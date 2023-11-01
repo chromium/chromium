@@ -134,8 +134,7 @@ public class BackgroundTaskSchedulerJobServiceTest {
         Assert.assertEquals(oneOffTask.getTaskId(), jobInfo.getId());
         Assert.assertFalse(jobInfo.isPeriodic());
         Assert.assertEquals(NetworkType.ANY, jobInfo.getNetworkType());
-        // TODO(crbug/1483735): Turn this back on when API 34 is available.
-        // Assert.assertTrue(jobInfo.isUserInitiated());
+        Assert.assertTrue(jobInfo.isUserInitiated());
         Assert.assertEquals(TIME_100_MIN_TO_MS, jobInfo.getMinLatencyMillis());
     }
 
