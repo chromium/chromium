@@ -135,7 +135,11 @@ BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet,
 // authentication.
 BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauth,
              "AutofillEnablePaymentsMandatoryReauth",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 // When enabled, some extra metrics logging for Autofill Downstream will start.
 BASE_FEATURE(kAutofillEnableRemadeDownstreamMetrics,
