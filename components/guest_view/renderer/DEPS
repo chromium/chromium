@@ -2,6 +2,7 @@ include_rules = [
   "+content/public/renderer",
   "+content/public/common",
   "+ipc",
+  "+mojo/public/cpp",
   "+third_party/blink/public",
   "+ui/gfx/geometry",
   "+v8/include",

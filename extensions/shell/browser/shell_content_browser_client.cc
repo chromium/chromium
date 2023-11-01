@@ -225,11 +225,6 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
     content::RenderProcessHost* render_process_host) {
   associated_registry->AddInterface<mojom::EventRouter>(base::BindRepeating(
       &EventRouter::BindForRenderer, render_process_host->GetID()));
-  associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
-      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
-                          render_process_host->GetID()));
-  associated_registry->AddInterface<mojom::GuestView>(base::BindRepeating(
-      &ExtensionsGuestView::CreateForExtensions, render_process_host->GetID()));
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_host->GetID()));
 }
@@ -247,6 +242,12 @@ void ShellContentBrowserClient::
                 std::move(receiver), render_frame_host);
           },
           &render_frame_host));
+  associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(
+      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
+                          render_frame_host.GetGlobalId()));
+  associated_registry.AddInterface<mojom::GuestView>(
+      base::BindRepeating(&ExtensionsGuestView::CreateForExtensions,
+                          render_frame_host.GetGlobalId()));
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

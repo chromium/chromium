@@ -13,14 +13,14 @@ namespace webui_examples {
 
 class WebshellGuestView : public guest_view::GuestViewMessageHandler {
  public:
-  explicit WebshellGuestView(int render_process_id,
+  explicit WebshellGuestView(const content::GlobalRenderFrameHostId& frame_id,
                              base::PassKey<WebshellGuestView>);
   WebshellGuestView(const WebshellGuestView&) = delete;
   WebshellGuestView& operator=(const WebshellGuestView&) = delete;
   ~WebshellGuestView() override;
 
   static void Create(
-      int render_process_id,
+      const content::GlobalRenderFrameHostId& frame_id,
       mojo::PendingAssociatedReceiver<guest_view::mojom::GuestViewHost>
           receiver);
 

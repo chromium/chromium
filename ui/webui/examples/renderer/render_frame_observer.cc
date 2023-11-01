@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/no_destructor.h"
 #include "components/guest_view/common/guest_view.mojom.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/guest_view/renderer/guest_view_container.h"
@@ -18,6 +17,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "ipc/ipc_sync_channel.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -45,18 +45,6 @@ class RenderFrameStatus final : public content::RenderFrameObserver {
   void OnDestruct() final {}
 };
 
-guest_view::mojom::GuestViewHost* GetGuestViewHost() {
-  static base::NoDestructor<
-      mojo::AssociatedRemote<guest_view::mojom::GuestViewHost>>
-      guest_view_host;
-  if (!*guest_view_host) {
-    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        guest_view_host.get());
-  }
-
-  return guest_view_host->get();
-}
-
 void AllowCustomElementNameRegistration(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK_EQ(args.Length(), 1);
@@ -74,12 +62,27 @@ void GetNextId(const v8::FunctionCallbackInfo<v8::Value>& args) {
   args.GetReturnValue().Set(++current_id);
 }
 
-void RegisterWebView(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void RegisterWebView(const blink::LocalFrameToken& frame_token,
+                     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1);
   CHECK(args[0]->IsInt32());
   int view_instance_id = args[0].As<v8::Int32>()->Value();
   CHECK_NE(view_instance_id, guest_view::kInstanceIDNone);
-  GetGuestViewHost()->ViewCreated(view_instance_id, "BrowserWebView");
+
+  // This view_holder is leaked. It likely should be bound to the returned
+  // object but views are not tracked.
+  auto* view_holder = new mojo::Remote<guest_view::mojom::ViewHandle>();
+  auto receiver = view_holder->BindNewPipeAndPassReceiver();
+
+  auto* web_frame = blink::WebLocalFrame::FromFrameToken(frame_token);
+  CHECK(web_frame);
+  auto* frame = content::RenderFrame::FromWebFrame(web_frame);
+  CHECK(frame);
+  mojo::AssociatedRemote<guest_view::mojom::GuestViewHost> guest_view;
+  frame->GetRemoteAssociatedInterfaces()->GetInterface(&guest_view);
+
+  guest_view->ViewCreated(view_instance_id, "BrowserWebView",
+                          std::move(receiver));
   args.GetReturnValue().SetUndefined();
 }
 
@@ -143,7 +146,7 @@ void AttachIframeGuest(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
   std::unique_ptr<guest_view::GuestViewAttachRequest> request =
       std::make_unique<guest_view::GuestViewAttachRequest>(
-          guest_view_container, render_frame->GetRoutingID(), guest_instance_id,
+          guest_view_container, render_frame, guest_instance_id,
           std::move(*attach_params).TakeDict(), v8::Local<v8::Function>(),
           args.GetIsolate());
   guest_view_container->IssueRequest(std::move(request));
@@ -294,7 +297,9 @@ void RenderFrameObserver::ReadyToCommitNavigation(
   binder_context.AddCallbackToWebshellObject("getNextId",
                                              base::BindRepeating(&GetNextId));
   binder_context.AddCallbackToWebshellObject(
-      "registerWebView", base::BindRepeating(&RegisterWebView));
+      "registerWebView",
+      base::BindRepeating(&RegisterWebView,
+                          render_frame()->GetWebFrame()->GetLocalFrameToken()));
   binder_context.AddCallbackToWebshellObject(
       "attachIframeGuest", base::BindRepeating(&AttachIframeGuest));
 }

@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/no_destructor.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -22,6 +21,7 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/scripts_run_info.h"
 #include "ipc/ipc_sync_channel.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -33,15 +33,16 @@ namespace extensions {
 namespace {
 
 struct RoutingInfoKey {
-  int routing_id;
+  blink::LocalFrameToken frame_token;
   std::string script_id;
 
-  RoutingInfoKey(int routing_id, std::string script_id)
-      : routing_id(routing_id), script_id(std::move(script_id)) {}
+  RoutingInfoKey(const blink::LocalFrameToken& frame_token,
+                 std::string script_id)
+      : frame_token(frame_token), script_id(std::move(script_id)) {}
 
   bool operator<(const RoutingInfoKey& other) const {
-    return std::tie(routing_id, script_id) <
-           std::tie(other.routing_id, other.script_id);
+    return std::tie(frame_token, script_id) <
+           std::tie(other.frame_token, other.script_id);
   }
 };
 
@@ -91,17 +92,6 @@ bool ShouldInjectScripts(const UserScript::ContentList& script_contents,
     }
   }
   return false;
-}
-
-mojom::GuestView* GetGuestView() {
-  static base::NoDestructor<mojo::AssociatedRemote<mojom::GuestView>>
-      guest_view;
-  if (!*guest_view) {
-    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        guest_view.get());
-  }
-
-  return guest_view->get();
 }
 
 }  // namespace
@@ -193,10 +183,10 @@ PermissionsData::PageAccess UserScriptInjector::CanExecuteOnFrame(
 
   if (script_->consumer_instance_type() ==
           UserScript::ConsumerInstanceType::WEBVIEW) {
-    int routing_id =
-        content::RenderFrame::FromWebFrame(web_frame)->GetRoutingID();
+    auto* render_frame = content::RenderFrame::FromWebFrame(web_frame);
+    auto token = web_frame->GetLocalFrameToken();
 
-    RoutingInfoKey key(routing_id, script_->id());
+    RoutingInfoKey key(token, script_->id());
 
     RoutingInfoMap& map = g_routing_info_map.Get();
     auto iter = map.find(key);
@@ -205,15 +195,14 @@ PermissionsData::PageAccess UserScriptInjector::CanExecuteOnFrame(
     if (iter != map.end()) {
       allowed = iter->second;
     } else {
+      mojo::AssociatedRemote<mojom::GuestView> remote;
+      render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&remote);
+
       // Perform a sync mojo call to the browser to check if this is allowed.
       // This is not ideal, but is mitigated by the fact that this is only done
       // for webviews, and then only once per host.
       // TODO(hanxi): Find a more efficient way to do this.
-      auto* guest_view = GetGuestView();
-      if (guest_view) {
-        guest_view->CanExecuteContentScript(routing_id, script_->id(),
-                                            &allowed);
-      }
+      remote->CanExecuteContentScript(script_->id(), &allowed);
       map.insert(std::pair<RoutingInfoKey, bool>(key, allowed));
     }
 

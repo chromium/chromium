@@ -10,16 +10,15 @@ import "url/mojom/url.mojom";
 
 interface GuestView {
   // Notifies the browser whether or not now is a good time to start loading the
-  // MimeHandlerView. |routing_id| identifies the embedder frame. If |success|
-  // is false, then MimeHandlerViewEmbedder should destroy itself. When
-  // |success| is true the MimeHandlerViewEmbedder should proceed with attaching
-  // the GuestView.
-  ReadyToCreateMimeHandlerView(int32 routing_id, bool success);
+  // MimeHandlerView. If |success| is false, then MimeHandlerViewEmbedder should
+  // destroy itself. When |success| is true the MimeHandlerViewEmbedder should
+  // proceed with attaching the GuestView.
+  ReadyToCreateMimeHandlerView(bool success);
 
-  // Queries whether the frame identified by `routing_id` is allowed to inject
+  // Queries whether the associated frame is allowed to inject
   // the script with the provided `script_id`.
   [Sync]
-  CanExecuteContentScript(int32 routing_id, string script_id) => (bool allowed);
+  CanExecuteContentScript(string script_id) => (bool allowed);
 };
 
 // An interface implemented by the renderer which is used for creating a

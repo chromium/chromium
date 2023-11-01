@@ -11,19 +11,20 @@
 
 namespace webui_examples {
 
-WebshellGuestView::WebshellGuestView(int render_process_id,
-                                     base::PassKey<WebshellGuestView>)
-    : guest_view::GuestViewMessageHandler(render_process_id) {}
+WebshellGuestView::WebshellGuestView(
+    const content::GlobalRenderFrameHostId& frame_id,
+    base::PassKey<WebshellGuestView>)
+    : guest_view::GuestViewMessageHandler(frame_id) {}
 
 WebshellGuestView::~WebshellGuestView() = default;
 
 // static
 void WebshellGuestView::Create(
-    int render_process_id,
+    const content::GlobalRenderFrameHostId& frame_id,
     mojo::PendingAssociatedReceiver<guest_view::mojom::GuestViewHost>
         receiver) {
   mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<WebshellGuestView>(render_process_id,
+      std::make_unique<WebshellGuestView>(frame_id,
                                           base::PassKey<WebshellGuestView>()),
       std::move(receiver));
 }
