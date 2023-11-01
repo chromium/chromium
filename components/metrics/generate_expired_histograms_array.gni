@@ -152,6 +152,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/quota/histograms.xml",
       "//tools/metrics/histograms/metadata/renderer/histograms.xml",
       "//tools/metrics/histograms/metadata/renderer4/histograms.xml",
+      "//tools/metrics/histograms/metadata/safe_browsing/enums.xml",
       "//tools/metrics/histograms/metadata/safe_browsing/histograms.xml",
       "//tools/metrics/histograms/metadata/sb_client/histograms.xml",
       "//tools/metrics/histograms/metadata/scanning/histograms.xml",
