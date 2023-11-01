@@ -145,6 +145,7 @@ void FloatingWorkspaceService::Init(
       floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
     InitForV2(sync_service, desk_sync_service);
   }
+  LOG(WARNING) << "Floating workspace V2 init (not a warning)";
 }
 
 void FloatingWorkspaceService::SubscribeToForeignSessionUpdates() {
