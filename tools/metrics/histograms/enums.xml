@@ -81357,6 +81357,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12"
       label="Allowed by requesting origin and embedding origin being
              same-site"/>
+  <int value="13"
+      label="Denied due to an abort by browser (e.g. RenderFrameHost was
+             deleted)"/>
 </enum>
 
 <enum name="StorageAccessInputState">
