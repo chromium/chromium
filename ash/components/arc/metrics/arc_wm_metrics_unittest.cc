@@ -149,4 +149,30 @@ TEST_F(ArcWmMetricsTest, TestMultipleWindowsEnterTabletModeDelayMetrics) {
   histogram_tester.ExpectTotalCount(histogram_name_upper_window, 1);
 }
 
+TEST_F(ArcWmMetricsTest, TestWindowLeaveTabletModeDelayMetrics) {
+  ash::AppType app_type = ash::AppType::ARC_APP;
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
+  window->Show();
+
+  base::HistogramTester histogram_tester;
+  const auto histogram_name =
+      ArcWmMetrics::GetWindowExitTabletModeTimeHistogramName(app_type);
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  histogram_tester.ExpectTotalCount(histogram_name, 1);
+
+  // If the window state of a window is maximized before entering into tablet
+  // mode, its window state should remains maximized after exiting tablet mode.
+  // In this case, histogram should not records data.
+  views::Widget::GetWidgetForNativeWindow(window.get())->Maximize();
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  histogram_tester.ExpectTotalCount(histogram_name, 1);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  histogram_tester.ExpectTotalCount(histogram_name, 1);
+}
+
 }  // namespace arc

@@ -38,6 +38,9 @@ class ArcWmMetrics : public aura::EnvObserver,
   static std::string GetWindowEnterTabletModeTimeHistogramName(
       ash::AppType app_type);
 
+  static std::string GetWindowExitTabletModeTimeHistogramName(
+      ash::AppType app_type);
+
   // aura::EnvObserver
   void OnWindowInitialized(aura::Window* new_window) override;
 
@@ -49,6 +52,7 @@ class ArcWmMetrics : public aura::EnvObserver,
 
   // ash::TabletModeObserver:
   void OnTabletModeStarting() override;
+  void OnTabletModeEnding() override;
   void OnTabletControllerDestroyed() override;
 
  private:
@@ -72,6 +76,11 @@ class ArcWmMetrics : public aura::EnvObserver,
   // their corresponding observers.
   base::flat_map<aura::Window*, std::unique_ptr<WindowCloseObserver>>
       close_observing_windows_;
+
+  // The map of windows that are exiting tablet mode and being observed by
+  // WindowStateChangeObserver, and their corresponding observers.
+  base::flat_map<aura::Window*, std::unique_ptr<WindowStateChangeObserver>>
+      exiting_tablet_mode_observing_windows_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
 
