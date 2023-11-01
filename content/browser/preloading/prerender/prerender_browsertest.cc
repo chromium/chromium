@@ -305,9 +305,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
         std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
             &PrerenderBrowserTest::web_contents, base::Unretained(this)));
     feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2InNewTab,
-         blink::features::kPrerender2MainFrameNavigation,
-
+        {blink::features::kPrerender2MainFrameNavigation,
          // To enable Content-Security-Policy navigate-to support.
          ::features::kExperimentalContentSecurityPolicyFeatures},
         {});

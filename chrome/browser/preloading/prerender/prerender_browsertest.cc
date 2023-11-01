@@ -63,7 +63,6 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
       : prerender_helper_(
             base::BindRepeating(&PrerenderBrowserTest::GetActiveWebContents,
                                 base::Unretained(this))) {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2InNewTab);
   }
 
   void SetUp() override {
@@ -108,7 +107,6 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class PrerenderHoldbackBrowserTest : public PrerenderBrowserTest {
