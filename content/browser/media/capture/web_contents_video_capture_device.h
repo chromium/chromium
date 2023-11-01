@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace content {
 
@@ -48,10 +49,12 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
       const std::string& device_id);
 
   // VideoCaptureDevice overrides.
-  void Crop(const base::Token& crop_id,
-            uint32_t sub_capture_target_version,
-            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
-                callback) final;
+  void ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback) final;
 
   // FrameSinkVideoConsumer overrides.
   void OnFrameCaptured(

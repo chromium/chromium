@@ -49,9 +49,10 @@ class MockVideoCaptureDevice final
                                       base::OnceClosure done_cb) override {}
   MOCK_METHOD0(MaybeSuspendDevice, void());
   MOCK_METHOD0(ResumeDevice, void());
-  MOCK_METHOD3(
-      Crop,
+  MOCK_METHOD4(
+      ApplySubCaptureTarget,
       void(
+          media::mojom::SubCaptureTargetType,
           const base::Token&,
           uint32_t,
           base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));

@@ -19,6 +19,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_switches.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -379,8 +380,9 @@ TEST_F(WebContentsFrameTrackerTest,
                               /*sub_capture_target_version=*/1))
       .Times(1);
 
-  tracker()->Crop(kCropId, /*sub_capture_target_version=*/1,
-                  std::move(callback));
+  tracker()->ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType::kCropTarget, kCropId,
+      /*sub_capture_target_version=*/1, std::move(callback));
 
   RunAllTasksUntilIdle();
   EXPECT_TRUE(success);

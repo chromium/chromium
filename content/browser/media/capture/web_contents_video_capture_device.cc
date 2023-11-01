@@ -18,6 +18,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -52,16 +53,17 @@ WebContentsVideoCaptureDevice::Create(const std::string& device_id) {
   return std::make_unique<WebContentsVideoCaptureDevice>(routing_id);
 }
 
-void WebContentsVideoCaptureDevice::Crop(
-    const base::Token& crop_id,
+void WebContentsVideoCaptureDevice::ApplySubCaptureTarget(
+    media::mojom::SubCaptureTargetType type,
+    const base::Token& target,
     uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  tracker_.AsyncCall(&WebContentsFrameTracker::Crop)
-      .WithArgs(crop_id, sub_capture_target_version,
+  tracker_.AsyncCall(&WebContentsFrameTracker::ApplySubCaptureTarget)
+      .WithArgs(type, target, sub_capture_target_version,
                 mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                     std::move(callback),
                     media::mojom::ApplySubCaptureTargetResult::kErrorGeneric));

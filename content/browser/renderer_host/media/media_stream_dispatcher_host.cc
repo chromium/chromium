@@ -691,6 +691,8 @@ void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
     ApplySubCaptureTargetCallback callback,
     bool target_passed_validation) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK(type == media::mojom::SubCaptureTargetType::kCropTarget ||
+        type == media::mojom::SubCaptureTargetType::kRestrictionTarget);
 
   if (!target_passed_validation) {
     std::move(callback).Run(
@@ -698,16 +700,8 @@ void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
     return;
   }
 
-  switch (type) {
-    case media::mojom::SubCaptureTargetType::kCropTarget:
-      media_stream_manager_->video_capture_manager()->Crop(
-          device_id, target, sub_capture_target_version, std::move(callback));
-      break;
-    case media::mojom::SubCaptureTargetType::kRestrictionTarget:
-      // TODO(crbug.com/1418194): Implement.
-      NOTIMPLEMENTED();
-      break;
-  }
+  media_stream_manager_->video_capture_manager()->ApplySubCaptureTarget(
+      device_id, type, target, sub_capture_target_version, std::move(callback));
 }
 #endif
 

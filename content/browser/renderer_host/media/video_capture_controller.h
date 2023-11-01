@@ -148,10 +148,12 @@ class CONTENT_EXPORT VideoCaptureController
   void TakePhoto(media::VideoCaptureDevice::TakePhotoCallback callback);
   void MaybeSuspend();
   void Resume();
-  void Crop(const base::Token& crop_id,
-            uint32_t sub_capture_target_version,
-            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
-                callback);
+  void ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback);
   void RequestRefreshFrame();
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
                                       base::OnceClosure done_cb);

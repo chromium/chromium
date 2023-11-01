@@ -387,8 +387,9 @@ void FrameSinkVideoCaptureDevice::Resume() {
   MaybeStartConsuming();
 }
 
-void FrameSinkVideoCaptureDevice::Crop(
-    const base::Token& crop_id,
+void FrameSinkVideoCaptureDevice::ApplySubCaptureTarget(
+    media::mojom::SubCaptureTargetType type,
+    const base::Token& target,
     uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {

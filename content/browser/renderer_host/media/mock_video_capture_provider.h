@@ -77,10 +77,11 @@ class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
                void(media::VideoCaptureDevice::TakePhotoCallback* callback));
   MOCK_METHOD0(MaybeSuspendDevice, void());
   MOCK_METHOD0(ResumeDevice, void());
-  MOCK_METHOD3(
-      Crop,
+  MOCK_METHOD4(
+      ApplySubCaptureTarget,
       void(
-          const base::Token& crop_id,
+          media::mojom::SubCaptureTargetType type,
+          const base::Token& target,
           uint32_t sub_capture_target_version,
           base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());

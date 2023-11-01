@@ -30,6 +30,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/screenlock_observer.h"
 #include "media/base/video_facing.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
@@ -88,21 +89,24 @@ class CONTENT_EXPORT VideoCaptureManager
   base::UnguessableToken Open(const blink::MediaStreamDevice& device) override;
   void Close(const base::UnguessableToken& capture_session_id) override;
 
-  // Start/stop cropping the video track.
+  // Start/stop cropping/restricting the video track.
   //
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // Non-empty |target| sets (or changes) the sub-capture target.
+  // Empty |target| reverts the capture to its original state.
   //
   // |sub_capture_target_version| must be incremented by at least one for each
   // call. By including it in frame's metadata, Viz informs Blink what was the
-  // latest invocation of cropTo() before a given frame was produced.
+  // latest invocation of cropTo() or restrictTo() before a given frame was
+  // produced.
   //
   // The callback reports success/failure.
-  void Crop(const base::UnguessableToken& session_id,
-            const base::Token& crop_id,
-            uint32_t sub_capture_target_version,
-            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
-                callback);
+  void ApplySubCaptureTarget(
+      const base::UnguessableToken& session_id,
+      media::mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback);
 
   // Called by VideoCaptureHost to locate a capture device for `capture_params`,
   // adding the Host as a client of the device's controller if successful. The

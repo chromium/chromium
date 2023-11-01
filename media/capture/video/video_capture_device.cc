@@ -106,8 +106,9 @@ void VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
 
 VideoCaptureDevice::~VideoCaptureDevice() = default;
 
-void VideoCaptureDevice::Crop(
-    const base::Token& crop_id,
+void VideoCaptureDevice::ApplySubCaptureTarget(
+    mojom::SubCaptureTargetType type,
+    const base::Token& target,
     uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {

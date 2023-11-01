@@ -31,10 +31,12 @@ class InProcessLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
       media::VideoCaptureDevice::TakePhotoCallback callback) override;
   void MaybeSuspendDevice() override;
   void ResumeDevice() override;
-  void Crop(const base::Token& crop_id,
-            uint32_t sub_capture_target_version,
-            base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
-                callback) override;
+  void ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback) override;
   void RequestRefreshFrame() override;
 
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,

@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -431,8 +432,9 @@ void WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId(
   OnPossibleTargetChange();
 }
 
-void WebContentsFrameTracker::Crop(
-    const base::Token& crop_id,
+void WebContentsFrameTracker::ApplySubCaptureTarget(
+    media::mojom::SubCaptureTargetType type,
+    const base::Token& target_token,
     uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
@@ -448,7 +450,14 @@ void WebContentsFrameTracker::Crop(
     return;
   }
 
-  crop_id_ = crop_id;
+  if (type != media::mojom::SubCaptureTargetType::kCropTarget) {
+    // TODO(crbug.com/1418194): Implement.
+    std::move(callback).Run(
+        media::mojom::ApplySubCaptureTargetResult::kNotImplemented);
+    return;
+  }
+
+  crop_id_ = target_token;
   sub_capture_target_version_ = sub_capture_target_version;
 
   // If we don't have a target yet, we can store the crop ID but cannot actually
