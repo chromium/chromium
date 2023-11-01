@@ -74,6 +74,7 @@ void MediaDocumentParser::CreateDocumentStructure() {
   did_build_document_structure_ = true;
 
   DCHECK(GetDocument());
+  GetDocument()->SetOverrideSiteForCookiesForCSPMedia(true);
   auto* root_element = MakeGarbageCollected<HTMLHtmlElement>(*GetDocument());
   GetDocument()->AppendChild(root_element);
   root_element->InsertedByParser();

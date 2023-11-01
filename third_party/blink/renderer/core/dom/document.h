@@ -1989,6 +1989,10 @@ class CORE_EXPORT Document : public ContainerNode,
   static Document* parseHTMLUnsafe(ExecutionContext* context,
                                    const String& html);
 
+  // This method should only be called when the document is top-level and it is
+  // rendering static media like video or images.
+  void SetOverrideSiteForCookiesForCSPMedia(bool value);
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -2694,6 +2698,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // If legacy DOM Mutation event listeners are supported by the embedder.
   absl::optional<bool> legacy_dom_mutations_supported_;
+
+  // For rendering media URLs in a top-level context that use the
+  // Content-Security-Policy header to sandbox their content. This causes
+  // access-controlled media to not load when it is the top-level URL when
+  // third-party cookie blocking is enabled.
+  bool override_site_for_cookies_for_csp_media_ = false;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

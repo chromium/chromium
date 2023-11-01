@@ -4,10 +4,12 @@
 
 #include <tuple>
 
+#include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -22,9 +24,12 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 
@@ -305,6 +310,112 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, CSPAttributeTooLong) {
 
   EXPECT_EQ(current_frame_host()->child_count(), 1u);
   EXPECT_FALSE(current_frame_host()->child_at(0)->csp_attribute());
+}
+
+namespace {
+
+constexpr char kWebmPath[] = "/csp_video.webm";
+
+std::unique_ptr<net::test_server::HttpResponse> ServeCSPMedia(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != kWebmPath) {
+    return nullptr;
+  }
+  auto cookie_header = request.headers.find("cookie");
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  if (cookie_header == request.headers.end()) {
+    response->set_code(net::HTTP_UNAUTHORIZED);
+    return std::move(response);
+  }
+  response->set_code(net::HTTP_OK);
+  const std::string kOneFrameOnePixelWebm =
+      "GkXfo0AgQoaBAUL3gQFC8oEEQvOBCEKCQAR3ZWJtQoeBAkKFgQIYU4BnQN8VSalmQCgq17FA"
+      "Aw9CQE2AQAZ3aGFtbXlXQUAGd2hhbW15RIlACECPQAAAAAAAFlSua0AxrkAu14EBY8WBAZyB"
+      "ACK1nEADdW5khkAFVl9WUDglhohAA1ZQOIOBAeBABrCBlrqBlh9DtnVAdOeBAKNAboEAAIDy"
+      "CACdASqWAJYAPk0ci0WD+IBAAJiWlu4XdQTSq2H4MW0+sMO0gz8HMRe+"
+      "0jRo0aNGjRo0aNGjRo0aNGjRo0aNGjRo0aNGjRo0aNGjRo0VAAD+/729RWRzH4mOZ9/"
+      "O8Dl319afX4gsgAAA";
+  std::string content;
+  base::Base64Decode(kOneFrameOnePixelWebm, &content);
+  response->AddCustomHeader("Content-Security-Policy", "sandbox allow-scripts");
+  response->AddCustomHeader("Content-Type", "video/webm");
+  response->AddCustomHeader("Access-Control-Allow-Origin", "null");
+  response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
+  response->set_content(content);
+  return std::move(response);
+}
+
+}  // namespace
+
+class ThirdPartyCookiesContentSecurityPolicyBrowserTest
+    : public ContentSecurityPolicyBrowserTest {
+ public:
+  ThirdPartyCookiesContentSecurityPolicyBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitAndEnableFeature(
+        net::features::kForceThirdPartyCookieBlocking);
+  }
+
+  void SetUpOnMainThread() override {
+    ContentSecurityPolicyBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server()->RegisterRequestHandler(base::BindRepeating(&ServeCSPMedia));
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentSecurityPolicyBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentSecurityPolicyBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+    ContentSecurityPolicyBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
+
+ protected:
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  net::EmbeddedTestServer https_server_;
+  ContentMockCertVerifier mock_cert_verifier_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that CSP does not break rendering access-controlled media due to
+// third-party cookie blocking.
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesContentSecurityPolicyBrowserTest,
+                       CSPMediaThirdPartyCookieBlocking) {
+  ASSERT_TRUE(content::SetCookie(web_contents()->GetBrowserContext(),
+                                 https_server()->GetURL("/"),
+                                 "foo=bar; SameSite=None; Secure;"));
+  ASSERT_TRUE(NavigateToURL(shell(), https_server()->GetURL(kWebmPath)));
+  EXPECT_TRUE(EvalJs(shell(),
+                     "fetch('/csp_video.webm', {credentials: "
+                     "'include'}).then(res => res.status == 200)")
+                  .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesContentSecurityPolicyBrowserTest,
+                       CSPMediaThirdPartyCookieBlocking_IFrame) {
+  ASSERT_TRUE(content::SetCookie(web_contents()->GetBrowserContext(),
+                                 https_server()->GetURL("/"),
+                                 "foo=bar; SameSite=None; Secure;"));
+  std::string page = "data:text/html,<iframe src=\"" +
+                     https_server()->GetURL(kWebmPath).spec() + "\"></iframe>";
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(page)));
+  content::RenderFrameHost* nested_iframe = content::ChildFrameAt(shell(), 0);
+  EXPECT_FALSE(EvalJs(nested_iframe,
+                      "fetch('/csp_video.webm', {credentials: "
+                      "'include'}).then(res => res.status == 200)")
+                   .ExtractBool());
 }
 
 namespace {
