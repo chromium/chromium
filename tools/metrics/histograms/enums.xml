@@ -49404,6 +49404,7 @@ from previous Chrome versions.
   <int value="-1961071650" label="InterestFeedV2Autoplay:disabled"/>
   <int value="-1961062505" label="VrBrowsingInCustomTab:disabled"/>
   <int value="-1960567385" label="KeepPrefetchedContentSuggestions:enabled"/>
+  <int value="-1960250727" label="DefaultANGLEVulkan:disabled"/>
   <int value="-1959602781" label="ShimlessRMADisableDarkMode:disabled"/>
   <int value="-1959563554" label="ChromeOSAccountManager:enabled"/>
   <int value="-1958364669" label="QueryTilesSegmentation:enabled"/>
@@ -50226,6 +50227,7 @@ from previous Chrome versions.
   <int value="-1560729847" label="AutofillCacheQueryResponses:enabled"/>
   <int value="-1560650271" label="WasmCodeCache:disabled"/>
   <int value="-1559789642" label="RunAllFlashInAllowMode:enabled"/>
+  <int value="-1559616006" label="DefaultANGLEVulkan:enabled"/>
   <int value="-1559292789" label="SideSearch:disabled"/>
   <int value="-1558734415" label="ArcHostVpn:enabled"/>
   <int value="-1558082361" label="ContinuousOverviewScrollAnimation:enabled"/>

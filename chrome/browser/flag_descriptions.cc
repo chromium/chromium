@@ -3718,6 +3718,10 @@ const char kZstdContentEncodingDescription[] =
 const char kEnableVulkanName[] = "Vulkan";
 const char kEnableVulkanDescription[] = "Use vulkan as the graphics backend.";
 
+const char kDefaultAngleVulkanName[] = "Default ANGLE Vulkan";
+const char kDefaultAngleVulkanDescription[] =
+    "Use the Vulkan backend for ANGLE by default.";
+
 const char kResponsiveToolbarName[] = "Responsive toolbar";
 const char kResponsiveToolbarDescription[] =
     "Toolbar icons overflow to a chevron icon when the browser width is "

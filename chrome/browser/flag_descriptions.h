@@ -2155,6 +2155,9 @@ extern const char kZstdContentEncodingDescription[];
 extern const char kEnableVulkanName[];
 extern const char kEnableVulkanDescription[];
 
+extern const char kDefaultAngleVulkanName[];
+extern const char kDefaultAngleVulkanDescription[];
+
 extern const char kResponsiveToolbarName[];
 extern const char kResponsiveToolbarDescription[];
 

@@ -4801,8 +4801,12 @@ const FeatureEntry kFeatureEntries[] = {
                                blink::switches::kDisableZeroCopy)},
     {"enable-vulkan", flag_descriptions::kEnableVulkanName,
      flag_descriptions::kEnableVulkanDescription,
-     kOsWin | kOsLinux | kOsAndroid | kOsCrOS,
+     kOsWin | kOsLinux | kOsAndroid | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kVulkan)},
+    {"default-angle-vulkan", flag_descriptions::kDefaultAngleVulkanName,
+     flag_descriptions::kDefaultAngleVulkanDescription,
+     kOsLinux | kOsAndroid | kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kDefaultANGLEVulkan)},
 #if BUILDFLAG(IS_ANDROID)
     {"translate-message-ui", flag_descriptions::kTranslateMessageUIName,
      flag_descriptions::kTranslateMessageUIDescription, kOsAndroid,
