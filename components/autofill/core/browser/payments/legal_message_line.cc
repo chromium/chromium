@@ -68,13 +68,19 @@ LegalMessageLine::Link::Link(size_t start,
                              const std::string& url_spec)
     : range(start, end), url(url_spec) {}
 
-LegalMessageLine::Link::~Link() {}
+LegalMessageLine::Link::~Link() = default;
 
-LegalMessageLine::LegalMessageLine() {}
+bool LegalMessageLine::Link::operator==(
+    const LegalMessageLine::Link& other) const = default;
+
+LegalMessageLine::LegalMessageLine() = default;
 
 LegalMessageLine::LegalMessageLine(const LegalMessageLine& other) = default;
 
-LegalMessageLine::~LegalMessageLine() {}
+LegalMessageLine::~LegalMessageLine() = default;
+
+bool LegalMessageLine::operator==(const LegalMessageLine& other) const =
+    default;
 
 // static
 bool LegalMessageLine::Parse(const base::Value::Dict& legal_message,

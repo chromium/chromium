@@ -35,6 +35,9 @@ struct VirtualCardEnrollmentFields {
   VirtualCardEnrollmentFields(const VirtualCardEnrollmentFields&);
   VirtualCardEnrollmentFields& operator=(const VirtualCardEnrollmentFields&);
   ~VirtualCardEnrollmentFields();
+
+  bool operator==(const VirtualCardEnrollmentFields& other) const;
+
   // The credit card to enroll.
   CreditCard credit_card;
   // Raw pointer to the image skia for the card art. If the card art is not yet

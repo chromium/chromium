@@ -30,6 +30,8 @@ VirtualCardEnrollmentFields::VirtualCardEnrollmentFields(
 VirtualCardEnrollmentFields& VirtualCardEnrollmentFields::operator=(
     const VirtualCardEnrollmentFields&) = default;
 VirtualCardEnrollmentFields::~VirtualCardEnrollmentFields() = default;
+bool VirtualCardEnrollmentFields::operator==(
+    const VirtualCardEnrollmentFields&) const = default;
 
 VirtualCardEnrollmentProcessState::VirtualCardEnrollmentProcessState() =
     default;
