@@ -5943,7 +5943,7 @@
   {
     "name": "omnibox-shortcut-boost",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "omnibox-shortcuts-database-ios",

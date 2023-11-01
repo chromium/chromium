@@ -1409,29 +1409,29 @@ const FeatureEntry::FeatureVariation kChromeRefresh2023NTBVariations[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
-const FeatureEntry::FeatureParam kShortcutBoostSearchAndUrl1414[] = {
-    {"ShortcutBoostSearchScore", "1414"},
-    {"ShortcutBoostUrlScore", "1414"}};
-const FeatureEntry::FeatureParam kShortcutBoostUrl1414[] = {
+const FeatureEntry::FeatureParam kShortcutBoostSingleUrl[] = {
     {"ShortcutBoostSearchScore", "0"},
-    {"ShortcutBoostUrlScore", "1414"}};
-const FeatureEntry::FeatureParam kShortcutBoostSearchAndUrl1200[] = {
-    {"ShortcutBoostSearchScore", "1200"},
-    {"ShortcutBoostUrlScore", "1200"}};
-const FeatureEntry::FeatureParam kShortcutBoostMultipleUrls2[] = {
+    {"ShortcutBoostNonTopHitThreshold", "0"},
+    {"ShortcutBoostGroupWithSearches", "false"},
+};
+const FeatureEntry::FeatureParam kShortcutBoostMultipleUrls[] = {
+    {"ShortcutBoostSearchScore", "0"},
     {"ShortcutBoostNonTopHitThreshold", "2"},
     {"ShortcutBoostGroupWithSearches", "true"},
-    {"ShortcutBoostUrlScore", "1420"}};
+};
+const FeatureEntry::FeatureParam kShortcutBoostMultipleSearchesAndUrls[] = {
+    {"ShortcutBoostSearchScore", "1414"},
+    {"ShortcutBoostNonTopHitThreshold", "2"},
+    {"ShortcutBoostGroupWithSearches", "true"},
+};
 
 const FeatureEntry::FeatureVariation kOmniboxShortcutBoostVariations[] = {
-    {"Searches & URLs - aggressive (1414)", kShortcutBoostSearchAndUrl1414,
-     std::size(kShortcutBoostSearchAndUrl1414), nullptr},
-    {"URLs - aggressive (1414)", kShortcutBoostUrl1414,
-     std::size(kShortcutBoostUrl1414), nullptr},
-    {"Searches & URLs - conservative (1200)", kShortcutBoostSearchAndUrl1200,
-     std::size(kShortcutBoostSearchAndUrl1200), nullptr},
-    {"Multiple URLs - super aggressive (2)", kShortcutBoostMultipleUrls2,
-     std::size(kShortcutBoostMultipleUrls2), nullptr},
+    {"Single URL", kShortcutBoostSingleUrl, std::size(kShortcutBoostSingleUrl),
+     nullptr},
+    {"Multiple URLs", kShortcutBoostMultipleUrls,
+     std::size(kShortcutBoostMultipleUrls), nullptr},
+    {"Multiple Searches and URLs", kShortcutBoostMultipleSearchesAndUrls,
+     std::size(kShortcutBoostMultipleSearchesAndUrls), nullptr},
 };
 
 // A limited number of combinations of the rich autocompletion params.
