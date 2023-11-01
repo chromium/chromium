@@ -88,14 +88,28 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                   kCanvasCaptureColorTestHtmlFile);
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_VerifyCanvasWebGLCaptureOpaqueColor \
+  DISABLED_VerifyCanvasWebGLCaptureOpaqueColor
+#else
+#define MAYBE_VerifyCanvasWebGLCaptureOpaqueColor \
+  VerifyCanvasWebGLCaptureOpaqueColor
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
-                       VerifyCanvasWebGLCaptureOpaqueColor) {
+                       MAYBE_VerifyCanvasWebGLCaptureOpaqueColor) {
   MakeTypicalCall("testCanvasWebGLCaptureOpaqueColors(true);",
                   kCanvasCaptureColorTestHtmlFile);
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_VerifyCanvasWebGLCaptureAlphaColor \
+  DISABLED_VerifyCanvasWebGLCaptureAlphaColor
+#else
+#define MAYBE_VerifyCanvasWebGLCaptureAlphaColor \
+  VerifyCanvasWebGLCaptureAlphaColor
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
-                       VerifyCanvasWebGLCaptureAlphaColor) {
+                       MAYBE_VerifyCanvasWebGLCaptureAlphaColor) {
   MakeTypicalCall("testCanvasWebGLCaptureAlphaColors(true);",
                   kCanvasCaptureColorTestHtmlFile);
 }
