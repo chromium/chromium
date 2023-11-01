@@ -91,18 +91,17 @@ TabSearchBubbleHost::~TabSearchBubbleHost() {
 
 void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
                                                     bool visible) {
-  DCHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
-  if (visible && bubble_created_time_.has_value()) {
-    button_->GetWidget()
-        ->GetCompositor()
-        ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+  CHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
+  if (visible && widget && bubble_created_time_.has_value()) {
+    widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+        base::BindOnce(
             [](base::TimeTicks bubble_created_time,
                bool bubble_using_cached_web_contents,
                base::TimeTicks presentation_timestamp) {
               base::UmaHistogramMediumTimes(
                   bubble_using_cached_web_contents
-                      ? "Tabs.TabSearch.WindowTimeToShowCachedWebView"
-                      : "Tabs.TabSearch.WindowTimeToShowUncachedWebView",
+                      ? "Tabs.TabSearch.WindowTimeToShowCachedWebView2"
+                      : "Tabs.TabSearch.WindowTimeToShowUncachedWebView2",
                   presentation_timestamp - bubble_created_time);
             },
             *bubble_created_time_,
