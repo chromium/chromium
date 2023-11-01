@@ -2346,7 +2346,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5884465125445718607">Sobre xinès número 6</translation>
 <translation id="5887400589839399685">S'ha desat la targeta</translation>
 <translation id="5887687176710214216">Darrera visita: ahir</translation>
-<translation id="5888023855665301188">Tramita la compra més ràpidament quan es desin els CVC. <ph name="LINK_BEGIN" />Suprimeix els codis de seguretat desats<ph name="LINK_END" /></translation>
+<translation id="5888023855665301188">Desa els CVC per tramitar les compres més ràpidament. <ph name="LINK_BEGIN" />Suprimeix els codis de seguretat desats<ph name="LINK_END" /></translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="5895187275912066135">Emès el</translation>
 <translation id="5901630391730855834">Groc</translation>
@@ -3298,7 +3298,7 @@ Detalls addicionals:
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7785790577395078482">aquesta tauleta</translation>
 <translation id="7786368602962652765">Un camp obligatori és buit. Emplena'l abans de desar.</translation>
-<translation id="7786912885126430740">Tramita la compra més ràpidament quan es desin els CVC</translation>
+<translation id="7786912885126430740">Desa els CVC per tramitar les compres més ràpidament</translation>
 <translation id="7790488044432570133">Els llocs web que visites poden demanar a Chrome informació que els ajuda a mesurar el rendiment dels seus anuncis. Chrome permet que els llocs web recullin tipus de dades limitats, com ara l'hora del dia en què se t'ha mostrat un anunci.</translation>
 <translation id="7791011319128895129">No publicada</translation>
 <translation id="7791196057686275387">Embalat</translation>

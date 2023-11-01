@@ -402,7 +402,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="13130607084115184">Gordetako pasahitzak hemen agertuko dira. Pasahitzak <ph name="BRAND" /> zerbitzura inportatzeko gailu honetan, <ph name="BEGIN_LINK" /> hautatu CSV fitxategi bat.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">Hauek kendu dira: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="1313405956111467313">Proxy-konfigurazio automatikoa</translation>
-<translation id="131364520783682672">Maiuskula-blokeoa</translation>
+<translation id="131364520783682672">Maiuskulen blokeoa</translation>
 <translation id="1313660246522271310">Webgune guztietan amaituko da saioa, baita irekita dauden fitxetan ere</translation>
 <translation id="1313705515580255288">Laster-markak, historia eta bestelako ezarpenak Google-ko kontuarekin sinkronizatuko dira.</translation>
 <translation id="1315184295353569363">Ezabatu taldea</translation>
@@ -7142,7 +7142,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6798420440063423019">Segurtasun-giltza blokeatuta dago PINa gehiegitan idatzi delako oker. Segurtasun-giltza berrezarri beharko duzu.</translation>
 <translation id="679845623837196966">Erakutsi irakurketa-zerrenda</translation>
 <translation id="6798578729981748444">Inportazioa amaitzeko, itxi Firefox-eko leiho guztiak.</translation>
-<translation id="6798780071646309401">maiuskulak aktibatuta daude</translation>
+<translation id="6798780071646309401">maiuskulen blokeoa aktibatuta dago</translation>
 <translation id="6798954102094737107"><ph name="PLUGIN_NAME" /> plugina</translation>
 <translation id="6801129617625983991">Ezarpen orokorrak</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Aukeratu luzapenak webgunea irakurri edo aldatu ahal duen}other{Aukeratu luzapenek webgunea irakurri edo aldatu ahal duten}}</translation>
@@ -8146,7 +8146,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7622114377921274169">Kargatzen.</translation>
 <translation id="7622768823216805500">Webguneek ordainketa-kudeatzaileak instalatu ohi dituzte ordainketa erraza eta antzeko erosketa-eginbideak eskaintzeko</translation>
 <translation id="7622966771025050155">Aldatu grabatutako fitxara</translation>
-<translation id="7624337243375417909">maiuskulak desaktibatuta daude</translation>
+<translation id="7624337243375417909">maiuskulen blokeoa desaktibatuta dago</translation>
 <translation id="7625568159987162309">Ikusi webguneetan gordetako baimenak eta datuak</translation>
 <translation id="7625823789272218216">Fitxa berria ezkerrean</translation>
 <translation id="7628201176665550262">Freskatze-abiadura</translation>
