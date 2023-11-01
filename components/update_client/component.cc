@@ -1174,7 +1174,8 @@ void Component::StateUpdatingDiff::DoHandle() {
   // the callback on the sequence the installer is running on.
   auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   if (base::FeatureList::IsEnabled(features::kPuffinPatches) &&
-      update_context.crx_cache_.has_value()) {
+      update_context.crx_cache_.has_value() &&
+      update_context.config->EnabledDeltas()) {
     base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
         ->PostTask(
             FROM_HERE,
