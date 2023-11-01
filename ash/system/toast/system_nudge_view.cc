@@ -67,9 +67,6 @@ constexpr int kButtonContainerTopPadding = 16;
 constexpr int kImageViewTrailingPadding = 16;
 constexpr int kTitleBottomPadding = 4;
 
-// Shadow constants
-constexpr gfx::Point kShadowOrigin = gfx::Point(8, 8);
-
 void AddPaddingView(views::View* parent, int width, int height) {
   parent->AddChildView(std::make_unique<views::View>())
       ->SetPreferredSize(gfx::Size(width, height));
@@ -268,21 +265,28 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
   }
 }
 
-SystemNudgeView::~SystemNudgeView() = default;
-
-void SystemNudgeView::UpdateShadowBounds() {
-  shadow_->SetContentBounds(gfx::Rect(kShadowOrigin, GetPreferredSize()));
+SystemNudgeView::~SystemNudgeView() {
+  auto* widget = GetWidget();
+  if (widget && widget->HasObserver(this)) {
+    widget->RemoveObserver(this);
+  }
 }
 
 void SystemNudgeView::AddedToWidget() {
-  shadow_->SetContentBounds(gfx::Rect(kShadowOrigin, GetPreferredSize()));
+  GetWidget()->AddObserver(this);
 
   // Attach the shadow at the bottom of the widget layer.
   auto* shadow_layer = shadow_->GetLayer();
   auto* widget_layer = GetWidget()->GetLayer();
-
   widget_layer->Add(shadow_layer);
   widget_layer->StackAtBottom(shadow_layer);
+}
+
+void SystemNudgeView::RemovedFromWidget() {
+  auto* widget = GetWidget();
+  if (widget && widget->HasObserver(this)) {
+    widget->RemoveObserver(this);
+  }
 }
 
 void SystemNudgeView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -291,6 +295,18 @@ void SystemNudgeView::OnMouseEntered(const ui::MouseEvent& event) {
 
 void SystemNudgeView::OnMouseExited(const ui::MouseEvent& event) {
   HandleOnMouseHovered(/*mouse_entered=*/false);
+}
+
+void SystemNudgeView::OnWidgetBoundsChanged(views::Widget* widget,
+                                            const gfx::Rect& new_bounds) {
+  // `shadow_` should have the same bounds as the view's layer.
+  shadow_->SetContentBounds(layer()->bounds());
+}
+
+void SystemNudgeView::OnWidgetDestroying(views::Widget* widget) {
+  if (widget && widget->HasObserver(this)) {
+    widget->RemoveObserver(this);
+  }
 }
 
 void SystemNudgeView::HandleOnMouseHovered(const bool mouse_entered) {

@@ -9,12 +9,14 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
+class ImageButton;
 class ImageView;
 class Label;
 class LabelButton;
-class ImageButton;
+class Widget;
 }  // namespace views
 
 namespace ash {
@@ -26,7 +28,8 @@ class SystemShadow;
 // This view supports different configurations depending on the provided
 // nudge data parameters. It will always have a body text, and may have a
 // leading image view, a title text, and up to two buttons placed on the bottom.
-class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
+class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
+                                   public views::WidgetObserver {
  public:
   METADATA_HEADER(SystemNudgeView);
 
@@ -43,8 +46,16 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   views::LabelButton* first_button() const { return first_button_; }
   views::LabelButton* second_button() const { return second_button_; }
 
-  // Called when the device zoom scale changes, observed from the widget.
-  void UpdateShadowBounds();
+  // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   // Owned by the views hierarchy.
@@ -56,11 +67,6 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   raw_ptr<views::ImageButton> close_button_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
-
-  // views::View:
-  void AddedToWidget() override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
 
   // Handles mouse enter/exit events to either show or hide `close_button_`.
   void HandleOnMouseHovered(const bool mouse_entered);
