@@ -158,6 +158,12 @@ const phoneHubRegEx =
     new RegExp('app[ ]?stream(ing)?|phone|camera[ ]?roll', 'i');
 
 /**
+ * Regular expression to check for wifi-related keywords.
+ */
+const wifiRegEx =
+    new RegExp('\\b(wifi|wi\-fi|internet|network|hotspot)\\b', 'i');
+
+/**
  * @fileoverview
  * 'feedback-flow' manages the navigation among the steps to be taken.
  */
@@ -622,7 +628,8 @@ export class FeedbackFlowElement extends PolymerElement {
 
   /** @private */
   computeShouldShowWifiDebugLogsCheckbox_() {
-    return this.feedbackContext_ && this.feedbackContext_.isInternalAccount;
+    return this.feedbackContext_ && this.feedbackContext_.isInternalAccount &&
+        wifiRegEx.test(this.description_);
   }
 
   /** @private */

@@ -60,6 +60,15 @@ export function FeedbackFlowTestSuite() {
   }
 
   /**
+   * @param {!Element} element
+   * @param {string} selector
+   * @returns {Element|null}
+   */
+  function findChildElement(element, selector) {
+    return element.shadowRoot.querySelector(selector);
+  }
+
+  /**
    * @suppress {visibility}
    * @return {?FeedbackContext}
    */
@@ -439,18 +448,20 @@ export function FeedbackFlowTestSuite() {
 
   // Test that the flag ShouldShowWifiDebugLogsCheckBox_ is false if
   // - is not internal account.
+  // - wifi, wi-fi, internet, network, and hotspot are mentioned in description.
   test('DoNotShowWifiDebugLogsCheckBox', async () => {
     await initializePage();
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
 
-    const searchPage = page.shadowRoot.querySelector('.iron-selected');
+    const searchPage = findChildElement(page, '.iron-selected');
     assertTrue(!!searchPage);
     assertEquals('searchPage', searchPage.id);
 
-    searchPage.shadowRoot.querySelector('textarea').value = 'abc';
+    findChildElement(searchPage, 'textarea').value =
+        'wifi wi-fi internet network hotspot';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
-    searchPage.shadowRoot.querySelector('#buttonContinue').click();
+    findChildElement(searchPage, '#buttonContinue').click();
     await flushTasks();
 
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
@@ -458,19 +469,20 @@ export function FeedbackFlowTestSuite() {
 
   // Test that the flag ShouldShowWifiDebugLogsCheckBox_ is true if
   // - is internal account.
+  // - Wi-fi is mentioned in description.
   test('ShowWifiDebugLogsCheckBox', async () => {
     testWithInternalAccount();
     await initializePage();
     assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
 
-    const searchPage = page.shadowRoot.querySelector('.iron-selected');
+    const searchPage = findChildElement(page, '.iron-selected');
     assertTrue(!!searchPage);
     assertEquals('searchPage', searchPage.id);
 
-    searchPage.shadowRoot.querySelector('textarea').value = 'abc';
+    findChildElement(searchPage, 'textarea').value = 'wi-fi';
     // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
     // button is clicked.
-    searchPage.shadowRoot.querySelector('#buttonContinue').click();
+    findChildElement(searchPage, '#buttonContinue').click();
     await flushTasks();
 
     assertTrue(page.getShouldShowWifiDebugLogsCheckboxForTesting());
