@@ -38,6 +38,8 @@ const char kHideIrrelevantModulesParam[] = "HideIrrelevantModules";
 const char kSetUpListCompactedTimeThresholdDays[] =
     "SetUpListCompactedTimeThresholdDays";
 
+const char kHomeModuleMinimumPadding[] = "HomeModuleMinimumPadding";
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -59,6 +61,11 @@ bool IsMagicStackEnabled() {
 
 bool IsFeedContainmentEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedContainment);
+}
+
+int HomeModuleMinimumPadding() {
+  return base::GetFieldTrialParamByFeatureAsInt(kEnableFeedContainment,
+                                                kHomeModuleMinimumPadding, 30);
 }
 
 bool IsTabResumptionEnabled() {

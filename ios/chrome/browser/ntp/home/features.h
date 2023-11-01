@@ -67,6 +67,10 @@ bool IsMagicStackEnabled();
 // Whether the feed is contained in a Home module.
 bool IsFeedContainmentEnabled();
 
+// The minimum padding between the modules and the screen bounds on the Home
+// surface. Relies on `IsFeedContainmentEnabled()` being enabled.
+int HomeModuleMinimumPadding();
+
 // Whether the tab resumption feature is enabled.
 bool IsTabResumptionEnabled();
 

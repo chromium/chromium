@@ -98,7 +98,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 
   // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync promo
   // after experiment.
-  if (IsMagicStackEnabled()) {
+  if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
     self.promoViewContainer.backgroundColor =
         [UIColor colorNamed:kBackgroundColor];
   }
@@ -133,9 +133,15 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   if (!visible) {
     return NSDirectionalEdgeInsetsZero;
   }
-  return NSDirectionalEdgeInsetsMake(
-      kContentStackVerticalPadding, kContentStackHorizontalPadding,
-      kContentStackVerticalPadding, kContentStackHorizontalPadding);
+  if (IsFeedContainmentEnabled()) {
+    return NSDirectionalEdgeInsetsMake(
+        kContentStackVerticalPadding, kContentStackVerticalPadding,
+        kContentStackVerticalPadding, kContentStackVerticalPadding);
+  } else {
+    return NSDirectionalEdgeInsetsMake(
+        kContentStackVerticalPadding, kContentStackHorizontalPadding,
+        kContentStackVerticalPadding, kContentStackHorizontalPadding);
+  }
 }
 
 // Applies constraints to the stack view for a specific visibility. `visible`

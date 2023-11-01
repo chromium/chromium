@@ -55,7 +55,8 @@ const CGFloat kFollowingDotMargin = 8;
 // Duration of the fade animation for elements that toggle when switching feeds.
 const CGFloat kSegmentAnimationDuration = 0.3;
 // Padding on top of the header.
-const CGFloat kTopVerticalPadding = 15;
+const CGFloat kTopVerticalPaddingFollowing = 15;
+const CGFloat kTopVerticalPadding = 5;
 
 // The size of feed symbol images.
 NSInteger kFeedSymbolPointSize = 17;
@@ -512,7 +513,9 @@ NSInteger kFeedSymbolPointSize = 17;
   CGFloat totalHeaderHeight =
       [self feedHeaderHeight] + [self customSearchEngineViewHeight];
   if (IsFeedContainmentEnabled()) {
-    totalHeaderHeight += kTopVerticalPadding;
+    totalHeaderHeight += [self.feedControlDelegate isFollowingFeedAvailable]
+                             ? kTopVerticalPaddingFollowing
+                             : kTopVerticalPadding;
   }
   [self.feedHeaderConstraints addObjectsFromArray:@[
     // Anchor container and menu button.
@@ -592,8 +595,6 @@ NSInteger kFeedSymbolPointSize = 17;
   } else {
     [self.feedHeaderConstraints addObjectsFromArray:@[
       // Anchors title label.
-      [self.view.heightAnchor
-          constraintEqualToConstant:kDiscoverFeedHeaderHeight],
       [self.titleLabel.leadingAnchor
           constraintEqualToAnchor:self.container.leadingAnchor
                          constant:kTitleHorizontalMargin],

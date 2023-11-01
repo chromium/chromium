@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
@@ -1393,29 +1395,46 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
 
-    NSLayoutConstraint* headerWidthConstraint =
-        [self.feedHeaderViewController.view.widthAnchor
-            constraintEqualToAnchor:self.collectionView.widthAnchor];
-    headerWidthConstraint.priority = UILayoutPriorityDefaultHigh;
-
+    // Apply parent collection view constraints.
     [NSLayoutConstraint activateConstraints:@[
-      [self.feedHeaderViewController.view.centerXAnchor
-          constraintEqualToAnchor:self.collectionView.centerXAnchor],
-      [self.feedHeaderViewController.view.widthAnchor
-          constraintLessThanOrEqualToConstant:kDiscoverFeedContentWidth],
-      headerWidthConstraint,
       [self.collectionView.centerXAnchor
           constraintEqualToAnchor:[self containerView].centerXAnchor],
       [self.collectionView.widthAnchor
-          constraintLessThanOrEqualToConstant:kDiscoverFeedContentWidth],
+          constraintLessThanOrEqualToConstant:kDiscoverFeedContentMaxWidth],
     ]];
+
+    // Apply feed header constraints.
+    if (IsFeedContainmentEnabled()) {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.feedHeaderViewController.view.centerXAnchor
+            constraintEqualToAnchor:self.collectionView.centerXAnchor],
+        [self.feedHeaderViewController.view.widthAnchor
+            constraintEqualToAnchor:self.collectionView.widthAnchor
+                           constant:-[self feedModulePadding]],
+      ]];
+    } else {
+      NSLayoutConstraint* headerWidthConstraint =
+          [self.feedHeaderViewController.view.widthAnchor
+              constraintEqualToAnchor:self.collectionView.widthAnchor];
+      headerWidthConstraint.priority = UILayoutPriorityDefaultHigh;
+
+      [NSLayoutConstraint activateConstraints:@[
+        [self.feedHeaderViewController.view.centerXAnchor
+            constraintEqualToAnchor:self.collectionView.centerXAnchor],
+        [self.feedHeaderViewController.view.widthAnchor
+            constraintLessThanOrEqualToConstant:kDiscoverFeedContentMaxWidth],
+        headerWidthConstraint,
+      ]];
+    }
+
     [self setInitialFeedHeaderConstraints];
     if (self.feedTopSectionViewController) {
       [NSLayoutConstraint activateConstraints:@[
-        [self.feedTopSectionViewController.view.leftAnchor
-            constraintEqualToAnchor:self.collectionView.leftAnchor],
+        [self.feedTopSectionViewController.view.centerXAnchor
+            constraintEqualToAnchor:self.collectionView.centerXAnchor],
         [self.feedTopSectionViewController.view.widthAnchor
-            constraintEqualToAnchor:self.collectionView.widthAnchor],
+            constraintEqualToAnchor:self.collectionView.widthAnchor
+                           constant:-[self feedModulePadding]],
         [self.feedTopSectionViewController.view.topAnchor
             constraintEqualToAnchor:self.feedHeaderViewController.view
                                         .bottomAnchor],
@@ -1435,7 +1454,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     CHECK(IsFeedContainmentEnabled());
     [NSLayoutConstraint activateConstraints:@[
       [_feedContainer.widthAnchor
-          constraintEqualToAnchor:self.collectionView.widthAnchor],
+          constraintEqualToAnchor:self.collectionView.widthAnchor
+                         constant:-[self feedModulePadding]],
       [_feedContainer.centerXAnchor
           constraintEqualToAnchor:self.collectionView.centerXAnchor],
       [_feedContainer.topAnchor
@@ -1547,6 +1567,20 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   }
   scrollPositionToSave -= self.collectionShiftingOffset;
   self.mutator.scrollPositionToSave = scrollPositionToSave;
+}
+
+// Returns the necessary padding between the feed module and the sides of the
+// screen. This can range anywhere between 0 and `HomeModuleMinimumPadding()`,
+// depending on the screen size.
+- (CGFloat)feedModulePadding {
+  if (!IsFeedContainmentEnabled()) {
+    return 0;
+  }
+  int screenWidth = self.view.frame.size.width;
+  int minPadding = HomeModuleMinimumPadding();
+  return minPadding - std::clamp(static_cast<int>(screenWidth -
+                                                  kDiscoverFeedContentMaxWidth),
+                                 0, minPadding);
 }
 
 #pragma mark - Helpers

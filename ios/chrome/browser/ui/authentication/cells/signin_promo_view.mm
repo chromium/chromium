@@ -315,7 +315,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           [UIColor colorNamed:kPrimaryBackgroundColor];
       // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
       // promo after experiment.
-      if (IsMagicStackEnabled()) {
+      if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
         self.imageView.backgroundColor = [UIColor colorNamed:kGrey100Color];
       }
       self.imageView.layer.cornerRadius = kNonProfileIconCornerRadius;
@@ -727,7 +727,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
           [UIColor colorNamed:kBackgroundColor];
       // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
       // promo after experiment.
-      if (IsMagicStackEnabled()) {
+      if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
         self.primaryButton.backgroundColor =
             [UIColor colorNamed:kBlueHaloColor];
       }
