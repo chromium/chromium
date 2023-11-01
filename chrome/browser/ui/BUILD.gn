@@ -1674,6 +1674,10 @@ static_library("ui") {
       "webui/feedback/feedback_handler.h",
       "webui/feedback/feedback_ui.cc",
       "webui/feedback/feedback_ui.h",
+      "webui/hats/hats_page_handler.cc",
+      "webui/hats/hats_page_handler.h",
+      "webui/hats/hats_ui.cc",
+      "webui/hats/hats_ui.h",
       "webui/help/version_updater.h",
       "webui/history/browsing_history_handler.cc",
       "webui/history/browsing_history_handler.h",
@@ -1983,7 +1987,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",
       "//chrome/browser/ui/webui/feed:mojo_bindings",
-      "//chrome/browser/ui/webui/hats:hats_ui",
+      "//chrome/browser/ui/webui/hats:mojo_bindings",
       "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
@@ -2078,7 +2082,6 @@ static_library("ui") {
 
       # TODO(crbug.com/1402145): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
-      "//chrome/browser/ui/webui/hats:hats_ui",
     ]
 
     if (use_ozone && !is_chromeos_ash) {

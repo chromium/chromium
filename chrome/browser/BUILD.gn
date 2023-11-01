@@ -4635,7 +4635,7 @@ static_library("browser") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",
-      "//chrome/browser/ui/webui/hats:hats_ui",
+      "//chrome/browser/ui/webui/hats:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",

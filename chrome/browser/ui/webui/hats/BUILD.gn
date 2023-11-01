@@ -9,26 +9,3 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 }
-
-source_set("hats_ui") {
-  sources = [
-    "hats_page_handler.cc",
-    "hats_page_handler.h",
-    "hats_ui.cc",
-    "hats_ui.h",
-  ]
-
-  public_deps = [
-    ":mojo_bindings",
-    "//content/public/browser",
-    "//mojo/public/cpp/bindings",
-  ]
-  deps = [
-    "//chrome/app:generated_resources_grit",
-    "//chrome/browser:resources_grit",
-    "//chrome/browser/resources/hats:resources_grit",
-    "//chrome/common",
-    "//google_apis",
-    "//ui/webui",
-  ]
-}
