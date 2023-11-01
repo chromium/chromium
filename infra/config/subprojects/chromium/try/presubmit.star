@@ -153,7 +153,7 @@ presubmit_builder(
     contact_team_email = "chrome-browser-infra-team@google.com",
     properties = {
         "builder_config_directory": "infra/config/generated/builders",
-        "mb_config_paths": ["src/tool/mb/mb_config.pyl"],
+        "mb_config_paths": ["src/tools/mb/mb_config.pyl"],
     },
     tryjob = try_.job(
         location_filters = ["infra/config/generated/builders/[^/]+/[^/]+/gn-args\\.json"],
