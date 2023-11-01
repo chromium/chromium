@@ -125,12 +125,7 @@ suite('network-config-wifi', function() {
       });
     });
 
-    test('New networks are explicitly not hidden when logged in', async () => {
-      // Simulate the dialog being opened while a user is logged in.
-      networkConfig.isLoggedIn_ = true;
-
-      await flushAsync();
-
+    test('New networks are explicitly not hidden', async () => {
       networkConfig.save();
 
       await flushAsync();
@@ -138,23 +133,6 @@ suite('network-config-wifi', function() {
       const props = mojoApi_.getPropertiesToSetForTest();
       assertEquals(props.typeConfig.wifi.hiddenSsid, HiddenSsidMode.kDisabled);
     });
-
-    test(
-        'New networks are explicitly not hidden when not logged in',
-        async () => {
-          // Simulate the dialog being opened when the user is not logged in.
-          networkConfig.isLoggedIn_ = false;
-
-          await flushAsync();
-
-          networkConfig.save();
-
-          await flushAsync();
-
-          assertEquals(
-              mojoApi_.getPropertiesToSetForTest().typeConfig.wifi.hiddenSsid,
-              HiddenSsidMode.kAutomatic);
-        });
   });
 
   suite('Existing WiFi Config', function() {
