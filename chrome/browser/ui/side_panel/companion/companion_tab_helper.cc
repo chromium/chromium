@@ -230,17 +230,6 @@ void CompanionTabHelper::DidOpenRequestedURL(
   }
 }
 
-void CompanionTabHelper::CreateAndRegisterLensEntry(
-    const content::OpenURLParams& params,
-    std::u16string combobox_label,
-    const ui::ImageModel favicon) {
-  delegate_->CreateAndRegisterLensEntry(params, combobox_label, favicon);
-}
-
-void CompanionTabHelper::RemoveContextualLensView() {
-  delegate_->RemoveContextualLensView();
-}
-
 void CompanionTabHelper::OpenContextualLensView(
     const content::OpenURLParams& params) {
   delegate_->OpenContextualLensView(params);

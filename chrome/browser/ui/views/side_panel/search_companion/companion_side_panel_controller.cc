@@ -29,6 +29,8 @@
 #include "components/lens/lens_url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/webui/webui_allowlist.h"
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -41,7 +43,9 @@ CompanionSidePanelController::CompanionSidePanelController(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {}
 
-CompanionSidePanelController::~CompanionSidePanelController() = default;
+CompanionSidePanelController::~CompanionSidePanelController() {
+  panel_container_view_ = nullptr;
+}
 
 void CompanionSidePanelController::CreateAndRegisterEntry() {
   auto* registry = SidePanelRegistry::Get(web_contents_);
@@ -98,6 +102,9 @@ void CompanionSidePanelController::DeregisterEntry() {
 void CompanionSidePanelController::ShowCompanionSidePanel(
     SidePanelOpenTrigger side_panel_open_trigger) {
   if (Browser* browser = chrome::FindBrowserWithTab(web_contents_)) {
+    if (is_lens_view_showing_) {
+      is_lens_view_showing_ = false;
+    }
     auto* coordinator =
         SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
     coordinator->Show(side_panel_open_trigger);
@@ -154,10 +161,9 @@ CompanionSidePanelController::GetCompanionWebContentsForTesting() {
 
 void CompanionSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   // Lens entry is possible if image search is disabled on CSC.
-  if (entry->key().id() == SidePanelEntry::Id::kLens) {
+  if (is_lens_view_showing_) {
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensEntryShown"));
-    return;
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
@@ -170,11 +176,11 @@ void CompanionSidePanelController::OnEntryShown(SidePanelEntry* entry) {
 }
 
 void CompanionSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
+  panel_container_view_ = nullptr;
   // Lens entry is possible if image search is disabled on CSC.
-  if (entry->key().id() == SidePanelEntry::Id::kLens) {
+  if (is_lens_view_showing_) {
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensEntryHidden"));
-    return;
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
@@ -202,13 +208,32 @@ void CompanionSidePanelController::RemoveObserver() {
 
 std::unique_ptr<views::View>
 CompanionSidePanelController::CreateCompanionWebView() {
-  auto companion_web_view = std::make_unique<CompanionSidePanelWebView>(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  auto panel_container_view = std::make_unique<views::FlexLayoutView>();
+  panel_container_view_ = panel_container_view.get();
+
+  // Set layout properties for the parent container view.
+  panel_container_view->SetOrientation(views::LayoutOrientation::kVertical);
+  panel_container_view->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  panel_container_view->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  // If a view was already create to be shown.
+  if (future_content_view_) {
+    panel_container_view->AddChildView(std::move(future_content_view_));
+    return panel_container_view;
+  }
+
+  // Allow child view to expand indefinitely.
+  auto* companion_web_view = panel_container_view->AddChildView(
+      std::make_unique<CompanionSidePanelWebView>(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
+  companion_web_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   // Observe on the webcontents for opening links in new tab.
   Observe(companion_web_view->GetWebContents());
-
-  return companion_web_view;
+  return panel_container_view;
 }
 
 GURL CompanionSidePanelController::GetOpenInNewTabUrl() {
@@ -375,7 +400,7 @@ void CompanionSidePanelController::NotifyLinkClick(
 
 void CompanionSidePanelController::AddCompanionFinishedLoadingCallback(
     CompanionTabHelper::CompanionLoadedCallback callback) {
-  if (has_companion_loaded) {
+  if (has_companion_loaded_) {
     std::move(callback).Run();
     return;
   }
@@ -391,32 +416,30 @@ void CompanionSidePanelController::DidFinishLoad(
       GURL(companion::GetHomepageURLForCompanion()).host()) {
     return;
   }
-  has_companion_loaded = true;
+  has_companion_loaded_ = true;
   for (auto& callback : companion_loaded_callbacks_) {
     std::move(callback).Run();
   }
   companion_loaded_callbacks_.clear();
 }
-void CompanionSidePanelController::CreateAndRegisterLensEntry(
-    const content::OpenURLParams& params,
-    std::u16string combobox_label,
-    const ui::ImageModel favicon) {
+
+void CompanionSidePanelController::OpenContextualLensView(
+    const content::OpenURLParams& params) {
   CHECK(web_contents_);
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   auto* registry = SidePanelRegistry::Get(web_contents_);
   if (!browser || !registry) {
     return;
   }
-  auto entry = std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kLens, combobox_label, favicon,
-      base::BindRepeating(
-          &companion::CompanionSidePanelController::CreateContextualLensView,
-          base::Unretained(this), params),
-      base::BindRepeating(&companion::CompanionSidePanelController::
-                              GetLensOpenInNewTabButtonURL,
-                          base::Unretained(this)));
-  entry->AddObserver(this);
-  registry->Register(std::move(entry));
+  if (panel_container_view_) {
+    auto lens_view = CreateContextualLensView(params);
+    panel_container_view_->RemoveAllChildViews();
+    panel_container_view_->AddChildView(std::move(lens_view));
+  } else {
+    // This means the panel is not open yet.
+    future_content_view_ = CreateContextualLensView(params);
+  }
+  is_lens_view_showing_ = true;
 }
 
 std::unique_ptr<views::View>
@@ -432,27 +455,15 @@ CompanionSidePanelController::CreateContextualLensView(
       base::BindRepeating(
           &CompanionSidePanelController::UpdateNewTabButtonState,
           base::Unretained(this)));
+  side_panel_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
   side_panel_view->OpenUrl(params);
   lens_side_panel_view_ = side_panel_view->GetWeakPtr();
   return side_panel_view;
 #else
   return nullptr;
-#endif
-}
-
-void CompanionSidePanelController::RemoveContextualLensView() {
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  lens_side_panel_view_.reset();
-#endif
-}
-
-void CompanionSidePanelController::OpenContextualLensView(
-    const content::OpenURLParams& params) {
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  if (!lens_side_panel_view_) {
-    return;
-  }
-  lens_side_panel_view_->OpenUrl(params);
 #endif
 }
 
@@ -482,6 +493,7 @@ void CompanionSidePanelController::UpdateNewTabButtonState() {
 content::WebContents*
 CompanionSidePanelController::GetLensViewWebContentsForTesting() {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  CHECK(lens_side_panel_view_);
   return lens_side_panel_view_ ? lens_side_panel_view_->GetWebContents()
                                : nullptr;
 #else

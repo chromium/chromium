@@ -133,6 +133,17 @@ bool SearchCompanionSidePanelCoordinator::Show(
   return true;
 }
 
+void SearchCompanionSidePanelCoordinator::ShowLens(
+    const content::OpenURLParams& url_params) {
+  // First, we need to modify our view to make sure we are showing Lens.
+  auto* companion_tab_helper = companion::CompanionTabHelper::FromWebContents(
+      browser_->tab_strip_model()->GetActiveWebContents());
+  companion_tab_helper->OpenContextualLensView(url_params);
+  SidePanelUI::GetSidePanelUIForBrowser(&GetBrowser())
+      ->Show(SidePanelEntry::Id::kSearchCompanion,
+             SidePanelOpenTrigger::kLensContextMenu);
+}
+
 BrowserView* SearchCompanionSidePanelCoordinator::GetBrowserView() const {
   return BrowserView::GetBrowserViewForBrowser(&GetBrowser());
 }

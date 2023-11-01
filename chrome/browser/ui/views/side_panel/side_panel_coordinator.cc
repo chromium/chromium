@@ -508,22 +508,6 @@ void SidePanelCoordinator::Show(
     return;
   }
 
-  // TODO(b/301638334): Remove this if no longer needed after CSC launch.
-  if ((entry->key().id() == SidePanelEntry::Id::kSearchCompanion ||
-       entry->key().id() == SidePanelEntry::Id::kLens) &&
-      combobox_model_ != nullptr &&
-      companion::ShouldUseContextualLensPanelForImageSearch(
-          browser_view_->browser())) {
-    if (!combobox_model_->HasKey(entry->key())) {
-      combobox_model_->AddItem(entry);
-    }
-    auto remove_key =
-        entry->key().id() == SidePanelEntry::Id::kSearchCompanion
-            ? SidePanelEntry::Key(SidePanelEntry::Id::kLens)
-            : SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion);
-    combobox_model_->RemoveItem(remove_key);
-  }
-
   if (GetContentContainerView() == nullptr) {
     CHECK(browser_view_->unified_side_panel());
     InitializeSidePanel();
@@ -1000,15 +984,7 @@ void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
 void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
                                              SidePanelEntry* entry) {
   if (combobox_model_) {
-    // TODO(b/301638334): Remove this if no longer needed after CSC launch.
-    // Only add companion entries if Lens is not in the combobox model.
-    if (!(entry->key().id() == SidePanelEntry::Id::kSearchCompanion &&
-          combobox_model_->HasKey(
-              SidePanelEntry::Key(SidePanelEntry::Id::kLens)) &&
-          companion::ShouldUseContextualLensPanelForImageSearch(
-              browser_view_->browser()))) {
-      combobox_model_->AddItem(entry);
-    }
+    combobox_model_->AddItem(entry);
     if (GetContentContainerView()) {
       SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
           SidePanelEntry::Key(GetDefaultEntry())));

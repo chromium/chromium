@@ -62,17 +62,9 @@ class CompanionTabHelper
     // loaded and the onload event was dispatched.
     virtual void AddCompanionFinishedLoadingCallback(
         base::OnceCallback<void()> callback) = 0;
-
-    // Create a contextual Lens entry.
-    virtual void CreateAndRegisterLensEntry(
-        const content::OpenURLParams& params,
-        std::u16string combobox_label,
-        const ui::ImageModel favicon) = 0;
-    // Opens a contextual Lens view that was already created.
+    // Create a contextual Lens view to open in the companion panel.
     virtual void OpenContextualLensView(
         const content::OpenURLParams& params) = 0;
-    // Removes and deletes the contextual Lens view.
-    virtual void RemoveContextualLensView() = 0;
     // Testing method to get the Lens view web contents.
     virtual content::WebContents* GetLensViewWebContentsForTesting() = 0;
     // Testing method to open lens results in a new tab.
@@ -102,6 +94,8 @@ class CompanionTabHelper
   // loaded and the onload event was dispatched.
   void AddCompanionFinishedLoadingCallback(CompanionLoadedCallback callback);
 
+  // Shows the companion side panel.
+  void ShowCompanionSidePanel(SidePanelOpenTrigger trigger);
   // Shows the companion side panel with query provided by the |search_url|.
   void ShowCompanionSidePanelForSearchURL(const GURL& search_url);
   // Shows the companion side panel with the image bytes passed via

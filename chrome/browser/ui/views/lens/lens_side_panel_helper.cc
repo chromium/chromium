@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
 #include "chrome/browser/ui/views/lens/lens_static_page_controller.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
@@ -41,6 +43,13 @@ GURL CreateURLForNewTab(const GURL& original_url) {
 
 void OpenLensSidePanel(Browser* browser,
                        const content::OpenURLParams& url_params) {
+  if (companion::ShouldUseContextualLensPanelForImageSearch(browser)) {
+    auto* coordinator =
+        SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
+    coordinator->ShowLens(url_params);
+    return;
+  }
+
   LensSidePanelCoordinator::GetOrCreateForBrowser(browser)
       ->RegisterEntryAndShow(url_params);
 }

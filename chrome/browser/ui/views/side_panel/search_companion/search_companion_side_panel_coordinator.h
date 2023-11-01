@@ -39,6 +39,7 @@ class SearchCompanionSidePanelCoordinator
   static bool IsSupported(Profile* profile, bool include_runtime_checks);
 
   bool Show(SidePanelOpenTrigger side_panel_open_trigger);
+  void ShowLens(const content::OpenURLParams& url_params);
   BrowserView* GetBrowserView() const;
   std::u16string GetTooltipForToolbarButton() const;
   static void SetAccessibleNameForToolbarButton(BrowserView* browser_view,
