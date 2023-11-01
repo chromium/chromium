@@ -67,7 +67,7 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
-    prerender_helper_.RegisterServerRequestMonitor(ssl_server());
+    prerender_helper_.RegisterServerRequestMonitor(&ssl_server_);
     PlatformBrowserTest::SetUp();
   }
 
@@ -77,16 +77,16 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    ssl_server()->SetSSLConfig(
-        net::EmbeddedTestServer::ServerCertificate::CERT_OK);
-    ssl_server()->ServeFilesFromDirectory(
+    ssl_server_.SetSSLConfig(
+        net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+    ssl_server_.ServeFilesFromDirectory(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
-    ASSERT_TRUE(ssl_server()->Start());
+    ASSERT_TRUE(ssl_server_.Start());
   }
 
   void TearDownOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    ASSERT_TRUE(ssl_server()->ShutdownAndWaitUntilComplete());
+    ASSERT_TRUE(ssl_server_.ShutdownAndWaitUntilComplete());
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -97,7 +97,17 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
     return prerender_helper_;
   }
 
-  net::test_server::EmbeddedTestServer* ssl_server() { return &ssl_server_; }
+  GURL GetUrl(const std::string& path) {
+    return ssl_server_.GetURL("a.test", path);
+  }
+
+  GURL GetSameSiteCrossOriginUrl(const std::string& path) {
+    return ssl_server_.GetURL("b.a.test", path);
+  }
+
+  GURL GetCrossSiteUrl(const std::string& path) {
+    return ssl_server_.GetURL("b.test", path);
+  }
 
  protected:
   void TestPrerenderAndActivateInNewTab(const std::string& link_click_script,
@@ -466,32 +476,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PreloadingHoldbackNotOverridden) {
   EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 }
 
-// TODO(crbug.com/1239281): Merge PrerenderMainFrameNavigationBrowserTest into
-// PrerenderBrowserTest.
-class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderMainFrameNavigationBrowserTest() {
-    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
-    // disable this feature.
-    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that the same-origin main frame navigation in an embedder triggered
 // prerendering page succeeds.
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
-                       SameOriginMainFrameNavigation) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginMainFrameNavigation) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
-  GURL url = embedded_test_server()->GetURL("/empty.html");
+  GURL url = GetUrl("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
-  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  GURL navigation_url = embedded_test_server()->GetURL("/title2.html");
+  GURL prerender_url = GetUrl("/title1.html");
+  GURL navigation_url = GetUrl("/title2.html");
 
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
@@ -531,17 +526,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
 
 // Tests that the same-site cross-origin main frame navigation in an embedder
 // triggered prerendering page succeeds.
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        SameSiteCrossOriginMainFrameNavigation) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
-  GURL url = embedded_test_server()->GetURL("a.test", "/empty.html");
+  GURL url = GetUrl("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
-  GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  GURL navigation_url = embedded_test_server()->GetURL(
-      "b.a.test", "/prerender_with_opt_in_header.html");
+  GURL prerender_url = GetUrl("/title1.html");
+  GURL navigation_url =
+      GetSameSiteCrossOriginUrl("/prerender_with_opt_in_header.html");
 
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
@@ -585,17 +580,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
 // Tests that the cross-site main frame navigation in an embedder triggered
 // prerendering page cancels the prerendering.
 IN_PROC_BROWSER_TEST_F(
-    PrerenderMainFrameNavigationBrowserTest,
+    PrerenderBrowserTest,
     CrossSiteMainFrameNavigationCancelsEmbedderTriggeredPrerendering) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
-  GURL url = embedded_test_server()->GetURL("a.test", "/empty.html");
+  GURL url = GetUrl("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
-  GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  GURL navigation_url = embedded_test_server()->GetURL(
-      "b.test", "/prerender_with_opt_in_header.html");
+  GURL prerender_url = GetUrl("/title1.html");
+  GURL navigation_url = GetCrossSiteUrl("/prerender_with_opt_in_header.html");
 
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
@@ -672,7 +666,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(chrome::kChromeUINewTabURL)));
-  GURL prerender_url = ssl_server()->GetURL("/simple.html");
+  GURL prerender_url = GetUrl("/simple.html");
 
   PrerenderManager::CreateForWebContents(GetActiveWebContents());
   auto* prerender_manager =
@@ -748,7 +742,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(chrome::kChromeUINewTabURL)));
-  GURL prerender_url = ssl_server()->GetURL("/simple.html");
+  GURL prerender_url = GetUrl("/simple.html");
 
   PrerenderManager::CreateForWebContents(GetActiveWebContents());
   auto* prerender_manager =
