@@ -1042,6 +1042,8 @@ void ProxyImpl::RecordReplayRepaint() {
                                                          viz::BeginFrameArgs::DefaultInterval(),
                                                          viz::BeginFrameArgs::NORMAL);
   scheduler_->OnBeginFrameDerivedImpl(args);
+
+  recordreplay::OnRepaintFinished();
 }
 
 }  // namespace cc

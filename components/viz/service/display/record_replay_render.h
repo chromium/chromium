@@ -42,9 +42,15 @@ void SubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_id,
 // Called to populate a bitmap with information for the given resource in the current frame.
 bool PopulateSkBitmapWithResource(SkBitmap* sk_bitmap, viz::ResourceId resource_id);
 
-// Called on the compositor thread when painting to the software output device has finished,
-// or when repainting has finished.
+// Called on the compositor thread when painting to the software output device has finished.
 void OnPaintFinished(const SkPixmap& pixmap);
+
+// Called on the compositor thread when repainting layout has comitted.
+void OnRepaintLayoutCommitted();
+
+// Called on the compositor thread when repainting has finished, which may or may not
+// have actually performed a paint.
+void OnRepaintFinished();
 
 // Set the proxy which will be used for triggering repaints from the main thread.
 void SetCompositorProxy(cc::ProxyMain* proxy);

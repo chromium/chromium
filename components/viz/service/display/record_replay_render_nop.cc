@@ -25,6 +25,10 @@ bool PopulateSkBitmapWithResource(SkBitmap* sk_bitmap, viz::ResourceId resource_
 
 void OnPaintFinished(const SkPixmap& pixmap) {}
 
+void OnRepaintLayoutCommitted() {}
+
+void OnRepaintFinished() {}
+
 void SetCompositorProxy(cc::ProxyMain* proxy) {}
 
 void CompositorProxyDestroyed(cc::ProxyMain* proxy) {}
