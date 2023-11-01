@@ -344,3 +344,33 @@ TEST_F(ToolbarControllerUnitTest, PopOutButton) {
   // kDummyButton4 does not exist.
   EXPECT_FALSE(toolbar_controller()->PopOut(kDummyButton4));
 }
+
+TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
+  views::View* button3 = test_buttons()[2];
+  button3->SetEnabled(false);
+
+  // Not enough space. Button3 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  EXPECT_TRUE(overflow_button()->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+
+  widget()->LayoutRootViewIfNecessary();
+  event_generator()->MoveMouseTo(
+      overflow_button()->GetBoundsInScreen().CenterPoint());
+  event_generator()->PressLeftButton();
+
+  const ui::SimpleMenuModel* menu = overflow_menu();
+  std::vector<ui::ElementIdentifier> overflowed_buttons =
+      GetOverflowedElements();
+
+  EXPECT_TRUE(menu);
+  EXPECT_EQ(overflowed_buttons.size(), menu->GetItemCount());
+  for (size_t i = 0; i < overflowed_buttons.size(); ++i) {
+    EXPECT_EQ(ToolbarController::FindToolbarElementWithId(
+                  toolbar_container_view(), overflowed_buttons.at(i))
+                  ->GetEnabled(),
+              menu->IsEnabledAt(i));
+  }
+}

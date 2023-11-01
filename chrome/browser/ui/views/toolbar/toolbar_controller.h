@@ -142,6 +142,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+  bool IsCommandIdEnabled(int command_id) const override;
 
   // Returns the element in `element_ids_` at index `command_id`.
   ui::ElementIdentifier GetHiddenElementOfCommandId(int command_id) const;
