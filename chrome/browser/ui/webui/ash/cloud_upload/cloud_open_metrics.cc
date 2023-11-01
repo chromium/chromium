@@ -60,20 +60,34 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider,
                                    size_t file_count)
     : multiple_files_(file_count > 1),
       cloud_provider_(cloud_provider),
-      drive_copy_error_(kGoogleDriveCopyErrorMetricName),
-      one_drive_copy_error_(kOneDriveCopyErrorMetricName),
-      drive_move_error_(kGoogleDriveMoveErrorMetricName),
-      one_drive_move_error_(kOneDriveMoveErrorMetricName),
-      drive_open_error_(kDriveErrorMetricName),
-      one_drive_open_error_(kOneDriveErrorMetricName),
-      drive_source_volume_(kDriveOpenSourceVolumeMetric),
-      one_drive_source_volume_(kOneDriveOpenSourceVolumeMetric),
-      drive_task_result_(kGoogleDriveTaskResultMetricName),
-      one_drive_task_result_(kOneDriveTaskResultMetricName),
-      drive_transfer_required_(kDriveTransferRequiredMetric),
-      one_drive_transfer_required_(kOneDriveTransferRequiredMetric),
-      drive_upload_result_(kGoogleDriveUploadResultMetricName),
-      one_drive_upload_result_(kOneDriveUploadResultMetricName) {}
+      drive_copy_error_(kGoogleDriveCopyErrorMetricName,
+                        kGoogleDriveCopyErrorMetricStateMetricName),
+      one_drive_copy_error_(kOneDriveCopyErrorMetricName,
+                            kOneDriveCopyErrorMetricStateMetricName),
+      drive_move_error_(kGoogleDriveMoveErrorMetricName,
+                        kGoogleDriveMoveErrorMetricStateMetricName),
+      one_drive_move_error_(kOneDriveMoveErrorMetricName,
+                            kOneDriveMoveErrorMetricStateMetricName),
+      drive_open_error_(kDriveErrorMetricName,
+                        kDriveErrorMetricStateMetricName),
+      one_drive_open_error_(kOneDriveErrorMetricName,
+                            kOneDriveErrorMetricStateMetricName),
+      drive_source_volume_(kDriveOpenSourceVolumeMetric,
+                           kDriveOpenSourceVolumeMetricStateMetric),
+      one_drive_source_volume_(kOneDriveOpenSourceVolumeMetric,
+                               kOneDriveOpenSourceVolumeMetricStateMetric),
+      drive_task_result_(kGoogleDriveTaskResultMetricName,
+                         kGoogleDriveTaskResultMetricStateMetricName),
+      one_drive_task_result_(kOneDriveTaskResultMetricName,
+                             kOneDriveTaskResultMetricStateMetricName),
+      drive_transfer_required_(kDriveTransferRequiredMetric,
+                               kDriveTransferRequiredMetricStateMetric),
+      one_drive_transfer_required_(kOneDriveTransferRequiredMetric,
+                                   kOneDriveTransferRequiredMetricStateMetric),
+      drive_upload_result_(kGoogleDriveUploadResultMetricName,
+                           kGoogleDriveUploadResultMetricStateMetricName),
+      one_drive_upload_result_(kOneDriveUploadResultMetricName,
+                               kOneDriveUploadResultMetricStateMetricName) {}
 
 void CloudOpenMetrics::CheckForInconsistencies(
     Metric<base::File::Error>& copy_error,
@@ -481,35 +495,20 @@ CloudOpenMetrics::~CloudOpenMetrics() {
     ExpectNotLogged(drive_upload_result_);
   }
 
-  // TODO(b/300861997): Make companion metric logging a Metric method.
-  base::UmaHistogramEnumeration(kGoogleDriveCopyErrorMetricStateMetricName,
-                                drive_copy_error_.state);
-  base::UmaHistogramEnumeration(kOneDriveCopyErrorMetricStateMetricName,
-                                one_drive_copy_error_.state);
-  base::UmaHistogramEnumeration(kGoogleDriveMoveErrorMetricStateMetricName,
-                                drive_move_error_.state);
-  base::UmaHistogramEnumeration(kOneDriveMoveErrorMetricStateMetricName,
-                                one_drive_move_error_.state);
-  base::UmaHistogramEnumeration(kDriveErrorMetricStateMetricName,
-                                drive_open_error_.state);
-  base::UmaHistogramEnumeration(kOneDriveErrorMetricStateMetricName,
-                                one_drive_open_error_.state);
-  base::UmaHistogramEnumeration(kDriveOpenSourceVolumeMetricStateMetric,
-                                drive_source_volume_.state);
-  base::UmaHistogramEnumeration(kOneDriveOpenSourceVolumeMetricStateMetric,
-                                one_drive_source_volume_.state);
-  base::UmaHistogramEnumeration(kGoogleDriveTaskResultMetricStateMetricName,
-                                drive_task_result_.state);
-  base::UmaHistogramEnumeration(kOneDriveTaskResultMetricStateMetricName,
-                                one_drive_task_result_.state);
-  base::UmaHistogramEnumeration(kDriveTransferRequiredMetricStateMetric,
-                                drive_transfer_required_.state);
-  base::UmaHistogramEnumeration(kOneDriveTransferRequiredMetricStateMetric,
-                                one_drive_transfer_required_.state);
-  base::UmaHistogramEnumeration(kGoogleDriveUploadResultMetricStateMetricName,
-                                drive_upload_result_.state);
-  base::UmaHistogramEnumeration(kOneDriveUploadResultMetricStateMetricName,
-                                one_drive_upload_result_.state);
+  drive_copy_error_.LogCompanionMetric();
+  one_drive_copy_error_.LogCompanionMetric();
+  drive_move_error_.LogCompanionMetric();
+  one_drive_move_error_.LogCompanionMetric();
+  drive_open_error_.LogCompanionMetric();
+  one_drive_open_error_.LogCompanionMetric();
+  drive_source_volume_.LogCompanionMetric();
+  one_drive_source_volume_.LogCompanionMetric();
+  drive_task_result_.LogCompanionMetric();
+  one_drive_task_result_.LogCompanionMetric();
+  drive_transfer_required_.LogCompanionMetric();
+  one_drive_transfer_required_.LogCompanionMetric();
+  drive_upload_result_.LogCompanionMetric();
+  one_drive_upload_result_.LogCompanionMetric();
 
   if (delayed_dump_) {
     base::debug::DumpWithoutCrashing();

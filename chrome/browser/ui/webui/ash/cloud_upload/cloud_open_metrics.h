@@ -36,8 +36,10 @@ class Metric {
                 "The underlying type of the MetricType must be an int");
 
  public:
-  explicit Metric(std::string metric_name_to_set)
-      : metric_name(metric_name_to_set) {}
+  Metric(std::string metric_name_to_set,
+         std::string companion_metric_name_to_set)
+      : metric_name(metric_name_to_set),
+        companion_metric_name_(companion_metric_name_to_set) {}
   ~Metric() = default;
 
   // Logs a `new_value` to the metric with `metric_name` and saves it to
@@ -92,6 +94,10 @@ class Metric {
     return true;
   }
 
+  void LogCompanionMetric() {
+    base::UmaHistogramEnumeration(companion_metric_name_, state);
+  }
+
   void set_state(MetricState new_state) { state = new_state; }
 
   std::string metric_name;
@@ -101,6 +107,8 @@ class Metric {
 
  private:
   void LogMetric(MetricType new_value);
+
+  std::string companion_metric_name_;
 };
 
 // Specialise for base::File::Error.

@@ -26,7 +26,8 @@ class MetricTest : public testing::Test {
     kMaxValue = kTwo,
   };
 
-  Metric<TestEnum> metric_ = Metric<TestEnum>("metric_name");
+  Metric<TestEnum> metric_ =
+      Metric<TestEnum>("metric_name", "companion_metric_name");
   base::HistogramTester histogram_;
 };
 
