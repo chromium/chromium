@@ -180,7 +180,7 @@ class DriveIntegrationService : public KeyedService,
     virtual void OnBulkPinProgress(const drivefs::pinning::Progress& progress) {
     }
 
-    // Triggered when the bulk pinning manger is fully initialized.
+    // Triggered when the bulk-pinning manager is fully initialized.
     virtual void OnBulkPinInitialized() {}
 
     // Triggered when the network connection to Drive could have changed.

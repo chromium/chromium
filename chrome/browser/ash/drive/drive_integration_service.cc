@@ -1042,15 +1042,13 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
 }
 
 void DriveIntegrationService::CreateOrDeleteBulkPinningManager() {
-  VLOG(1) << "CreateOrDeleteBulkPinningManager";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!util::IsDriveFsBulkPinningAvailable(profile_)) {
     if (pinning_manager_) {
-      LOG(WARNING) << "Delete bulk-pinning manager because of policy change";
-      pinning_manager_->Stop();
-      pinning_manager_.reset();
+      LOG(WARNING) << "Deleting bulk-pinning manager because of policy change";
       GetPrefs()->SetBoolean(kDriveFsBulkPinningEnabled, false);
+      pinning_manager_.reset();
     }
 
     return;
@@ -1062,7 +1060,6 @@ void DriveIntegrationService::CreateOrDeleteBulkPinningManager() {
   }
 
   // Instantiate a PinningManager.
-  VLOG(1) << "Create bulk-pinning manager";
   DCHECK(!pinning_manager_);
   pinning_manager_ = std::make_unique<PinningManager>(
       profile_->GetPath(), GetMountPointPath(), GetDriveFsInterface(),
@@ -1220,12 +1217,11 @@ void DriveIntegrationService::PinFiles(
 }
 
 void DriveIntegrationService::StartOrStopBulkPinning() {
-  VLOG(1) << "StartOrStopBulkPinning";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!pinning_manager_) {
-    LOG(ERROR) << "Cannot toggle the state of the bulk-pinning manager: "
-                  "There is no bulk-pinning manager";
+    VLOG(1) << "Cannot toggle the state of the bulk-pinning manager: "
+               "There is no bulk-pinning manager";
     return;
   }
 

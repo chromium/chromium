@@ -649,6 +649,7 @@ PinningManager::PinningManager(Path profile_path,
       queue_size_(queue_size),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
+  VLOG(1) << "Creating bulk-pinning manager";
   chromeos::PowerManagerClient* const p = chromeos::PowerManagerClient::Get();
   power_manager_.Observe(p);
   p->GetBatterySaverModeState(base::BindOnce(
@@ -656,13 +657,16 @@ PinningManager::PinningManager(Path profile_path,
   user_data_auth_client_.Observe(ash::UserDataAuthClient::Get());
 }
 
-PinningManager::~PinningManager() = default;
+PinningManager::~PinningManager() {
+  VLOG(1) << "Deleting bulk-pinning manager";
+}
 
 void PinningManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (InProgress(progress_.stage)) {
-    LOG(ERROR) << "Pin manager is already started: " << Quote(progress_.stage);
+    LOG(ERROR) << "Bulk-pinning manager is already started: It is in stage "
+               << Quote(progress_.stage);
     return;
   }
 
@@ -708,7 +712,7 @@ bool PinningManager::CalculateRequiredSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsPausedOrInProgress(progress_.stage) && progress_.should_pin) {
     LOG(ERROR) << "Cannot calculate required space: "
-               << "Pin manager is in stage " << progress_.stage;
+               << "Bulk-pinning manager is in stage " << progress_.stage;
     return false;
   }
 
