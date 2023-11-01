@@ -431,8 +431,7 @@ Installer::Result MakeInstallerResult(
       //   error.
       // - use the installer extra code if available.
       // - use the text description of the error if available.
-      result.original_error =
-          outcome.installer_error ? *outcome.installer_error : exit_code;
+      result.original_error = outcome.installer_error.value_or(exit_code);
       if (!result.original_error) {
         result.original_error = kErrorApplicationInstallerFailed;
       }
@@ -446,10 +445,7 @@ Installer::Result MakeInstallerResult(
                   result.original_error == ERROR_SUCCESS_RESTART_REQUIRED
               ? 0
               : kErrorApplicationInstallerFailed;
-      result.installer_text =
-          outcome.installer_text
-              ? *outcome.installer_text
-              : base::WideToUTF8(GetTextForSystemError(result.original_error));
+      result.installer_text = outcome.installer_text.value_or("");
       CHECK_NE(result.original_error, 0);
       break;
   }

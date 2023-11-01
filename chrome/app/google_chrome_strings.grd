@@ -1916,6 +1916,10 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog for runtime errors that occur while installing.">
           Install error: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
         </message>
+        <message name="IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY"
+                 desc="Error message displayed in the main dialog when an IT admin has disabled installation or update of this application using Windows Group Policy.">
+          Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
+        </message>
       </if>
       <!-- High Efficiency Chip strings -->
       <if expr="not is_android">

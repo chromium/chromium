@@ -186,6 +186,23 @@ void GetComponents(
 #if BUILDFLAG(IS_WIN)
 namespace {
 
+std::wstring GetTextForInstallerError(int error_code) {
+#define POLICY_ERROR_SWITCH_ENTRY(error_code)                                 \
+  case error_code:                                                            \
+    return GetLocalizedStringF(IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY_BASE, \
+                               L#error_code)
+
+  switch (error_code) {
+    POLICY_ERROR_SWITCH_ENTRY(GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY);
+    POLICY_ERROR_SWITCH_ENTRY(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
+    POLICY_ERROR_SWITCH_ENTRY(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL);
+    default:
+      return GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE,
+                                 GetTextForSystemError(error_code));
+  }
+#undef POLICY_ERROR_SWITCH_ENTRY
+}
+
 std::wstring GetTextForUpdateClientInstallError(int error_code) {
 #define INSTALL_SWITCH_ENTRY(error_code) \
   case static_cast<int>(error_code):     \
@@ -355,8 +372,7 @@ std::string GetInstallerText(UpdateService::ErrorCategory error_category,
     switch (error_category) {
       case UpdateService::ErrorCategory::kInstall:
         return is_installer_error
-                   ? GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE,
-                                         GetTextForSystemError(error_code))
+                   ? GetTextForInstallerError(error_code)
                    : GetTextForUpdateClientInstallError(error_code);
       case UpdateService::ErrorCategory::kDownload:
         return GetTextForDownloadError(error_code);
@@ -475,7 +491,7 @@ MakeUpdateClientCrxStateChangeCallback(
 #if BUILDFLAG(IS_WIN)
           if (update_state.installer_text.empty())
             update_state.installer_text = internal::GetInstallerText(
-                update_state.error_category, update_state.error_code,
+                UpdateService::ErrorCategory::kInstall, update_state.error_code,
                 /*is_installer_error=*/true);
 #endif  // BUILDFLAG(IS_WIN)
         }
@@ -917,8 +933,12 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
              StateChangeCallback state_update, bool usage_stats_enabled) {
             base::ScopedTempDir temp_dir;
             if (!temp_dir.CreateUniqueTempDir()) {
+#if BUILDFLAG(IS_WIN)
               return InstallerResult(kErrorApplicationInstallerFailed,
-                                     kErrorCreatingTempDir);
+                                     HRESULTFromLastError());
+#else   // BUILDFLAG(IS_WIN)
+              return InstallerResult(kErrorApplicationInstallerFailed);
+#endif  // BUILDFLAG(IS_WIN)
             }
 
             return RunApplicationInstaller(
@@ -956,6 +976,8 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             if (result.error == 0 && installer_version.IsValid()) {
               persisted_data->SetProductVersion(app_id, installer_version);
               config->GetPrefService()->CommitPendingWrite();
+            } else {
+              state.error_category = UpdateService::ErrorCategory::kInstall;
             }
 
             // Handle the offline installer cases similar to the online cases,
@@ -964,6 +986,12 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                 result.original_error ? result.original_error : result.error;
             state.extra_code1 = result.extended_error;
             state.installer_text = result.installer_text;
+#if BUILDFLAG(IS_WIN)
+            if (state.installer_text.empty())
+              state.installer_text = internal::GetInstallerText(
+                  state.error_category, state.error_code,
+                  /*is_installer_error=*/true);
+#endif  // BUILDFLAG(IS_WIN)
             state.installer_cmd_line = result.installer_cmd_line;
             state_update.Run(state);
             VLOG(1) << app_id
@@ -1033,13 +1061,18 @@ void UpdateServiceImpl::HandleUpdateDisabledByPolicy(
   UpdateState update_state;
   update_state.app_id = app_id;
   update_state.state = UpdateService::UpdateState::State::kUpdateError;
-  update_state.error_category = UpdateService::ErrorCategory::kUpdateCheck;
+  update_state.error_category = UpdateService::ErrorCategory::kInstall;
   update_state.error_code =
       is_install ? GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY
       : policy != kPolicyAutomaticUpdatesOnly
           ? GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY
           : GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL;
   update_state.extra_code1 = 0;
+#if BUILDFLAG(IS_WIN)
+  update_state.installer_text = internal::GetInstallerText(
+      update_state.error_category, update_state.error_code,
+      /*is_installer_error=*/true);
+#endif  // BUILDFLAG(IS_WIN)
 
   base::BindPostTask(main_task_runner_, state_update).Run(update_state);
   base::BindPostTask(main_task_runner_, std::move(callback))
