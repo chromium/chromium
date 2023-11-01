@@ -58,8 +58,6 @@
 namespace update_client {
 namespace {
 
-using base::FilePath;
-
 // Makes stateful mock instances for callbacks in tests. These are callback
 // mocks that retain state between successive invocations of the callback.
 template <typename Mock>
@@ -88,17 +86,19 @@ class MockUpdateCheckerFactory {
 // Makes a copy of the file specified by |from_path| in a temporary directory
 // and returns the path of the copy. Returns true if successful. Cleans up if
 // there was an error creating the copy.
-bool MakeTestFile(const FilePath& from_path, FilePath* to_path) {
-  FilePath temp_dir;
+bool MakeTestFile(const base::FilePath& from_path, base::FilePath* to_path) {
+  base::FilePath temp_dir;
   bool result = base::CreateNewTempDirectory(FILE_PATH_LITERAL("update_client"),
                                              &temp_dir);
-  if (!result)
+  if (!result) {
     return false;
+  }
 
-  FilePath temp_file;
+  base::FilePath temp_file;
   result = CreateTemporaryFileInDir(temp_dir, &temp_file);
-  if (!result)
+  if (!result) {
     return false;
+  }
 
   result = CopyFile(from_path, temp_file);
   if (!result) {
@@ -297,7 +297,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -354,7 +354,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -420,7 +420,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
       CrxComponent crx1;
       crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
-      crx1.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx1.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx1.version = base::Version("0.9");
       crx1.installer = base::MakeRefCounted<TestInstaller>();
       crx1.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -428,7 +428,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
       CrxComponent crx2;
       crx2.app_id = "abagagagagagagagagagagagagagagag";
       crx2.name = "test_abag";
-      crx2.pk_hash.assign(abag_hash, abag_hash + std::size(abag_hash));
+      crx2.pk_hash.assign(std::begin(abag_hash), std::end(abag_hash));
       crx2.version = base::Version("2.2");
       crx2.installer = base::MakeRefCounted<TestInstaller>();
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -541,7 +541,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
       download_metrics.total_bytes = 1843;
       download_metrics.download_time_ms = 1000;
 
-      FilePath path;
+      base::FilePath path;
       EXPECT_TRUE(MakeTestFile(
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
@@ -677,14 +677,14 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
       CrxComponent crx1;
       crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
-      crx1.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx1.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx1.version = base::Version("0.9");
       crx1.installer = base::MakeRefCounted<TestInstaller>();
       crx1.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
       CrxComponent crx2;
       crx2.name = "test_abag";
-      crx2.pk_hash.assign(abag_hash, abag_hash + std::size(abag_hash));
+      crx2.pk_hash.assign(std::begin(abag_hash), std::end(abag_hash));
       crx2.version = base::Version("2.2");
       crx2.installer = base::MakeRefCounted<TestInstaller>();
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -781,7 +781,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
       download_metrics.total_bytes = 1843;
       download_metrics.download_time_ms = 1000;
 
-      FilePath path;
+      base::FilePath path;
       EXPECT_TRUE(MakeTestFile(
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
@@ -914,7 +914,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -1003,7 +1003,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
         download_metrics.url = url;
@@ -1228,7 +1228,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       CrxComponent crx1;
       crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
-      crx1.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx1.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx1.version = base::Version("0.9");
       crx1.installer = base::MakeRefCounted<TestInstaller>();
       crx1.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -1236,7 +1236,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       CrxComponent crx2;
       crx2.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
       crx2.name = "test_ihfo";
-      crx2.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
+      crx2.pk_hash.assign(std::begin(ihfo_hash), std::end(ihfo_hash));
       crx2.version = base::Version("0.8");
       crx2.installer = base::MakeRefCounted<TestInstaller>();
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -1361,7 +1361,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
         download_metrics.url = url;
@@ -1537,7 +1537,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
       CrxComponent crx;
       crx.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
       crx.name = "test_ihfo";
-      crx.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
+      crx.pk_hash.assign(std::begin(ihfo_hash), std::end(ihfo_hash));
       crx.installer = installer_;
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
@@ -1697,7 +1697,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
         download_metrics.url = url;
@@ -2052,7 +2052,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoided) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
         download_metrics.url = url;
@@ -2184,7 +2184,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoided) {
   CrxComponent crx;
   crx.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
   crx.name = "test_ihfo";
-  crx.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
+  crx.pk_hash.assign(std::begin(ihfo_hash), std::end(ihfo_hash));
   crx.installer = installer;
   crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
@@ -2361,7 +2361,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = installer;
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -2453,7 +2453,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       download_metrics.total_bytes = 1843;
       download_metrics.download_time_ms = 1000;
 
-      FilePath path;
+      base::FilePath path;
       EXPECT_TRUE(MakeTestFile(
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
@@ -2566,7 +2566,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
       CrxComponent crx;
       crx.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
       crx.name = "test_ihfo";
-      crx.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
+      crx.pk_hash.assign(std::begin(ihfo_hash), std::end(ihfo_hash));
       crx.installer = installer_;
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
@@ -2723,7 +2723,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
         download_metrics.url = url;
@@ -3422,7 +3422,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoidedFullUpdateSucceeds) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
         download_metrics.url = url;
@@ -3642,7 +3642,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -3710,7 +3710,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -3799,7 +3799,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -3890,7 +3890,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
         download_metrics.url = url;
@@ -4142,7 +4142,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -4213,7 +4213,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -4318,7 +4318,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -4500,7 +4500,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -4588,7 +4588,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -4692,7 +4692,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       CrxComponent crx1;
       crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
-      crx1.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx1.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx1.version = base::Version("0.9");
       crx1.installer = base::MakeRefCounted<TestInstaller>();
       crx1.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -4701,7 +4701,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       CrxComponent crx2;
       crx2.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
       crx2.name = "test_ihfo";
-      crx2.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
+      crx2.pk_hash.assign(std::begin(ihfo_hash), std::end(ihfo_hash));
       crx2.version = base::Version("0.8");
       crx2.installer = base::MakeRefCounted<TestInstaller>();
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -4826,7 +4826,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
         download_metrics.url = url;
@@ -4968,7 +4968,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
             void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -5013,7 +5013,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -5089,7 +5089,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         CrxComponent crx;
         crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
         crx.name = "test_jebg";
-        crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+        crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
         crx.version = base::Version("0.9");
         crx.installer = base::MakeRefCounted<TestInstaller>();
         crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -5099,7 +5099,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         CrxComponent crx;
         crx.app_id = "abagagagagagagagagagagagagagagag";
         crx.name = "test_abag";
-        crx.pk_hash.assign(abag_hash, abag_hash + std::size(abag_hash));
+        crx.pk_hash.assign(std::begin(abag_hash), std::end(abag_hash));
         crx.version = base::Version("0.1");
         crx.installer = base::MakeRefCounted<TestInstaller>();
         crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -5109,7 +5109,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         CrxComponent crx;
         crx.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
         crx.name = "test_ihfo";
-        crx.pk_hash.assign(ihfo_hash, ihfo_hash + std::size(ihfo_hash));
+        crx.pk_hash.assign(std::begin(ihfo_hash), std::end(ihfo_hash));
         crx.version = base::Version("0.2");
         crx.installer = base::MakeRefCounted<TestInstaller>();
         crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -5119,7 +5119,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         CrxComponent crx;
         crx.app_id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
         crx.name = "test_gjpm";
-        crx.pk_hash.assign(gjpm_hash, gjpm_hash + std::size(gjpm_hash));
+        crx.pk_hash.assign(std::begin(gjpm_hash), std::end(gjpm_hash));
         crx.version = base::Version("0.3");
         crx.installer = base::MakeRefCounted<TestInstaller>();
         crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -5182,7 +5182,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -5361,7 +5361,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/runaction_test_win.crx3") {
         download_metrics.url = url;
@@ -5458,7 +5458,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
         CrxComponent crx;
         crx.app_id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
         crx.name = "test_gjpm";
-        crx.pk_hash.assign(gjpm_hash, gjpm_hash + std::size(gjpm_hash));
+        crx.pk_hash.assign(std::begin(gjpm_hash), std::end(gjpm_hash));
         crx.version = base::Version("0.0");
         crx.installer = base::MakeRefCounted<VersionedTestInstaller>();
         crx.action_handler = action_handler;
@@ -5530,7 +5530,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -5615,7 +5615,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
             CrxComponent crx;
             crx.app_id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
             crx.name = "test_gjpm";
-            crx.pk_hash.assign(gjpm_hash, gjpm_hash + std::size(gjpm_hash));
+            crx.pk_hash.assign(std::begin(gjpm_hash), std::end(gjpm_hash));
             crx.version = base::Version("1.0");
             crx.installer =
                 base::MakeRefCounted<ReadOnlyTestInstaller>(unpack_path);
@@ -5646,7 +5646,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -5704,7 +5704,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -5830,7 +5830,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -5895,7 +5895,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
         download_metrics.url = url;
@@ -5974,7 +5974,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -6039,7 +6039,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
         download_metrics.url = url;
@@ -6155,7 +6155,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
             void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -6220,7 +6220,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
-      FilePath path;
+      base::FilePath path;
       Result result;
       if (url.path() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
         download_metrics.url = url;
@@ -6329,7 +6329,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -6377,7 +6377,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -6441,7 +6441,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -6518,7 +6518,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -6592,7 +6592,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -6640,7 +6640,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
     ~MockCrxDownloader() override = default;
 
     base::OnceClosure DoStartDownload(const GURL& url) override {
-      EXPECT_TRUE(false);
+      NOTREACHED();
       return base::DoNothing();
     }
   };
@@ -6725,7 +6725,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
@@ -6949,7 +6949,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
-      crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
+      crx.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
