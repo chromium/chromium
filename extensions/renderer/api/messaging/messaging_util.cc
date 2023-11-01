@@ -151,7 +151,9 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
   v8::Local<v8::Value> parsed_message;
   v8::TryCatch try_catch(isolate);
   if (!v8::JSON::Parse(context, v8_message_string).ToLocal(&parsed_message)) {
-    NOTREACHED();
+    // TODO(crbug.com/1439827): Replace the above with a CHECK that parsing
+    // should always succeed here. This should be trusted data.
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return v8::Local<v8::Value>();
   }
   return parsed_message;
