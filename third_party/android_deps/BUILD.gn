@@ -217,8 +217,8 @@ if (!defined(dagger_java_target)) {
     enable_bytecode_checks = false
 
     # Target is swapped out when internal code is enabled.
-    # Please depend on :dagger_java instead.
-    visibility = [ ":*" ]
+    # Please depend on //third_party/android_deps:dagger_java instead.
+    visibility = [ "//third_party/android_deps:*" ]
     deps = [ ":javax_inject_javax_inject_java" ]
   }
 }
@@ -231,8 +231,8 @@ if (!defined(dagger_annotation_processor_target)) {
     enable_bytecode_checks = false
 
     # Target is swapped out when internal code is enabled.
-    # Please depend on :dagger_processor instead.
-    visibility = [ ":*" ]
+    # Please depend on //third_party/android_deps:dagger_processor instead.
+    visibility = [ "//third_party/android_deps:*" ]
     deps = [
       ":com_google_code_findbugs_jsr305_java",
       ":com_google_dagger_dagger_producers_java",
@@ -240,12 +240,12 @@ if (!defined(dagger_annotation_processor_target)) {
       ":com_google_googlejavaformat_google_java_format_java",
       ":com_google_guava_guava_java",
       ":com_squareup_javapoet_java",
-      ":dagger_java",
       ":javax_annotation_jsr250_api_java",
       ":javax_inject_javax_inject_java",
       ":net_ltgt_gradle_incap_incap_java",
       ":org_checkerframework_checker_compat_qual_java",
       ":org_jetbrains_kotlinx_kotlinx_metadata_jvm_java",
+      "//third_party/android_deps:dagger_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -495,9 +495,9 @@ if (!defined(dagger_annotation_processor_target)) {
     ]
     deps = [
       ":com_google_guava_guava_java",
-      ":dagger_java",
       ":javax_inject_javax_inject_java",
       ":org_checkerframework_checker_compat_qual_java",
+      "//third_party/android_deps:dagger_java",
     ]
   }
 }
@@ -520,8 +520,8 @@ if (!defined(dagger_annotation_processor_target)) {
       ":com_google_dagger_dagger_producers_java",
       ":com_google_guava_guava_java",
       ":com_squareup_javapoet_java",
-      ":dagger_java",
       ":javax_inject_javax_inject_java",
+      "//third_party/android_deps:dagger_java",
     ]
   }
 }
@@ -581,8 +581,8 @@ java_prebuilt("com_google_guava_failureaccess_java") {
   enable_bytecode_checks = false
 
   # Target is swapped out when internal code is enabled.
-  # Please depend on :guava_android_java instead.
-  visibility = [ ":*" ]
+  # Please depend on //third_party/android_deps:guava_android_java instead.
+  visibility = [ "//third_party/android_deps:*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -781,11 +781,11 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_google_errorprone_error_prone_annotations_java",
-      ":guava_android_java",
-      ":material_design_java",
       ":org_checkerframework_checker_qual_java",
       ":org_jsoup_jsoup_java",
-      ":protobuf_lite_runtime_java",
+      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:material_design_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_test_services_storage_java",
       "//third_party/hamcrest:hamcrest_core_java",
@@ -1034,8 +1034,8 @@ if (!limit_android_deps) {
       enable_bytecode_checks = false
 
       # Target is swapped out when internal code is enabled.
-      # Please depend on :material_design_java instead.
-      visibility = [ ":*" ]
+      # Please depend on //third_party/android_deps:material_design_java instead.
+      visibility = [ "//third_party/android_deps:*" ]
       deps = [
         "//third_party/androidx:androidx_annotation_annotation_experimental_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
@@ -1078,8 +1078,8 @@ if (!limit_android_deps) {
       enable_bytecode_checks = false
 
       # Target is swapped out when internal code is enabled.
-      # Please depend on :playcore_java instead.
-      visibility = [ ":*" ]
+      # Please depend on //third_party/android_deps:playcore_java instead.
+      visibility = [ "//third_party/android_deps:*" ]
       deps = [
         ":com_google_android_play_core_common_java",
         "$google_play_services_package:google_play_services_basement_java",
@@ -1146,8 +1146,8 @@ if (!limit_android_deps) {
       enable_bytecode_checks = false
 
       # Target is swapped out when internal code is enabled.
-      # Please depend on :guava_android_java instead.
-      visibility = [ ":*" ]
+      # Please depend on //third_party/android_deps:guava_android_java instead.
+      visibility = [ "//third_party/android_deps:*" ]
       deps = [
         ":com_google_code_findbugs_jsr305_java",
         ":com_google_errorprone_error_prone_annotations_java",
@@ -1183,8 +1183,8 @@ if (!limit_android_deps) {
       enable_bytecode_checks = false
 
       # Target is swapped out when internal code is enabled.
-      # Please depend on :protobuf_lite_runtime_java instead.
-      visibility = [ ":*" ]
+      # Please depend on //third_party/android_deps:protobuf_lite_runtime_java instead.
+      visibility = [ "//third_party/android_deps:*" ]
 
       # Prebuilt protos in the runtime library.
       # If you want to use these protos, you should create a proto_java_library
@@ -1232,8 +1232,8 @@ if (!limit_android_deps) {
     deps = [
       ":com_google_code_findbugs_jsr305_java",
       ":com_google_errorprone_error_prone_annotations_java",
-      ":guava_android_java",
       ":io_grpc_grpc_context_java",
+      "//third_party/android_deps:guava_android_java",
     ]
 
     # https://crbug.com/1412551
@@ -1246,8 +1246,8 @@ if (!limit_android_deps) {
     info_path = "libs/io_grpc_grpc_binder/io_grpc_grpc_binder.info"
     enable_bytecode_checks = false
     deps = [
-      ":guava_android_java",
       ":io_grpc_grpc_core_java",
+      "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
@@ -1273,9 +1273,9 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":com_google_code_findbugs_jsr305_java",
-      ":guava_android_java",
       ":io_grpc_grpc_api_java",
-      ":protobuf_lite_runtime_java",
+      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
     ]
 
     # https://crbug.com/1412551
@@ -1290,8 +1290,8 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":com_google_errorprone_error_prone_annotations_java",
-      ":guava_android_java",
       ":io_grpc_grpc_api_java",
+      "//third_party/android_deps:guava_android_java",
     ]
 
     # https://crbug.com/1412551
@@ -2289,10 +2289,10 @@ if (!limit_android_deps) {
       ":com_google_android_annotations_java",
       ":com_google_code_gson_gson_java",
       ":com_google_errorprone_error_prone_annotations_java",
-      ":guava_android_java",
       ":io_grpc_grpc_api_java",
       ":io_perfmark_perfmark_api_java",
       ":org_codehaus_mojo_animal_sniffer_annotations_java",
+      "//third_party/android_deps:guava_android_java",
     ]
 
     # https://crbug.com/1412551
@@ -2462,10 +2462,10 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":guava_android_java",
       ":org_robolectric_nativeruntime_dist_compat_java",
       ":org_robolectric_utils_java",
       ":org_robolectric_utils_reflector_java",
+      "//third_party/android_deps:guava_android_java",
     ]
     is_robolectric = true
   }
@@ -2500,8 +2500,8 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":guava_android_java",
       ":org_robolectric_annotations_java",
+      "//third_party/android_deps:guava_android_java",
     ]
     is_robolectric = true
   }
@@ -2521,9 +2521,9 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_google_auto_value_auto_value_annotations_java",
-      ":guava_android_java",
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_utils_java",
+      "//third_party/android_deps:guava_android_java",
     ]
     is_robolectric = true
   }
@@ -2543,10 +2543,10 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_google_auto_value_auto_value_annotations_java",
-      ":guava_android_java",
       ":org_robolectric_annotations_java",
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_utils_java",
+      "//third_party/android_deps:guava_android_java",
     ]
     is_robolectric = true
   }
@@ -2565,7 +2565,6 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":guava_android_java",
       ":javax_annotation_javax_annotation_api_java",
       ":javax_inject_javax_inject_java",
       ":org_ow2_asm_asm_commons_java",
@@ -2574,6 +2573,7 @@ if (!limit_android_deps) {
       ":org_robolectric_shadowapi_java",
       ":org_robolectric_utils_java",
       ":org_robolectric_utils_reflector_java",
+      "//third_party/android_deps:guava_android_java",
     ]
     is_robolectric = true
   }

@@ -59,7 +59,7 @@ class BuildConfigGenerator extends DefaultTask {
     static final Map<String, String> EXISTING_LIBS = [
         com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
         com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
-        com_google_guava_listenablefuture: ':guava_android_java',
+        com_google_guava_listenablefuture: '//third_party/android_deps:guava_android_java',
         com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
         junit_junit: '//third_party/junit:junit',
         net_bytebuddy_byte_buddy_android: '//third_party/byte_buddy:byte_buddy_android_java',
@@ -82,13 +82,14 @@ class BuildConfigGenerator extends DefaultTask {
     // These targets will still be downloaded from maven. Any deps onto them will be made
     // to point to the aliased target instead.
     static final Map<String, String> ALIASED_LIBS = [
-        com_google_android_material_material: ':material_design_java',
-        com_google_android_play_feature_delivery: ':playcore_java',
-        com_google_dagger_dagger_compiler: ':dagger_processor',
-        com_google_dagger_dagger: ':dagger_java',
-        com_google_guava_failureaccess: ':guava_android_java',
-        com_google_guava_guava_android: ':guava_android_java',
-        com_google_protobuf_protobuf_javalite: ':protobuf_lite_runtime_java',
+        // Use fully-qualified labels here since androidx might refer to them.
+        com_google_android_material_material: '//third_party/android_deps:material_design_java',
+        com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
+        com_google_dagger_dagger_compiler: '//third_party/android_deps:dagger_processor',
+        com_google_dagger_dagger: '//third_party/android_deps:dagger_java',
+        com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
+        com_google_guava_guava_android: '//third_party/android_deps:guava_android_java',
+        com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
         // Logic for google_play_services_package added below.
     ]
 
@@ -511,7 +512,7 @@ class BuildConfigGenerator extends DefaultTask {
             aliasedLib = aliasedLib != null ? aliasedLib : EXISTING_LIBS.get(dep.id)
 
             // The failureaccess alias needs to map to -jre or -android guava.
-            if (aliasedLib == ':guava_android_java' && !dependency.supportsAndroid) {
+            if (aliasedLib == '//third_party/android_deps:guava_android_java' && !dependency.supportsAndroid) {
                 aliasedLib = ':com_google_guava_guava_java'
             }
 
@@ -520,7 +521,7 @@ class BuildConfigGenerator extends DefaultTask {
             if (targetName.startsWith('org_robolectric') && dep.id.contains('guava')) {
                 // Change from guava-jre to guava-android so that we don't get two copies of Guava
                 // in robolectric tests (since code-under-test might depend on guava-android).
-                gnTarget = ':guava_android_java'
+                gnTarget = '//third_party/android_deps:guava_android_java'
             } else if (aliasedLib) {
                 gnTarget = aliasedLib
             } else if (isInDifferentRepo(dep)) {
@@ -531,7 +532,8 @@ class BuildConfigGenerator extends DefaultTask {
             }
 
             if (targetName.contains('guava') && (
-                    gnTarget == ':guava_android_java' || gnTarget == ':com_google_guava_guava_java')) {
+                    gnTarget == '//third_party/android_deps:guava_android_java' ||
+                    gnTarget == ':com_google_guava_guava_java')) {
                 // Prevent circular dep caused by having listenablefuture aliased to guava_android.
                 return
             }
