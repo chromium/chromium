@@ -854,11 +854,17 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     return;
   }
 
-  NSUInteger moduleIndex = [self
-      indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
   [_tabResumptionModuleContainer removeFromSuperview];
-  [_magicStackModuleOrder removeObjectAtIndex:moduleIndex];
   _tabResumptionModuleContainer = nil;
+
+  // Only remove from _magicStackModuleOrder if it has been received. Since the
+  // Segmentation ranking fetch is asynchronous, it is possible for the most
+  // recent local tab to be removed before receiving it.
+  if (_magicStackRankReceived) {
+    NSUInteger moduleIndex = [self
+        indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
+    [_magicStackModuleOrder removeObjectAtIndex:moduleIndex];
+  }
 }
 
 - (void)showParcelTrackingItems:(NSArray<ParcelTrackingItem*>*)items {
