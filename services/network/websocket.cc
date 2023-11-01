@@ -783,7 +783,7 @@ void WebSocket::ReadAndSendFromDataPipe(InterruptionReason resume_reason) {
 bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
   while (true) {
     if (data_frame->data_length == 0) {
-      auto data_to_pass = base::MakeRefCounted<net::IOBuffer>();
+      auto data_to_pass = base::MakeRefCounted<net::IOBufferWithSize>();
       if (channel_->SendFrame(true, MessageTypeToOpCode(data_frame->type),
                               std::move(data_to_pass),
                               0) == net::WebSocketChannel::CHANNEL_DELETED) {
@@ -814,7 +814,7 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
         data_frame->do_not_fragment && !message_under_reassembly_) {
       // The cast is needed to unambiguously select a constructor on 32-bit
       // platforms.
-      message_under_reassembly_ = base::MakeRefCounted<net::IOBuffer>(
+      message_under_reassembly_ = base::MakeRefCounted<net::IOBufferWithSize>(
           base::checked_cast<size_t>(data_frame->data_length));
       CHECK_EQ(bytes_reassembled_, 0u);
     }
@@ -851,7 +851,8 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
 
     const size_t size_to_send =
         std::min(static_cast<uint64_t>(readable_size), data_frame->data_length);
-    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(size_to_send);
+    auto data_to_pass =
+        base::MakeRefCounted<net::IOBufferWithSize>(size_to_send);
     const bool is_final = (size_to_send == data_frame->data_length);
     memcpy(data_to_pass->data(), buffer, size_to_send);
     blocked_on_websocket_channel_ = true;

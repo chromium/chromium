@@ -89,7 +89,7 @@ P2PSocketUdp::PendingPacket::PendingPacket(const net::IPEndPoint& to,
                                            const rtc::PacketOptions& options,
                                            uint64_t id)
     : to(to),
-      data(base::MakeRefCounted<net::IOBuffer>(content.size())),
+      data(base::MakeRefCounted<net::IOBufferWithSize>(content.size())),
       size(content.size()),
       packet_options(options),
       id(id) {
@@ -192,7 +192,8 @@ void P2PSocketUdp::Init(
   // NOTE: Remote address will be same as what renderer provided.
   client_->SocketCreated(address, remote_address.ip_address);
 
-  recv_buffer_ = base::MakeRefCounted<net::IOBuffer>(kUdpReadBufferSize);
+  recv_buffer_ =
+      base::MakeRefCounted<net::IOBufferWithSize>(kUdpReadBufferSize);
   DoRead();
 }
 
@@ -281,7 +282,8 @@ bool P2PSocketUdp::HandleReadResult(int result) {
     // 'ERR_IO_PENDING' if drained.
     pending_received_packets_.push_back(std::move(packet));
     pending_received_buffers_.push_back(std::move(recv_buffer_));
-    recv_buffer_ = base::MakeRefCounted<net::IOBuffer>(kUdpReadBufferSize);
+    recv_buffer_ =
+        base::MakeRefCounted<net::IOBufferWithSize>(kUdpReadBufferSize);
 
     MaybeDrainReceivedPackets(false);
   } else if (result == net::ERR_IO_PENDING) {
