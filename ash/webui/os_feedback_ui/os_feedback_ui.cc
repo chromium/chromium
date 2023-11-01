@@ -120,6 +120,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"bluetoothLogsInfo", IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_CHECKBOX},
       {"bluetoothLogsMessage", IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE},
       {"wifiDebugLogsInfo", IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_CHECKBOX},
+      {"wifiDebugLogsMessage", IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_MESSAGE},
       {"linkCrossDeviceDogfoodFeedbackInfo",
        IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_INFO},
       {"linkCrossDeviceDogfoodFeedbackMessage",

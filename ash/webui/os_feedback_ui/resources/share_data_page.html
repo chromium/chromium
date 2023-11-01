@@ -401,6 +401,17 @@
     </cr-button>
   </div>
 </cr-dialog>
+<cr-dialog id="wifiDebugLogsDialog">
+  <div slot="body">
+    [[i18n('wifiDebugLogsMessage')]]
+  </div>
+  <div slot="button-container">
+    <cr-button id="wifiDebugLogsDialogDoneButton" class="action-button"
+        on-click="handleCloseWifiDebugLogsDialogClicked_">
+      [[i18n('buttonDone')]]
+    </cr-button>
+  </div>
+</cr-dialog>
 <cr-dialog id="linkCrossDeviceDogfoodFeedbackDialog">
   <div slot="body">
     [[i18n('linkCrossDeviceDogfoodFeedbackMessage')]]

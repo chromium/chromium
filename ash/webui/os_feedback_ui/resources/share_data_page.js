@@ -316,6 +316,26 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    * @param {!Event} e
    * @protected
    */
+  handleOpenWifiDebugLogsInfoDialog_(e) {
+    // The default behavior of clicking on an anchor tag
+    // with href="#" is a scroll to the top of the page.
+    // This link opens a dialog, so we want to prevent
+    // this default behavior.
+    e.preventDefault();
+
+    this.getElement_('#wifiDebugLogsDialog').showModal();
+    this.getElement_('#wifiDebugLogsDialogDoneButton').focus();
+  }
+
+  /** @protected */
+  handleCloseWifiDebugLogsDialogClicked_() {
+    this.getElement_('#wifiDebugLogsDialog').close();
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
   handleOpenLinkCrossDeviceDogfoodFeedbackInfoDialog_(e) {
     // The default behavior of clicking on an anchor tag
     // with href="#" is a scroll to the top of the page.
@@ -631,6 +651,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         this.shadowRoot.querySelector('#wifiDebugLogsInfoLink');
     // Setting href causes <a> tag to display as link.
     wifiDebugLogsLink.setAttribute('href', '#');
+    wifiDebugLogsLink.addEventListener(
+        'click', (e) => void this.handleOpenWifiDebugLogsInfoDialog_(e));
   }
 
   /** @private */

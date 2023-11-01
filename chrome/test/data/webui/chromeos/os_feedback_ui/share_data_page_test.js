@@ -1073,6 +1073,38 @@ export function shareDataPageTestSuite() {
   });
 
   /**
+   * Test that clicking the "View more details" link will open the dialog and
+   * set the focus on the close dialog icon button.
+   */
+  test('openWifiDebugLogsDialog', async () => {
+    await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+
+    // The dialog is not visible as default.
+    const closeDialogButton = getElement('#wifiDebugLogsDialogDoneButton');
+    assertFalse(isVisible(closeDialogButton));
+
+    // After clicking the #wifiDebugLogsInfoLink, the dialog pops up.
+    const dialog = /** @type {!Element} */ (getElement('#wifiDebugLogsDialog'));
+    const dialogOpenedEvent = eventToPromise('cr-dialog-open', dialog);
+    getElement('#wifiDebugLogsInfoLink').click();
+    await dialogOpenedEvent;
+
+    assertTrue(isVisible(closeDialogButton));
+
+    // The preview dialog's close icon button is focused.
+    assertEquals(closeDialogButton, getDeepActiveElement());
+
+    // Press enter should close the preview dialog.
+    closeDialogButton.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    // The preview dialog's close icon button is not visible now.
+    assertFalse(isVisible(closeDialogButton));
+  });
+
+  /**
    * Test that clicking the #linkCrossDeviceDogfoodFeedbackInfoLink will open
    * the dialog and set the focus on the close dialog icon button.
    */
