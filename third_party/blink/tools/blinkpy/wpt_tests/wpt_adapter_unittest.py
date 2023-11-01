@@ -219,6 +219,7 @@ class WPTAdapterTest(unittest.TestCase):
                 return_value=8)
     def test_wrapper_option(self, _):
         args = [
+            '--product=content_shell',
             '--no-manifest-update',
             '--wrapper=rr record --disable-avx-512',
             'external/wpt/dir/',
@@ -231,7 +232,8 @@ class WPTAdapterTest(unittest.TestCase):
 
     def test_scratch_directory_cleanup(self):
         """Only test results should be left behind, even with an exception."""
-        adapter = WPTAdapter.from_args(self.host, ["--no-manifest-update"])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--product=content_shell', '--no-manifest-update'])
         files_before = dict(self.fs.files)
         with self.assertRaises(KeyboardInterrupt):
             with adapter.test_env() as options:
@@ -251,6 +253,7 @@ class WPTAdapterTest(unittest.TestCase):
         adds new failing tests.
         """
         adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell',
             '--zero-tests-executed-ok',
             '--isolated-script-test-filter',
             'does-not-exist.any.html::does-not-exist.any.worker.html',
@@ -262,8 +265,10 @@ class WPTAdapterTest(unittest.TestCase):
     def test_run_all_with_zero_tests_executed_ok(self):
         # `--zero-tests-executed-ok` without explicit tests should still run the
         # entire suite. This matches the `run_web_tests.py` behavior.
-        adapter = WPTAdapter.from_args(
-            self.host, ['--zero-tests-executed-ok', '--no-manifest-update'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--zero-tests-executed-ok',
+            '--no-manifest-update'
+        ])
         with adapter.test_env() as options:
             self.assertEqual(sorted(options.include), ([
                 'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
@@ -274,6 +279,7 @@ class WPTAdapterTest(unittest.TestCase):
 
     def test_binary_args_propagation(self):
         adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell',
             '--no-manifest-update',
             '--enable-leak-detection',
             '--additional-driver-flag=--enable-features=FakeFeature',
@@ -288,8 +294,10 @@ class WPTAdapterTest(unittest.TestCase):
                 }, set(options.binary_args))
 
     def test_flag_specific(self):
-        adapter = WPTAdapter.from_args(
-            self.host, ['--flag-specific=fake-flag', '--no-manifest-update'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--flag-specific=fake-flag',
+            '--no-manifest-update'
+        ])
         with adapter.test_env() as options:
             self.assertIn('--enable-features=FakeFeature', options.binary_args)
             self.assertEqual(sorted(options.include), ([
@@ -350,8 +358,10 @@ class WPTAdapterTest(unittest.TestCase):
                                  ['dir/reftest.html'])
 
     def test_sanitizer_enabled(self):
-        adapter = WPTAdapter.from_args(
-            self.host, ['--no-manifest-update', '--enable-sanitizer'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--no-manifest-update',
+            '--enable-sanitizer'
+        ])
         with adapter.test_env() as options:
             self.assertEqual(options.timeout_multiplier, 2)
             run_info = self._read_run_info(options)
@@ -364,34 +374,38 @@ class WPTAdapterTest(unittest.TestCase):
                 # The non-WPT test should be excluded.
                 external/wpt/dir/reftest.html
                 """))
-        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--product=content_shell', '--no-manifest-update'])
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 3)
 
         # TODO We should not retry failures when running with '--use-upstream-wpt'
         # Consider add a unit test for that
 
-        adapter = WPTAdapter.from_args(self.host,
-                                       ['--no-manifest-update', '--smoke'])
+        adapter = WPTAdapter.from_args(
+            self.host,
+            ['--product=content_shell', '--no-manifest-update', '--smoke'])
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 3)
 
-        adapter = WPTAdapter.from_args(
-            self.host,
-            ['--no-manifest-update', 'external/wpt/dir/reftest.html'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--no-manifest-update',
+            'external/wpt/dir/reftest.html'
+        ])
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 0)
 
     def test_env_var(self):
         adapter = WPTAdapter.from_args(self.host, [
-            "--no-manifest-update",
-            "--additional-env-var=NEW_ENV_VAR=new_env_var_value"
+            '--product=content_shell', '--no-manifest-update',
+            '--additional-env-var=NEW_ENV_VAR=new_env_var_value'
         ])
         with adapter.test_env():
-            self.assertEqual(os.environ["NEW_ENV_VAR"], "new_env_var_value")
+            self.assertEqual(os.environ['NEW_ENV_VAR'], 'new_env_var_value')
 
     def test_show_results(self):
-        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--product=content_shell', '--no-manifest-update'])
         post_run_tasks = mock.Mock()
         self._mocks.enter_context(
             mock.patch('blinkpy.web_tests.port.base.Port.clean_up_test_run',
@@ -443,8 +457,10 @@ class WPTAdapterTest(unittest.TestCase):
             }))
 
     def test_reset_results_pass_to_fail(self):
-        adapter = WPTAdapter.from_args(
-            self.host, ['--no-manifest-update', '--reset-results'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--no-manifest-update',
+            '--reset-results'
+        ])
         with adapter.test_env() as options:
             self.write_wptreport(options, [{
                 'test': '/dir/reftest.html',
@@ -460,8 +476,10 @@ class WPTAdapterTest(unittest.TestCase):
             """)
 
     def test_reset_results_pass_to_flaky(self):
-        adapter = WPTAdapter.from_args(
-            self.host, ['--no-manifest-update', '--reset-results'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--no-manifest-update',
+            '--reset-results'
+        ])
         with adapter.test_env() as options:
             self.write_wptreport(options, [{
                 'test': '/dir/reftest.html',
@@ -487,8 +505,10 @@ class WPTAdapterTest(unittest.TestCase):
             [reftest.html]
               expected: FAIL
             """)
-        adapter = WPTAdapter.from_args(
-            self.host, ['--no-manifest-update', '--reset-results'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--no-manifest-update',
+            '--reset-results'
+        ])
         with adapter.test_env() as options:
             self.write_wptreport(options, [{
                 'test': '/dir/reftest.html',
@@ -508,6 +528,7 @@ class WPTAdapterTest(unittest.TestCase):
               expected: FAIL
             """)
         adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell',
             '--no-manifest-update',
             '--reset-results',
             '--flag-specific=fake-flag',
@@ -536,8 +557,10 @@ class WPTAdapterTest(unittest.TestCase):
                 if os == "win": FAIL
                 if os == "linux": FAIL
             """)
-        adapter = WPTAdapter.from_args(
-            self.host, ['--no-manifest-update', '--reset-results'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--no-manifest-update',
+            '--reset-results'
+        ])
         with adapter.test_env() as options:
             self.write_wptreport(options, [{
                 'test': '/dir/reftest.html',
@@ -564,8 +587,10 @@ class WPTAdapterTest(unittest.TestCase):
             [variant.html?xyz]
               expected: ERROR
             """)
-        adapter = WPTAdapter.from_args(
-            self.host, ['--no-manifest-update', '--reset-results'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--no-manifest-update',
+            '--reset-results'
+        ])
         with adapter.test_env() as options:
             self.write_wptreport(options, [{
                 'test': '/wpt_internal/variant.html?xyz',
@@ -588,8 +613,10 @@ class WPTAdapterTest(unittest.TestCase):
             [variant.html?xyz]
               expected: ERROR
             """)
-        adapter = WPTAdapter.from_args(
-            self.host, ['--no-manifest-update', '--reset-results'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=content_shell', '--no-manifest-update',
+            '--reset-results'
+        ])
         with adapter.test_env() as options:
             self.write_wptreport(options, [{
                 'test': '/wpt_internal/variant.html?xyz',

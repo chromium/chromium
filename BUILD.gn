@@ -1107,6 +1107,7 @@ if (use_blink && !is_cronet_build) {
         "reftest",
         "crashtest",
         "print-reftest",
+        "--product=content_shell",
         "--no-show-results",
         "--zero-tests-executed-ok",
       ]
