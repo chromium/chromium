@@ -203,28 +203,18 @@ const CGFloat kSymbolToolbarPointSize = 24;
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
-    UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSMutableAttributedString* attributedString =
-        [[NSMutableAttributedString alloc]
-            initWithString:l10n_util::GetNSString(IDS_CANCEL)
-                attributes:attributes];
-    buttonConfiguration.attributedTitle = attributedString;
-    cancelButton.configuration = buttonConfiguration;
-  } else {
-    cancelButton.titleLabel.font =
-        [UIFont systemFontOfSize:kLocationBarFontSize];
-    [cancelButton setTitle:l10n_util::GetNSString(IDS_CANCEL)
-                  forState:UIControlStateNormal];
-    UIEdgeInsets contentInsets = UIEdgeInsetsMake(
-        0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
-    SetContentEdgeInsets(cancelButton, contentInsets);
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+  UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:l10n_util::GetNSString(IDS_CANCEL)
+              attributes:attributes];
+  buttonConfiguration.attributedTitle = attributedString;
+  cancelButton.configuration = buttonConfiguration;
 
   cancelButton.hidden = YES;
   [cancelButton addTarget:self.actionHandler
