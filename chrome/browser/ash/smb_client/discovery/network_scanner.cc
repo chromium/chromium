@@ -51,8 +51,9 @@ void NetworkScanner::FindHostsInNetwork(FindHostsCallback callback) {
 
   const uint32_t request_id = AddNewRequest(std::move(callback));
   for (const auto& locator : locators_) {
-    locator->FindHosts(
-        base::BindOnce(&NetworkScanner::OnHostsFound, AsWeakPtr(), request_id));
+    locator->FindHosts(base::BindOnce(&NetworkScanner::OnHostsFound,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      request_id));
   }
 }
 

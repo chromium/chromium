@@ -59,7 +59,7 @@ enum Source { SOURCE_FILE, SOURCE_DEVICE, SOURCE_NETWORK, SOURCE_SYSTEM };
 // Represents a volume (mount point) in the volume manager. Validity of the data
 // is guaranteed by the weak pointer. Simply saying, the weak pointer should be
 // valid as long as the volume is mounted.
-class Volume : public base::SupportsWeakPtr<Volume> {
+class Volume {
  public:
   Volume(const Volume&) = delete;
   Volume& operator=(const Volume&) = delete;
@@ -195,6 +195,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   bool hidden() const { return hidden_; }
   absl::optional<guest_os::VmType> vm_type() const { return vm_type_; }
 
+  base::WeakPtr<Volume> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
  private:
   Volume();
 
@@ -289,6 +291,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
 
   // Only set for VOLUME_TYPE_GUEST_OS, identifies the type of Guest OS VM.
   absl::optional<guest_os::VmType> vm_type_;
+
+  base::WeakPtrFactory<Volume> weak_ptr_factory_{this};
 };
 
 }  // namespace file_manager

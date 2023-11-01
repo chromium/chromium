@@ -45,8 +45,7 @@ class SmbShareInfo;
 
 // Creates and manages an smb file system.
 class SmbService : public KeyedService,
-                   public net::NetworkChangeNotifier::NetworkChangeObserver,
-                   public base::SupportsWeakPtr<SmbService> {
+                   public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   using MountResponse = base::OnceCallback<void(SmbMountResult result)>;
   using StartReadDirIfSuccessfulCallback =
@@ -257,6 +256,7 @@ class SmbService : public KeyedService,
   base::OnceClosure setup_complete_callback_;
   SmbFsShare::MounterCreationCallback smbfs_mounter_creation_callback_;
   MountInternalCallback restored_share_mount_done_callback_;
+  base::WeakPtrFactory<SmbService> weak_ptr_factory_{this};
 };
 
 }  // namespace smb_client
