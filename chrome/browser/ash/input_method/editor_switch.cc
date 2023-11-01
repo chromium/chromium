@@ -118,15 +118,21 @@ EditorSwitch::EditorSwitch(Profile* profile, std::string_view country_code)
 EditorSwitch::~EditorSwitch() = default;
 
 bool EditorSwitch::IsAllowedForUse() const {
-  bool is_managed = profile_->GetProfilePolicyConnector()->IsManaged();
+  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood)) {
+    return true;
+  }
 
-  return  // Conditions required for dogfooding.
-      (base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood)) ||
-      // Conditions required for the feature to be enabled for non-dogfood
-      // population.
-      (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
-       base::FeatureList::IsEnabled(features::kFeatureManagementOrca) &&
-       !is_managed && IsCountryAllowed(country_code_));
+  if (profile_ == nullptr) {
+    return false;
+  }
+
+  auto* profile_policy_connector = profile_->GetProfilePolicyConnector();
+
+  return (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
+          base::FeatureList::IsEnabled(features::kFeatureManagementOrca) &&
+          IsCountryAllowed(country_code_)) &&
+         (profile_policy_connector == nullptr ||
+          !profile_policy_connector->IsManaged());
 }
 
 EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
@@ -138,6 +144,10 @@ EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
 }
 
 bool EditorSwitch::CanBeTriggered() const {
+  if (profile_ == nullptr) {
+    return false;
+  }
+
   ConsentStatus current_consent_status = GetConsentStatusFromInteger(
       profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
