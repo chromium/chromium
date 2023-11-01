@@ -3554,7 +3554,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Dogfood_CANARY_DEV_50",
+                    "name": "Dogfood_CANARY_DEV_BETA_50",
                     "enable_features": [
                         "ScreenSaverDuration"
                     ]
