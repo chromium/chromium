@@ -29,8 +29,10 @@ import java.util.Date;
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "The fallback implementation doesn't support bidirectional streaming")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason =
+                "The fallback implementation doesn't support bidirectional streaming. "
+                        + "crbug.com/1494870: Enable for AOSP_PLATFORM once fixed")
 public class BidirectionalStreamQuicTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 

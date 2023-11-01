@@ -60,8 +60,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(JUnit4.class)
 @RequiresMinAndroidApi(Build.VERSION_CODES.O)
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "The fallback implementation doesn't support telemetry logging")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason = "CronetLoggerTestRule is supported only by the native implementation.")
 public final class CronetLoggerTest {
     private final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
     private final CronetLoggerTestRule mLoggerTestRule = new CronetLoggerTestRule(TestLogger.class);

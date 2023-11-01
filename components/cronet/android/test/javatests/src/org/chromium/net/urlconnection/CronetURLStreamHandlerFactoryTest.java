@@ -55,6 +55,11 @@ public class CronetURLStreamHandlerFactoryTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "crbug.com/1494845: setURLStreamHandlerFactory fails with 'factory already"
+                            + " defined'")
     public void testSetUrlStreamFactoryUsesCronet() throws Exception {
         assertThat(
                         NativeTestServer.startNativeTestServer(

@@ -58,8 +58,8 @@ import java.util.concurrent.CountDownLatch;
             QuicOptions.QuichePassthroughOption.class
         })
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "The fallback implementation doesn't support experimental options")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason = "Fallback and AOSP implementations do not support JSON experimental options")
 public class ExperimentalOptionsTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
     @Rule public ExpectedException expectedException = ExpectedException.none();

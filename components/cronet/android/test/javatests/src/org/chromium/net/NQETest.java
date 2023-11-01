@@ -43,8 +43,8 @@ import java.util.concurrent.ThreadFactory;
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "The fallback implementation doesn't support network quality estimating")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason = "Fallback and AOSP implementations do not support network quality estimating")
 public class NQETest {
     private static final String TAG = NQETest.class.getSimpleName();
 

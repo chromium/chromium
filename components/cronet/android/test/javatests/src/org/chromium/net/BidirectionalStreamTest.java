@@ -122,8 +122,7 @@ public class BidirectionalStreamTest {
         return urlResponseInfo;
     }
 
-    private void runSimpleGetWithExpectedReceivedByteCount(int expectedReceivedBytes)
-            throws Exception {
+    private void runGetWithExpectedReceivedByteCount(int expectedReceivedBytes) throws Exception {
         String url = Http2TestServer.getEchoMethodUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
@@ -153,6 +152,9 @@ public class BidirectionalStreamTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494845")
     public void testBuilderCheck() throws Exception {
         ExperimentalCronetEngine engine = mTestRule.getTestFramework().getEngine();
         if (mTestRule.testingJavaImpl()) {
@@ -231,8 +233,7 @@ public class BidirectionalStreamTest {
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in BidirectionalStream: net::ERR_DISALLOWED_URL_SCHEME");
-        assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
-                .isEqualTo(-301);
+        mTestRule.assertCronetInternalErrorCode((NetworkException) callback.mError, -301);
     }
 
     @Test
@@ -240,7 +241,28 @@ public class BidirectionalStreamTest {
     public void testSimpleGet() throws Exception {
         // Since this is the first request on the connection, the expected received bytes count
         // must account for an HPACK dynamic table size update.
-        runSimpleGetWithExpectedReceivedByteCount(31);
+        int expectedReceivedBytes = 31;
+
+        String url = Http2TestServer.getEchoMethodUrl();
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        // Create stream.
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .setHttpMethod("GET")
+                        .build();
+        stream.start();
+        callback.blockForDone();
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        // Default method is 'GET'.
+        assertThat(callback.mResponseAsString).isEqualTo("GET");
+        UrlResponseInfo urlResponseInfo =
+                createUrlResponseInfo(
+                        new String[] {url}, "", 200, expectedReceivedBytes, ":status", "200");
+        mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
+        checkResponseInfo(
+                callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");
     }
 
     @Test
@@ -269,6 +291,43 @@ public class BidirectionalStreamTest {
     @Test
     @SmallTest
     public void testSimplePost() throws Exception {
+        String url = Http2TestServer.getEchoStreamUrl();
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        callback.addWriteData("Test String".getBytes());
+        callback.addWriteData("1234567890".getBytes());
+        callback.addWriteData("woot!".getBytes());
+        // Create stream.
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .addHeader("foo", "bar")
+                        .addHeader("empty", "")
+                        .addHeader("Content-Type", "zebra")
+                        .addRequestAnnotation(this)
+                        .addRequestAnnotation("request annotation")
+                        .build();
+        stream.start();
+        callback.blockForDone();
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo("Test String1234567890woot!");
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasHeadersThat()
+                .containsEntry("echo-foo", Arrays.asList("bar"));
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasHeadersThat()
+                .containsEntry("echo-empty", Arrays.asList(""));
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasHeadersThat()
+                .containsEntry("echo-content-type", Arrays.asList("zebra"));
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "RequedFinishedListener is not available in AOSP")
+    public void testPostWithFinishedListener() throws Exception {
         String url = Http2TestServer.getEchoStreamUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.addWriteData("Test String".getBytes());
@@ -312,6 +371,9 @@ public class BidirectionalStreamTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "ActiveRequestCount is not available in AOSP")
     public void testGetActiveRequestCount() throws Exception {
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.addWriteData("Test String".getBytes());
@@ -333,6 +395,9 @@ public class BidirectionalStreamTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "ActiveRequestCount is not available in AOSP")
     public void testGetActiveRequestCountWithInvalidRequest() throws Exception {
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         BidirectionalStream stream =
@@ -353,8 +418,6 @@ public class BidirectionalStreamTest {
     public void testSimpleGetWithCombinedHeader() throws Exception {
         String url = Http2TestServer.getCombinedHeadersUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
-        TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
-        mCronetEngine.addRequestFinishedListener(requestFinishedListener);
         // Create stream.
         BidirectionalStream stream =
                 mCronetEngine
@@ -364,15 +427,12 @@ public class BidirectionalStreamTest {
         stream.start();
         callback.blockForDone();
         assertThat(stream.isDone()).isTrue();
-        requestFinishedListener.blockUntilDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         // Default method is 'GET'.
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         assertThat(callback.getResponseInfoWithChecks())
                 .hasHeadersThat()
                 .containsEntry("foo", Arrays.asList("bar", "bar2"));
-        RequestFinishedInfo finishedInfo = requestFinishedListener.getRequestInfo();
-        assertThat(finishedInfo.getAnnotations()).isEmpty();
     }
 
     @Test
@@ -415,6 +475,9 @@ public class BidirectionalStreamTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494845: Requires access to internals not available in AOSP")
     // Tests that a delayed flush() only sends buffers that have been written
     // before it is called, and it doesn't flush buffers in mPendingQueue.
     public void testFlushData() throws Exception {
@@ -570,12 +633,10 @@ public class BidirectionalStreamTest {
                         return sampleData;
                     }
                 };
-        CronetBidirectionalStream stream =
-                (CronetBidirectionalStream)
-                        mCronetEngine
-                                .newBidirectionalStreamBuilder(
-                                        url, callback, callback.getExecutor())
-                                .build();
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .build();
         stream.start();
         callback.blockForDone();
         assertThat(callback.mOnCanceledCalled).isTrue();
@@ -1226,6 +1287,11 @@ public class BidirectionalStreamTest {
     /** Checks that the buffer is updated correctly, when starting at an offset. */
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "crbug.com/1494845: Relies on finished listener synchronization which isn't"
+                            + " available in AOSP")
     public void testSimpleGetBufferUpdates() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         mCronetEngine.addRequestFinishedListener(requestFinishedListener);
@@ -1314,7 +1380,7 @@ public class BidirectionalStreamTest {
 
         // TestRequestFinishedListener expects a single call to onRequestFinished. Here we
         // explicitly wait for the call to happen to avoid a race condition with the other
-        // TestRequestFinishedListener created within runSimpleGetWithExpectedReceivedByteCount.
+        // TestRequestFinishedListener created within runGetWithExpectedReceivedByteCount.
         requestFinishedListener.blockUntilDone();
         mCronetEngine.removeRequestFinishedListener(requestFinishedListener);
 
@@ -1323,7 +1389,7 @@ public class BidirectionalStreamTest {
         // The expected received bytes count is lower than it would be for the first request on the
         // connection, because the server includes an HPACK dynamic table size update only in the
         // first response HEADERS frame.
-        runSimpleGetWithExpectedReceivedByteCount(27);
+        runGetWithExpectedReceivedByteCount(27);
     }
 
     @Test
@@ -1475,6 +1541,9 @@ public class BidirectionalStreamTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494845: Requires access to internals not available in AOSP")
     public void testExecutorShutdownBeforeStreamIsDone() {
         // Test that stream is destroyed even if executor is shut down and rejects posting tasks.
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
@@ -1549,22 +1618,21 @@ public class BidirectionalStreamTest {
         BidirectionalStream.Builder builder =
                 mCronetEngine.newBidirectionalStreamBuilder(
                         Http2TestServer.getEchoMethodUrl(), callback, callback.getExecutor());
-        CronetBidirectionalStream stream =
-                (CronetBidirectionalStream) builder.setHttpMethod("GET").build();
+        BidirectionalStream stream = builder.setHttpMethod("GET").build();
         stream.start();
         Exception e = assertThrows(Exception.class, mCronetEngine::shutdown);
-        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
+        assertThat(e).hasMessageThat().matches("Cannot shutdown with (running|active) requests.");
 
         callback.waitForNextReadStep();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
         e = assertThrows(Exception.class, mCronetEngine::shutdown);
-        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
+        assertThat(e).hasMessageThat().matches("Cannot shutdown with (running|active) requests.");
         callback.startNextRead(stream);
 
         callback.waitForNextReadStep();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_READ_COMPLETED);
         e = assertThrows(Exception.class, mCronetEngine::shutdown);
-        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
+        assertThat(e).hasMessageThat().matches("Cannot shutdown with (running|active) requests.");
 
         // May not have read all the data, in theory. Just enable auto-advance
         // and finish the request.
@@ -1581,8 +1649,7 @@ public class BidirectionalStreamTest {
         BidirectionalStream.Builder builder =
                 mCronetEngine.newBidirectionalStreamBuilder(
                         Http2TestServer.getEchoMethodUrl(), callback, callback.getExecutor());
-        CronetBidirectionalStream stream =
-                (CronetBidirectionalStream) builder.setHttpMethod("GET").build();
+        BidirectionalStream stream = builder.setHttpMethod("GET").build();
         stream.start();
         callback.setFailure(FailureType.THROW_SYNC, ResponseStep.ON_READ_COMPLETED);
         callback.blockForDone();
@@ -1598,15 +1665,14 @@ public class BidirectionalStreamTest {
         BidirectionalStream.Builder builder =
                 mCronetEngine.newBidirectionalStreamBuilder(
                         Http2TestServer.getEchoMethodUrl(), callback, callback.getExecutor());
-        CronetBidirectionalStream stream =
-                (CronetBidirectionalStream) builder.setHttpMethod("GET").build();
+        BidirectionalStream stream = builder.setHttpMethod("GET").build();
 
         // Block callback when response starts to verify that shutdown fails
         // if there are active requests.
         callback.setAutoAdvance(false);
         stream.start();
         Exception e = assertThrows(Exception.class, mCronetEngine::shutdown);
-        assertThat(e).hasMessageThat().isEqualTo("Cannot shutdown with running requests.");
+        assertThat(e).hasMessageThat().matches("Cannot shutdown with (running|active) requests.");
         callback.waitForNextReadStep();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
         stream.cancel();

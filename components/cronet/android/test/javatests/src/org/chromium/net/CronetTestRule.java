@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.StrictMode;
 
 import androidx.annotation.Nullable;
+import androidx.core.os.BuildCompat;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.rules.TestRule;
@@ -32,6 +33,7 @@ import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.JavaCronetEngine;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
+import org.chromium.net.impl.PlatformCronetProvider;
 import org.chromium.net.impl.UserAgent;
 
 import java.io.File;
@@ -98,6 +100,19 @@ public class CronetTestRule implements TestRule {
         }
     }
 
+    public void assertCronetInternalErrorCode(NetworkException exception, int expectedErrorCode) {
+        switch (implementationUnderTest()) {
+            case STATICALLY_LINKED:
+                assertThat(exception.getCronetInternalErrorCode()).isEqualTo(expectedErrorCode);
+                break;
+            case AOSP_PLATFORM:
+            case FALLBACK:
+                // Internal error codes aren't supported in the fallback implementation, and
+                // inaccessible in AOSP
+                break;
+        }
+    }
+
     /**
      * Returns {@code true} when test is being run against the java implementation of CronetEngine.
      *
@@ -106,6 +121,10 @@ public class CronetTestRule implements TestRule {
     @Deprecated
     public boolean testingJavaImpl() {
         return mImplementation.equals(CronetImplementation.FALLBACK);
+    }
+
+    public CronetImplementation implementationUnderTest() {
+        return mImplementation;
     }
 
     @Override
@@ -123,28 +142,6 @@ public class CronetTestRule implements TestRule {
         setImplementationUnderTest(CronetImplementation.STATICALLY_LINKED);
         String packageName = desc.getTestClass().getPackage().getName();
         String testName = desc.getTestClass().getName() + "#" + desc.getMethodName();
-
-        EnumSet<CronetImplementation> excludedImplementations =
-                EnumSet.noneOf(CronetImplementation.class);
-        IgnoreFor ignoreDueToClassAnnotation = getTestClassAnnotation(desc, IgnoreFor.class);
-        if (ignoreDueToClassAnnotation != null) {
-            excludedImplementations.addAll(
-                    Arrays.asList(ignoreDueToClassAnnotation.implementations()));
-        }
-        IgnoreFor ignoreDueToMethodAnnotation = getTestMethodAnnotation(desc, IgnoreFor.class);
-        if (ignoreDueToMethodAnnotation != null) {
-            excludedImplementations.addAll(
-                    Arrays.asList(ignoreDueToMethodAnnotation.implementations()));
-        }
-        Log.i(TAG, "Excluded implementations: %s", excludedImplementations);
-
-        Set<CronetImplementation> implementationsUnderTest =
-                EnumSet.complementOf(excludedImplementations);
-        assertWithMessage(
-                        "Test should not be skipped via IgnoreFor annotation. "
-                                + "Use DisabledTest instead")
-                .that(implementationsUnderTest)
-                .isNotEmpty();
 
         // Find the API version required by the test.
         int requiredApiVersion = getMaximumAvailableApiLevel();
@@ -189,13 +186,34 @@ public class CronetTestRule implements TestRule {
                         + Build.VERSION.SDK_INT,
                 Build.VERSION.SDK_INT >= requiredAndroidApiVersion);
 
+        EnumSet<CronetImplementation> excludedImplementations =
+                EnumSet.noneOf(CronetImplementation.class);
+        IgnoreFor ignoreDueToClassAnnotation = getTestClassAnnotation(desc, IgnoreFor.class);
+        if (ignoreDueToClassAnnotation != null) {
+            excludedImplementations.addAll(
+                    Arrays.asList(ignoreDueToClassAnnotation.implementations()));
+        }
+        IgnoreFor ignoreDueToMethodAnnotation = getTestMethodAnnotation(desc, IgnoreFor.class);
+        if (ignoreDueToMethodAnnotation != null) {
+            excludedImplementations.addAll(
+                    Arrays.asList(ignoreDueToMethodAnnotation.implementations()));
+        }
+        if (!BuildCompat.isAtLeastU()) {
+            excludedImplementations.add(CronetImplementation.AOSP_PLATFORM);
+        }
+
+        Log.i(TAG, "Excluded implementations: %s", excludedImplementations);
+
+        Set<CronetImplementation> implementationsUnderTest =
+                EnumSet.complementOf(excludedImplementations);
+        assertWithMessage(
+                        "Test should not be skipped via IgnoreFor annotation. "
+                                + "Use DisabledTest instead")
+                .that(implementationsUnderTest)
+                .isNotEmpty();
+
         if (packageName.startsWith("org.chromium.net")) {
             for (CronetImplementation implementation : implementationsUnderTest) {
-                if (implementation.equals(CronetImplementation.AOSP_PLATFORM)) {
-                    // TODO(crbug/1451394): Remove this and fix tests.
-                    Log.i(TAG, "Skipping the Platform implementation");
-                    continue;
-                }
                 Log.i(TAG, "Running test against " + implementation + " implementation.");
                 setImplementationUnderTest(implementation);
                 evaluateWithFramework(base, testName, netLogEnabled);
@@ -628,7 +646,9 @@ public class CronetTestRule implements TestRule {
                          -> (ExperimentalCronetEngine.Builder) new JavaCronetProvider(context)
                                     .createBuilder()),
         AOSP_PLATFORM(
-                (context) -> { throw new UnsupportedOperationException("Not implemented yet"); });
+                context ->
+                        (ExperimentalCronetEngine.Builder)
+                                new PlatformCronetProvider(context).createBuilder());
 
         private final EngineBuilderSupplier mEngineSupplier;
 
@@ -643,13 +663,16 @@ public class CronetTestRule implements TestRule {
         private void verifyCronetEngineInstance(CronetEngine engine) {
             switch (this) {
                 case STATICALLY_LINKED:
-                    checkImplClass(engine, CronetUrlRequestContext.class);
+                    assertThat(engine).isInstanceOf(CronetUrlRequestContext.class);
                     break;
                 case FALLBACK:
-                    checkImplClass(engine, JavaCronetEngine.class);
+                    assertThat(engine).isInstanceOf(JavaCronetEngine.class);
                     break;
                 case AOSP_PLATFORM:
-                    // TODO(crbug/1451404): Add once platform provider CL lands.
+                    // We cannot reference the impl class for AOSP_PLATFORM. Do a reverse check
+                    // instead.
+                    assertThat(engine).isNotInstanceOf(CronetUrlRequestContext.class);
+                    assertThat(engine).isNotInstanceOf(JavaCronetEngine.class);
                     break;
             }
         }

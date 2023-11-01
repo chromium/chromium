@@ -136,6 +136,9 @@ public class CronetHttpURLConnectionTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testReadTimeout() throws Exception {
         // Add url interceptors.
         MockUrlRequestJobFactory mockUrlRequestJobFactory =
@@ -278,7 +281,11 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        CronetException e = assertThrows(CronetException.class, secondConnection::getResponseCode);
+        IOException e = assertThrows(IOException.class, secondConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(CronetException.class);
+        }
         assertThat(e)
                 .hasMessageThat()
                 .containsMatch(
@@ -301,7 +308,11 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        CronetException e = assertThrows(CronetException.class, mUrlConnection::getResponseCode);
+        IOException e = assertThrows(IOException.class, mUrlConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(CronetException.class);
+        }
         assertThat(e)
                 .hasMessageThat()
                 .containsMatch(
@@ -319,7 +330,11 @@ public class CronetHttpURLConnectionTest {
         // Cronet's wrapper only receives the error in its listener
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
-        assertThrows(CronetException.class, mUrlConnection::getResponseCode);
+        IOException e = assertThrows(IOException.class, mUrlConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(CronetException.class);
+        }
         checkExceptionsAreThrown(mUrlConnection);
     }
 
@@ -587,6 +602,9 @@ public class CronetHttpURLConnectionTest {
      */
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testBigDataRead() throws Exception {
         String data = "MyBigFunkyData";
         int dataLength = data.length();

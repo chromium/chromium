@@ -33,8 +33,8 @@ import java.util.concurrent.Executors;
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "Testing internals of the native implementation")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason = "crbug.com/1494845: Testing internals of the native implementation")
 public class CronetUploadTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 

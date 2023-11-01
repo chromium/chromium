@@ -28,8 +28,8 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
 @RunWith(AndroidJUnit4.class)
 @DoNotBatch(reason = "crbug/1459563")
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "The fallback implementation doesn't support MockCertVerifier")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason = "MockCertVerifier is supported only by the native implementation")
 public class MockCertVerifierTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 

@@ -1081,6 +1081,7 @@ android_library("cronet_common_javatests") {
            "//base:base_java_test_support",
            "//build/android:build_java",
            "//third_party/android_sdk:android_test_base_java",
+           "//third_party/androidx:androidx_core_core_java",
            "//third_party/google-truth:google_truth_java",
            "//third_party/jni_zero:jni_zero_java",
            "//third_party/junit",

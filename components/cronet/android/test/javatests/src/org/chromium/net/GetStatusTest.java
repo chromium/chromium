@@ -134,10 +134,10 @@ public class GetStatusTest {
 
     @Test
     @SmallTest
-    // Regression test for crbug.com/606872.
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK},
-            reason = "The fallback implementation doesn't support status queries")
+            reason = "Relies on timings which are not respected by the fallback implementation")
+    // Regression test for crbug.com/606872.
     public void testGetStatusForUpload() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =

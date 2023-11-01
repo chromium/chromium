@@ -80,16 +80,11 @@ public class CronetUrlRequestTest {
                         NativeTestServer.startNativeTestServer(
                                 mTestRule.getTestFramework().getContext()))
                 .isTrue();
-        // Add url interceptors after native application context is initialized.
-        if (!mTestRule.testingJavaImpl()) {
-            mMockUrlRequestJobFactory =
-                    new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
-        }
     }
 
     @After
     public void tearDown() throws Exception {
-        if (!mTestRule.testingJavaImpl()) {
+        if (mMockUrlRequestJobFactory != null) {
             mMockUrlRequestJobFactory.shutdown();
         }
         NativeTestServer.shutdownNativeTestServer();
@@ -135,6 +130,9 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494845")
     public void testBuilderChecks() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
@@ -183,6 +181,9 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1497531: Figure out what how to handle getProxy checks")
     public void testSimpleGet() throws Exception {
         String url = NativeTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
@@ -269,8 +270,8 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Tests native implementaion internals")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "bug.com/1494845: tests native implementation internals")
     public void testLoadFlagsWithConnectionMigration() throws Exception {
         runConnectionMigrationTest(/* disableConnectionMigration= */ false);
         runConnectionMigrationTest(/* disableConnectionMigration= */ true);
@@ -283,6 +284,9 @@ public class CronetUrlRequestTest {
      */
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1497531: Figure out what how to handle getProxy checks")
     public void testRedirectAsync() throws Exception {
         // Start the request and wait to see the redirect.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -509,8 +513,10 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "No canonical exception to assert on")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "No canonical exception to assert on. "
+                            + "crbug.com/1497531: Figure out what how to handle getProxy checks")
     public void testContentLengthMismatchFailsOnce() throws Exception {
         String url = NativeTestServer.getFileURL("/content_length_mismatch.html");
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
@@ -786,7 +792,12 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testMockSuccess() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback = startAndWaitForComplete(NativeTestServer.getSuccessURL());
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mRedirectResponseInfoList).isEmpty();
@@ -822,7 +833,12 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testMockMultiRedirect() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(NativeTestServer.getMultiRedirectURL());
         UrlResponseInfo mResponseInfo = callback.getResponseInfoWithChecks();
@@ -874,7 +890,12 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testMockNotFound() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(NativeTestServer.getNotFoundURL());
         UrlResponseInfo expected =
@@ -890,9 +911,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Java impl doesn't support MockUrlRequestJobFactory")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testMockStartAsyncError() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         final int arbitraryNetError = -3;
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(
@@ -910,9 +933,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Java impl doesn't support MockUrlRequestJobFactory")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testMockReadDataSyncError() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         final int arbitraryNetError = -4;
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(
@@ -931,9 +956,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Java impl doesn't support MockUrlRequestJobFactory")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testMockReadDataAsyncError() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         final int arbitraryNetError = -5;
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(
@@ -953,9 +980,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Java impl doesn't support MockUrlRequestJobFactory")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testMockClientCertificateRequested() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(
                         MockUrlRequestJobFactory.getMockUrlForClientCertificateRequest());
@@ -970,9 +999,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Java impl doesn't support MockUrlRequestJobFactory")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
     public void testMockSSLCertificateError() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(
                         MockUrlRequestJobFactory.getMockUrlForSSLCertificateError());
@@ -994,7 +1025,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK},
-            reason = "Java impl doesn't support MockUrlRequestJobFactory")
+            reason = "crbug.com/1495320: Refactor error checking")
     public void testSSLCertificateError() throws Exception {
         EmbeddedTestServer sslServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
@@ -1023,8 +1054,7 @@ public class CronetUrlRequestTest {
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in CronetUrlRequest: net::ERR_CERT_DATE_INVALID");
-        assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
-                .isEqualTo(-201);
+        mTestRule.assertCronetInternalErrorCode((NetworkException) callback.mError, -201);
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_FAILED);
 
         sslServer.stopAndDestroyServer();
@@ -1033,6 +1063,11 @@ public class CronetUrlRequestTest {
     /** Checks that the buffer is updated correctly, when starting at an offset. */
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "No canonical exception to assert on. "
+                            + "crbug.com/1497531: Figure out what how to handle getProxy checks")
     public void testSimpleGetBufferUpdates() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
@@ -1322,6 +1357,9 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494845")
     public void testUploadSetDataProvider() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -1839,8 +1877,10 @@ public class CronetUrlRequestTest {
     /** This test uses a direct executor for callbacks, and non direct for upload */
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494845")
     public void testDirectExecutorProhibitedByDefault() throws Exception {
-        System.out.println("testing with " + mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         Executor myExecutor =
                 new Executor() {
@@ -1870,7 +1910,6 @@ public class CronetUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(1);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        callback.mError.printStackTrace();
         assertThat(callback.mError).hasMessageThat().contains("Exception posting task to executor");
         assertThat(callback.mError)
                 .hasCauseThat()
@@ -2341,8 +2380,8 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Tests native-specific internals")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494846: tests native-specific internals")
     public void testExecutorShutdown() {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
@@ -2453,8 +2492,8 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "No adapter to destroy in fallback implementation")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494846: tests native-specific internals")
     // Regression test for crbug.com/564946.
     public void testDestroyUploadDataStreamAdapterOnSucceededCallback() throws Exception {
         TestUrlRequestCallback callback = new QuitOnSuccessCallback();
@@ -2496,9 +2535,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Fallback impl doesn't support MockUrlRequestJobFactory")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494846: tests native-specific internals")
     public void testErrorCodes() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         checkSpecificErrorCode(
                 -105, NetworkException.ERROR_HOSTNAME_NOT_RESOLVED, "NAME_NOT_RESOLVED", false);
         checkSpecificErrorCode(
@@ -2544,9 +2585,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Fallback impl doesn't support QUIC")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494846: tests native-specific internals")
     public void testQuicErrorCode() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(
                         MockUrlRequestJobFactory.getMockUrlWithFailure(
@@ -2563,9 +2606,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Fallback impl doesn't support QUIC")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494846: tests native-specific internals")
     public void testQuicErrorCodeForNetworkChanged() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(
                         MockUrlRequestJobFactory.getMockUrlWithFailure(
@@ -2587,9 +2632,11 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "Fallback impl doesn't support MockUrlRequestJobFactory")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494846: tests native-specific internals")
     public void testLegacyOnFailedCallback() throws Exception {
+        mMockUrlRequestJobFactory =
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         final int netError = -123;
         final AtomicBoolean failedExpectation = new AtomicBoolean();
         final ConditionVariable done = new ConditionVariable();
@@ -2701,6 +2748,9 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494845")
     // Used for Android's NetworkSecurityPolicy added in Nougat
     public void testCleartextTrafficBlocked() throws Exception {
         final int cleartextNotPermitted = -29;
@@ -2909,6 +2959,9 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @RequiresMinAndroidApi(Build.VERSION_CODES.M)
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "crbug.com/1494845")
     public void testBindToNetwork() {
         String url = NativeTestServer.getEchoMethodURL();
         // bind to invalid network handle

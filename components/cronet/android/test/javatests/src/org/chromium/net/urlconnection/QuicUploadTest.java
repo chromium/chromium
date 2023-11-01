@@ -33,8 +33,10 @@ import java.util.Arrays;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "The fallback implementation doesn't support QUIC")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason =
+                "The fallback implementation doesn't support QUIC. "
+                        + "crbug.com/1494870: Enable for AOSP_PLATFORM once fixed")
 public class QuicUploadTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 

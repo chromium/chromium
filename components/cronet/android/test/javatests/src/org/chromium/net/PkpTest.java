@@ -42,8 +42,10 @@ import java.util.Set;
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "The fallback implementation doesn't support public key pinning")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason =
+                "The fallback implementation does not support public key pinning. "
+                        + "crbug.com/1494845")
 public class PkpTest {
     private static final int DISTANT_FUTURE = Integer.MAX_VALUE;
     private static final boolean INCLUDE_SUBDOMAINS = true;

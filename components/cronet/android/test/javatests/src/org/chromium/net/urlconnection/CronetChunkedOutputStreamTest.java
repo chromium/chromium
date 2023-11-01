@@ -101,9 +101,14 @@ public class CronetChunkedOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         out.write(UPLOAD_DATA);
         NativeTestServer.shutdownNativeTestServer();
-        NetworkException e =
-                assertThrows(NetworkException.class, () -> out.write(TestUtil.getLargeData()));
-        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        IOException e = assertThrows(IOException.class, () -> out.write(TestUtil.getLargeData()));
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(NetworkException.class);
+            NetworkException networkException = (NetworkException) e;
+            assertThat(networkException.getErrorCode())
+                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        }
     }
 
     @Test
@@ -119,13 +124,25 @@ public class CronetChunkedOutputStreamTest {
         mConnection.setChunkedStreamingMode(1);
         OutputStream out = mConnection.getOutputStream();
         out.write(1);
-        NetworkException e = assertThrows(NetworkException.class, () -> out.write(1));
-        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        IOException e = assertThrows(IOException.class, () -> out.write(1));
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(NetworkException.class);
+            NetworkException networkException = (NetworkException) e;
+            assertThat(networkException.getErrorCode())
+                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        }
 
         // Make sure IOException is reported again when trying to read response
         // from the mConnection.
-        e = assertThrows(NetworkException.class, mConnection::getResponseCode);
-        assertThat(e.getErrorCode()).isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        e = assertThrows(IOException.class, mConnection::getResponseCode);
+        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
+            assertThat(e).isInstanceOf(NetworkException.class);
+            NetworkException networkException = (NetworkException) e;
+            assertThat(networkException.getErrorCode())
+                    .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
+        }
     }
 
     @Test

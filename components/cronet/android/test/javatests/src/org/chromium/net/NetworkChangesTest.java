@@ -46,8 +46,8 @@ import java.util.concurrent.CountDownLatch;
 @RunWith(AndroidJUnit4.class)
 @DoNotBatch(reason = "crbug/1459563")
 @IgnoreFor(
-        implementations = {CronetImplementation.FALLBACK},
-        reason = "Tests implementation details of the native implementation")
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason = "Fake network changes are supported only by the native implementation")
 public class NetworkChangesTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
