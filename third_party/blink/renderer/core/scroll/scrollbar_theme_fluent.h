@@ -51,15 +51,15 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
 
  private:
   friend class ScrollbarThemeFluentMock;
-  int ThumbThickness(const float scale_from_dip) const;
 
+  int ThumbThickness(float scale_from_dip, EScrollbarWidth scrollbar_width);
   // Overlay scrollbar tracks have a invisible length-wise inset to give them a
   // floating appearance.
   gfx::Rect InsetButtonRect(const Scrollbar& scrollbar,
                             gfx::Rect rect,
-                            ScrollbarPart part);
-  gfx::Rect InsetTrackRect(const Scrollbar& scrollbar, gfx::Rect rect);
-  int ScrollbarTrackInsetPx(float scale);
+                            ScrollbarPart part) const;
+  gfx::Rect InsetTrackRect(const Scrollbar& scrollbar, gfx::Rect rect) const;
+  int ScrollbarTrackInsetPx(float scale) const;
 
   // Button's height for vertical and width for the horizontal scrollbar.
   int scrollbar_button_length_;
