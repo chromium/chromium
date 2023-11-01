@@ -722,6 +722,8 @@ chromium-metrics-reviews@google.com.
     <variant name="app-banner" summary="App banner exceptions"/>
     <variant name="auto-dark-web-content"
         summary="Auto-dark web contents exceptions"/>
+    <variant name="auto-picture-in-picture"
+        summary="Automatic picture-in-picture exceptions"/>
     <variant name="auto-select-certificate"
         summary="Auto-select cert exceptions"/>
     <variant name="automatic-downloads"
