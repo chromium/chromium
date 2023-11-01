@@ -30,5 +30,7 @@ per-file *.mm=lgrey@chromium.org
 
 per-file *_win.*=davidbienvenu@chromium.org
 
+per-file *_headless.*=kvitekp@chromium.org
+
 # If you're doing structural changes get a review from one of the OWNERS.
 per-file BUILD.gn=*
