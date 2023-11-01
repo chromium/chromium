@@ -8,6 +8,7 @@ import {fakeUpdateControllerTest} from './fake_update_controller_test.js';
 import {fakeUpdateProviderTest} from './fake_update_provider_test.js';
 import {firmwareUpdateDialogTest} from './firmware_update_dialog_test.js';
 import {firmwareUpdateAppTest} from './firmware_update_test.js';
+import {firmwareUpdateUtilsTest} from './firmware_update_utils_test.js';
 import {peripheralUpdatesListTest} from './peripheral_updates_list_test.js';
 import {updateCardTest} from './update_card_test.js';
 
@@ -22,6 +23,7 @@ runSuite('FakeUpdateControllerTest', fakeUpdateControllerTest);
 runSuite('FakeUpdateProviderTest', fakeUpdateProviderTest);
 runSuite('FirmwareUpdateApp', firmwareUpdateAppTest);
 runSuite('FirmwareUpdateDialog', firmwareUpdateDialogTest);
+runSuite('FirmwareUpdateUtilsTest', firmwareUpdateUtilsTest);
 runSuite('PeripheralUpdatesListTest', peripheralUpdatesListTest);
 runSuite('UpdateCardTest', updateCardTest);
 

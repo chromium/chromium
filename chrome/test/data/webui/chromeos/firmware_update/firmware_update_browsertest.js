@@ -36,6 +36,7 @@ const debug_suites_list = [
   'FakeUpdateProviderTest',
   'FirmwareUpdateApp',
   'FirmwareUpdateDialog',
+  'FirmwareUpdateUtilsTest',
   'PeripheralUpdatesListTest',
   'UpdateCardTest',
 ];

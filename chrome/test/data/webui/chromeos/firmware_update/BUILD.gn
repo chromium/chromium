@@ -21,6 +21,7 @@ build_webui_tests("build_webui_tests") {
     "firmware_update_dialog_test.ts",
     "firmware_update_test.ts",
     "firmware_update_unified_test.ts",
+    "firmware_update_utils_test.ts",
     "peripheral_updates_list_test.ts",
     "update_card_test.ts",
   ]
