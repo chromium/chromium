@@ -672,10 +672,13 @@ message RuntimeCountersTelemetry {
   // Total lifetime runtime. Currently always S0 runtime from Intel vPro PSR.
   optional int64 uptime_runtime_seconds = 1;
   // Number of times that the device has entered into the sleep state. Currently
-  // obtained via the PSR, count from S0->S3.
+  // obtained via the PSR, count from S0->S3. As of Oct 2023, this number is
+  // expected to be always zero as ChromeOS devices do not use this state.
   optional int64 counter_enter_sleep = 2;
   // Number of times that the device has entered into the hibernation state.
-  // Currently obtained via the PSR, count from S0->S4.
+  // Currently obtained via the PSR, count from S0->S4. As of Oct 2023, this
+  // number is expected to be always zero, unless the ChromeOS device is
+  // equipped with Intel KeyLocker.
   optional int64 counter_enter_hibernation = 3;
   // Number of times that the device has entered into the power-off state.
   // Currently obtained via the PSR, count from S0->S5.
