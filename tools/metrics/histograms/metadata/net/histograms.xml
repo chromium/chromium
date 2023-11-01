@@ -2164,22 +2164,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpRequestHeaders.HeaderCount" units="count"
-    expires_after="2023-11-07">
-  <owner>ricea@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The total number of headers for a net::HttpRequestHeaders object, recorded
-    at destruction time. Because these objects are created and copied in many
-    places and not necessarily sent over the network, this should not be
-    considered an unbiased estimate of how many headers are sent in practice.
-
-    The purpose of this histogram is to measure the appropriate amount of memory
-    to allocate for headers when the object is created. See
-    https://crbug.com/1477132.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpResponseCode" enum="HttpResponseCode"
     expires_after="never">
 <!-- expires-never: Core network stack health metric -->
