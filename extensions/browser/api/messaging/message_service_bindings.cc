@@ -76,6 +76,8 @@ bool IsValidMessagingSource(RenderProcessHost& process,
           ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
               process, *source_endpoint.extension_id);
       if (!is_content_script_expected) {
+        debug::ScopedScriptInjectionTrackerFailureCrashKeys tracker_keys(
+            *process.GetBrowserContext(), source_endpoint.extension_id.value());
         bad_message::ReceivedBadMessage(
             &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
         return false;

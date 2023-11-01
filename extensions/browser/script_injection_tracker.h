@@ -5,14 +5,17 @@
 #ifndef EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
 #define EXTENSIONS_BROWSER_SCRIPT_INJECTION_TRACKER_H_
 
+#include "base/debug/crash_logging.h"
 #include "base/types/pass_key.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 struct HostID;
 
 namespace content {
+class BrowserContext;
 class NavigationHandle;
 class RenderFrameHost;
 class RenderProcessHost;
@@ -135,6 +138,47 @@ class ScriptInjectionTracker {
       content::RenderFrameHost* frame,
       const GURL& url);
 };
+
+namespace debug {
+
+// Helper for adding a set of `ScriptInjectionTracker`-related crash keys.
+//
+// For example, the `extension_registry_status` crash key will log if the
+// affected extension has been enebled, and the
+// `do_static_content_scripts_match` crash key will log if the tracker thinks
+// that the affected frame matches the content script URL patterns from the
+// extension manifest.  Search for the `Get...CrashKey` functions in the `.cc`
+// file for a comprehensive, up-to-date list of the generated crash keys and
+// of their names.
+class ScopedScriptInjectionTrackerFailureCrashKeys {
+ public:
+  ScopedScriptInjectionTrackerFailureCrashKeys(
+      content::BrowserContext& browser_context,
+      const ExtensionId& extension_id);
+  ScopedScriptInjectionTrackerFailureCrashKeys(content::RenderFrameHost& frame,
+                                               const ExtensionId& extension_id);
+  ~ScopedScriptInjectionTrackerFailureCrashKeys();
+
+ private:
+  base::debug::ScopedCrashKeyString registry_status_crash_key_;
+  base::debug::ScopedCrashKeyString is_incognito_crash_key_;
+
+  absl::optional<base::debug::ScopedCrashKeyString>
+      last_committed_origin_crash_key_;
+  absl::optional<base::debug::ScopedCrashKeyString>
+      last_committed_url_crash_key_;
+
+  absl::optional<base::debug::ScopedCrashKeyString>
+      do_web_view_scripts_match_crash_key_;
+  absl::optional<base::debug::ScopedCrashKeyString>
+      do_static_content_scripts_match_crash_key_;
+  absl::optional<base::debug::ScopedCrashKeyString>
+      do_dynamic_content_scripts_match_crash_key_;
+  absl::optional<base::debug::ScopedCrashKeyString>
+      do_user_scripts_match_crash_key_;
+};
+
+}  // namespace debug
 
 }  // namespace extensions
 

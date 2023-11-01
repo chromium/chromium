@@ -271,6 +271,8 @@ void ExtensionFunctionDispatcher::Dispatch(
 
   if (auto bad_message_code = ValidateRequest(*params, &frame, process)) {
     // Kill the renderer if it's an invalid request.
+    debug::ScopedScriptInjectionTrackerFailureCrashKeys tracker_keys(
+        frame, params->extension_id);
     bad_message::ReceivedBadMessage(&process, *bad_message_code);
     std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(),
                             ToString(*bad_message_code), nullptr);

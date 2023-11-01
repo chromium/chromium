@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -910,4 +911,139 @@ bool ScriptInjectionTracker::DoStaticContentScriptsMatchForTesting(
   return DoStaticContentScriptsMatch(extension, *frame, url);
 }
 
+namespace debug {
+
+namespace {
+
+base::debug::CrashKeyString* GetRegistryStatusCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "extension_registry_status", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+std::string GetRegistryStatusValue(const ExtensionId& extension_id,
+                                   content::BrowserContext& browser_context) {
+  std::string result = "status=";
+  ExtensionRegistry* registry = ExtensionRegistry::Get(&browser_context);
+  if (registry->enabled_extensions().Contains(extension_id)) {
+    result += "enabled,";
+  }
+  if (registry->disabled_extensions().Contains(extension_id)) {
+    result += "disabled,";
+  }
+  if (registry->terminated_extensions().Contains(extension_id)) {
+    result += "terminated,";
+  }
+  if (registry->blocklisted_extensions().Contains(extension_id)) {
+    result += "blocklisted,";
+  }
+  if (registry->blocked_extensions().Contains(extension_id)) {
+    result += "blocked,";
+  }
+  if (registry->ready_extensions().Contains(extension_id)) {
+    result += "ready,";
+  }
+  return result;
+}
+
+base::debug::CrashKeyString* GetIsIncognitoCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "is_incognito", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetLastCommittedOriginCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "script_frame_last_committed_origin", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetLastCommittedUrlCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "script_frame_last_committed_url", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetDoWebViewScriptsMatchCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "do_web_view_scripts_match", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetDoStaticContentScriptsMatchCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "do_static_content_scripts_match", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetDoDynamicContentScriptsMatchCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "do_dynamic_content_scripts_match", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetDoUserScriptsMatchCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "do_user_scripts_match", base::debug::CrashKeySize::Size32);
+  return crash_key;
+}
+
+const char* BoolToCrashKeyValue(bool value) {
+  return value ? "yes" : "no";
+}
+
+}  // namespace
+
+ScopedScriptInjectionTrackerFailureCrashKeys::
+    ScopedScriptInjectionTrackerFailureCrashKeys(
+        content::BrowserContext& browser_context,
+        const ExtensionId& extension_id)
+    : registry_status_crash_key_(
+          GetRegistryStatusCrashKey(),
+          GetRegistryStatusValue(extension_id, browser_context)),
+      is_incognito_crash_key_(
+          GetIsIncognitoCrashKey(),
+          BoolToCrashKeyValue(browser_context.IsOffTheRecord())) {}
+
+ScopedScriptInjectionTrackerFailureCrashKeys::
+    ScopedScriptInjectionTrackerFailureCrashKeys(
+        content::RenderFrameHost& frame,
+        const ExtensionId& extension_id)
+    : ScopedScriptInjectionTrackerFailureCrashKeys(*frame.GetBrowserContext(),
+                                                   extension_id) {
+  const GURL& frame_url = frame.GetLastCommittedURL();
+  last_committed_origin_crash_key_.emplace(
+      GetLastCommittedOriginCrashKey(),
+      frame.GetLastCommittedOrigin().GetDebugString());
+  last_committed_url_crash_key_.emplace(GetLastCommittedUrlCrashKey(),
+                                        frame_url.possibly_invalid_spec());
+
+  const ExtensionRegistry* registry =
+      ExtensionRegistry::Get(frame.GetBrowserContext());
+  CHECK(registry);
+
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(extension_id);
+  if (extension) {
+    do_web_view_scripts_match_crash_key_.emplace(
+        GetDoWebViewScriptsMatchCrashKey(),
+        BoolToCrashKeyValue(DoWebViewScripstMatch(*extension, frame)));
+    do_static_content_scripts_match_crash_key_.emplace(
+        GetDoStaticContentScriptsMatchCrashKey(),
+        BoolToCrashKeyValue(
+            DoStaticContentScriptsMatch(*extension, frame, frame_url)));
+    do_dynamic_content_scripts_match_crash_key_.emplace(
+        GetDoDynamicContentScriptsMatchCrashKey(),
+        BoolToCrashKeyValue(
+            DoDynamicContentScriptsMatch(*extension, frame, frame_url)));
+    do_user_scripts_match_crash_key_.emplace(
+        GetDoUserScriptsMatchCrashKey(),
+        BoolToCrashKeyValue(DoUserScriptsMatch(*extension, frame, frame_url)));
+  }
+}
+
+ScopedScriptInjectionTrackerFailureCrashKeys::
+    ~ScopedScriptInjectionTrackerFailureCrashKeys() = default;
+
+}  // namespace debug
 }  // namespace extensions
