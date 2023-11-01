@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -322,6 +323,10 @@ ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
   std::unique_ptr<win::ScopedWindowsThreadEnvironment> scoped_environment;
   if (environment == WorkerEnvironment::COM_MTA) {
     scoped_environment = std::make_unique<win::ScopedWinrtInitializer>();
+
+    // TODO(crbug.com/1498668): rollback the change or replace it with a CHECK
+    // before closing the bug.
+    DUMP_WILL_BE_CHECK(scoped_environment->Succeeded());
   }
 
   DCHECK(!scoped_environment || scoped_environment->Succeeded());
