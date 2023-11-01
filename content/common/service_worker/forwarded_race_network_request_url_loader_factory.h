@@ -20,13 +20,21 @@ namespace content {
 // order to avoid sending duplicated requests.
 // This URLLoaderFactory fuses two different message pipes into a single pipe by
 // passing |client_receiver| in the constructor and calling
-// CreateLoaderAndStart().
+// CreateLoaderAndStart(). This behavior only works on the first
+// CreateLoaderAndStart() call.
+//
+// When CreateLoaderAndStart() is called, there is a case that the message pipes
+// are already fused to the pipes for the prior request. In that case this
+// URLLoaderFactory creates a new regular URLLoader and dispatches the request
+// with using |fallback_factory|. Specifically, this happens when the request is
+// proxied by the extension then respond with the internal redirect, and the new
+// request url starts with chrome-extension://.
 class ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory
     : network::mojom::URLLoaderFactory {
  public:
   ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderClient> client_receiver,
-      const GURL& url);
+      scoped_refptr<network::SharedURLLoaderFactory> fallback_factory);
   ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory(
       const ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory&) = delete;
   ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory& operator=(
@@ -52,7 +60,8 @@ class ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_{this};
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client_receiver_;
   mojo::PendingRemote<network::mojom::URLLoader> loader_;
-  GURL url_;
+  scoped_refptr<network::SharedURLLoaderFactory> fallback_factory_;
+  bool is_data_pipe_fused_ = false;
 };
 }  // namespace content
 

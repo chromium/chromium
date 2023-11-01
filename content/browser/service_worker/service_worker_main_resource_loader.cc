@@ -523,7 +523,8 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
   mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
   forwarded_race_network_request_url_loader_factory_.emplace(
       forwarding_client.InitWithNewPipeAndPassReceiver(),
-      resource_request_.url);
+      ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
+          context, frame_tree_node_id_));
   CHECK(!race_network_request_url_loader_client_);
   race_network_request_url_loader_client_.emplace(
       resource_request_, AsWeakPtr(), std::move(forwarding_client));
