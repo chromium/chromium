@@ -591,8 +591,15 @@ void ClientControlledShellSurface::RebindRootSurface(
     Surface* root_surface,
     bool can_minimize,
     int container,
-    bool default_scale_cancellation) {
+    bool default_scale_cancellation,
+    bool supports_floated_state) {
   use_default_scale_cancellation_ = default_scale_cancellation;
+  supports_floated_state_ = supports_floated_state;
+  auto* const window = widget_ ? widget_->GetNativeWindow() : nullptr;
+  if (window) {
+    window->SetProperty(chromeos::kSupportsFloatedStateKey,
+                        supports_floated_state_);
+  }
   ShellSurfaceBase::RebindRootSurface(root_surface, can_minimize, container);
 }
 

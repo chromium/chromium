@@ -184,7 +184,8 @@ Display::CreateOrGetClientControlledShellSurface(
 
   if (shell_surface) {
     shell_surface->RebindRootSurface(surface, can_minimize, container,
-                                     default_scale_cancellation);
+                                     default_scale_cancellation,
+                                     supports_floated_state);
   } else {
     shell_surface = std::make_unique<ClientControlledShellSurface>(
         surface, can_minimize, container, default_scale_cancellation,

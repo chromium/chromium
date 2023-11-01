@@ -171,7 +171,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void RebindRootSurface(Surface* root_surface,
                          bool can_minimize,
                          int container,
-                         bool default_scale_cancellation);
+                         bool default_scale_cancellation,
+                         bool supports_floated_state);
 
   // Overridden from SurfaceTreeHost:
   void DidReceiveCompositorFrameAck() override;
@@ -361,7 +362,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
       ash::ArcResizeLockType::NONE;
 
   // True if the window supports the floated state.
-  const bool supports_floated_state_;
+  bool supports_floated_state_;
 };
 
 }  // namespace exo
