@@ -875,6 +875,7 @@ bool PasswordFormManager::ProvisionallySave(
   CalculateSubmittedFormTypeMetric();
   metrics_recorder_->set_possible_username_used(false);
   votes_uploader_.clear_single_username_votes_data();
+  votes_uploader_.set_should_send_username_first_flow_votes(false);
 
   if (possible_usernames && !possible_usernames->empty()) {
     HandleUsernameFirstFlow(*possible_usernames,
@@ -1351,9 +1352,8 @@ void PasswordFormManager::HandleUsernameFirstFlow(
   bool should_prefer_username_found_outside_of_form =
       ShouldPreferUsernameFoundOutsideOfForm(best_candidate,
                                              in_form_username_detection_method);
-  if (!should_prefer_username_found_outside_of_form) {
-    return;
-  }
+  votes_uploader_.set_should_send_username_first_flow_votes(
+      should_prefer_username_found_outside_of_form);
 
   if (!best_candidate.has_value()) {
     // Happens when there is no username field in the password form as well.
@@ -1362,10 +1362,13 @@ void PasswordFormManager::HandleUsernameFirstFlow(
     votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData());
     return;
   }
+
   const UsernameFoundOutsideOfForm& picked_username = best_candidate.value();
   if (base::FeatureList::IsEnabled(
           features::kUsernameFirstFlowWithIntermediateValuesVoting)) {
-    // Send votes on all candidates outside of the password form.
+    // Cache voting data for all candidates outside of the password form.
+    // Will send votes only if `should_prefer_username_found_outside_of_form` is
+    // true or there is an `IN_FORM_OVERRULE` vote among any of them.
     for (const auto& it : possible_usernames) {
       votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData(
           it.second.renderer_id, it.second.value,
@@ -1374,13 +1377,17 @@ void PasswordFormManager::HandleUsernameFirstFlow(
           FormMatchesUsername(*parsed_submitted_form_.get(), it.second.value)));
     }
   } else {
-    // Send vote only on the best possible username candidate user modified
+    // Cache voting data for the best possible username candidate user modified
     // field.
     votes_uploader_.add_single_username_vote_data(SingleUsernameVoteData(
         picked_username.data.renderer_id, picked_username.data.value,
         picked_username.data.form_predictions.value_or(FormPredictions()),
         form_fetcher_->GetBestMatches(),
         picked_username.password_form_had_matching_username));
+  }
+
+  if (!should_prefer_username_found_outside_of_form) {
+    return;
   }
 
   // Suggest the possible username value in a prompt in three cases:

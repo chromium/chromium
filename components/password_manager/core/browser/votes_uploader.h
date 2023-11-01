@@ -255,6 +255,10 @@ class VotesUploader {
     suggested_username_ = suggested_username;
   }
 
+  void set_should_send_username_first_flow_votes(bool value) {
+    should_send_username_first_flow_votes_ = value;
+  }
+
 #if defined(UNIT_TEST)
   const std::u16string& suggested_username() const {
     return suggested_username_;
@@ -398,6 +402,11 @@ class VotesUploader {
   // first flow. Populated when the password form, that follows single username
   // form, is submitted.
   std::vector<SingleUsernameVoteData> single_username_votes_data_;
+
+  // If set to true, Username First Flow was detected and a vote on the
+  // candidate field(s) should be sent. Used only in Username First Flow, not
+  // used in Forgot Password Form.
+  bool should_send_username_first_flow_votes_ = false;
 
   // The username that is suggested in a save/update prompt. The user might
   // modify it in the prompt before saving.

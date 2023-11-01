@@ -658,6 +658,7 @@ TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
   VotesUploader votes_uploader(&client_, false);
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
   base::HistogramTester histogram_tester;
+  votes_uploader.set_should_send_username_first_flow_votes(true);
   votes_uploader.MaybeSendSingleUsernameVotes();
 
   histogram_tester.ExpectUniqueSample(
@@ -693,6 +694,7 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/single_username_candidate_value,
       /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -733,6 +735,7 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
       /*stored_credentials=*/{}, PasswordFormHadMatchingUsername(false)));
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/u"saved_value", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -785,6 +788,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/single_username_candidate_value,
       /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -839,6 +843,7 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
   votes_uploader.set_suggested_username(suggested_value);
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/suggested_value, /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -893,6 +898,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/single_username_candidate_value,
       /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
@@ -944,6 +950,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/u"", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -997,6 +1004,7 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
   votes_uploader.set_suggested_username(other_value);
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/u"", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
   // Expect no upload on username form, as th signal is not informative to us.
   EXPECT_CALL(mock_autofill_download_manager_,
@@ -1032,6 +1040,7 @@ TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
   votes_uploader.set_suggested_username(u"");
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/u"", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
   votes_uploader.MaybeSendSingleUsernameVotes();
 
