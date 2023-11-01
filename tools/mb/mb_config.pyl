@@ -483,9 +483,7 @@
       'ios-blink-dbg-fyi': 'ios_simulator_blink_xctest',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
-      'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64_reclient',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
-      'ios-simulator-cronet': 'ios_cronet_xctest_reclient',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest_reclient_no_lld',
       'ios-wpt-fyi-rel': 'ios_simulator_release_static_bot_xctest_reclient',
@@ -1372,11 +1370,9 @@
       'ios-device': 'ios_device_release_compile_only_reclient',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
-      'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64_reclient',
       'ios-simulator': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_sim_reclient',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
-      'ios-simulator-cronet': 'ios_cronet_xctest_reclient_use_dummy_lastchange',
       'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'ios-simulator-inverse-fieldtrials-fyi': 'ios_simulator_debug_static_bot_invert_fieldtrials_xctest_reclient',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest_reclient',
@@ -3087,18 +3083,6 @@
       'clang_tot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'ios_disable_code_signing', 'release', 'static', 'xctest',
     ],
 
-    'ios_cronet_xctest_arm64_reclient': [
-      'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest',
-    ],
-
-    'ios_cronet_xctest_reclient': [
-      'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
-    ],
-
-    'ios_cronet_xctest_reclient_use_dummy_lastchange': [
-      'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'use_dummy_lastchange',
-    ],
-
     'ios_device_release_compile_only': [
       'ios_device_release_compile_only',
     ],
@@ -4285,11 +4269,6 @@
                   'use_crash_key_stubs=true use_platform_icu_alternatives=true')
     },
 
-    'cronet_ios': {
-      'mixins': ['cronet_common'],
-      'gn_args': ('disable_brotli_filter=false enable_remoting=false use_partition_alloc=false use_allocator_shim=false ios_stack_profiler_enabled=false'),
-    },
-
     'custom_args': {
       'args_file': '//build/custom_args.gn',
     },
@@ -4518,10 +4497,6 @@
 
     'ios_cpu_x64': {
       'gn_args': 'target_cpu="x64"',
-    },
-
-    'ios_deployment_target_11_0': {
-      'gn_args': 'ios_deployment_target=\"11.0\"',
     },
 
     'ios_device': {

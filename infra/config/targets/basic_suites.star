@@ -4514,13 +4514,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "ios_cronet_tests",
-    tests = {
-        "cronet_test": None,
-    },
-)
-
-targets.legacy_basic_suite(
     name = "ios_eg2_cq_tests",
     tests = {
         "ios_chrome_integration_eg2tests_module": targets.legacy_test_config(

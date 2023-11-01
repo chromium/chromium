@@ -665,10 +665,6 @@
     "label": "//components/cronet/android:cronet_smoketests_platform_only_instrumentation_apk",
     "type": "console_test_launcher",
   },
-  "cronet_test": {
-    "label": "//components/cronet/ios/test:cronet_test",
-    "type": "generated_script",
-  },
   "cronet_test_instrumentation_apk": {
     "label": "//components/cronet/android:cronet_test_instrumentation_apk",
     "type": "console_test_launcher",

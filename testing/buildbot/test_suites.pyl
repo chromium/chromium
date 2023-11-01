@@ -3865,10 +3865,6 @@
       'ios_crash_xcuitests_module': {},
     },
 
-    'ios_cronet_tests': {
-      'cronet_test': {},
-    },
-
     'ios_eg2_cq_tests': {
       'ios_chrome_integration_eg2tests_module': {
         'mixins': [
@@ -7095,14 +7091,6 @@
           'SIM_IPHONE_14_17_0',
           'SIM_IPHONE_SE_3RD_GEN_17_0',
           'SIM_IPAD_AIR_5TH_GEN_17_0',
-        ],
-      },
-    },
-
-    'ios_simulator_cronet_tests': {
-      'ios_cronet_tests': {
-        'variants': [
-          'SIM_IPHONE_13_15_5',
         ],
       },
     },

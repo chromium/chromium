@@ -377,14 +377,6 @@ builder.
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
   * exclude: [`//.*\.md`](https://cs.chromium.org/search?q=+file:.*\.md)
 
-* [ios-simulator-cronet](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-cronet) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-cronet""))
-
-  Location filters:
-  * [`//components/cronet/.+`](https://cs.chromium.org/chromium/src/components/cronet/)
-  * [`//components/grpc_support/.+`](https://cs.chromium.org/chromium/src/components/grpc_support/)
-  * [`//ios/.+`](https://cs.chromium.org/chromium/src/ios/)
-  * exclude: [`//components/cronet/android/.+`](https://cs.chromium.org/chromium/src/components/cronet/android/)
-
 * [ios-simulator-full-configs](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-full-configs) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-full-configs""))
 
   Location filters:

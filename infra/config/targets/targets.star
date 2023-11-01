@@ -827,11 +827,6 @@ targets.console_test_launcher(
     label = "//components/cronet/android:cronet_smoketests_platform_only_instrumentation_apk",
 )
 
-targets.generated_script(
-    name = "cronet_test",
-    label = "//components/cronet/ios/test:cronet_test",
-)
-
 targets.console_test_launcher(
     name = "cronet_test_instrumentation_apk",
     label = "//components/cronet/android:cronet_test_instrumentation_apk",

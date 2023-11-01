@@ -3480,32 +3480,6 @@
           'isolated_scripts': 'ios_m1_simulator_tests'
         },
       },
-      'ios-m1-simulator-cronet': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_13_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_15_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_simulator_cronet_tests'
-        },
-      },
-      'ios-simulator-cronet': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_13_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_15_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_simulator_cronet_tests',
-        }
-      },
       'ios-simulator-multi-window': {
         'mixins': [
           'has_native_resultdb_integration',

@@ -648,17 +648,6 @@ targets.legacy_matrix_compound_suite(
     },
 )
 
-targets.legacy_matrix_compound_suite(
-    name = "ios_simulator_cronet_tests",
-    basic_suites = {
-        "ios_cronet_tests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_13_15_5",
-            ],
-        ),
-    },
-)
-
 # Please also change ios_code_coverage_tests for any change in this suite.
 targets.legacy_matrix_compound_suite(
     name = "ios_simulator_full_configs_tests",

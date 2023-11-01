@@ -287,30 +287,6 @@
       "use_remoteexec": true
     }
   },
-  "ios-m1-simulator-cronet": {
-    "gn_args": {
-      "disable_brotli_filter": false,
-      "disable_file_support": true,
-      "enable_remoting": false,
-      "enable_run_ios_unittests_with_xctest": true,
-      "enable_websockets": false,
-      "include_transport_security_state_preload_list": false,
-      "ios_deployment_target": "11.0",
-      "ios_stack_profiler_enabled": false,
-      "is_component_build": false,
-      "is_cronet_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_allocator_shim": false,
-      "use_crash_key_stubs": true,
-      "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true,
-      "use_remoteexec": true
-    }
-  },
   "ios-simulator": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
@@ -349,31 +325,6 @@
       "target_environment": "simulator",
       "target_os": "ios",
       "use_goma": true
-    }
-  },
-  "ios-simulator-cronet": {
-    "gn_args": {
-      "disable_brotli_filter": false,
-      "disable_file_support": true,
-      "enable_remoting": false,
-      "enable_run_ios_unittests_with_xctest": true,
-      "enable_websockets": false,
-      "include_transport_security_state_preload_list": false,
-      "ios_deployment_target": "11.0",
-      "ios_stack_profiler_enabled": false,
-      "is_component_build": false,
-      "is_cronet_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_allocator_shim": false,
-      "use_crash_key_stubs": true,
-      "use_dummy_lastchange": true,
-      "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true,
-      "use_remoteexec": true
     }
   },
   "ios-simulator-full-configs": {

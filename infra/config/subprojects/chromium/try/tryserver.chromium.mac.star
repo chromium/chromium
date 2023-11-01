@@ -456,14 +456,6 @@ ios_builder(
     cpu = cpu.ARM64,
 )
 
-ios_builder(
-    name = "ios-m1-simulator-cronet",
-    mirrors = ["ci/ios-m1-simulator-cronet"],
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
 try_.orchestrator_builder(
     name = "ios-simulator",
     branch_selector = branches.selector.IOS_BRANCHES,
@@ -533,24 +525,6 @@ try_.compilator_builder(
     main_list_view = "try",
     siso_enabled = True,
     xcode = xcode.x15main,
-)
-
-ios_builder(
-    name = "ios-simulator-cronet",
-    branch_selector = branches.selector.IOS_BRANCHES,
-    mirrors = [
-        "ci/ios-simulator-cronet",
-    ],
-    main_list_view = "try",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "components/cronet/.+",
-            "components/grpc_support/.+",
-            "ios/.+",
-            cq.location_filter(exclude = True, path_regexp = "components/cronet/android/.+"),
-        ],
-    ),
 )
 
 ios_builder(
