@@ -5313,9 +5313,7 @@ crbug.com/1275716 [ Mac ] fast/forms/text-control-intrinsic-widths.html [ Failur
 crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-top-left.html [ Crash Failure Pass Timeout ]
 crbug.com/1275967 [ Debug Linux ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 crbug.com/1276207 virtual/gpu-rasterization/images/color-profile-image-object-fit.html [ Failure Pass ]
-crbug.com/1276290 [ Mac10.15 Release ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
-crbug.com/1276290 [ Mac11 Release ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
-crbug.com/1276290 [ Mac12 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
 
 crbug.com/1159463 crbug.com/1278570 [ Linux ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1159463 crbug.com/1278570 [ Mac11 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
@@ -6925,9 +6923,6 @@ crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging
 crbug.com/1472631 [ Linux ] virtual/text-antialias/whitespace/normal-after-nowrap-breaking.html [ Failure Pass ]
 crbug.com/1472721 [ Linux ] virtual/scalefactor150/fast/hidpi/static/pointerevents/pointerevent_touch-adjustment_click_target.html [ Failure Pass ]
 crbug.com/1472721 [ Linux ] virtual/scalefactor200/fast/hidpi/static/pointerevents/pointerevent_touch-adjustment_click_target.html [ Failure Pass ]
-
-# Gardener 2023-08-16
-crbug.com/1473474 [ Mac13 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure Pass ]
 
 # Re-enable after new baselines are generated
 crbug.com/1456636 [ Linux ] virtual/view-transition/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure

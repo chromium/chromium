@@ -1283,20 +1283,13 @@ if (use_blink && !is_cronet_build) {
 
     args = _common_web_test_args
 
-    data_deps = [ ":blink_web_tests_support_data" ]
+    data_deps = [
+      ":blink_web_tests_expectations",
+      ":blink_web_tests_support_data",
+    ]
     data = [
       "//third_party/blink/perf_tests/",
       "//third_party/blink/web_tests/VirtualTestSuites",
-
-      # List all test expectations here
-      "//third_party/blink/web_tests/ASANExpectations",
-      "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/MSANExpectations",
-      "//third_party/blink/web_tests/NeverFixTests",
-      "//third_party/blink/web_tests/SlowTests",
-      "//third_party/blink/web_tests/StaleTestExpectations",
-      "//third_party/blink/web_tests/TestExpectations",
-      "//third_party/blink/web_tests/WebGPUExpectations",
 
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/accessibility/",
@@ -1385,6 +1378,24 @@ if (use_blink && !is_cronet_build) {
 
       # === Test Case Folders Ends ===
     ]
+  }
+
+  group("blink_web_tests_expectations") {
+    testonly = true
+
+    data = [
+      # Include virtual baselines.
+      "//third_party/blink/web_tests/virtual/",
+
+      # List all test expectations here
+      "//third_party/blink/web_tests/ASANExpectations",
+      "//third_party/blink/web_tests/LeakExpectations",
+      "//third_party/blink/web_tests/MSANExpectations",
+      "//third_party/blink/web_tests/NeverFixTests",
+      "//third_party/blink/web_tests/SlowTests",
+      "//third_party/blink/web_tests/StaleTestExpectations",
+      "//third_party/blink/web_tests/TestExpectations",
+    ]
 
     if (is_win || is_linux || is_fuchsia) {
       data += [
@@ -1431,59 +1442,20 @@ if (use_blink && !is_cronet_build) {
     # Use --wpt-only to skip tests under web_tests/virtual/
     args += [ "--wpt-only" ]
 
-    data_deps = [ ":blink_web_tests_support_data" ]
+    data_deps = [
+      ":blink_web_tests_expectations",
+      ":blink_web_tests_support_data",
+    ]
     data = [
       "//third_party/blink/perf_tests/",
       "//third_party/blink/web_tests/VirtualTestSuites",
 
-      # List all test expectations here
-      "//third_party/blink/web_tests/ASANExpectations",
-      "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/MSANExpectations",
-      "//third_party/blink/web_tests/NeverFixTests",
-      "//third_party/blink/web_tests/SlowTests",
-      "//third_party/blink/web_tests/StaleTestExpectations",
-      "//third_party/blink/web_tests/TestExpectations",
-      "//third_party/blink/web_tests/WebGPUExpectations",
-
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/external/",
       "//third_party/blink/web_tests/wpt_internal/",
-      "//third_party/blink/web_tests/virtual/",
 
       # === Test Case Folders Ends ===
     ]
-
-    if (is_win || is_linux || is_fuchsia) {
-      data += [
-        "//third_party/blink/web_tests/platform/win/",
-        "//third_party/blink/web_tests/platform/win10/",
-      ]
-      if (is_linux || is_fuchsia) {
-        data += [ "//third_party/blink/web_tests/platform/linux/" ]
-      }
-      if (is_fuchsia) {
-        data += [
-          "//third_party/blink/web_tests/platform/fuchsia/",
-          "$root_gen_dir/package_metadata/content_shell.meta",
-        ]
-      }
-    } else if (is_mac) {
-      data += [
-        "//third_party/blink/web_tests/platform/mac/",
-        "//third_party/blink/web_tests/platform/mac-mac10.15/",
-        "//third_party/blink/web_tests/platform/mac-mac11-arm64/",
-      ]
-    }
-
-    # flag-specific tests only runs on linux as of now
-    if (is_linux) {
-      data += [
-        "//third_party/blink/web_tests/FlagSpecificConfig",
-        "//third_party/blink/web_tests/FlagExpectations/",
-        "//third_party/blink/web_tests/flag-specific/",
-      ]
-    }
   }
 
   script_test("devtools_web_tests") {
