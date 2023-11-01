@@ -28,7 +28,8 @@ InvokeEvent::InvokeEvent(const AtomicString& type,
 InvokeEvent::InvokeEvent(const AtomicString& type,
                          const String& action,
                          Element* invoker)
-    : Event(type, Bubbles::kNo, Cancelable::kYes), invoker_(invoker) {
+    : Event(type, Bubbles::kNo, Cancelable::kYes, ComposedMode::kComposed),
+      invoker_(invoker) {
   DCHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
   action_ = action;
 }
