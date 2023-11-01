@@ -541,8 +541,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     KeyboardOperations, /* keyboard_operations.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        // TODO(b/307657529): enable the test
-        // TestCase("renameRemovableWithKeyboardOnFileList").NewDirectoryTree(),
+        TestCase("renameRemovableWithKeyboardOnFileList").NewDirectoryTree(),
         TestCase("keyboardSelectDriveDirectoryTree").NewDirectoryTree(),
         TestCase("keyboardDeleteFolderDownloads").NewDirectoryTree(),
         TestCase("keyboardDeleteFolderDownloads")
@@ -1850,7 +1849,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("sharePathWithCrostini")
             .NewDirectoryTree()
             .FeatureIds({"screenplay-122c00f8-9842-4666-8ca0-b6bf47454551"}),
-// Section end - browser tests for new directory tree
+        // Section end - browser tests for new directory tree
         TestCase("mountCrostini"),
         TestCase("enableDisableCrostini"),
         TestCase("sharePathWithCrostini")
