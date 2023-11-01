@@ -14561,6 +14561,7 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Collapsed"/>
   <int value="2" label="Disabled by policy"/>
   <int value="3" label="Disabled"/>
+  <int value="4" label="Disabled by default search engine"/>
 </enum>
 
 <enum name="ContentType">
