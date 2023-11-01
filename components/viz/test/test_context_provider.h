@@ -43,14 +43,15 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   TestSharedImageInterface();
   ~TestSharedImageInterface() override;
 
-  gpu::Mailbox CreateSharedImage(SharedImageFormat format,
-                                 const gfx::Size& size,
-                                 const gfx::ColorSpace& color_space,
-                                 GrSurfaceOrigin surface_origin,
-                                 SkAlphaType alpha_type,
-                                 uint32_t usage,
-                                 base::StringPiece debug_label,
-                                 gpu::SurfaceHandle surface_handle) override;
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle) override;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       SharedImageFormat format,

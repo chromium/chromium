@@ -11,6 +11,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -167,10 +168,12 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     // Create a multiplanar shared image to upload the data to, if one doesn't
     // exist already.
     if (!created_shared_images_) {
-      holders_[0].mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           format, video_frame->coded_size(), video_frame->ColorSpace(),
           kTopLeft_GrSurfaceOrigin, kPlaneAlphaType, mailbox_usage,
           "VideoFrameYUV", gpu::kNullSurfaceHandle);
+      CHECK(client_shared_image);
+      holders_[0].mailbox = client_shared_image->mailbox();
       holders_[0].texture_target = GL_TEXTURE_2D;
 
       // Split up shared image creation from upload so we only have to wait on
@@ -205,10 +208,12 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
       int num_channels = yuva_info_.numChannelsInPlane(plane);
       viz::SharedImageFormat format =
           PlaneSharedImageFormat(num_channels, caps.texture_rg);
-      holders_[plane].mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           format, tex_size, video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin,
           kPlaneAlphaType, mailbox_usage, "VideoFrameYUV",
           gpu::kNullSurfaceHandle);
+      CHECK(client_shared_image);
+      holders_[plane].mailbox = client_shared_image->mailbox();
       holders_[plane].texture_target = GL_TEXTURE_2D;
     }
 

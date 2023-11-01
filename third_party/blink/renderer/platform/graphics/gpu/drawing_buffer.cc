@@ -2004,10 +2004,12 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         back_buffer_alpha_type = kUnpremul_SkAlphaType;
       }
 
-      back_buffer_mailbox =
+      auto client_shared_image =
           sii->CreateSharedImage(color_buffer_format_, size, color_space_,
                                  origin, back_buffer_alpha_type, usage,
                                  "WebGLDrawingBuffer", gpu::kNullSurfaceHandle);
+      CHECK(client_shared_image);
+      back_buffer_mailbox = client_shared_image->mailbox();
     }
   }
 

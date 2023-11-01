@@ -457,10 +457,12 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_RASTER;
     if (mailbox_texture_is_overlay_candidate)
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    *mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, "OneCopyRasterTile",
         gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    *mailbox = client_shared_image->mailbox();
     // Clear the resource if we're not going to initialize it fully from the
     // copy due to non-exact resource reuse.  See https://crbug.com/1313091
     needs_clear = rect_to_copy.size() != resource_size;

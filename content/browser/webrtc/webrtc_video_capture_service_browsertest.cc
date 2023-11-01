@@ -24,6 +24,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -200,14 +201,16 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
         continue;
       }
 
-      gpu::Mailbox mailbox = sii->CreateSharedImage(
-          viz::SinglePlaneFormat::kRGBA_8888, kDummyFrameCodedSize,
-          gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-          kOpaque_SkAlphaType,
-          gpu::SHARED_IMAGE_USAGE_RASTER |
-              gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-              gpu::SHARED_IMAGE_USAGE_GLES2,
-          "TestLabel", gpu::kNullSurfaceHandle);
+      gpu::Mailbox mailbox =
+          sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888,
+                                 kDummyFrameCodedSize,
+                                 gfx::ColorSpace::CreateSRGB(),
+                                 kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+                                 gpu::SHARED_IMAGE_USAGE_RASTER |
+                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+                                     gpu::SHARED_IMAGE_USAGE_GLES2,
+                                 "TestLabel", gpu::kNullSurfaceHandle)
+              ->mailbox();
 
       gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
       ri->WaitSyncTokenCHROMIUM(sii_token.GetConstData());

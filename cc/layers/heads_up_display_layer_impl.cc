@@ -45,6 +45,7 @@
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -297,11 +298,13 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       if (backing->overlay_candidate) {
         flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       }
-      backing->mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           pool_resource.format(), pool_resource.size(),
           pool_resource.color_space(), kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, flags, "HeadsUpDisplayLayer",
           gpu::kNullSurfaceHandle);
+      CHECK(client_shared_image);
+      backing->mailbox = client_shared_image->mailbox();
       auto* ri = raster_context_provider->RasterInterface();
       ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       pool_resource.set_gpu_backing(std::move(backing));

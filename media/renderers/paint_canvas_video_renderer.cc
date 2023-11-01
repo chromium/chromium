@@ -29,6 +29,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -1833,11 +1834,13 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     }
 
-    yuv_cache_.mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         SHARED_IMAGE_FORMAT, video_frame->coded_size(),
         GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         "PaintCanvasVideoRenderer", gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    yuv_cache_.mailbox = client_shared_image->mailbox();
     token = sii->GenUnverifiedSyncToken();
   }
 
@@ -2058,11 +2061,13 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         if (supports_oop_raster) {
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
         }
-        mailbox = sii->CreateSharedImage(
+        auto client_shared_image = sii->CreateSharedImage(
             SHARED_IMAGE_FORMAT, video_frame->coded_size(),
             GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
             "PaintCanvasVideoRenderer", gpu::kNullSurfaceHandle);
+        CHECK(client_shared_image);
+        mailbox = client_shared_image->mailbox();
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       }
 

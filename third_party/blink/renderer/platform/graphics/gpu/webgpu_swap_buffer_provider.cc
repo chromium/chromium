@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
@@ -184,10 +185,12 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
     if (usage_ & WGPUTextureUsage_StorageBinding) {
       usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
     }
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         Format(), size, PredefinedColorSpaceToGfxColorSpace(color_space_),
         kTopLeft_GrSurfaceOrigin, alpha_mode, usage, "WebGPUSwapBufferProvider",
         gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    gpu::Mailbox mailbox = client_shared_image->mailbox();
     gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();
 
     unused_swap_buffers_.push_back(base::MakeRefCounted<SwapBuffer>(

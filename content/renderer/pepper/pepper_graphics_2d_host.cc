@@ -30,6 +30,7 @@
 #include "content/renderer/pepper/ppb_image_data_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -690,10 +691,12 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
           gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
       if (overlays_supported)
         usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      gpu_mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, usage, "PepperGraphics2DHost",
           gpu::kNullSurfaceHandle);
+      CHECK(client_shared_image);
+      gpu_mailbox = client_shared_image->mailbox();
       in_sync_token = sii->GenUnverifiedSyncToken();
     }
 

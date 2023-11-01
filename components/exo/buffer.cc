@@ -226,10 +226,12 @@ Buffer::Texture::Texture(
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_GLES2;
 
-  mailbox_ = sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888, size,
-                                    color_space, kTopLeft_GrSurfaceOrigin,
-                                    kPremul_SkAlphaType, usage, "ExoTexture",
-                                    gpu::kNullSurfaceHandle);
+  auto client_shared_image = sii->CreateSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture",
+      gpu::kNullSurfaceHandle);
+  CHECK(client_shared_image);
+  mailbox_ = client_shared_image->mailbox();
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();

@@ -45,14 +45,15 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   void Flush() override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(
       const Mailbox& mailbox) override;
-  Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                            const gfx::Size& size,
-                            const gfx::ColorSpace& color_space,
-                            GrSurfaceOrigin surface_origin,
-                            SkAlphaType alpha_type,
-                            uint32_t usage,
-                            base::StringPiece debug_label,
-                            gpu::SurfaceHandle surface_handle) override;
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,

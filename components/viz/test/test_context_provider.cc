@@ -156,20 +156,20 @@ gfx::GpuMemoryBufferHandle CreateGMBHandle(SharedImageFormat format,
 TestSharedImageInterface::TestSharedImageInterface() = default;
 TestSharedImageInterface::~TestSharedImageInterface() = default;
 
-gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
-    SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
-    gpu::SurfaceHandle surface_handle) {
+scoped_refptr<gpu::ClientSharedImage>
+TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
+                                            const gfx::Size& size,
+                                            const gfx::ColorSpace& color_space,
+                                            GrSurfaceOrigin surface_origin,
+                                            SkAlphaType alpha_type,
+                                            uint32_t usage,
+                                            base::StringPiece debug_label,
+                                            gpu::SurfaceHandle surface_handle) {
   base::AutoLock locked(lock_);
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
   most_recent_size_ = size;
-  return mailbox;
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -200,9 +200,11 @@ TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
                                             gfx::BufferUsage buffer_usage) {
   // Create a GMBHandle and a mailbox and associate the two for usage in
   // MapSharedImage().
-  auto mailbox =
+  auto client_shared_image =
       CreateSharedImage(format, size, color_space, surface_origin, alpha_type,
                         usage, std::move(debug_label), surface_handle);
+  CHECK(client_shared_image);
+  auto mailbox = client_shared_image->mailbox();
 
   auto gmb_handle = CreateGMBHandle(format, size, buffer_usage);
 

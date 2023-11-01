@@ -14,6 +14,7 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -508,11 +509,14 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   MockReleaseCallback release;
 
   auto* sii = context_provider()->SharedImageInterface();
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
-      SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-      "TestLabel", gpu::kNullSurfaceHandle);
+  gpu::Mailbox mailbox =
+      sii->CreateSharedImage(SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1),
+                             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+                             kPremul_SkAlphaType,
+                             gpu::SHARED_IMAGE_USAGE_RASTER |
+                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+                             "TestLabel", gpu::kNullSurfaceHandle)
+          ->mailbox();
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
   constexpr gfx::Size size(64, 64);

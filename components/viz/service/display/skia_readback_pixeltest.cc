@@ -859,11 +859,13 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
                  pixels[i].data(), row_bytes);
 
     if (!use_multiplanar_si() || i == 0) {
-      mailboxes[i].mailbox = sii->CreateSharedImage(
-          format, plane_size, gfx::ColorSpace::CreateREC709(),
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
-          gpu::kNullSurfaceHandle);
+      mailboxes[i].mailbox =
+          sii->CreateSharedImage(format, plane_size,
+                                 gfx::ColorSpace::CreateREC709(),
+                                 kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+                                 "TestLabels", gpu::kNullSurfaceHandle)
+              ->mailbox();
       DCHECK(!mailboxes[i].mailbox.IsZero());
     }
 

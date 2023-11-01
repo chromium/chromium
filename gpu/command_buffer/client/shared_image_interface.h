@@ -117,8 +117,9 @@ class GPU_EXPORT SharedImageInterface {
   // Creates a shared image of requested |format|, |size| and |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which
   // API(s) the image will be used with.
-  // Returns a mailbox that can be imported into said APIs using their
-  // corresponding shared image functions (e.g.
+  // Returns a non-null scoped_refptr to ClientSharedImage. The
+  // ClientSharedImage struct contains a mailbox that can be imported into said
+  // APIs using their corresponding shared image functions (e.g.
   // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM or
   // RasterInterface::CopySharedImage) or (deprecated) mailbox functions (e.g.
   // GLES2Interface::CreateAndConsumeTextureCHROMIUM).
@@ -127,14 +128,15 @@ class GPU_EXPORT SharedImageInterface {
   // the GPU channel is lost).
   // |debug_label| is retained for heap dumps and passed to graphics APIs for
   // tracing tools. Pick a name that is unique to the allocation site.
-  virtual Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                                    const gfx::Size& size,
-                                    const gfx::ColorSpace& color_space,
-                                    GrSurfaceOrigin surface_origin,
-                                    SkAlphaType alpha_type,
-                                    uint32_t usage,
-                                    base::StringPiece debug_label,
-                                    gpu::SurfaceHandle surface_handle) = 0;
+  virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle) = 0;
 
   // Same behavior as the above, except that this version takes |pixel_data|
   // which is used to populate the SharedImage.  |pixel_data| should have the

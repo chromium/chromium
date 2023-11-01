@@ -204,7 +204,8 @@ bool SharedImageInterfaceInProcess::LazyCreateSharedImageFactory() {
   return true;
 }
 
-Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
+scoped_refptr<ClientSharedImage>
+SharedImageInterfaceInProcess::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -230,7 +231,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
             MakeSyncToken(next_fence_sync_release_++)),
         {});
   }
-  return mailbox;
+  return base::MakeRefCounted<ClientSharedImage>(mailbox);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(

@@ -5,6 +5,7 @@
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
@@ -95,10 +96,13 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
 
   // Create the shared image
   SharedImageInterface* sii = gl_context_->GetSharedImageInterface();
-  Mailbox gl_mailbox = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_GLES2,
-      "TestLabel", kNullSurfaceHandle);
+  Mailbox gl_mailbox =
+      sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888, {1, 1},
+                             gfx::ColorSpace::CreateSRGB(),
+                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                             SHARED_IMAGE_USAGE_GLES2, "TestLabel",
+                             kNullSurfaceHandle)
+          ->mailbox();
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   gl()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
   GLuint texture =

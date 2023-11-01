@@ -22,6 +22,7 @@
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
@@ -83,12 +84,14 @@ class PPB_Graphics3D_Impl::ColorBuffer {
     // kPepper3DImageChromium is enabled on some CrOS devices, SkiaRenderer
     // don't support overlays for legacy mailboxes. To avoid any problems with
     // overlays, we don't introduce them here.
-    mailbox_ = sii_->CreateSharedImage(
+    auto client_shared_image = sii_->CreateSharedImage(
         has_alpha ? viz::SinglePlaneFormat::kRGBA_8888
                   : viz::SinglePlaneFormat::kRGBX_8888,
         shared_image_size, gfx::ColorSpace::CreateSRGB(),
         kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage,
         "PPBGraphics3DImpl", gpu::SurfaceHandle());
+    CHECK(client_shared_image);
+    mailbox_ = client_shared_image->mailbox();
 
     sync_token_ = sii_->GenVerifiedSyncToken();
   }

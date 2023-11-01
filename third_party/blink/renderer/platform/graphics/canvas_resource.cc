@@ -528,10 +528,12 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     CHECK(client_shared_image);
     shared_image_mailbox = client_shared_image->mailbox();
   } else {
-    shared_image_mailbox = shared_image_interface->CreateSharedImage(
+    auto client_shared_image = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRaster",
         gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    shared_image_mailbox = client_shared_image->mailbox();
   }
 
   // Wait for the mailbox to be ready to be used.

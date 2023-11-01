@@ -37,6 +37,7 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -550,10 +551,12 @@ class VideoResourceUpdater::HardwarePlaneResource
           gfx::BufferUsage::SCANOUT,
           SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
-    mailbox_ = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         format, size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, shared_image_usage, "VideoResourceUpdater",
         gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    mailbox_ = client_shared_image->mailbox();
     InterfaceBase()->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
   }

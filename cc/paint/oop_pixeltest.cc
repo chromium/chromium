@@ -29,6 +29,7 @@
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -187,10 +188,13 @@ class OopPixelTest : public testing::Test,
     auto* sii = raster_context_provider_->SharedImageInterface();
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
-        options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, flags, "TestLabel", gpu::kNullSurfaceHandle);
+    gpu::Mailbox mailbox =
+        sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888,
+                               gfx::Size(width, height),
+                               options.target_color_params.color_space,
+                               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                               flags, "TestLabel", gpu::kNullSurfaceHandle)
+            ->mailbox();
     EXPECT_TRUE(mailbox.Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -265,11 +269,13 @@ class OopPixelTest : public testing::Test,
       absl::optional<gfx::ColorSpace> color_space = absl::nullopt) {
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
-        image_format, options.resource_size,
-        color_space.value_or(options.target_color_params.color_space),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags, "TestLabel",
-        gpu::kNullSurfaceHandle);
+    gpu::Mailbox mailbox =
+        sii->CreateSharedImage(
+               image_format, options.resource_size,
+               color_space.value_or(options.target_color_params.color_space),
+               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
+               "TestLabel", gpu::kNullSurfaceHandle)
+            ->mailbox();
     EXPECT_TRUE(mailbox.Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 

@@ -79,7 +79,7 @@ scoped_refptr<gfx::NativePixmap> ClientSharedImageInterface::GetNativePixmap(
   return proxy_->GetNativePixmap(mailbox);
 }
 
-Mailbox ClientSharedImageInterface::CreateSharedImage(
+scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -90,9 +90,9 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
   DCHECK(gpu::IsValidClientUsage(usage)) << usage;
-  return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
-                                              surface_origin, alpha_type, usage,
-                                              debug_label));
+  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(
+      proxy_->CreateSharedImage(format, size, color_space, surface_origin,
+                                alpha_type, usage, debug_label)));
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
