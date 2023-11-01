@@ -431,11 +431,6 @@ const char kIosUserZoomMultipliers[] = "ios.user_zoom_multipliers";
 
 const char kPrintingEnabled[] = "printing.enabled";
 
-// An integer that stores the authorization state push notification permissions
-// are in on a user's device.
-const char kPushNotificationAuthorizationStatus[] =
-    "ios.push_notifications.authorization_status";
-
 // Bool used for the incognito biometric authentication setting.
 const char kIncognitoAuthenticationSetting[] =
     "ios.settings.incognito_authentication_enabled";

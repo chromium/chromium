@@ -6,20 +6,6 @@
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_UTIL_H_
 
 #import <Foundation/Foundation.h>
-#import <UserNotifications/UserNotifications.h>
-
-// multiple UMA metrics and the local state pref service rely on this enum.
-// Please do not reorder or delete its entries.
-namespace push_notification {
-enum class PushNotificationSettingsAuthorizationStatus : int {
-  NOTDETERMINED,
-  DENIED,
-  AUTHORIZED,
-  PROVISIONAL,
-  EPHEMERAL,
-  kMaxValue = EPHEMERAL
-};
-}
 
 @class UIApplication;
 @class UNNotificationCategory;
@@ -61,12 +47,6 @@ enum class PushNotificationSettingsAuthorizationStatus : int {
 // executed on the application's main thread.
 + (void)getPermissionSettings:
     (void (^)(UNNotificationSettings* settings))completionHandler;
-
-// Logs the permission status, stored in iOS settings, the user has given for
-// whether Chrome can receive push notifications on the device to UMA. In
-// addition, it also logs whether the user's push notification permission status
-// changed to either authorized or denied.
-+ (void)logPermissionSettingsMetrics:(UNAuthorizationStatus)authorizationStatus;
 
 @end
 

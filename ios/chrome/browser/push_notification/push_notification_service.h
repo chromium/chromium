@@ -15,7 +15,6 @@ class PrefRegistrySyncable;
 namespace ios {
 class ChromeBrowserStateManager;
 }
-class PrefRegistrySimple;
 @class PushNotificationAccountContextManager;
 enum class PushNotificationClientId;
 class PushNotificationClientManager;
@@ -73,8 +72,6 @@ class PushNotificationService {
   // disabled by default.
   static void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry);
-
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  protected:
   PushNotificationService(ios::ChromeBrowserStateManager* manager);
