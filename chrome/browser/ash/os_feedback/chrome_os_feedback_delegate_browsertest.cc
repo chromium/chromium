@@ -756,21 +756,27 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
 
 // Test if Diagnostics app is opened.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenDiagnosticsApp) {
+  Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+
+  gfx::NativeWindow feedback_window =
+      feedback_browser->window()->GetNativeWindow();
+
+  std::set<views::Widget*> owned_widgets_pre_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
+
+  EXPECT_EQ(owned_widgets_pre_dialog.size(), 0u);
+
+  // Initialize the delegate.
   auto feedback_delegate =
       ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
-      ->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   feedback_delegate.OpenDiagnosticsApp();
-  browser_opened.Wait();
 
-  Browser* app_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS);
+  std::set<views::Widget*> owned_widgets_post_dialog;
+  views::Widget::GetAllOwnedWidgets(feedback_window,
+                                    &owned_widgets_post_dialog);
 
-  EXPECT_TRUE(app_browser);
-  EXPECT_EQ(diagnostics_url_, FindActiveUrl(app_browser));
+  EXPECT_EQ(owned_widgets_post_dialog.size(), 1u);
 }
 
 // Test if Explore app is opened.

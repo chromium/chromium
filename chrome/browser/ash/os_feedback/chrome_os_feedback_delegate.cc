@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -382,7 +383,10 @@ void ChromeOsFeedbackDelegate::OnSendFeedbackDone(SendReportCallback callback,
 }
 
 void ChromeOsFeedbackDelegate::OpenDiagnosticsApp() {
-  ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::DIAGNOSTICS);
+  gfx::NativeWindow window = FindFeedbackWindow(profile_);
+  CHECK(window);
+  ash::DiagnosticsDialog::ShowDialog(
+      ash::DiagnosticsDialog::DiagnosticsPage::kDefault, window);
 }
 
 void ChromeOsFeedbackDelegate::OpenExploreApp() {
