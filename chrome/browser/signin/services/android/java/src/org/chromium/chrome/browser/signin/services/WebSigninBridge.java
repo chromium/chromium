@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
+import java.util.Objects;
+
 /**
  * Used by the web sign-in flow to detect when the flow is completed or failed. Every instance of
  * this class should be explicitly destroyed using {@link #destroy()} to correctly release native
@@ -63,7 +65,8 @@ public class WebSigninBridge {
      * @param listener The listener to be notified about sign-in completion.
      */
     private WebSigninBridge(Profile profile, CoreAccountInfo account, Listener listener) {
-        assert account != null && listener != null;
+        Objects.requireNonNull(account);
+        Objects.requireNonNull(listener);
         mNativeWebSigninBridge = WebSigninBridgeJni.get().create(profile, account, listener);
         assert mNativeWebSigninBridge != 0 : "Couldn't create native WebSigninBridge object!";
     }
