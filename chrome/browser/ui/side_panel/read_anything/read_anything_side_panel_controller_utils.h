@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_CONTROLLER_UTILS_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_CONTROLLER_UTILS_H_
 
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+
 class Browser;
 
 // Used for reading mode option in context menu.
-void ShowReadAnythingSidePanel(Browser* browser);
+void ShowReadAnythingSidePanel(Browser* browser,
+                               SidePanelOpenTrigger open_trigger);
 bool IsReadAnythingEntryShowing(Browser* browser);
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_CONTROLLER_UTILS_H_

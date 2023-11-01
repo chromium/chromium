@@ -320,6 +320,14 @@ bool IsReadAnythingReadAloudEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud);
 }
 
+BASE_FEATURE(kReadAnythingOmniboxIcon,
+             "ReadAnythingOmniboxIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsReadAnythingOmniboxIconEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingOmniboxIcon);
+}
+
 BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPdfOcrEnabled() {

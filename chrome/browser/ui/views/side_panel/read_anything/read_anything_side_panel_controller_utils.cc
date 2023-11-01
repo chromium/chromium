@@ -6,13 +6,13 @@
 
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 
-void ShowReadAnythingSidePanel(Browser* browser) {
+void ShowReadAnythingSidePanel(Browser* browser,
+                               SidePanelOpenTrigger open_trigger) {
   SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
   if (!side_panel_ui) {
     return;
   }
-  side_panel_ui->Show(SidePanelEntryId::kReadAnything,
-                      SidePanelOpenTrigger::kReadAnythingContextMenu);
+  side_panel_ui->Show(SidePanelEntryId::kReadAnything, open_trigger);
 }
 
 bool IsReadAnythingEntryShowing(Browser* browser) {

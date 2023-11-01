@@ -237,6 +237,11 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);
 // If enabled, show the Read Aloud feature in Read Anything.
 AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingOmniboxIcon);
+
+// If enabled, show a reading mode icon in the omnibox.
+AX_BASE_EXPORT bool IsReadAnythingOmniboxIconEnabled();
+
 // Enables a feature whereby inaccessible (i.e. untagged) PDFs are made
 // accessible using an optical character recognition service. Due to the size of
 // the OCR component, this feature targets desktop versions of Chrome for now.

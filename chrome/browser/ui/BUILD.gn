@@ -5271,6 +5271,8 @@ static_library("ui") {
       "views/location_bar/omnibox_chip_button.cc",
       "views/location_bar/omnibox_chip_button.h",
       "views/location_bar/omnibox_chip_theme.h",
+      "views/location_bar/read_anything_icon_view.cc",
+      "views/location_bar/read_anything_icon_view.h",
       "views/location_bar/selected_keyword_view.cc",
       "views/location_bar/selected_keyword_view.h",
       "views/location_bar/star_view.cc",

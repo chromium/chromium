@@ -25,7 +25,8 @@ enum class SidePanelOpenTrigger {
   kPinnedEntryToolbarButton = 12,
   kAppMenu = 13,
   kOpenedInNewTabFromSidePanel = 14,
-  kMaxValue = kOpenedInNewTabFromSidePanel,
+  kReadAnythingOmniboxIcon = 15,
+  kMaxValue = kReadAnythingOmniboxIcon,
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
