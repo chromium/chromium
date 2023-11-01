@@ -89,6 +89,17 @@ void SetUpOpenH264Params(VideoCodecProfile profile,
     }
   }
 
+  if (options.content_hint == VideoEncoder::ContentHint::Screen &&
+      num_temporal_layers > 2) {
+    // Currently, OpenH264 only supports up to 2 temporal layers for screen
+    // content. Otherwise,
+    // https://github.com/cisco/openh264/blob/6a6cb82eef8e83bc52bafab21e996f5d3e211eb4/codec/encoder/core/src/ref_list_mgr_svc.cpp#L650
+    // triggers an assert.
+    // See https://bugs.webrtc.org/15582 for more details.
+    LOG(ERROR) << "Screen content only supports up to 2 temporal layers.";
+    params->iUsageType = CAMERA_VIDEO_REAL_TIME;
+  }
+
   params->iTemporalLayerNum = num_temporal_layers;
   params->iSpatialLayerNum = 1;
   auto& layer = params->sSpatialLayers[0];
