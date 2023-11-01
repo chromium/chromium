@@ -33,6 +33,11 @@ UILabel* DiscoverHeaderLabel();
 SetUpListItemView* SetUpListItemViewWithAccessibilityId(
     NSString* accessibility_id);
 
+// Returns the SetUpListItemView in a Magic Stack module with the given
+// `accessibility_id`.
+SetUpListItemView* SetUpListItemViewInMagicStackWithAccessibilityId(
+    NSString* accessibility_id);
+
 }  // namespace ntp_home
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NTP_HOME_TEST_UTILS_H_

@@ -174,7 +174,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   SetUpListItemView* _setUpListSyncItemView;
   SetUpListItemView* _setUpListDefaultBrowserItemView;
   SetUpListItemView* _setUpListAutofillItemView;
-  SetUpListItemView* _setUpListAllSetItemView;
+  MagicStackModuleContainer* _setUpListSyncModule;
+  MagicStackModuleContainer* _setUpListDefaultBrowserModule;
+  MagicStackModuleContainer* _setUpListAutofillModule;
+  MagicStackModuleContainer* _setUpListCompactedModule;
+  MagicStackModuleContainer* _setUpListAllSetModule;
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
   TabResumptionView* _tabResumptionView;
   NSMutableArray<MagicStackModuleContainer*>* _parcelTrackingModuleContainers;
@@ -570,44 +574,57 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       if (shouldShowCompactedSetUpListModule) {
         [_compactedSetUpListViews addObject:view];
       }
+      MagicStackModuleContainer* setUpListModule;
       switch (type) {
         case ContentSuggestionsModuleType::kSetUpListSync:
           _setUpListSyncItemView = view;
+          _setUpListSyncModule = [[MagicStackModuleContainer alloc]
+              initWithContentView:_setUpListSyncItemView
+                             type:type
+                         delegate:self];
+          setUpListModule = _setUpListSyncModule;
           break;
         case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
           _setUpListDefaultBrowserItemView = view;
+          _setUpListDefaultBrowserModule = [[MagicStackModuleContainer alloc]
+              initWithContentView:_setUpListDefaultBrowserItemView
+                             type:type
+                         delegate:self];
+          setUpListModule = _setUpListDefaultBrowserModule;
           break;
         case ContentSuggestionsModuleType::kSetUpListAutofill:
           _setUpListAutofillItemView = view;
+          _setUpListAutofillModule = [[MagicStackModuleContainer alloc]
+              initWithContentView:_setUpListAutofillItemView
+                             type:type
+                         delegate:self];
+          setUpListModule = _setUpListAutofillModule;
           break;
         case ContentSuggestionsModuleType::kSetUpListAllSet:
-          _setUpListAllSetItemView = view;
+          _setUpListAllSetModule =
+              [[MagicStackModuleContainer alloc] initWithContentView:view
+                                                                type:type
+                                                            delegate:self];
+          setUpListModule = _setUpListAllSetModule;
           break;
         default:
           break;
       }
+
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
-      if (_magicStackRankReceived) {
-        if (shouldShowCompactedSetUpListModule) {
-          MultiRowContainerView* multiRowContainer =
-              [[MultiRowContainerView alloc]
-                  initWithViews:_compactedSetUpListViews];
-          MagicStackModuleContainer* setUpListCompactedModule =
-              [[MagicStackModuleContainer alloc]
-                  initWithContentView:multiRowContainer
-                                 type:ContentSuggestionsModuleType::
-                                          kCompactedSetUpList
-                             delegate:self];
-          [self insertModuleIntoMagicStack:setUpListCompactedModule];
-        } else {
-          MagicStackModuleContainer* setUpListModule =
-              [[MagicStackModuleContainer alloc] initWithContentView:view
-                                                                type:type
-                                                            delegate:self];
-          [self insertModuleIntoMagicStack:setUpListModule];
-        }
+      if (_magicStackRankReceived && !shouldShowCompactedSetUpListModule) {
+        [self insertModuleIntoMagicStack:setUpListModule];
       }
+    }
+    if (_magicStackRankReceived && shouldShowCompactedSetUpListModule) {
+      MultiRowContainerView* multiRowContainer = [[MultiRowContainerView alloc]
+          initWithViews:_compactedSetUpListViews];
+      _setUpListCompactedModule = [[MagicStackModuleContainer alloc]
+          initWithContentView:multiRowContainer
+                         type:ContentSuggestionsModuleType::kCompactedSetUpList
+                     delegate:self];
+      [self insertModuleIntoMagicStack:_setUpListCompactedModule];
     }
   } else {
     SetUpListView* setUpListView =
@@ -1289,52 +1306,23 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListSync: {
-        MagicStackModuleContainer* setUpListSyncModule =
-            [[MagicStackModuleContainer alloc]
-                initWithContentView:_setUpListSyncItemView
-                               type:type
-                           delegate:self];
-        moduleContainer = setUpListSyncModule;
+        moduleContainer = _setUpListSyncModule;
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListDefaultBrowser: {
-        MagicStackModuleContainer* setUpListDefaultBrowserModule =
-            [[MagicStackModuleContainer alloc]
-                initWithContentView:_setUpListDefaultBrowserItemView
-                               type:type
-                           delegate:self];
-        moduleContainer = setUpListDefaultBrowserModule;
+        moduleContainer = _setUpListDefaultBrowserModule;
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListAutofill: {
-        MagicStackModuleContainer* setUpListAutofillModule =
-            [[MagicStackModuleContainer alloc]
-                initWithContentView:_setUpListAutofillItemView
-                               type:type
-                           delegate:self];
-        moduleContainer = setUpListAutofillModule;
+        moduleContainer = _setUpListAutofillModule;
         break;
       }
       case ContentSuggestionsModuleType::kCompactedSetUpList: {
-        MultiRowContainerView* multiRowContainer =
-            [[MultiRowContainerView alloc]
-                initWithViews:_compactedSetUpListViews];
-        MagicStackModuleContainer* setUpListCompactedModule =
-            [[MagicStackModuleContainer alloc]
-                initWithContentView:multiRowContainer
-                               type:ContentSuggestionsModuleType::
-                                        kCompactedSetUpList
-                           delegate:self];
-        moduleContainer = setUpListCompactedModule;
+        moduleContainer = _setUpListCompactedModule;
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListAllSet: {
-        MagicStackModuleContainer* setUpListAllSetModule =
-            [[MagicStackModuleContainer alloc]
-                initWithContentView:_setUpListAllSetItemView
-                               type:type
-                           delegate:self];
-        moduleContainer = setUpListAllSetModule;
+        moduleContainer = _setUpListAllSetModule;
         break;
       }
       case ContentSuggestionsModuleType::kSafetyCheck:
@@ -1359,7 +1347,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         }
         break;
       default:
-        break;
+        NOTREACHED_NORETURN();
     }
     if (moduleContainer) {
       [_magicStack addArrangedSubview:moduleContainer];

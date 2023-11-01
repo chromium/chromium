@@ -177,8 +177,31 @@ void TapMoreButtonIfVisible() {
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
   if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)] ||
-      [self isRunningTest:@selector(testMagicStackEditButton)]) {
-    config.features_enabled.push_back(kMagicStack);
+      [self isRunningTest:@selector(testMagicStackEditButton)] ||
+      [self isRunningTest:@selector
+            (testMagicStackCompactedSetUpListCompleteAllItems)]) {
+    if ([self
+            isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)]) {
+      config.additional_args.push_back(
+          "--enable-features=" + std::string(kMagicStack.name) + "<" +
+          std::string(kMagicStack.name));
+      config.additional_args.push_back(
+          "--force-fieldtrials=" + std::string(kMagicStack.name) + "/Test");
+      config.additional_args.push_back(
+          "--force-fieldtrial-params=" + std::string(kMagicStack.name) +
+          ".Test:" + std::string(kSetUpListCompactedTimeThresholdDays) + "/" +
+          "3");
+    } else {
+      config.additional_args.push_back(
+          "--enable-features=" + std::string(kMagicStack.name) + "<" +
+          std::string(kMagicStack.name));
+      config.additional_args.push_back(
+          "--force-fieldtrials=" + std::string(kMagicStack.name) + "/Test");
+      config.additional_args.push_back(
+          "--force-fieldtrial-params=" + std::string(kMagicStack.name) +
+          ".Test:" + std::string(kSetUpListCompactedTimeThresholdDays) + "/" +
+          "0");
+    }
   } else {
     config.features_disabled.push_back(kMagicStack);
   }
@@ -649,6 +672,80 @@ void TapMoreButtonIfVisible() {
   GREYAssert(
       base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"Timeout waiting for Sign in Set Up List Item expired.");
+
+  // Tap the signin item.
+  TapView(set_up_list::kSignInItemID);
+  [ChromeEarlGreyUI waitForAppToIdle];
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    // The fake signin UI appears. Dismiss it.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kFakeAuthCancelButtonIdentifier)]
+        performAction:grey_tap()];
+  } else {
+    // The full-screen signin promo appears. Dismiss it.
+    TapPromoStyleSecondaryActionButton();
+  }
+
+  // Verify the All Set item is shown.
+  condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                                set_up_list::kAllSetItemID),
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"Timeout waiting for the All Set Module to show expired.");
+}
+
+// Attempts to complete the Set Up List through the Compacted Magic Stack
+// module.
+- (void)testMagicStackCompactedSetUpListCompleteAllItems {
+  [self prepareToTestSetUpListInMagicStack];
+
+  // Tap the default browser item.
+  TapView(set_up_list::kDefaultBrowserItemID);
+  // Ensure the Default Browser Promo is displayed.
+  id<GREYMatcher> defaultBrowserView = grey_accessibilityID(
+      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:defaultBrowserView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss Default Browser Promo.
+  TapPromoStyleSecondaryActionButton();
+
+  ConditionBlock condition = ^{
+    return [NewTabPageAppInterface
+        setUpListItemDefaultBrowserInMagicStackIsComplete];
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"SetUpList item Default Browser not completed.");
+
+  // Tap the autofill item.
+  TapView(set_up_list::kAutofillItemID);
+  id<GREYMatcher> CPEPromoView =
+      grey_accessibilityID(@"kCredentialProviderPromoAccessibilityId");
+  [[EarlGrey selectElementWithMatcher:CPEPromoView]
+      assertWithMatcher:grey_notNil()];
+  // Dismiss the CPE promo.
+  TapSecondaryActionButton();
+
+  condition = ^{
+    return [NewTabPageAppInterface setUpListItemAutofillInMagicStackIsComplete];
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"SetUpList item Autofill not completed.");
+
+  // Completed Set Up List items last one impression
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);

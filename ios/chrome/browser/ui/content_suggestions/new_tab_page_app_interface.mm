@@ -70,13 +70,26 @@ using set_up_list_prefs::SetUpListItemState;
 }
 
 + (BOOL)setUpListItemDefaultBrowserIsComplete {
-  return ntp_home::SetUpListItemViewWithAccessibilityId(
-             set_up_list::kDefaultBrowserItemID)
-      .complete;
+  SetUpListItemView* view = ntp_home::SetUpListItemViewWithAccessibilityId(
+      set_up_list::kDefaultBrowserItemID);
+  return view.complete;
 }
 
 + (BOOL)setUpListItemAutofillIsComplete {
   return ntp_home::SetUpListItemViewWithAccessibilityId(
+             set_up_list::kAutofillItemID)
+      .complete;
+}
+
++ (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete {
+  SetUpListItemView* view =
+      ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
+          set_up_list::kDefaultBrowserItemID);
+  return view.complete;
+}
+
++ (BOOL)setUpListItemAutofillInMagicStackIsComplete {
+  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
              set_up_list::kAutofillItemID)
       .complete;
 }
