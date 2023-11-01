@@ -52,13 +52,6 @@ bool ShouldShowGreetingOrOnboarding(bool in_tablet_mode) {
   return true;
 }
 
-bool ShouldShowSpacer(bool in_tablet_mode) {
-  if (assistant::features::IsAssistantLearnMoreEnabled()) {
-    return !in_tablet_mode;
-  }
-  return false;
-}
-
 bool ShouldShowIph() {
   return assistant::features::IsAssistantLearnMoreEnabled();
 }
@@ -178,10 +171,8 @@ void AssistantZeroStateView::UpdateLayout() {
   onboarding_view_->SetVisible(show_greeting_or_onboarding && show_onboarding);
   greeting_label_->SetVisible(show_greeting_or_onboarding && !show_onboarding);
 
-  const bool show_spacer = ShouldShowSpacer(delegate_->IsTabletMode());
-  spacer_->SetVisible(show_spacer);
-
   const bool show_iph = ShouldShowIph();
+  spacer_->SetVisible(show_iph);
   iph_view_->SetVisible(show_iph);
 }
 

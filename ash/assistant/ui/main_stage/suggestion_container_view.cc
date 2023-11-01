@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
@@ -173,15 +174,21 @@ void SuggestionContainerView::OnConversationStartersChanged(
     const std::vector<AssistantSuggestion>& conversation_starters) {
   // We don't show conversation starters when showing onboarding since the
   // onboarding experience already provides the user w/ suggestions.
-  if (delegate()->ShouldShowOnboarding())
+  if (delegate()->ShouldShowOnboarding()) {
     return;
+  }
+
+  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+    return;
+  }
 
   // If we've committed a query we should ignore changes to the cache of
   // conversation starters as we are past the state in which they should be
   // presented. To present them now could incorrectly associate the conversation
   // starters with a response.
-  if (has_committed_query_)
+  if (has_committed_query_) {
     return;
+  }
 
   RemoveAllViews();
   OnSuggestionsAdded(conversation_starters);
