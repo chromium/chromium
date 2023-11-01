@@ -56,16 +56,13 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
   }
 }
 
-- (void)displayPromptForMediaCaptureType:(WKMediaCaptureType)mediaCaptureType
-                                  origin:(const GURL&)origin {
+- (void)displayPromptForMediaCaptureType:(WKMediaCaptureType)mediaCaptureType {
   // This block strongly captures `self` intentionally to ensure that
   // `_decisionHandler` is always invoked, even if the scope of `self` has
   // deallocated.
-  __block GURL originCopy = origin;
   _taskRunner->PostTask(
       FROM_HERE, base::BindOnce(^{
-        [self displayPromptForMediaCaptureTypeOnTaskRunner:mediaCaptureType
-                                                    origin:originCopy];
+        [self displayPromptForMediaCaptureTypeOnTaskRunner:mediaCaptureType];
       }));
 }
 
@@ -73,8 +70,7 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
 
 // Helper method that only executes on `_taskRunner`'s sequence.
 - (void)displayPromptForMediaCaptureTypeOnTaskRunner:
-            (WKMediaCaptureType)mediaCaptureType
-                                              origin:(const GURL&)origin {
+    (WKMediaCaptureType)mediaCaptureType {
   if (!_presenter) {
     [self handleDecision:WKPermissionDecisionDeny];
     return;
@@ -99,7 +95,7 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
   // `_decisionHandler` is always invoked, even if the scope of `self` has
   // deallocated.
   webState->RequestPermissionsWithDecisionHandler(
-      GetPermissionsFromWKMediaCaptureType(mediaCaptureType), origin,
+      GetPermissionsFromWKMediaCaptureType(mediaCaptureType),
       ^(WKPermissionDecision decision) {
         [self handleDecision:decision];
       });

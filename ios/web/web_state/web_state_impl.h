@@ -276,12 +276,10 @@ class WebStateImpl final : public WebState {
   // Removes all current web frames.
   void RemoveAllWebFrames();
 
-  // Requests the user's permission to access requested `permissions` on
-  // top-level `origin`.
+  // Requests the user's permission to access requested `permissions`.
   typedef void (^PermissionDecisionHandler)(WKPermissionDecision decision)
       API_AVAILABLE(ios(15.0));
   void RequestPermissionsWithDecisionHandler(NSArray<NSNumber*>* permissions,
-                                             const GURL& origin,
                                              PermissionDecisionHandler handler)
       API_AVAILABLE(ios(15.0));
 

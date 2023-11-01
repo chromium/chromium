@@ -8,7 +8,6 @@
 #import <WebKit/WebKit.h>
 
 #import "base/memory/scoped_refptr.h"
-#import "url/gurl.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -41,10 +40,9 @@ class WebStateImpl;
                                (const scoped_refptr<base::SequencedTaskRunner>&)
                                    taskRunner;
 
-/// Displays a prompt to users and ask capture permission for `mediaCaptureType`
-/// coming from a page with the given `origin`.
-- (void)displayPromptForMediaCaptureType:(WKMediaCaptureType)mediaCaptureType
-                                  origin:(const GURL&)origin;
+/// Displays a prompt to users and ask capture permission for
+/// `mediaCaptureType`.
+- (void)displayPromptForMediaCaptureType:(WKMediaCaptureType)mediaCaptureType;
 
 @end
 

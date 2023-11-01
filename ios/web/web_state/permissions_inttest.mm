@@ -15,7 +15,6 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/test/fakes/crw_fake_wk_frame_info.h"
 #import "ios/web/test/web_test_with_web_controller.h"
-#import "ios/web/web_state/ui/crw_media_capture_permission_request.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -29,9 +28,6 @@ using base::test::ios::SpinRunLoopWithMinDelay;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
-
-constexpr std::string_view kSecureUrl = "https://www.chromium.org";
-constexpr std::string_view kInsecureUrl = "http://www.chromium.org";
 
 // Mocks WebStateObserver callbacks.
 class WebStateObserverMock : public web::WebStateObserver {
@@ -512,22 +508,18 @@ TEST_F(PermissionsInttest, TestsThatClosingTabBeforeDecisionDeniesPermission) {
     __block NSInteger decision = -1;
     WKWebView* web_view = [web_controller() ensureWebViewCreated];
     id<WKUIDelegate> ui_delegate = web_view.UIDelegate;
-    {
-      // Fake a media capture permission request. Use an inner scope to allow
-      // the request to be destroyed, simulating the closing of a tab.
-      CRWMediaCapturePermissionRequest* request =
-          [[CRWMediaCapturePermissionRequest alloc]
-              initWithDecisionHandler:^(
-                  WKPermissionDecision wk_permission_decision) {
-                decision = static_cast<NSInteger>(wk_permission_decision);
-              }
-                         onTaskRunner:base::SequencedTaskRunner::
-                                          GetCurrentDefault()];
-      request.presenter = (id<CRWMediaCapturePermissionPresenter>)ui_delegate;
-      [request displayPromptForMediaCaptureType:WKMediaCaptureTypeCamera
-                                         origin:GURL(kSecureUrl)];
-    }
-
+    // Fake a media capture permission request.
+    CRWFakeWKFrameInfo* frame_info = [[CRWFakeWKFrameInfo alloc] init];
+    frame_info.mainFrame = YES;
+    [ui_delegate webView:web_view
+        requestMediaCapturePermissionForOrigin:frame_info.securityOrigin
+                              initiatedByFrame:frame_info
+                                          type:WKMediaCaptureTypeCamera
+                               decisionHandler:^(WKPermissionDecision
+                                                     wk_permission_decision) {
+                                 decision = static_cast<NSInteger>(
+                                     wk_permission_decision);
+                               }];
     EXPECT_TRUE(
         WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, true, ^bool {
           return LastRequestedPermissionsMatchesPermissions(
@@ -575,30 +567,6 @@ TEST_F(PermissionsInttest, TestsThatCancelllingPrerenderDeniesPermission) {
         }));
     EXPECT_FALSE(web_state());
   }
-}
-
-// Tests that permission is denied for non-secure origins.
-TEST_F(PermissionsInttest, TestPermissionDeniedForNonSecureOrigin) {
-  // Initialize the decision to a value that should map to none of the
-  // WKPermissionDecisions.
-  __block NSInteger decision = -1;
-  WKWebView* web_view = [web_controller() ensureWebViewCreated];
-  id<WKUIDelegate> ui_delegate = web_view.UIDelegate;
-
-  // Fake a media capture permission request.
-  CRWMediaCapturePermissionRequest* request = [[CRWMediaCapturePermissionRequest
-      alloc]
-      initWithDecisionHandler:^(WKPermissionDecision wk_permission_decision) {
-        decision = static_cast<NSInteger>(wk_permission_decision);
-      }
-                 onTaskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
-  request.presenter = (id<CRWMediaCapturePermissionPresenter>)ui_delegate;
-  [request displayPromptForMediaCaptureType:WKMediaCaptureTypeCamera
-                                     origin:GURL(kInsecureUrl)];
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, true, ^bool {
-    return decision == static_cast<NSInteger>(WKPermissionDecisionDeny);
-  }));
 }
 
 #endif  // TARGET_OS_SIMULATOR

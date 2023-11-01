@@ -120,19 +120,18 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
           initWithDecisionHandler:decisionHandler
                      onTaskRunner:self.mainTaskRunner];
   request.presenter = self;
-  GURL securityOrigin = web::GURLOriginWithWKSecurityOrigin(origin);
   if (web::GetWebClient()->EnableFullscreenAPI()) {
     if (@available(iOS 16, *)) {
       if (webView.fullscreenState == WKFullscreenStateInFullscreen ||
           webView.fullscreenState == WKFullscreenStateEnteringFullscreen) {
         [webView closeAllMediaPresentationsWithCompletionHandler:^{
-          [request displayPromptForMediaCaptureType:type origin:securityOrigin];
+          [request displayPromptForMediaCaptureType:type];
         }];
         return;
       }
     }
   }
-  [request displayPromptForMediaCaptureType:type origin:securityOrigin];
+  [request displayPromptForMediaCaptureType:type];
 }
 
 - (WKWebView*)webView:(WKWebView*)webView
