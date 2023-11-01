@@ -10,6 +10,7 @@
 #include "ash/wm/session_state_animator.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "ui/aura/client/aura_constants.h"
 
 namespace ash {
@@ -99,6 +100,48 @@ TEST_F(SessionStateAnimatiorImplContainersTest,
       base::BindOnce([](int* count) { ++(*count); }, &callback_count));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, callback_count);
+}
+
+// Tests that AnimationSequence is not released prematurely because
+// LayerCopyAnimator aborts animations due to display size change.
+TEST_F(SessionStateAnimatiorImplContainersTest,
+       AnimationSequenceAndLayerCopyAnimator) {
+  UpdateDisplay("300x200,500x400");
+  base::RunLoop().RunUntilIdle();
+
+  // Create windows in containers of all displays so that the containers will
+  // be animated.
+  auto window_1 = CreateTestWindow(gfx::Rect(0, 0, 30, 20));
+  auto window_2 = CreateTestWindow(gfx::Rect(600, 0, 30, 20));
+
+  SessionStateAnimatorImpl animator;
+
+  // Creates LayerCopyAnimator on containers.
+  animator.StartAnimation(SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
+                          SessionStateAnimator::ANIMATION_COPY_LAYER,
+                          SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE);
+
+  // Simulate display changes that cause LayerCopyAnimators of first part of
+  // containers list to fail.
+  UpdateDisplay("600x500,500x400");
+
+  base::RunLoop animation_wait_loop;
+  auto animation_ended = [&](bool) { animation_wait_loop.Quit(); };
+
+  // Start a ANIMATION_DROP sequence.
+  SessionStateAnimator::AnimationSequence* animation_sequence =
+      animator.BeginAnimationSequence(
+          base::BindLambdaForTesting(animation_ended));
+  animation_sequence->StartAnimation(
+      SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
+      SessionStateAnimator::ANIMATION_DROP,
+      SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  animation_sequence->EndSequence();
+
+  // Wait for `animation_ended` to be called.
+  animation_wait_loop.Run();
+
+  // No crash or use-after-free should happen.
 }
 
 }  // namespace ash

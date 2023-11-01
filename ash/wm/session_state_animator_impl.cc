@@ -352,20 +352,33 @@ class SessionStateAnimatorImpl::AnimationSequence
     animator_->StartAnimationInSequence(container_mask, type, speed, this);
   }
 
+  void EndSequence() override {
+    SessionStateAnimator::AnimationSequence::EndSequence();
+
+    // Mark animation completed if there are no pending ones at the end in
+    // case it is skipped during animation setup because the sequence is not
+    // marked as ended..
+    if (sequences_completed_ == sequences_attached_) {
+      OnAnimationCompleted();
+    }
+  }
+
  private:
   ~AnimationSequence() override = default;
 
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
     sequences_completed_++;
-    if (sequences_completed_ == sequences_attached_)
+    if (sequence_ended() && sequences_completed_ == sequences_attached_) {
       OnAnimationCompleted();
+    }
   }
 
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {
     sequences_completed_++;
-    if (sequences_completed_ == sequences_attached_)
+    if (sequence_ended() && sequences_completed_ == sequences_attached_) {
       OnAnimationAborted();
+    }
   }
 
   void OnLayerAnimationScheduled(
