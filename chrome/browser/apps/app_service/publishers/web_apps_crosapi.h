@@ -110,6 +110,7 @@ class WebAppsCrosapi : public KeyedService,
                     MenuType menu_type,
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
+  void UpdateAppSize(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      WindowMode window_mode) override;
   void PauseApp(const std::string& app_id) override;

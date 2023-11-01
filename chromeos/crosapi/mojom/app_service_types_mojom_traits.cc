@@ -4,6 +4,7 @@
 
 #include "chromeos/crosapi/mojom/app_service_types_mojom_traits.h"
 
+#include <cstddef>
 #include <string>
 #include <utility>
 
@@ -137,6 +138,20 @@ StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::is_platform_app(
   return ConvertOptionalBoolToMojomOptionalBool(r->is_platform_app);
 }
 
+// static
+absl::optional<uint64_t>
+StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::app_size_in_bytes(
+    const apps::AppPtr& r) {
+  return r->app_size_in_bytes;
+}
+
+// static
+absl::optional<uint64_t>
+StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::data_size_in_bytes(
+    const apps::AppPtr& r) {
+  return r->data_size_in_bytes;
+}
+
 bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
     crosapi::mojom::AppDataView data,
     apps::AppPtr* out) {
@@ -256,6 +271,10 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   if (!data.ReadIsPlatformApp(&is_platform_app))
     return false;
 
+  absl::optional<uint64_t> app_size_in_bytes = data.app_size_in_bytes();
+
+  absl::optional<uint64_t> data_size_in_bytes = data.data_size_in_bytes();
+
   auto app = std::make_unique<apps::App>(app_type, app_id);
   app->readiness = readiness;
   app->name = name;
@@ -295,6 +314,8 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
       ConvertMojomOptionalBoolToOptionalBool(handles_intents);
   app->is_platform_app =
       ConvertMojomOptionalBoolToOptionalBool(is_platform_app);
+  app->app_size_in_bytes = app_size_in_bytes;
+  app->data_size_in_bytes = data_size_in_bytes;
   *out = std::move(app);
   return true;
 }

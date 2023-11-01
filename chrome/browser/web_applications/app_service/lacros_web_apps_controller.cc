@@ -177,6 +177,10 @@ void LacrosWebAppsController::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
 
+void LacrosWebAppsController::UpdateAppSize(const std::string& app_id) {
+  return publisher_helper().UpdateAppSize(app_id);
+}
+
 void LacrosWebAppsController::SetWindowMode(const std::string& app_id,
                                             apps::WindowMode window_mode) {
   return publisher_helper().SetWindowMode(app_id, window_mode);

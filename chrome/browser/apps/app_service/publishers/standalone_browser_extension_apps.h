@@ -102,6 +102,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   void SetWindowMode(const std::string& app_id,
                      WindowMode window_mode) override;
   void StopApp(const std::string& app_id) override;
+  void UpdateAppSize(const std::string& app_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
 
   // crosapi::mojom::AppPublisher overrides.

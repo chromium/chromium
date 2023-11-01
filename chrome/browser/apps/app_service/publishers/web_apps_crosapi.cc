@@ -210,6 +210,13 @@ void WebAppsCrosapi::GetMenuModel(
                              std::move(menu_items), std::move(callback)));
 }
 
+void WebAppsCrosapi::UpdateAppSize(const std::string& app_id) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+  controller_->UpdateAppSize(app_id);
+}
+
 void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
                                    WindowMode window_mode) {
   if (!LogIfNotConnected(FROM_HERE)) {

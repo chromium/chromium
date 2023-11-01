@@ -120,6 +120,10 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
 
   static crosapi::mojom::OptionalBool is_platform_app(const apps::AppPtr& r);
 
+  static absl::optional<uint64_t> app_size_in_bytes(const apps::AppPtr& r);
+
+  static absl::optional<uint64_t> data_size_in_bytes(const apps::AppPtr& r);
+
   static bool Read(crosapi::mojom::AppDataView data, apps::AppPtr* out);
 };
 

@@ -1192,6 +1192,17 @@ apps::WindowMode WebAppPublisherHelper::GetWindowMode(
   return ConvertDisplayModeToWindowMode(display_mode);
 }
 
+void WebAppPublisherHelper::UpdateAppSize(const std::string& app_id) {
+  const auto* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  provider_->scheduler().ComputeAppSize(
+      app_id, base::BindOnce(&WebAppPublisherHelper::OnGetWebAppSize,
+                             weak_ptr_factory_.GetWeakPtr(), app_id));
+}
+
 void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
                                           apps::WindowMode window_mode) {
   auto user_display_mode = mojom::UserDisplayMode::kStandalone;
@@ -1992,6 +2003,18 @@ void WebAppPublisherHelper::OnLaunchCompleted(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::move(on_complete).Run(web_contents.get());
+}
+
+void WebAppPublisherHelper::OnGetWebAppSize(
+    webapps::AppId app_id,
+    absl::optional<ComputeAppSizeCommand::Size> size) {
+  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  if (!size.has_value()) {
+    return;
+  }
+  app->app_size_in_bytes = size->app_size_in_bytes;
+  app->data_size_in_bytes = size->data_size_in_bytes;
+  delegate_->PublishWebApp(std::move(app));
 }
 
 }  // namespace web_app

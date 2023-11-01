@@ -104,6 +104,14 @@ struct App {
   // IDs used for policy to identify the app.
   // For web apps, it contains the install URL(s).
   array<string>? policy_ids@29;
+
+  // The amount of storage (in bytes) used by the app.
+  [MinVersion=21]
+  uint64? app_size_in_bytes@30;
+
+  // The amount of storage (in bytes) used by the app's data.
+  [MinVersion=21]
+  uint64? data_size_in_bytes@31;
 };
 
 // The types of apps available in the registry.

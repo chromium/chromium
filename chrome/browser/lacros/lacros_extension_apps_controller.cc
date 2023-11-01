@@ -206,6 +206,11 @@ void LacrosExtensionAppsController::OpenNativeSettings(
   chrome::ShowExtensions(browser, extension->id());
 }
 
+void LacrosExtensionAppsController::UpdateAppSize(const std::string& app_id) {
+  DCHECK(publisher_);
+  return publisher_->UpdateAppSize(app_id);
+}
+
 void LacrosExtensionAppsController::SetWindowMode(
     const std::string& app_id,
     apps::WindowMode window_mode) {

@@ -78,6 +78,7 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
                          ui::ResourceScaleFactor scale_factor,
                          apps::LoadIconCallback callback) override;
   void OpenNativeSettings(const std::string& app_id) override;
+  void UpdateAppSize(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::WindowMode window_mode) override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params,

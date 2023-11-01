@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/extend.h"
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -32,12 +33,14 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/browser/path_util.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
@@ -522,6 +525,21 @@ void LacrosExtensionAppsPublisher::UpdateAppWindowMode(
   matched->second->Publish(extension, apps::Readiness::kReady);
 }
 
+void LacrosExtensionAppsPublisher::UpdateAppSize(const std::string& app_id) {
+  Profile* profile = nullptr;
+  const extensions::Extension* extension = nullptr;
+  bool success = lacros_extensions_util::GetProfileAndExtension(
+      app_id, &profile, &extension);
+  if (!success) {
+    return;
+  }
+
+  extensions::path_util::CalculateExtensionDirectorySize(
+      extension->path(),
+      base::BindOnce(&LacrosExtensionAppsPublisher::OnSizeCalculated,
+                     weak_ptr_factory_.GetWeakPtr(), extension->id()));
+}
+
 void LacrosExtensionAppsPublisher::OnIsCapturingVideoChanged(
     content::WebContents* web_contents,
     bool is_capturing_video) {
@@ -546,6 +564,18 @@ void LacrosExtensionAppsPublisher::OnIsCapturingAudioChanged(
   auto result = media_requests_.UpdateMicrophoneState(
       app_id.value(), web_contents, is_capturing_audio);
   ModifyCapabilityAccess(app_id.value(), result.camera, result.microphone);
+}
+
+void LacrosExtensionAppsPublisher::OnSizeCalculated(const std::string& app_id,
+                                                    int64_t size) {
+  std::vector<apps::AppPtr> apps;
+  apps::AppType app_type = which_type_.ChooseForChromeAppOrExtension(
+      apps::AppType::kStandaloneBrowserChromeApp,
+      apps::AppType::kStandaloneBrowserExtension);
+  auto app = std::make_unique<apps::App>(app_type, app_id);
+  app->app_size_in_bytes = size;
+  apps.push_back(std::move(app));
+  Publish(std::move(apps));
 }
 
 absl::optional<std::string> LacrosExtensionAppsPublisher::MaybeGetAppId(

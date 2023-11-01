@@ -46,6 +46,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->show_in_management = true;
   input->has_badge = absl::nullopt;
   input->paused = false;
+  input->app_size_in_bytes = 1000000;
+  input->data_size_in_bytes = 1000000;
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
@@ -79,6 +81,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   EXPECT_EQ(output->description, "description");
   EXPECT_EQ(output->version, "version");
   EXPECT_EQ(output->additional_search_terms, input->additional_search_terms);
+  EXPECT_EQ(output->app_size_in_bytes, 1000000);
+  EXPECT_EQ(output->data_size_in_bytes, 1000000);
 
   EXPECT_EQ(output->icon_key->timeline, 1U);
   EXPECT_EQ(output->icon_key->icon_effects, 2U);
@@ -151,6 +155,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->allow_uninstall = true;
   input->handles_intents = true;
   input->is_platform_app = absl::nullopt;
+  input->app_size_in_bytes = absl::nullopt;
+  input->data_size_in_bytes = absl::nullopt;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -171,6 +177,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   EXPECT_TRUE(output->show_in_management.value());
   EXPECT_FALSE(output->has_badge.has_value());
   EXPECT_FALSE(output->paused.value());
+  EXPECT_FALSE(output->app_size_in_bytes.has_value());
+  EXPECT_FALSE(output->data_size_in_bytes.has_value());
 
   ASSERT_EQ(output->intent_filters.size(), 1U);
   auto& filter = output->intent_filters[0];

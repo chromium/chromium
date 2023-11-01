@@ -20,6 +20,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -236,6 +237,8 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
   apps::WindowMode GetWindowMode(const std::string& app_id);
 
+  void UpdateAppSize(const std::string& app_id);
+
   void SetWindowMode(const std::string& app_id, apps::WindowMode window_mode);
 
   void SetRunOnOsLoginMode(const std::string& app_id,
@@ -415,6 +418,9 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       base::WeakPtr<Browser> browser,
       base::WeakPtr<content::WebContents> web_contents,
       apps::LaunchContainer container);
+
+  void OnGetWebAppSize(webapps::AppId app_id,
+                       absl::optional<ComputeAppSizeCommand::Size> size);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 
