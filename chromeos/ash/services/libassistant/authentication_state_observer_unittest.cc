@@ -8,7 +8,6 @@
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -88,11 +87,6 @@ class AuthenticationStateObserverTest : public ::testing::Test {
   }
 
   AuthenticationStateObserverMock& observer_mock() { return observer_mock_; }
-
-  assistant_client::AssistantManagerDelegate& assistant_manager_delegate() {
-    return *service_tester_.assistant_manager_internal()
-                .assistant_manager_delegate();
-  }
 
   void FlushMojomPipes() { service_tester_.FlushForTesting(); }
 

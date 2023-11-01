@@ -49,11 +49,6 @@ LibassistantServiceTester::assistant_manager() {
   return libassistant_factory_->assistant_manager();
 }
 
-chromeos::assistant::FakeAssistantManagerInternal&
-LibassistantServiceTester::assistant_manager_internal() {
-  return libassistant_factory_->assistant_manager_internal();
-}
-
 void LibassistantServiceTester::Start() {
   service_controller_->Initialize(mojom::BootupConfig::New(),
                                   BindURLLoaderFactory());

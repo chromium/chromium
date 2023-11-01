@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -56,63 +57,6 @@ using assistant_client::SpeakerIdEnrollmentUpdate;
     return;                                                                 \
   }
 
-OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
-    const ::assistant_client::SpeakerIdEnrollmentUpdate::State& state) {
-  OnSpeakerIdEnrollmentEventRequest request;
-  SpeakerIdEnrollmentEvent* event = request.mutable_event();
-  switch (state) {
-    case SpeakerIdEnrollmentUpdate::State::INIT: {
-      event->mutable_init_state();
-      break;
-    }
-    case SpeakerIdEnrollmentUpdate::State::CHECK: {
-      event->mutable_check_state();
-      break;
-    }
-    case SpeakerIdEnrollmentUpdate::State::LISTEN: {
-      event->mutable_listen_state();
-      break;
-    }
-    case SpeakerIdEnrollmentUpdate::State::PROCESS: {
-      event->mutable_process_state();
-      break;
-    }
-    case SpeakerIdEnrollmentUpdate::State::UPLOAD: {
-      event->mutable_upload_state();
-      break;
-    }
-    case SpeakerIdEnrollmentUpdate::State::FETCH: {
-      event->mutable_fetch_state();
-      break;
-    }
-    case SpeakerIdEnrollmentUpdate::State::DONE: {
-      event->mutable_done_state();
-      break;
-    }
-    case SpeakerIdEnrollmentUpdate::State::FAILURE: {
-      event->mutable_failure_state();
-      break;
-    }
-  }
-  return request;
-}
-
-[[nodiscard]] assistant_client::InternalOptions* CreateInternalOptions(
-    assistant_client::AssistantManagerInternal* assistant_manager_internal,
-    const std::string& locale,
-    bool spoken_feedback_enabled,
-    bool dark_mode_enabled) {
-  auto* options = assistant_manager_internal->CreateDefaultInternalOptions();
-  auto proto = chromeos::assistant::CreateInternalOptionsProto(
-      locale, spoken_feedback_enabled);
-  chromeos::libassistant::PopulateInternalOptionsFromProto(proto, options);
-
-  chromeos::assistant::SetDarkModeEnabledForV1(options, dark_mode_enabled);
-  chromeos::assistant::SetTimezoneOverrideForV1(options);
-
-  return options;
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,65 +86,6 @@ class AssistantClientV1::DeviceStateListener
   raw_ptr<AssistantClientV1, ExperimentalAsh> assistant_client_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<DeviceStateListener> weak_factory_{this};
-};
-
-////////////////////////////////////////////////////////////////////////////////
-//   AssistantClientV1::DisplayConnectionImpl
-////////////////////////////////////////////////////////////////////////////////
-
-class AssistantClientV1::DisplayConnectionImpl
-    : public assistant_client::DisplayConnection {
- public:
-  DisplayConnectionImpl()
-      : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
-  DisplayConnectionImpl(const DisplayConnectionImpl&) = delete;
-  DisplayConnectionImpl& operator=(const DisplayConnectionImpl&) = delete;
-  ~DisplayConnectionImpl() override = default;
-
-  // assistant_client::DisplayConnection overrides:
-  void SetDelegate(Delegate* delegate) override {
-    ENSURE_CALLING_SEQUENCE(&DisplayConnectionImpl::SetDelegate, delegate);
-
-    delegate_ = delegate;
-  }
-
-  void OnAssistantEvent(const std::string& assistant_event_bytes) override {
-    ENSURE_CALLING_SEQUENCE(&DisplayConnectionImpl::OnAssistantEvent,
-                            assistant_event_bytes);
-
-    DCHECK(observer_);
-
-    OnAssistantDisplayEventRequest request;
-    auto* assistant_display_event = request.mutable_event();
-    auto* on_assistant_event =
-        assistant_display_event->mutable_on_assistant_event();
-    on_assistant_event->set_assistant_event_bytes(assistant_event_bytes);
-    observer_->OnGrpcMessage(request);
-  }
-
-  void SetObserver(
-      GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
-    DCHECK(!observer_);
-    observer_ = observer;
-  }
-
-  void SendDisplayRequest(const std::string& display_request_bytes) {
-    if (!delegate_) {
-      LOG(ERROR) << "Can't send DisplayRequest before delegate is set.";
-      return;
-    }
-
-    delegate_->OnDisplayRequest(display_request_bytes);
-  }
-
- private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
-
-  raw_ptr<GrpcServicesObserver<OnAssistantDisplayEventRequest>, ExperimentalAsh>
-      observer_ = nullptr;
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<DisplayConnectionImpl> weak_factory_{this};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -240,83 +125,14 @@ class AssistantClientV1::MediaManagerListener
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// AssistantClientV1::AssistantManagerDelegateImpl
-////////////////////////////////////////////////////////////////////////////////
-
-// Implementation of |AssistantManagerDelegate| that will forward all calls
-// to the correct observers.
-// It also keeps track of the last text query that was started, so we can
-// pass its metadata to |OnConversationTurnStarted|.
-class AssistantClientV1::AssistantManagerDelegateImpl
-    : public assistant_client::AssistantManagerDelegate {
- public:
-  explicit AssistantManagerDelegateImpl(AssistantClientV1* assistant_client)
-      : assistant_client_(assistant_client),
-        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
-  AssistantManagerDelegateImpl(const AssistantManagerDelegateImpl&) = delete;
-  AssistantManagerDelegateImpl& operator=(const AssistantManagerDelegateImpl&) =
-      delete;
-  ~AssistantManagerDelegateImpl() override = default;
-
-  // assistant_client::AssistantManagerDelegate overrides:
-  void OnConversationTurnStartedInternal(
-      const assistant_client::ConversationTurnMetadata& metadata) override {
-    ENSURE_CALLING_SEQUENCE(
-        &AssistantManagerDelegateImpl::OnConversationTurnStartedInternal,
-        metadata);
-
-    OnConversationStateEventRequest request;
-    auto* turn_started = request.mutable_event()->mutable_on_turn_started();
-    turn_started->set_turn_id(metadata.id);
-    turn_started->set_is_mic_open(metadata.is_mic_open);
-    assistant_client_->NotifyConversationStateEvent(request);
-  }
-
-  void OnNotificationRemoved(const std::string& grouping_key) override {
-    ENSURE_CALLING_SEQUENCE(
-        &AssistantManagerDelegateImpl::OnNotificationRemoved, grouping_key);
-
-    OnDeviceStateEventRequest request;
-    auto* notification_removed =
-        request.mutable_event()->mutable_on_notification_removed();
-    notification_removed->set_grouping_id(grouping_key);
-    assistant_client_->NotifyDeviceStateEvent(request);
-  }
-
-  void OnCommunicationError(int error_code) override {
-    ENSURE_CALLING_SEQUENCE(&AssistantManagerDelegateImpl::OnCommunicationError,
-                            error_code);
-
-    if (chromeos::assistant::IsAuthError(error_code)) {
-      OnDeviceStateEventRequest request;
-      auto* communication_error =
-          request.mutable_event()->mutable_on_communication_error();
-      communication_error->set_error_code(
-          ::assistant::api::events::DeviceStateEvent::OnCommunicationError::
-              AUTH_TOKEN_FAIL);
-      assistant_client_->NotifyDeviceStateEvent(request);
-    }
-  }
-
- private:
-  raw_ptr<AssistantClientV1, ExperimentalAsh> assistant_client_ = nullptr;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<AssistantManagerDelegateImpl> weak_factory_{this};
-};
-
-////////////////////////////////////////////////////////////////////////////////
 //   AssistantClientV1
 ////////////////////////////////////////////////////////////////////////////////
 
 AssistantClientV1::AssistantClientV1(
-    std::unique_ptr<assistant_client::AssistantManager> manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal)
-    : AssistantClient(std::move(manager), assistant_manager_internal),
+    std::unique_ptr<assistant_client::AssistantManager> manager)
+    : AssistantClient(std::move(manager)),
       device_state_listener_(std::make_unique<DeviceStateListener>(this)),
-      display_connection_(std::make_unique<DisplayConnectionImpl>()),
-      media_manager_listener_(std::make_unique<MediaManagerListener>(this)),
-      assistant_manager_delegate_(
-          std::make_unique<AssistantManagerDelegateImpl>(this)) {
+      media_manager_listener_(std::make_unique<MediaManagerListener>(this)) {
   assistant_manager()->AddDeviceStateListener(device_state_listener_.get());
 }
 
@@ -344,51 +160,33 @@ void AssistantClientV1::StartGrpcHttpConnectionClient(
 
 void AssistantClientV1::AddExperimentIds(
     const std::vector<std::string>& exp_ids) {
-  assistant_manager_internal()->AddExtraExperimentIds(exp_ids);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::AddSpeakerIdEnrollmentEventObserver(
     GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {
-  speaker_event_observer_list_.AddObserver(observer);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::RemoveSpeakerIdEnrollmentEventObserver(
     GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {
-  speaker_event_observer_list_.RemoveObserver(observer);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::StartSpeakerIdEnrollment(
     const StartSpeakerIdEnrollmentRequest& request) {
-  assistant_client::SpeakerIdEnrollmentConfig client_config;
-  client_config.user_id = request.user_id();
-  client_config.skip_cloud_enrollment = request.skip_cloud_enrollment();
-
-  auto callback =
-      base::BindRepeating(&AssistantClientV1::OnSpeakerIdEnrollmentUpdate,
-                          weak_factory_.GetWeakPtr());
-
-  assistant_manager_internal()->StartSpeakerIdEnrollment(
-      client_config,
-      ToStdFunctionRepeating(BindToCurrentSequenceRepeating(callback)));
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::CancelSpeakerIdEnrollment(
     const CancelSpeakerIdEnrollmentRequest& request) {
-  assistant_manager_internal()->StopSpeakerIdEnrollment([]() {});
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::GetSpeakerIdEnrollmentInfo(
     const ::assistant::api::GetSpeakerIdEnrollmentInfoRequest& request,
     base::OnceCallback<void(bool user_model_exists)> on_done) {
-  auto callback =
-      AdaptCallback<const assistant_client::SpeakerIdEnrollmentStatus&>(
-          /*once_callback=*/std::move(on_done),
-          /*transformer=*/[](const assistant_client::SpeakerIdEnrollmentStatus&
-                                 status) { return status.user_model_exists; });
-
-  assistant_manager_internal()->GetSpeakerIdEnrollmentStatus(
-      request.cloud_enrollment_status_request().user_id(),
-      ToStdFunction(BindToCurrentSequence(std::move(callback))));
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::ResetAllDataAndShutdown() {
@@ -397,13 +195,12 @@ void AssistantClientV1::ResetAllDataAndShutdown() {
 
 void AssistantClientV1::SendDisplayRequest(
     const OnDisplayRequestRequest& request) {
-  display_connection_->SendDisplayRequest(request.display_request_bytes());
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::AddDisplayEventObserver(
     GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
-  display_connection_->SetObserver(observer);
-  assistant_manager_internal()->SetDisplayConnection(display_connection_.get());
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::ResumeCurrentStream() {
@@ -429,13 +226,7 @@ void AssistantClientV1::AddDeviceStateEventObserver(
 
 void AssistantClientV1::AddMediaActionFallbackEventObserver(
     GrpcServicesObserver<OnMediaActionFallbackEventRequest>* observer) {
-  media_action_fallback_event_observer_list_.AddObserver(observer);
-
-  // Register handler for media actions.
-  auto callback = base::BindRepeating(&AssistantClientV1::HandleMediaAction,
-                                      weak_factory_.GetWeakPtr());
-  assistant_manager_internal()->RegisterFallbackMediaHandler(
-      ToStdFunctionRepeating(BindToCurrentSequenceRepeating(callback)));
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::SendVoicelessInteraction(
@@ -443,19 +234,12 @@ void AssistantClientV1::SendVoicelessInteraction(
     const std::string& description,
     const ::assistant::api::VoicelessOptions& options,
     base::OnceCallback<void(bool)> on_done) {
-  assistant_client::VoicelessOptions voiceless_options;
-  chromeos::libassistant::PopulateVoicelessOptionsFromProto(options,
-                                                            &voiceless_options);
-  assistant_manager_internal()->SendVoicelessInteraction(
-      interaction.SerializeAsString(), description, voiceless_options,
-      [callback = std::move(on_done)](bool result) mutable {
-        std::move(callback).Run(result);
-      });
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::RegisterActionModule(
     assistant_client::ActionModule* action_module) {
-  assistant_manager_internal()->RegisterActionModule(action_module);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::StartVoiceInteraction() {
@@ -463,15 +247,12 @@ void AssistantClientV1::StartVoiceInteraction() {
 }
 
 void AssistantClientV1::StopAssistantInteraction(bool cancel_conversation) {
-  assistant_manager_internal()->StopAssistantInteractionInternal(
-      cancel_conversation);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::AddConversationStateEventObserver(
     GrpcServicesObserver<OnConversationStateEventRequest>* observer) {
-  conversation_state_event_observer_list_.AddObserver(observer);
-  assistant_manager_internal()->SetAssistantManagerDelegate(
-      assistant_manager_delegate_.get());
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::SetAuthenticationInfo(const AuthTokens& tokens) {
@@ -480,73 +261,26 @@ void AssistantClientV1::SetAuthenticationInfo(const AuthTokens& tokens) {
 
 void AssistantClientV1::SetInternalOptions(const std::string& locale,
                                            bool spoken_feedback_enabled) {
-  // All options must have value before we can convey them to libassistant.
-  DCHECK(dark_mode_enabled_.has_value());
-
-  assistant_manager_internal()->SetOptions(
-      *CreateInternalOptions(assistant_manager_internal(), locale,
-                             spoken_feedback_enabled,
-                             dark_mode_enabled_.value()),
-      [](bool success) { DVLOG(2) << "set options: " << success; });
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::UpdateAssistantSettings(
     const SettingsUiUpdate& settings,
     const std::string& user_id,
     base::OnceCallback<void(const UpdateAssistantSettingsResponse&)> on_done) {
-  std::string update_settings_ui_request =
-      chromeos::assistant::SerializeUpdateSettingsUiRequest(
-          settings.SerializeAsString());
-
-  auto callback = AdaptCallback<const assistant_client::VoicelessResponse&>(
-      /*once_callback=*/std::move(on_done),
-      /*transformer=*/&ToUpdateSettingsResponseProto);
-
-  assistant_manager_internal()->SendUpdateSettingsUiRequest(
-      update_settings_ui_request, user_id,
-      ToStdFunction(BindToCurrentSequence(std::move(callback))));
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::GetAssistantSettings(
     const ::assistant::ui::SettingsUiSelector& selector,
     const std::string& user_id,
     base::OnceCallback<void(const GetAssistantSettingsResponse&)> on_done) {
-  std::string get_settins_ui_request =
-      chromeos::assistant::SerializeGetSettingsUiRequest(
-          selector.SerializeAsString());
-
-  auto callback = AdaptCallback<const assistant_client::VoicelessResponse&>(
-      /*once_callback=*/std::move(on_done),
-      /*transformer=*/&ToGetSettingsResponseProto);
-
-  assistant_manager_internal()->SendGetSettingsUiRequest(
-      get_settins_ui_request, user_id,
-      ToStdFunction(BindToCurrentSequence(std::move(callback))));
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::AddMediaManagerListener() {
   assistant_manager()->GetMediaManager()->AddListener(
       media_manager_listener_.get());
-}
-
-void AssistantClientV1::HandleMediaAction(
-    const std::string& action_name,
-    const std::string& media_action_args_proto) {
-  OnMediaActionFallbackEventRequest request;
-  auto* media_action = request.mutable_event()->mutable_on_media_action_event();
-  media_action->set_action_name(action_name);
-  media_action->set_action_args(media_action_args_proto);
-
-  for (auto& observer : media_action_fallback_event_observer_list_) {
-    observer.OnGrpcMessage(request);
-  }
-}
-
-void AssistantClientV1::NotifyConversationStateEvent(
-    const OnConversationStateEventRequest& request) {
-  for (auto& observer : conversation_state_event_observer_list_) {
-    observer.OnGrpcMessage(request);
-  }
 }
 
 void AssistantClientV1::NotifyDeviceStateEvent(
@@ -561,16 +295,8 @@ void AssistantClientV1::NotifyAllServicesReady() {
       ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE);
 }
 
-void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(
-    const SpeakerIdEnrollmentUpdate& update) {
-  auto event_request = ConvertToGrpcEventRequest(update.state);
-  for (auto& observer : speaker_event_observer_list_) {
-    observer.OnGrpcMessage(event_request);
-  }
-}
-
 void AssistantClientV1::SetLocaleOverride(const std::string& locale) {
-  assistant_manager_internal()->SetLocaleOverride(locale);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::SetDeviceAttributes(bool enable_dark_mode) {
@@ -589,86 +315,31 @@ void AssistantClientV1::EnableListening(bool listening_enabled) {
 
 void AssistantClientV1::AddTimeToTimer(const std::string& id,
                                        const base::TimeDelta& duration) {
-  if (alarm_timer_manager())
-    alarm_timer_manager()->AddTimeToTimer(id, duration.InSeconds());
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::PauseTimer(const std::string& timer_id) {
-  if (alarm_timer_manager())
-    alarm_timer_manager()->PauseTimer(timer_id);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::RemoveTimer(const std::string& timer_id) {
-  if (alarm_timer_manager())
-    alarm_timer_manager()->RemoveEvent(timer_id);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::ResumeTimer(const std::string& timer_id) {
-  if (alarm_timer_manager())
-    alarm_timer_manager()->ResumeTimer(timer_id);
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::GetTimers(
     base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
         on_done) {
-  std::vector<assistant::AssistantTimer> timers;
-  if (alarm_timer_manager()) {
-    timers =
-        GetAllCurrentTimersFromEvents(alarm_timer_manager()->GetAllEvents());
-  }
-  std::move(on_done).Run(std::move(timers));
+  NOTREACHED_NORETURN();
 }
 
 void AssistantClientV1::AddAlarmTimerEventObserver(
     GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
         observer) {
-  timer_event_observer_list_.AddObserver(observer);
-
-  // We always want to know when a timer has started ringing.
-  alarm_timer_manager()->RegisterRingingStateListener(
-      ToStdFunctionRepeating(BindToCurrentSequenceRepeating(
-          [](const base::WeakPtr<AssistantClientV1>& self) {
-            if (self) {
-              self->GetAndNotifyTimerStatus();
-            }
-          },
-          weak_factory_.GetWeakPtr())));
-
-  // In timers v2, we also want to know when timers are scheduled,
-  // updated, and/or removed so that we can represent those states
-  // in UI.
-  alarm_timer_manager()->RegisterTimerActionListener(
-      ToStdFunctionRepeating(BindToCurrentSequenceRepeating(
-          [](const base::WeakPtr<AssistantClientV1>& self,
-             const assistant_client::AlarmTimerManager::EventActionType&
-                 ignore) {
-            if (self) {
-              self->GetAndNotifyTimerStatus();
-            }
-          },
-          weak_factory_.GetWeakPtr())));
-}
-
-assistant_client::AlarmTimerManager* AssistantClientV1::alarm_timer_manager() {
-  DCHECK(assistant_manager_internal());
-  return assistant_manager_internal()->GetAlarmTimerManager();
-}
-
-void AssistantClientV1::GetAndNotifyTimerStatus() {
-  GetTimers(base::BindOnce(
-      [](const base::WeakPtr<AssistantClientV1>& self,
-         const std::vector<assistant::AssistantTimer>& timers) {
-        // Observers outlive `this`. Observers are added when
-        // `OnAssistantClientRunning()`, and destroyed when
-        // `OnDestroyingAssistantClient()`.
-        if (self) {
-          for (auto& observer : self->timer_event_observer_list_) {
-            observer.OnGrpcMessage(
-                CreateOnAlarmTimerEventRequestProtoForV1(timers));
-          }
-        }
-      },
-      weak_factory_.GetWeakPtr()));
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace ash::libassistant

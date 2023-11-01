@@ -8,27 +8,19 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 
 namespace ash::libassistant {
 
 class FakeAssistantClient : public AssistantClient {
  public:
   FakeAssistantClient(std::unique_ptr<chromeos::assistant::FakeAssistantManager>
-                          assistant_manager,
-                      chromeos::assistant::FakeAssistantManagerInternal*
-                          assistant_manager_internal);
+                          assistant_manager);
   ~FakeAssistantClient() override;
 
   // AssistantClient:
   chromeos::assistant::FakeAssistantManager* assistant_manager() {
     return reinterpret_cast<chromeos::assistant::FakeAssistantManager*>(
         AssistantClient::assistant_manager());
-  }
-  chromeos::assistant::FakeAssistantManagerInternal*
-  assistant_manager_internal() {
-    return reinterpret_cast<chromeos::assistant::FakeAssistantManagerInternal*>(
-        AssistantClient::assistant_manager_internal());
   }
 
   void StartServices(ServicesStatusObserver* services_status_observer) override;
@@ -104,7 +96,6 @@ class FakeAssistantClient : public AssistantClient {
           observer) override;
 
  private:
-  chromeos::assistant::FakeAlarmTimerManager* fake_alarm_timer_manager();
   void GetAndNotifyTimerStatus();
 
   raw_ptr<GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>,

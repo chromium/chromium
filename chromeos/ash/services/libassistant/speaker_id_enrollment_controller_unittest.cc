@@ -9,7 +9,6 @@
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,11 +64,6 @@ class AssistantSpeakerIdEnrollmentControllerTest : public ::testing::Test {
   void FlushForTesting() { service_tester_.FlushForTesting(); }
 
   LibassistantServiceTester& service_tester() { return service_tester_; }
-
-  chromeos::assistant::FakeAssistantManagerInternal&
-  assistant_manager_internal() {
-    return service_tester().assistant_manager_internal();
-  }
 
   assistant_client::SpeakerIdEnrollmentUpdate CreateUpdate(
       SpeakerIdEnrollmentState state) {

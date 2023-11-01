@@ -120,10 +120,7 @@ void ServiceController::Initialize(
 
   auto assistant_manager = libassistant_factory_->CreateAssistantManager(
       ToLibassistantConfig(*config));
-  assistant_client::AssistantManagerInternal* assistant_manager_internal =
-      nullptr;
-  assistant_client_ = AssistantClient::Create(std::move(assistant_manager),
-                                              assistant_manager_internal);
+  assistant_client_ = AssistantClient::Create(std::move(assistant_manager));
 
   DCHECK(settings_controller_);
   settings_controller_->SetAuthenticationTokens(

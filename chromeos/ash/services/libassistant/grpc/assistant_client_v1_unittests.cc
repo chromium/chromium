@@ -9,7 +9,6 @@
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,23 +26,6 @@ class AssistantManagerMock : public chromeos::assistant::FakeAssistantManager {
   // chromeos::assistant::FakeAssistantManager implementation:
   MOCK_METHOD(void, EnableListening, (bool value));
   MOCK_METHOD(void, SetAuthTokens, (const AssistantClient::AuthTokens&));
-};
-
-class AssistantManagerInternalMock
-    : public chromeos::assistant::FakeAssistantManagerInternal {
- public:
-  AssistantManagerInternalMock() = default;
-  AssistantManagerInternalMock(const AssistantManagerInternalMock&) = delete;
-  AssistantManagerInternalMock& operator=(const AssistantManagerInternalMock&) =
-      delete;
-  ~AssistantManagerInternalMock() override = default;
-
-  // chromeos::assistant::FakeAssistantManagerInternal implementation:
-  MOCK_METHOD(void, SetLocaleOverride, (const std::string& locale));
-  MOCK_METHOD(void,
-              SetOptions,
-              (const assistant_client::InternalOptions& options,
-               assistant_client::SuccessCallbackInternal on_done));
 };
 
 class MockServicesStatusObserver : public ServicesStatusObserver {
@@ -69,11 +51,8 @@ class AssistantClientV1Test : public testing::Test {
 
   void SetUp() override {
     auto assistant_manager = std::make_unique<AssistantManagerMock>();
-    assistant_manager_internal_ =
-        std::make_unique<testing::StrictMock<AssistantManagerInternalMock>>();
-
-    assistant_client_ = std::make_unique<AssistantClientV1>(
-        std::move(assistant_manager), assistant_manager_internal_.get());
+    assistant_client_ =
+        std::make_unique<AssistantClientV1>(std::move(assistant_manager));
   }
 
   // Start Libassistant services.
@@ -83,10 +62,6 @@ class AssistantClientV1Test : public testing::Test {
 
   AssistantClientV1& v1_client() { return *assistant_client_; }
 
-  AssistantManagerInternalMock& assistant_manager_internal_mock() {
-    return *assistant_manager_internal_;
-  }
-
   AssistantManagerMock& assistant_manager_mock() {
     return *reinterpret_cast<AssistantManagerMock*>(
         assistant_client_->assistant_manager());
@@ -95,32 +70,11 @@ class AssistantClientV1Test : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment environment_;
   std::unique_ptr<AssistantClientV1> assistant_client_ = nullptr;
-  std::unique_ptr<AssistantManagerInternalMock> assistant_manager_internal_ =
-      nullptr;
 };
 
 TEST_F(AssistantClientV1Test, ShouldNotifyServicesStarted) {
   MockServicesStatusObserver services_status_observer;
   StartServices(&services_status_observer);
-}
-
-TEST_F(AssistantClientV1Test, ShouldSetLocale) {
-  MockServicesStatusObserver services_status_observer;
-  StartServices(&services_status_observer);
-
-  EXPECT_CALL(assistant_manager_internal_mock(), SetLocaleOverride("locale"));
-
-  v1_client().SetLocaleOverride("locale");
-}
-
-TEST_F(AssistantClientV1Test, ShouldSetOptions) {
-  MockServicesStatusObserver services_status_observer;
-  StartServices(&services_status_observer);
-  v1_client().SetDeviceAttributes(/*dark_mode_enabled=*/true);
-
-  EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
-
-  v1_client().SetInternalOptions("locale", true);
 }
 
 TEST_F(AssistantClientV1Test, ShouldSetListeningEnabled) {

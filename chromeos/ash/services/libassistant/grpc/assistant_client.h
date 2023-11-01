@@ -49,7 +49,6 @@ class SettingsUiUpdate;
 namespace assistant_client {
 class ActionModule;
 class AssistantManager;
-class AssistantManagerInternal;
 class HttpConnectionFactory;
 }  // namespace assistant_client
 
@@ -94,8 +93,7 @@ class AssistantClient {
   using AuthTokens = std::vector<std::pair<std::string, std::string>>;
 
   AssistantClient(
-      std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal);
+      std::unique_ptr<assistant_client::AssistantManager> assistant_manager);
   AssistantClient(const AssistantClient&) = delete;
   AssistantClient& operator=(const AssistantClient&) = delete;
   virtual ~AssistantClient();
@@ -212,25 +210,16 @@ class AssistantClient {
   assistant_client::AssistantManager* assistant_manager() {
     return assistant_manager_.get();
   }
-  // Will not return nullptr.
-  assistant_client::AssistantManagerInternal* assistant_manager_internal() {
-    return assistant_manager_internal_;
-  }
 
-  // Creates an instance of AssistantClient, the returned instance could be
-  // LibAssistant V1 or V2 based depending on the current flags. It should be
-  // transparent to the caller.
+  // Creates an instance of AssistantClient.
   static std::unique_ptr<AssistantClient> Create(
-      std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal);
+      std::unique_ptr<assistant_client::AssistantManager> assistant_manager);
 
  protected:
   void ResetAssistantManager();
 
  private:
   std::unique_ptr<assistant_client::AssistantManager> assistant_manager_;
-  raw_ptr<assistant_client::AssistantManagerInternal, ExperimentalAsh>
-      assistant_manager_internal_ = nullptr;
 };
 
 }  // namespace ash::libassistant

@@ -12,7 +12,6 @@
 #include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,10 +78,6 @@ class AssistantSpeechRecognitionObserverTest : public ::testing::Test {
   }
 
   SpeechRecognitionObserverMock& observer_mock() { return observer_mock_; }
-
-  assistant_client::DisplayConnection& display_connection() {
-    return *service_tester_.assistant_manager_internal().display_connection();
-  }
 
   assistant_client::ConversationStateListener& conversation_state_listener() {
     return *service_tester_.assistant_manager().conversation_state_listener();

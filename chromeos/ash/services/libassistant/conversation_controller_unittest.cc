@@ -17,11 +17,8 @@ namespace {
 class AssistantClientMock : public FakeAssistantClient {
  public:
   AssistantClientMock(std::unique_ptr<chromeos::assistant::FakeAssistantManager>
-                          assistant_manager,
-                      chromeos::assistant::FakeAssistantManagerInternal*
-                          assistant_manager_internal)
-      : FakeAssistantClient(std::move(assistant_manager),
-                            assistant_manager_internal) {}
+                          assistant_manager)
+      : FakeAssistantClient(std::move(assistant_manager)) {}
   ~AssistantClientMock() override = default;
 
   // AssistantClient:
@@ -56,7 +53,7 @@ class ConversationControllerTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment environment_;
   ConversationController controller_;
-  AssistantClientMock assistant_client_{nullptr, nullptr};
+  AssistantClientMock assistant_client_{nullptr};
 };
 
 TEST_F(ConversationControllerTest, ShouldStartVoiceInteraction) {

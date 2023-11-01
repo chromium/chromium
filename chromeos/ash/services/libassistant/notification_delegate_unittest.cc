@@ -10,7 +10,6 @@
 #include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash::libassistant {
@@ -95,11 +94,6 @@ class NotificationDelegateTest : public ::testing::Test {
     service_tester_.service()
         .conversation_controller()
         .OnAssistantClientRunning(&service_tester_.assistant_client());
-  }
-
-  assistant_client::AssistantManagerDelegate& assistant_manager_delegate() {
-    return *service_tester_.assistant_manager_internal()
-                .assistant_manager_delegate();
   }
 
   NotificationDelegateMock& delegate_mock() { return delegate_mock_; }
