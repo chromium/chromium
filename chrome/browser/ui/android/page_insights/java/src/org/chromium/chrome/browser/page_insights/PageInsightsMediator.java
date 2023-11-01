@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
 import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
 import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvider;
@@ -114,6 +115,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final ObservableSupplier<Tab> mTabObservable;
     private final Supplier<Profile> mProfileSupplier;
     private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
+    private final boolean mIsAccessibilityEnabled;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
     @Nullable
@@ -232,6 +234,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mIsPageInsightsEnabledSupplier = isPageInsightsEnabledSupplier;
         mPageInsightsConfigProvider = pageInsightsConfigProvider;
         mPageInsightsDataLoader = new PageInsightsDataLoader();
+        mIsAccessibilityEnabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled();
         mSurfaceRendererContextValues =
                 PageInsightsActionHandlerImpl.createContextValues(
                         new PageInsightsActionHandlerImpl(
@@ -355,10 +358,19 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     }
 
     private void maybeAutoTriggerPageInsights() {
+        if (!mAutoTriggerReady) return;
+        if (mSheetContent == mSheetController.getCurrentSheetContent()) {
+            Log.v(
+                    TAG,
+                    "Not auto-triggering because page insights sheet content already being shown.");
+            return;
+        }
         if (!BrowserControlsUtils.areBrowserControlsOffScreen(mControlsStateProvider)
-                || mSheetContent == mSheetController.getCurrentSheetContent()
-                || !mAutoTriggerReady) {
-            Log.v(TAG, "Not auto-triggering because trigger conditions not yet met.");
+                && !mIsAccessibilityEnabled) {
+            Log.v(
+                    TAG,
+                    "Not auto-triggering because browser controls are not off screen and a11y is"
+                            + " not enabled.");
             return;
         }
         resetAutoTriggerTimer();
