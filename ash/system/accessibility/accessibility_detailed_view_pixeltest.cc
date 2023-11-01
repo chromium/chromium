@@ -47,7 +47,7 @@ TEST_F(AccessibilityDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/7, detailed_view_container));
+      /*revision_number=*/6, detailed_view_container));
 }
 
 }  // namespace ash

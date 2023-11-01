@@ -31,7 +31,6 @@
 //components/test/data/viz/backdrop_filter_masked.png
 //components/test/data/viz/backdrop_filter_masked_sw.png
 //components/test/data/viz/backdrop_filter_offset.png
-//components/test/data/viz/backdrop_filter_offset_sw.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_gl.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_graphite.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_vk.png
