@@ -3,7 +3,9 @@
 <script src='../../resources/testharnessreport.js'></script>
 <script src='../../resources/gesture-util.js'></script>
 <script src="resources/hover-on-scroll-checker.js"></script>
-
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 <style>
   body, html {
     margin: 0;
@@ -36,26 +38,20 @@
 
 <script>
   window.onload = async () => {
-    if (window.internals)
-      internals.settings.setScrollAnimatorEnabled(false);
+    if (!window.internals) {
+      // Test requires window.internals to hide cursor.
+      return;
+    }
 
     promise_test(async () => {
-      const elementHeight = 50;
-      const mouse = GestureSourceType.MOUSE_INPUT;
-      const scrollSpeed = 350;
-      const preciseScrollingDeltas = true;
-      const scrollByPage = false;
-      const cursorIsVisible = false;
+      const scrollAmount = 150;
       const postScrollHoverIndex = 0;
       const scrollCallback = (x, y) => {
         internals.setIsCursorVisible(document, false);
-        return smoothScroll(3 * elementHeight, x, y, mouse, 'down',
-                            scrollSpeed, preciseScrollingDeltas,
-                            scrollByPage, cursorIsVisible);
+        return wheelScroll(x, y, 0, scrollAmount);
       };
       return runHoverStateOnScrollTest(scrollCallback, postScrollHoverIndex);
     }, 'crbug.com/153784 New hover effects should not be invoked during ' +
        'scroll if the mouse cursor is not visible.');
   }
-
 </script>
