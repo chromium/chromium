@@ -125,7 +125,8 @@
     z-index: 1;
   }
 
-  :host([data-is-promoted-tile]) #text {
+  :host([data-is-promoted-tile]) #text,
+  :host([data-sea-pen]) #text {
     position: relative;
     top: 8px;
   }
@@ -157,11 +158,13 @@
 
   .primary-text,
   ::slotted(.primary-text) {
-    font: var(--cros-title-2-font));
+    font: var(--cros-title-2-font);
   }
 
   :host([data-is-promoted-tile]) .primary-text,
-  :host([data-is-promoted-tile]) ::slotted(.primary-text) {
+  :host([data-is-promoted-tile]) ::slotted(.primary-text),
+  :host([data-sea-pen]) .primary-text,
+  :host([data-sea-pen]) ::slotted(.primary-text) {
     font: var(--cros-display-6_regular-font);
   }
 

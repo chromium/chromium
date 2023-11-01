@@ -115,15 +115,6 @@
     right: 20px;
     top: 20px;
   }
-
-  h2 {
-    color: var(--cros-sys-secondary);
-    font: var(--cros-button-2-font);
-    height: 20px;
-    margin-block-start: 0;
-    margin-block-end: 0;
-    padding: 16px 8px 16px;
-  }
 </style>
 <template is="dom-if" if="[[hasError_]]">
   <wallpaper-error></wallpaper-error>
@@ -131,7 +122,7 @@
 <main aria-label="$i18n{wallpaperCollections}" hidden$="[[hasError_]]">
   <template is="dom-if" if="[[isSeaPenEnabled_]]" restamp>
     <!-- TODO(b/308200616): Add real text -->
-    <h2 class="heading">TBD Heading</h2>
+    <h2 class="wallpaper-collections-heading">TBD Heading</h2>
     <iron-list aria-setsize$="[[promotedTiles_.length]]"
         id="promoted"
         grid
@@ -185,7 +176,7 @@
       </template>
     </iron-list>
     <!-- TODO(b/308200616): Add real text -->
-    <h2>TBD Heading</h2>
+    <h2 class="wallpaper-collections-heading">TBD Heading</h2>
   </template>
   <iron-list aria-setsize$="[[tiles_.length]]"
       id="grid"
