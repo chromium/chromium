@@ -3726,6 +3726,21 @@
             ]
         }
     ],
+    "ClankFollowUIUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FeedFollowUiUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionModelImageEmbedder": [
         {
             "platforms": [
@@ -8479,6 +8494,21 @@
                     },
                     "enable_features": [
                         "EnableDiscoverFeedTopSyncPromo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSFollowUIUpdate": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFollowUIUpdate"
                     ]
                 }
             ]
