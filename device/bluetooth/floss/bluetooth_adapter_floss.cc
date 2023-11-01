@@ -1583,15 +1583,6 @@ void BluetoothAdapterFloss::AdvertisementLost(uint8_t scanner_id,
   }
 
   BluetoothDeviceFloss* device_ptr = device.get();
-  BluetoothDeviceFloss* deleted_ptr =
-      static_cast<BluetoothDeviceFloss*>(GetDevice(device->GetAddress()));
-
-  // Only remove devices from devices_ that are not paired or connected.
-  if (!deleted_ptr ||
-      (!deleted_ptr->IsPaired() && !deleted_ptr->IsConnected())) {
-    devices_.erase(canonical_address);
-  }
-
   for (const auto& [key, scanner] : scanners_) {
     if (scanner->GetScannerId() == scanner_id) {
       scanner->OnDeviceLost(device_ptr);
