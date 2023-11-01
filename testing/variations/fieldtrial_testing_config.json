@@ -9244,10 +9244,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IntersectionOptimization"
-                    ]
+                    "name": "Default"
                 }
             ]
         }
