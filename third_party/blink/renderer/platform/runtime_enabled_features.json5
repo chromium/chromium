@@ -625,7 +625,7 @@
     },
     {
       name: "ClipboardSupportedTypes",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ClipboardSvg",
