@@ -324,6 +324,15 @@
               inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></div>
         </cr-checkbox>
       </div>
+      <!-- Wifi debug Logs (Googler Internal Only) -->
+      <div id="wifiDebugLogsCheckboxContainer" class="checkbox-field-container"
+          hidden="[[!shouldShowWifiDebugLogsCheckbox]]">
+        <cr-checkbox id="wifiDubugLogsCheckbox"
+            aria-labelledby="wifiDebugLogsInfoLabel" checked>
+          <div id="wifiDebugLogsInfoLabel" class="checkbox-label"
+              inner-h-t-m-l="[[wifiDebugLogsCheckboxLabel_]]"></div>
+        </cr-checkbox>
+      </div>
       <!-- Link Cross Device Doogfood Feedback (Googler Internal Only) -->
       <div id="linkCrossDeviceDogfoodFeedbackCheckboxContainer" class="checkbox-field-container"
           hidden="[[!shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox]]">

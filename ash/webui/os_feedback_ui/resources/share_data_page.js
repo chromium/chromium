@@ -83,6 +83,11 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     /**
      * @type {boolean}
      */
+    this.shouldShowWifiDebugLogsCheckbox;
+
+    /**
+     * @type {boolean}
+     */
     this.shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox;
 
     /**
@@ -129,6 +134,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @type {string}
      * @protected
      */
+    this.wifiDebugLogsCheckboxLabel_;
+
+    /**
+     * @type {string}
+     * @protected
+     */
     this.linkCrossDeviceDogfoodFeedbackCheckboxLabel_;
 
     /**
@@ -148,6 +159,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     this.setPerformanceTraceCheckboxLabel_();
     this.setAssistantLogsCheckboxLabelAndAttributes_();
     this.setBluetoothLogsCheckboxLabelAndAttributes_();
+    this.setWifiDebugLogsCheckboxLabelAndAttributes_();
     this.setLinkCrossDeviceDogfoodFeedbackCheckboxLabelAndAttributes_();
     this.setAutofillCheckboxLabelAndAttributes_();
     // Set the aria description works the best for screen reader.
@@ -608,6 +620,17 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     bluetoothLogsLink.setAttribute('href', '#');
     bluetoothLogsLink.addEventListener(
         'click', (e) => void this.handleOpenBluetoothLogsInfoDialog_(e));
+  }
+
+  /** @private */
+  setWifiDebugLogsCheckboxLabelAndAttributes_() {
+    this.wifiDebugLogsCheckboxLabel_ =
+        this.i18nAdvanced('wifiDebugLogsInfo', {attrs: ['id']});
+
+    const wifiDebugLogsLink =
+        this.shadowRoot.querySelector('#wifiDebugLogsInfoLink');
+    // Setting href causes <a> tag to display as link.
+    wifiDebugLogsLink.setAttribute('href', '#');
   }
 
   /** @private */

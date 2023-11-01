@@ -202,6 +202,12 @@ export class FeedbackFlowElement extends PolymerElement {
     this.shouldShowBluetoothCheckbox_;
 
     /**
+     * Whether to show the Wifi debug Logs checkbox in share data page.
+     * @type {boolean}
+     */
+    this.shouldShowWifiDebugLogsCheckbox_ = false;
+
+    /**
      * Whether to show the Link Cross Device Dogfood Feedback checkbox in share
      * data page.
      * @type {boolean}
@@ -542,6 +548,8 @@ export class FeedbackFlowElement extends PolymerElement {
         this.shouldShowBluetoothCheckbox_ = this.feedbackContext_ !== null &&
             this.feedbackContext_.isInternalAccount &&
             this.isDescriptionRelatedToBluetooth(this.description_);
+        this.shouldShowWifiDebugLogsCheckbox_ =
+            this.computeShouldShowWifiDebugLogsCheckbox_();
         this.shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox_ =
             this.feedbackContext_ !== null &&
             loadTimeData.getBoolean(
@@ -610,6 +618,11 @@ export class FeedbackFlowElement extends PolymerElement {
       default:
         console.warn('unexpected state: ', event.detail.currentState);
     }
+  }
+
+  /** @private */
+  computeShouldShowWifiDebugLogsCheckbox_() {
+    return this.feedbackContext_ && this.feedbackContext_.isInternalAccount;
   }
 
   /** @private */
@@ -714,6 +727,13 @@ export class FeedbackFlowElement extends PolymerElement {
    */
   getIsUserLoggedInForTesting() {
     return this.isUserLoggedIn_;
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  getShouldShowWifiDebugLogsCheckboxForTesting() {
+    return this.shouldShowWifiDebugLogsCheckbox_;
   }
 
   /**

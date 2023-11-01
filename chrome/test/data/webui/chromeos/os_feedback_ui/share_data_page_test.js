@@ -825,6 +825,25 @@ export function shareDataPageTestSuite() {
     assertFalse(!!reportNoSysInfo.feedbackContext.extraDiagnostics);
   });
 
+  test(
+      'WifiDebugLogsCheckboxVisible_When_ShowWifiDebugLogsCheckbox_True',
+      async () => {
+        await initializePage();
+        page.shouldShowWifiDebugLogsCheckbox = true;
+
+        assertTrue(isVisible(getElement('#wifiDebugLogsCheckboxContainer')));
+        assertTrue(getElement('#wifiDubugLogsCheckbox').checked);
+      });
+
+  test(
+      'WifiDebugLogsCheckboxInvisible_When_ShowWifiDebugLogsCheckbox_False',
+      async () => {
+        await initializePage();
+        page.shouldShowWifiDebugLogsCheckbox = false;
+
+        assertFalse(isVisible(getElement('#wifiDebugLogsCheckboxContainer')));
+      });
+
   /**
    * Test that when feedback context contains categoryTag matching value
    * is set on report.

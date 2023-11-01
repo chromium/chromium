@@ -437,6 +437,45 @@ export function FeedbackFlowTestSuite() {
     assertFalse(isVisible(bluetoothCheckbox));
   });
 
+  // Test that the flag ShouldShowWifiDebugLogsCheckBox_ is false if
+  // - is not internal account.
+  test('DoNotShowWifiDebugLogsCheckBox', async () => {
+    await initializePage();
+    assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
+
+    const searchPage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!searchPage);
+    assertEquals('searchPage', searchPage.id);
+
+    searchPage.shadowRoot.querySelector('textarea').value = 'abc';
+    // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
+    // button is clicked.
+    searchPage.shadowRoot.querySelector('#buttonContinue').click();
+    await flushTasks();
+
+    assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
+  });
+
+  // Test that the flag ShouldShowWifiDebugLogsCheckBox_ is true if
+  // - is internal account.
+  test('ShowWifiDebugLogsCheckBox', async () => {
+    testWithInternalAccount();
+    await initializePage();
+    assertFalse(page.getShouldShowWifiDebugLogsCheckboxForTesting());
+
+    const searchPage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!searchPage);
+    assertEquals('searchPage', searchPage.id);
+
+    searchPage.shadowRoot.querySelector('textarea').value = 'abc';
+    // The flag ShouldShowWifiDebugLogsCheckBox_ is only updated when continue
+    // button is clicked.
+    searchPage.shadowRoot.querySelector('#buttonContinue').click();
+    await flushTasks();
+
+    assertTrue(page.getShouldShowWifiDebugLogsCheckboxForTesting());
+  });
+
   // Test the "Link Cross Device Dogfood Feedback" checkbox will show up if
   // logged with internal account and input description is related.
   test(
