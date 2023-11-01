@@ -382,8 +382,18 @@ void ChromeOsFeedbackDelegate::OnSendFeedbackDone(SendReportCallback callback,
   std::move(callback).Run(send_status);
 }
 
+// An active feedback app can be either a SWA (for logged in users) or a dialog
+// (for users not logged in).
+// - Open the diagnostics app as SWA when feedback SWA exists.
+// - Otherwise, open it as a dialog.
 void ChromeOsFeedbackDelegate::OpenDiagnosticsApp() {
-  gfx::NativeWindow window = FindFeedbackWindow(profile_);
+  if (ash::FindSystemWebAppBrowser(profile_,
+                                   ash::SystemWebAppType::OS_FEEDBACK)) {
+    ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::DIAGNOSTICS);
+    return;
+  }
+
+  gfx::NativeWindow window = OsFeedbackDialog::FindDialogWindow();
   CHECK(window);
   ash::DiagnosticsDialog::ShowDialog(
       ash::DiagnosticsDialog::DiagnosticsPage::kDefault, window);

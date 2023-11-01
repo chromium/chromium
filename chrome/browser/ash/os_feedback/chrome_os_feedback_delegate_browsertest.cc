@@ -293,6 +293,28 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     return feedback_browser;
   }
 
+  void LaunchFeedbackDialog() {
+    extensions::FeedbackPrivateAPI* api =
+        extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(
+            browser()->profile());
+
+    auto info = api->CreateFeedbackInfo(
+        "testing", std::string(), "Login", std::string(), GURL(),
+        extensions::api::feedback_private::FeedbackFlow::kLogin,
+        /*from_assistant=*/false,
+        /*include_bluetooth_logs=*/false,
+        /*show_questionnaire=*/false,
+        /*from_chrome_labs_or_kaleidoscope=*/false,
+        /*from_autofill=*/false,
+        /*autofill_metadata=*/base::Value::Dict());
+
+    base::test::TestFuture<void> test_future;
+    // Open the feedback dialog.
+    OsFeedbackDialog::ShowDialogAsync(browser()->profile(), *info,
+                                      test_future.GetCallback());
+    EXPECT_TRUE(test_future.Wait());
+  }
+
   scoped_refptr<base::RefCountedMemory> CreateFakePngData() {
     const unsigned char kData[] = {12, 11, 99};
     return base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
@@ -754,12 +776,36 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
   EXPECT_EQ(0u, result.size());
 }
 
-// Test if Diagnostics app is opened.
-IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenDiagnosticsApp) {
+// Verify that when Feedback is launched as a SWA, request to open the
+// Diagnostics app will launch the app as an independent SWA
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       OpenDiagnosticsApp_From_SWA) {
   Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
+  CHECK(feedback_browser);
 
-  gfx::NativeWindow feedback_window =
-      feedback_browser->window()->GetNativeWindow();
+  auto feedback_delegate =
+      ChromeOsFeedbackDelegate::CreateForTesting(browser()->profile());
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  feedback_delegate.OpenDiagnosticsApp();
+  browser_opened.Wait();
+
+  Browser* app_browser = ash::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::DIAGNOSTICS);
+
+  EXPECT_TRUE(app_browser);
+  EXPECT_EQ(diagnostics_url_, FindActiveUrl(app_browser));
+}
+
+// Verify that when Feedback is launched as a dialog, request to open the
+// Diagnostics app will open the app as a child dialog of Feedback dialog.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
+                       OpenDiagnosticsApp_From_Dialog) {
+  LaunchFeedbackDialog();
+  gfx::NativeWindow feedback_window = OsFeedbackDialog::FindDialogWindow();
 
   std::set<views::Widget*> owned_widgets_pre_dialog;
   views::Widget::GetAllOwnedWidgets(feedback_window, &owned_widgets_pre_dialog);
@@ -855,25 +901,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // Feedback Dialog.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        OpenSystemInfoDialog_From_FeedbackDialog) {
-  extensions::FeedbackPrivateAPI* api =
-      extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(
-          browser()->profile());
-
-  auto info = api->CreateFeedbackInfo(
-      "testing", std::string(), "Login", std::string(), GURL(),
-      extensions::api::feedback_private::FeedbackFlow::kLogin,
-      /*from_assistant=*/false,
-      /*include_bluetooth_logs=*/false,
-      /*show_questionnaire=*/false,
-      /*from_chrome_labs_or_kaleidoscope=*/false,
-      /*from_autofill=*/false,
-      /*autofill_metadata=*/base::Value::Dict());
-
-  base::test::TestFuture<void> test_future;
-  // Open the feedback dialog.
-  OsFeedbackDialog::ShowDialogAsync(browser()->profile(), *info,
-                                    test_future.GetCallback());
-  EXPECT_TRUE(test_future.Wait());
+  LaunchFeedbackDialog();
 
   gfx::NativeWindow feedback_window = OsFeedbackDialog::FindDialogWindow();
 
