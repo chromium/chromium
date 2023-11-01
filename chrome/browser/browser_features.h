@@ -66,6 +66,7 @@ BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
 BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
+BASE_DECLARE_FEATURE(kNoAppCompatClearInChildren);
 BASE_DECLARE_FEATURE(kNoPreReadMainDll);
 #endif
 

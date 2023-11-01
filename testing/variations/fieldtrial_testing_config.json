@@ -10519,6 +10519,21 @@
             ]
         }
     ],
+    "NoAppCompatClearInChildren": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NoAppCompatClearInChildren"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoPreReadMainDll": [
         {
             "platforms": [

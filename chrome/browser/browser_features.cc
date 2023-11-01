@@ -208,6 +208,13 @@ BASE_FEATURE(kLockProfileCookieDatabase,
              "LockProfileCookieDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Don't try to clear downlevel OS appcompat layers out of Chrome's
+// AppCompatFlags\Layers value in the Windows registry on process startup in
+// child processes; see https://crbug.com/1482568.
+BASE_FEATURE(kNoAppCompatClearInChildren,
+             "NoAppCompatClearInChildren",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Don't call the Win32 API PrefetchVirtualMemory when loading chrome.dll inside
 // non-browser processes. This is done by passing flags to these processes. This
 // prevents pulling the entirety of chrome.dll into physical memory (albeit only

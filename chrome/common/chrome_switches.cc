@@ -789,6 +789,11 @@ extern const char kFromInstaller[] = "from-installer";
 // it.
 const char kHideIcons[] = "hide-icons";
 
+// Don't try to clear downlevel OS appcompat layers out of Chrome's
+// AppCompatFlags\Layers value in the Windows registry on process startup; see
+// https://crbug.com/1482568.
+const char kNoAppCompatClear[] = "no-appcompat-clear";
+
 // Whether or not the browser should warn if the profile is on a network share.
 // This flag is only relevant for Windows currently.
 const char kNoNetworkProfileWarning[] = "no-network-profile-warning";

@@ -2987,6 +2987,9 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   if (base::FeatureList::IsEnabled(features::kNoPreReadMainDll)) {
     command_line->AppendSwitch(switches::kNoPreReadMainDll);
   }
+  if (base::FeatureList::IsEnabled(features::kNoAppCompatClearInChildren)) {
+    command_line->AppendSwitch(switches::kNoAppCompatClear);
+  }
 #endif
 
   ThreadProfilerConfiguration::Get()->AppendCommandLineSwitchForChildProcess(
