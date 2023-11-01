@@ -326,9 +326,6 @@ class PersonalDataManager : public KeyedService,
   virtual void UpdateLocalCvc(const std::string& guid,
                               const std::u16string& cvc);
 
-  // Adds |credit_card| to the web database as a full server card.
-  virtual void AddFullServerCreditCard(const CreditCard& credit_card);
-
   // Update a server card. Only the full number and masked/unmasked
   // status can be changed. Looks up the card by server ID.
   virtual void UpdateServerCreditCard(const CreditCard& credit_card);
@@ -718,6 +715,13 @@ class PersonalDataManager : public KeyedService,
   const std::vector<autofill::AutofillProfile>& test_addresses() const {
     return test_addresses_;
   }
+
+  // Adds `credit_card` to the web database as a full server card.
+  //
+  // It is no longer possible for users to reach this path as full server cards
+  // have been deprecated, however tests still use this when testing
+  // still-supported paths (filling, editing, and deleting full server cards).
+  void AddFullServerCreditCardForTesting(const CreditCard& credit_card);
 
  protected:
   // Only PersonalDataManagerFactory and certain tests can create instances of

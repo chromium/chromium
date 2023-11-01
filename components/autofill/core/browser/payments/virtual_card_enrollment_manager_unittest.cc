@@ -82,7 +82,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     card_->set_card_art_url(autofill_client_->form_origin());
     card_->set_instrument_id(112233445566);
     card_->set_guid("00000000-0000-0000-0000-000000000001");
-    personal_data_manager().AddFullServerCreditCard(*card_.get());
+    personal_data_manager().AddServerCreditCard(*card_.get());
   }
 
   void SetValidCardArtImageForCard(const CreditCard& card) {

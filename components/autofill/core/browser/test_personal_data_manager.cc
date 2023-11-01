@@ -142,14 +142,6 @@ void TestPersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   }
 }
 
-void TestPersonalDataManager::AddFullServerCreditCard(
-    const CreditCard& credit_card) {
-  // Though the name is AddFullServerCreditCard, this test class treats masked
-  // and full server cards equally, relying on their preset RecordType to
-  // differentiate them.
-  AddServerCreditCard(credit_card);
-}
-
 const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
     const {
   if (default_country_code_.empty())

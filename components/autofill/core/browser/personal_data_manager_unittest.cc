@@ -218,7 +218,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     {
       PersonalDataProfileTaskWaiter waiter(*personal_data_);
       EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged());
-      personal_data_->AddFullServerCreditCard(masked_server_card);
+      personal_data_->AddFullServerCreditCardForTesting(masked_server_card);
       std::move(waiter).Wait();
     }
     ASSERT_EQ(1U, personal_data_->GetCreditCards().size());
@@ -234,7 +234,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     full_server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
     full_server_card.set_server_id("full_id");
     full_server_card.set_use_count(10);
-    personal_data_->AddFullServerCreditCard(full_server_card);
+    personal_data_->AddFullServerCreditCardForTesting(full_server_card);
 
     CreditCard local_card;
     test::SetCreditCardInfo(&local_card, "Freddy Mercury",
@@ -1347,7 +1347,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   credit_card3.set_record_type(CreditCard::RecordType::kFullServerCard);
   credit_card3.set_server_id("server_id");
 
-  personal_data_->AddFullServerCreditCard(credit_card3);
+  personal_data_->AddFullServerCreditCardForTesting(credit_card3);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   cards.push_back(&credit_card3);
@@ -1356,7 +1356,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   // Must not add a duplicate server card with same GUID.
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
 
-  personal_data_->AddFullServerCreditCard(credit_card3);
+  personal_data_->AddFullServerCreditCardForTesting(credit_card3);
 
   ExpectSameElements(cards, personal_data_->GetCreditCards());
 
@@ -1367,7 +1367,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
 
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
 
-  personal_data_->AddFullServerCreditCard(duplicate_server_card);
+  personal_data_->AddFullServerCreditCardForTesting(duplicate_server_card);
 
   ExpectSameElements(cards, personal_data_->GetCreditCards());
 }
@@ -1542,7 +1542,7 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_Invalid) {
 TEST_F(PersonalDataManagerTest, GetCreditCardByServerId) {
   CreditCard card = test::GetFullServerCard();
   card.set_server_id("server id");
-  personal_data_->AddFullServerCreditCard(card);
+  personal_data_->AddFullServerCreditCardForTesting(card);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   ASSERT_EQ(1u, personal_data_->GetCreditCards().size());
@@ -1589,7 +1589,7 @@ TEST_F(PersonalDataManagerTest,
 TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
   CreditCard card = test::GetFullServerCard();
   card.set_server_id("card_server_id");
-  personal_data_->AddFullServerCreditCard(card);
+  personal_data_->AddFullServerCreditCardForTesting(card);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   card.set_server_id("card_server_id");
@@ -1597,14 +1597,14 @@ TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
   std::vector<GURL> updated_urls;
   updated_urls.emplace_back("https://www.example.com/card1");
 
-  personal_data_->AddFullServerCreditCard(card);
+  personal_data_->AddFullServerCreditCardForTesting(card);
   WaitForFetchImagesForUrls();
 
   card.set_card_art_url(GURL("https://www.example.com/card2"));
   updated_urls.clear();
   updated_urls.emplace_back("https://www.example.com/card2");
 
-  personal_data_->AddFullServerCreditCard(card);
+  personal_data_->AddFullServerCreditCardForTesting(card);
   WaitForFetchImagesForUrls();
 }
 #endif
@@ -3303,7 +3303,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, SwitchServerStorages) {
   server_card.set_guid("00000000-0000-0000-0000-000000000007");
   server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   server_card.set_server_id("server_id");
-  personal_data_->AddFullServerCreditCard(server_card);
+  personal_data_->AddFullServerCreditCardForTesting(server_card);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
 
   EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
@@ -3328,7 +3328,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   server_card.set_guid("00000000-0000-0000-0000-000000000007");
   server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   server_card.set_server_id("server_id");
-  personal_data_->AddFullServerCreditCard(server_card);
+  personal_data_->AddFullServerCreditCardForTesting(server_card);
 
   // Set server card metadata.
   server_card.set_use_count(15);

@@ -1083,26 +1083,6 @@ void PersonalDataManager::UpdateLocalCvc(const std::string& guid,
   Refresh();
 }
 
-void PersonalDataManager::AddFullServerCreditCard(
-    const CreditCard& credit_card) {
-  DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
-  DCHECK(!credit_card.IsEmpty(app_locale_));
-  DCHECK(!credit_card.server_id().empty());
-  DCHECK(database_helper_->GetServerDatabase())
-      << "Adding server card without server storage.";
-
-  // Don't add a duplicate.
-  if (FindByGUID(server_credit_cards_, credit_card.guid()) ||
-      FindByContents(server_credit_cards_, credit_card))
-    return;
-
-  // Add the new credit card to the web database.
-  database_helper_->GetServerDatabase()->AddFullServerCreditCard(credit_card);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
-}
-
 void PersonalDataManager::UpdateServerCreditCard(
     const CreditCard& credit_card) {
   DCHECK_NE(CreditCard::RecordType::kLocalCard, credit_card.record_type());
@@ -2016,6 +1996,27 @@ bool PersonalDataManager::IsPaymentCvcStorageEnabled() {
 
 AutofillImageFetcherBase* PersonalDataManager::GetImageFetcher() const {
   return image_fetcher_;
+}
+
+void PersonalDataManager::AddFullServerCreditCardForTesting(
+    const CreditCard& credit_card) {
+  DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
+  DCHECK(!credit_card.IsEmpty(app_locale_));
+  DCHECK(!credit_card.server_id().empty());
+  DCHECK(database_helper_->GetServerDatabase())
+      << "Adding server card without server storage.";
+
+  // Don't add a duplicate.
+  if (FindByGUID(server_credit_cards_, credit_card.guid()) ||
+      FindByContents(server_credit_cards_, credit_card)) {
+    return;
+  }
+
+  // Add the new credit card to the web database.
+  database_helper_->GetServerDatabase()->AddFullServerCreditCard(credit_card);
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
 }
 
 AutofillProfileMigrationStrikeDatabase*
