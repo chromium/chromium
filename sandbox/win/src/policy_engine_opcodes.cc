@@ -153,44 +153,6 @@ EvalResult OpcodeEval<OP_NUMBER_MATCH>(PolicyOpcode* opcode,
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// Opcode OpNumberMatchRange
-// Requires a uint32_t in selected_param.
-// Argument 0 is the stored lower bound to match.
-// Argument 1 is the stored upper bound to match.
-
-PolicyOpcode* OpcodeFactory::MakeOpNumberMatchRange(uint8_t selected_param,
-                                                    uint32_t lower_bound,
-                                                    uint32_t upper_bound,
-                                                    uint32_t options) {
-  if (lower_bound > upper_bound) {
-    return nullptr;
-  }
-  PolicyOpcode* opcode =
-      MakeBase(OP_NUMBER_MATCH_RANGE, options, selected_param);
-  if (!opcode)
-    return nullptr;
-  opcode->SetArgument(0, lower_bound);
-  opcode->SetArgument(1, upper_bound);
-  return opcode;
-}
-
-template <>
-EvalResult OpcodeEval<OP_NUMBER_MATCH_RANGE>(PolicyOpcode* opcode,
-                                             const ParameterSet* param,
-                                             MatchContext* context) {
-  uint32_t value = 0;
-  if (!param->Get(&value))
-    return EVAL_ERROR;
-
-  uint32_t lower_bound = 0;
-  uint32_t upper_bound = 0;
-  opcode->GetArgument(0, &lower_bound);
-  opcode->GetArgument(1, &upper_bound);
-  return ((lower_bound <= value) && (upper_bound >= value)) ? EVAL_TRUE
-                                                            : EVAL_FALSE;
-}
-
-//////////////////////////////////////////////////////////////////////////////
 // Opcode OpNumberAndMatch:
 // Requires a uint32_t in selected_param.
 // Argument 0 is the stored number to match.
@@ -225,13 +187,13 @@ EvalResult OpcodeEval<OP_NUMBER_AND_MATCH>(PolicyOpcode* opcode,
 // Argument 1 is the length in chars of the stored string.
 // Argument 2 is the offset to apply on the input string. It has special values.
 // as noted in the header file.
-// Argument 3 is the string matching options.
+// Argument 3 is the string matching options (true if last token, 0 otherwise).
 
 PolicyOpcode* OpcodeFactory::MakeOpWStringMatch(uint8_t selected_param,
                                                 const wchar_t* match_str,
                                                 int start_position,
-                                                StringMatchOptions match_opts,
-                                                uint32_t options) {
+                                                uint32_t options,
+                                                bool last_token) {
   if (!match_str)
     return nullptr;
   if ('\0' == match_str[0])
@@ -248,7 +210,7 @@ PolicyOpcode* OpcodeFactory::MakeOpWStringMatch(uint8_t selected_param,
   opcode->SetArgument(0, delta_str);
   opcode->SetArgument(1, length);
   opcode->SetArgument(2, start_position);
-  opcode->SetArgument(3, match_opts);
+  opcode->SetArgument(3, last_token ? 1 : 0);
   return opcode;
 }
 
@@ -269,10 +231,10 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
 
   int start_position = 0;
   size_t match_len = 0;
-  unsigned int match_opts = 0;
+  unsigned int last_token = 0;
   opcode->GetArgument(1, &match_len);
   opcode->GetArgument(2, &start_position);
-  opcode->GetArgument(3, &match_opts);
+  opcode->GetArgument(3, &last_token);
 
   const wchar_t* match_str = opcode->GetRelativeString(0);
   // Advance the source string to the last successfully evaluated position
@@ -291,8 +253,6 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
     return EVAL_FALSE;
   }
 
-  BOOLEAN case_sensitive = (match_opts & CASE_INSENSITIVE) ? TRUE : FALSE;
-
   // We have three cases, depending on the value of start_pos:
   // Case 1. We skip N characters and compare once.
   // Case 2: We skip to the end and compare once.
@@ -301,9 +261,8 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
     size_t start_offset = static_cast<size_t>(start_position);
     if (kSeekToEnd == start_position) {
       start_offset = static_cast<size_t>(source_len - match_len);
-    } else if (match_opts & EXACT_LENGTH) {
-      // A sub-case of case 3 is when the EXACT_LENGTH flag is on
-      // the match needs to be not just substring but full match.
+    } else if (last_token) {
+      // A sub-case of case 3 is that the final token needs a full match.
       if ((match_len + start_offset) != source_len) {
         return EVAL_FALSE;
       }
@@ -325,7 +284,7 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
       return EVAL_ERROR;
 
     if (0 == GetNtExports()->RtlCompareUnicodeString(&match_ustr, &source_ustr,
-                                                     case_sensitive)) {
+                                                     TRUE)) {
       // Match! update the match context.
       context->position += start_offset + match_len;
       return EVAL_TRUE;
@@ -340,8 +299,8 @@ EvalResult OpcodeEval<OP_WSTRING_MATCH>(PolicyOpcode* opcode,
       return EVAL_ERROR;
 
     do {
-      if (0 == GetNtExports()->RtlCompareUnicodeString(
-                   &match_ustr, &source_ustr, case_sensitive)) {
+      if (0 == GetNtExports()->RtlCompareUnicodeString(&match_ustr,
+                                                       &source_ustr, TRUE)) {
         // Match! update the match context.
         context->position +=
             static_cast<size_t>(source_ustr.Buffer - source_str) + match_len;
@@ -457,7 +416,6 @@ EvalResult PolicyOpcode::EvaluateHelper(const ParameterSet* parameters,
     OPCODE_EVAL(OP_ALWAYS_FALSE, this, parameters, match);
     OPCODE_EVAL(OP_ALWAYS_TRUE, this, parameters, match);
     OPCODE_EVAL(OP_NUMBER_MATCH, this, parameters, match);
-    OPCODE_EVAL(OP_NUMBER_MATCH_RANGE, this, parameters, match);
     OPCODE_EVAL(OP_NUMBER_AND_MATCH, this, parameters, match);
     OPCODE_EVAL(OP_WSTRING_MATCH, this, parameters, match);
     OPCODE_EVAL(OP_ACTION, this, parameters, match);

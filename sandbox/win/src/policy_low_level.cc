@@ -156,7 +156,6 @@ PolicyRule::PolicyRule(const PolicyRule& other) {
 // far and once the associated opcode is generated this function sets it back
 // to zero.
 bool PolicyRule::GenStringOpcode(RuleType rule_type,
-                                 StringMatchOptions match_opts,
                                  uint8_t parameter,
                                  int state,
                                  bool last_call,
@@ -196,22 +195,19 @@ bool PolicyRule::GenStringOpcode(RuleType rule_type,
   if (PENDING_ASTERISK == state) {
     if (last_call) {
       op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(),
-                                               kSeekToEnd, match_opts, options);
+                                               kSeekToEnd, options, false);
     } else {
-      op = opcode_factory_->MakeOpWStringMatch(
-          parameter, fragment->c_str(), kSeekForward, match_opts, options);
+      op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(),
+                                               kSeekForward, options, false);
     }
 
   } else if (PENDING_QMARK == state) {
     op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(),
-                                             *skip_count, match_opts, options);
+                                             *skip_count, options, false);
     *skip_count = 0;
   } else {
-    if (last_call) {
-      match_opts = static_cast<StringMatchOptions>(EXACT_LENGTH | match_opts);
-    }
     op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(), 0,
-                                             match_opts, options);
+                                             options, last_call);
   }
   if (!op)
     return false;
@@ -222,8 +218,7 @@ bool PolicyRule::GenStringOpcode(RuleType rule_type,
 
 bool PolicyRule::AddStringMatch(RuleType rule_type,
                                 uint8_t parameter,
-                                const wchar_t* string,
-                                StringMatchOptions match_opts) {
+                                const wchar_t* string) {
   if (done_) {
     // Do not allow to add more rules after generating the action opcode.
     return false;
@@ -242,8 +237,8 @@ bool PolicyRule::AddStringMatch(RuleType rule_type,
           // '**' and '&*' is an error.
           return false;
         }
-        if (!GenStringOpcode(rule_type, match_opts, parameter, state, false,
-                             &skip_count, &fragment)) {
+        if (!GenStringOpcode(rule_type, parameter, state, false, &skip_count,
+                             &fragment)) {
           return false;
         }
         last_char = kLastCharIsAsterisk;
@@ -254,8 +249,8 @@ bool PolicyRule::AddStringMatch(RuleType rule_type,
           // '*?' is an error.
           return false;
         }
-        if (!GenStringOpcode(rule_type, match_opts, parameter, state, false,
-                             &skip_count, &fragment)) {
+        if (!GenStringOpcode(rule_type, parameter, state, false, &skip_count,
+                             &fragment)) {
           return false;
         }
         ++skip_count;
@@ -275,8 +270,8 @@ bool PolicyRule::AddStringMatch(RuleType rule_type,
     ++current_char;
   }
 
-  if (!GenStringOpcode(rule_type, match_opts, parameter, state, true,
-                       &skip_count, &fragment)) {
+  if (!GenStringOpcode(rule_type, parameter, state, true, &skip_count,
+                       &fragment)) {
     return false;
   }
   return true;

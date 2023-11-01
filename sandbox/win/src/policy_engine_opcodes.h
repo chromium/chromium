@@ -62,15 +62,10 @@ enum EvalResult {
   ASK_BROKER,   // The target must generate an IPC to the broker. On the broker
                 // side, this means grant access to the resource.
   DENY_ACCESS,  // No access granted to the resource.
-  GIVE_READONLY,   // Give readonly access to the resource.
-  GIVE_ALLACCESS,  // Give full access to the resource.
-  GIVE_CACHED,     // IPC is not required. Target can return a cached handle.
-  GIVE_FIRST,      // TODO(cpu)
   SIGNAL_ALARM,    // Unusual activity. Generate an alarm.
   FAKE_SUCCESS,    // Do not call original function. Just return 'success'.
   FAKE_ACCESS_DENIED,  // Do not call original function. Just return 'denied'
                        // and do not do IPC.
-  TERMINATE_PROCESS,   // Destroy target process. Do IPC as well.
 };
 
 // The following are the implemented opcodes. uint16_t purely to pack nicely.
@@ -78,7 +73,6 @@ enum OpcodeID : uint16_t {
   OP_ALWAYS_FALSE,        // Evaluates to false (EVAL_FALSE).
   OP_ALWAYS_TRUE,         // Evaluates to true (EVAL_TRUE).
   OP_NUMBER_MATCH,        // Match a 32-bit integer as n == a.
-  OP_NUMBER_MATCH_RANGE,  // Match a 32-bit integer as a <= n <= b.
   OP_NUMBER_AND_MATCH,    // Match using bitwise AND; as in: n & a != 0.
   OP_WSTRING_MATCH,       // Match a string for equality.
   OP_ACTION               // Evaluates to an action opcode.
@@ -221,12 +215,6 @@ class PolicyOpcode {
   OpcodeArgument arguments_[PolicyOpcode::kArgumentCount];
 };
 
-enum StringMatchOptions {
-  CASE_SENSITIVE = 0,    // Pay or Not attention to the case as defined by
-  CASE_INSENSITIVE = 1,  // RtlCompareUnicodeString windows API.
-  EXACT_LENGTH = 2       // Don't do substring match. Do full string match.
-};
-
 // Opcodes that do string comparisons take a parameter that is the starting
 // position to perform the comparison so we can do substring matching. There
 // are two special values:
@@ -316,15 +304,6 @@ class OpcodeFactory {
                                    const void* match,
                                    uint32_t options);
 
-  // Creates an OpNumberMatchRange opcode using the memory passed in the ctor.
-  // selected_param: index of the input argument. It must be a uint32_t or the
-  // evaluation result will generate a EVAL_ERROR.
-  // lower_bound, upper_bound: the range to compare against selected_param.
-  PolicyOpcode* MakeOpNumberMatchRange(uint8_t selected_param,
-                                       uint32_t lower_bound,
-                                       uint32_t upper_bound,
-                                       uint32_t options);
-
   // Creates an OpWStringMatch opcode using the raw memory passed in the ctor.
   // selected_param: index of the input argument. It must be a wide string
   // pointer or the evaluation result will generate a EVAL_ERROR.
@@ -336,13 +315,12 @@ class OpcodeFactory {
   // the selected_param string.
   // Note that the range in the position (0 to 0x7fff) is dictated by the
   // current implementation.
-  // match_opts: Indicates additional matching flags. Currently CaseInsensitive
-  // is supported.
+  // All comparisons are case-insensitive.
   PolicyOpcode* MakeOpWStringMatch(uint8_t selected_param,
                                    const wchar_t* match_str,
                                    int start_position,
-                                   StringMatchOptions match_opts,
-                                   uint32_t options);
+                                   uint32_t options,
+                                   bool final_token);
 
   // Creates an OpNumberAndMatch opcode using the raw memory passed in the ctor.
   // selected_param: index of the input argument. It must be uint32_t or the

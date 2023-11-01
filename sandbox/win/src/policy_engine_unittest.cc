@@ -43,15 +43,15 @@ TEST(PolicyEngineTest, Rules1) {
 
   // Add rule set #1
   opcode_maker.MakeOpWStringMatch(FileNameArg, L"c:\\documents and settings\\",
-                                  0, CASE_INSENSITIVE, kPolNone);
+                                  0, kPolNone, false);
   opcode_maker.MakeOpNumberMatch(CreationDispositionArg, OPEN_EXISTING,
                                  kPolNone);
   opcode_maker.MakeOpVoidPtrMatch(SecurityAttributes, nullptr, kPolNone);
   opcode_maker.MakeOpAction(ASK_BROKER, kPolNone);
 
   // Add rule set #2
-  opcode_maker.MakeOpWStringMatch(FileNameArg, L".TXT", kSeekToEnd,
-                                  CASE_INSENSITIVE, kPolNone);
+  opcode_maker.MakeOpWStringMatch(FileNameArg, L".TXT", kSeekToEnd, kPolNone,
+                                  true);
   opcode_maker.MakeOpNumberMatch(CreationDispositionArg, CREATE_NEW,
                                  kPolNegateEval);
   opcode_maker.MakeOpAction(FAKE_ACCESS_DENIED, kPolNone);

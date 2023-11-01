@@ -47,7 +47,7 @@ namespace sandbox {
 bool NamedPipePolicy::GenerateRules(const wchar_t* name,
                                     LowLevelPolicy* policy) {
   PolicyRule pipe(ASK_BROKER);
-  if (!pipe.AddStringMatch(IF, NameBased::NAME, name, CASE_INSENSITIVE)) {
+  if (!pipe.AddStringMatch(IF, NameBased::NAME, name)) {
     return false;
   }
   if (!policy->AddRule(IpcTag::CREATENAMEDPIPEW, &pipe)) {

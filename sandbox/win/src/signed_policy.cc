@@ -29,8 +29,7 @@ bool SignedPolicy::GenerateRules(const wchar_t* name,
   std::wstring nt_filename = nt_path.Append(file_path.BaseName()).value();
   // Create a rule to ASK_BROKER if name matches.
   PolicyRule signed_policy(ASK_BROKER);
-  if (!signed_policy.AddStringMatch(IF, NameBased::NAME, nt_filename.c_str(),
-                                    CASE_INSENSITIVE)) {
+  if (!signed_policy.AddStringMatch(IF, NameBased::NAME, nt_filename.c_str())) {
     return false;
   }
   if (!policy->AddRule(IpcTag::NTCREATESECTION, &signed_policy)) {

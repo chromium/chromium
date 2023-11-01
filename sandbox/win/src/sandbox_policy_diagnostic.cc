@@ -193,31 +193,22 @@ std::string GetOpcodeAction(EvalResult action) {
       return "askBroker";
     case DENY_ACCESS:
       return "deny";
-    case GIVE_READONLY:
-      return "readonly";
-    case GIVE_ALLACCESS:
-      return "allaccess";
-    case GIVE_CACHED:
-      return "cached";
-    case GIVE_FIRST:
-      return "first";
     case SIGNAL_ALARM:
       return "alarm";
     case FAKE_SUCCESS:
       return "fakeSuccess";
     case FAKE_ACCESS_DENIED:
       return "fakeDenied";
-    case TERMINATE_PROCESS:
-      return "terminate";
   }
 }
 
 std::string GetStringMatchOperation(int pos, uint32_t options) {
   if (pos == 0) {
-    if (options & EXACT_LENGTH)
+    if (options) {
       return "exact";
-    else
+    } else {
       return "prefix";
+    }
   } else if (pos < 0) {
     return "scan";
   } else if (pos == kSeekToEnd) {
@@ -256,12 +247,6 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
         condition += base::StringPrintf("p[%d] == %p", param, match_ptr);
       }
       break;
-    case OP_NUMBER_MATCH_RANGE:
-      opcode->GetArgument(0, &args[0]);
-      opcode->GetArgument(1, &args[1]);
-      condition +=
-          base::StringPrintf("%x <= p[%d] <= %x", args[0], param, args[1]);
-      break;
     case OP_NUMBER_AND_MATCH:
       opcode->GetArgument(0, &args[0]);
       condition += base::StringPrintf("p[%d] & %x", param, args[0]);
@@ -275,8 +260,6 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
       auto match_string = std::wstring(opcode->GetRelativeString(0), 0,
                                        static_cast<size_t>(args[1]));
       condition += GetStringMatchOperation(pos, args[3]);
-      if (args[3] & CASE_INSENSITIVE)
-        condition += "_i";
       condition +=
           base::StringPrintf("(p[%d], '%ls')", param, match_string.c_str());
     } break;
