@@ -98,6 +98,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
       FrameNodeImpl* parent_frame_node,
+      FrameNodeImpl* fenced_frame_embedder_frame_node,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token,
       content::BrowsingInstanceId browsing_instance_id,

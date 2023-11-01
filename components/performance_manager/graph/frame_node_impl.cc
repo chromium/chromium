@@ -28,11 +28,13 @@ using PriorityAndReason = execution_context_priority::PriorityAndReason;
 FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
                              PageNodeImpl* page_node,
                              FrameNodeImpl* parent_frame_node,
+                             FrameNodeImpl* outer_document_for_fenced_frame,
                              int render_frame_id,
                              const blink::LocalFrameToken& frame_token,
                              content::BrowsingInstanceId browsing_instance_id,
                              content::SiteInstanceId site_instance_id)
     : parent_frame_node_(parent_frame_node),
+      outer_document_for_fenced_frame_(outer_document_for_fenced_frame),
       page_node_(page_node),
       process_node_(process_node),
       render_frame_id_(render_frame_id),
@@ -53,6 +55,8 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
 
   DCHECK(process_node);
   DCHECK(page_node);
+  // A <fencedframe> has no parent node.
+  CHECK(!outer_document_for_fenced_frame || !parent_frame_node_);
 }
 
 FrameNodeImpl::~FrameNodeImpl() {
@@ -146,7 +150,6 @@ resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
 }
 
 bool FrameNodeImpl::IsMainFrame() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !parent_frame_node_;
 }
 
@@ -238,6 +241,23 @@ uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return parent_frame_node_;
+}
+
+FrameNodeImpl* FrameNodeImpl::parent_or_outer_document_or_embedder() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (parent_frame_node_) {
+    return parent_frame_node_;
+  }
+
+  if (outer_document_for_fenced_frame_) {
+    return outer_document_for_fenced_frame_;
+  }
+
+  if (page_node()->embedder_frame_node()) {
+    return page_node()->embedder_frame_node();
+  }
+
+  return nullptr;
 }
 
 PageNodeImpl* FrameNodeImpl::page_node() const {
@@ -369,8 +389,9 @@ bool FrameNodeImpl::is_capturing_video_stream() const {
 
 absl::optional<bool> FrameNodeImpl::intersects_viewport() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The intersection with the viewport of the main frame is not tracked.
-  DCHECK(!IsMainFrame());
+  // The intersection with the viewport of the outermost main frame or embedder
+  // is not tracked.
+  DCHECK(parent_or_outer_document_or_embedder());
   return intersects_viewport_.value();
 }
 
@@ -434,8 +455,9 @@ void FrameNodeImpl::SetIsCapturingVideoStream(bool is_capturing_video_stream) {
 
 void FrameNodeImpl::SetIntersectsViewport(bool intersects_viewport) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The intersection with the viewport of the main frame is not tracked.
-  DCHECK(!IsMainFrame());
+  // The intersection with the viewport of the outermost main frame or embedder
+  // is not tracked.
+  DCHECK(parent_or_outer_document_or_embedder());
   intersects_viewport_.SetAndMaybeNotify(this, intersects_viewport);
 }
 
@@ -579,6 +601,11 @@ void FrameNodeImpl::RemoveEmbeddedPage(base::PassKey<PageNodeImpl>,
 const FrameNode* FrameNodeImpl::GetParentFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return parent_frame_node();
+}
+
+const FrameNode* FrameNodeImpl::GetParentOrOuterDocumentOrEmbedder() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return parent_or_outer_document_or_embedder();
 }
 
 const PageNode* FrameNodeImpl::GetPageNode() const {

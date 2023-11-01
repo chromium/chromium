@@ -29,8 +29,10 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
     return FrameNode::Visibility::kNotVisible;
   }
 
-  // A main frame is always visible if the page is visible.
-  if (frame_node->IsMainFrame()) {
+  // The main frame is always visible if its page is visible. Fenced frames are
+  // an exception, as `IsMainFrame()` returns true for them, but they aren't
+  // really the outermost frame of the frame tree.
+  if (!frame_node->parent_or_outer_document_or_embedder()) {
     return FrameNode::Visibility::kVisible;
   }
 
@@ -124,7 +126,7 @@ void FrameVisibilityDecorator::OnIsCurrentChanged(const FrameNode* frame_node) {
 
 void FrameVisibilityDecorator::OnIntersectsViewportChanged(
     const FrameNode* frame_node) {
-  CHECK(!frame_node->IsMainFrame());
+  CHECK(frame_node->GetParentOrOuterDocumentOrEmbedder());
   CHECK(frame_node->IntersectsViewport().has_value());
   OnFramePropertyChanged(frame_node);
 }

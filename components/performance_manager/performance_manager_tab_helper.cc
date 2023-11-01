@@ -199,6 +199,16 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
     parent_frame_node = frames_[parent].get();
   }
 
+  // Get the outer document for a <fencedframe>.
+  FrameNodeImpl* outer_document_for_fenced_frame = nullptr;
+  if (render_frame_host->IsFencedFrameRoot()) {
+    CHECK(!parent_frame_node);
+    content::RenderFrameHost* outer_document =
+        render_frame_host->GetParentOrOuterDocument();
+    CHECK(outer_document);
+    outer_document_for_fenced_frame = GetExistingFrameNode(outer_document);
+  }
+
   // Ideally, creation would not be required here, but it is possible in tests
   // for the RenderProcessUserData to not have attached at this point.
   PerformanceManagerRegistryImpl::GetInstance()
@@ -217,7 +227,7 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
   std::unique_ptr<FrameNodeImpl> frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node, primary_page_node(), parent_frame_node,
-          render_frame_host->GetRoutingID(),
+          outer_document_for_fenced_frame, render_frame_host->GetRoutingID(),
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
           site_instance->GetBrowsingInstanceId(), site_instance->GetId(),
           base::BindOnce(
@@ -583,6 +593,13 @@ void PerformanceManagerTabHelper::OnMainFrameNavigation(int64_t navigation_id,
 
   primary_page_->first_time_title_set = false;
   primary_page_->first_time_favicon_set = false;
+}
+
+FrameNodeImpl* PerformanceManagerTabHelper::GetExistingFrameNode(
+    content::RenderFrameHost* render_frame_host) const {
+  auto it = frames_.find(render_frame_host);
+  CHECK(it != frames_.end());
+  return it->second.get();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceManagerTabHelper);

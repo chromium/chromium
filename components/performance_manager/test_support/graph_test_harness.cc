@@ -16,9 +16,9 @@ TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateFrameNodeAutoId(
     ProcessNodeImpl* process_node,
     PageNodeImpl* page_node,
     FrameNodeImpl* parent_frame_node) {
-  return TestNodeWrapper<FrameNodeImpl>::Create(this, process_node, page_node,
-                                                parent_frame_node,
-                                                ++next_frame_routing_id_);
+  return TestNodeWrapper<FrameNodeImpl>::Create(
+      this, process_node, page_node, parent_frame_node,
+      /*outer_document_for_fenced_frame=*/nullptr, ++next_frame_routing_id_);
 }
 
 TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateProcessNodeAutoId(

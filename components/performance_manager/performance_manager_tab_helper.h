@@ -138,6 +138,11 @@ class PerformanceManagerTabHelper
 
   void OnMainFrameNavigation(int64_t navigation_id, bool same_doc);
 
+  // Returns the FrameNodeImpl* associated with `render_frame_host`. This
+  // CHECKs that it exists.
+  FrameNodeImpl* GetExistingFrameNode(
+      content::RenderFrameHost* render_frame_host) const;
+
   // Data that is tracked per page.
   struct PageData {
     PageData();
