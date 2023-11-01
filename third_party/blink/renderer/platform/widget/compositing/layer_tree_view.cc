@@ -119,6 +119,9 @@ void LayerTreeView::Initialize(
     layer_tree_host_ =
         cc::LayerTreeHost::CreateThreaded(std::move(compositor_thread), std::move(params));
   }
+
+  first_source_frame_for_current_delegate_ =
+      layer_tree_host_->SourceFrameNumber();
 }
 
 void LayerTreeView::Disconnect() {
@@ -137,6 +140,11 @@ void LayerTreeView::ReattachTo(
   layer_tree_host_->WaitForProtectedSequenceCompletion();
   layer_tree_host_->DetachInputDelegateAndRenderFrameObserver();
   delegate_ = delegate;
+  CHECK_GE(layer_tree_host_->SourceFrameNumber(),
+           first_source_frame_for_current_delegate_)
+      << "SourceFrameNumber() must be monotonically increasing";
+  first_source_frame_for_current_delegate_ =
+      layer_tree_host_->SourceFrameNumber();
   widget_scheduler_ = std::move(scheduler);
 
   // Invalidate weak ptrs so callbacks from the previous delegate are dropped.
@@ -351,25 +359,32 @@ void LayerTreeView::WillCommit(const cc::CommitState&) {
   }
 }
 
-void LayerTreeView::DidCommit(base::TimeTicks commit_start_time,
+void LayerTreeView::DidCommit(int source_frame_number,
+                              base::TimeTicks commit_start_time,
                               base::TimeTicks commit_finish_time) {
-  if (!delegate_)
+  if (!delegate_ ||
+      source_frame_number < first_source_frame_for_current_delegate_) {
     return;
+  }
   delegate_->DidCommitCompositorFrame(commit_start_time, commit_finish_time);
   if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
     widget_scheduler_->DidCommitFrameToCompositor();
   }
 }
 
-void LayerTreeView::DidCommitAndDrawFrame() {
-  if (!delegate_)
+void LayerTreeView::DidCommitAndDrawFrame(int source_frame_number) {
+  if (!delegate_ ||
+      source_frame_number < first_source_frame_for_current_delegate_) {
     return;
+  }
   delegate_->DidCommitAndDrawCompositorFrame();
 }
 
-void LayerTreeView::DidCompletePageScaleAnimation() {
-  if (!delegate_)
+void LayerTreeView::DidCompletePageScaleAnimation(int source_frame_number) {
+  if (!delegate_ ||
+      source_frame_number < first_source_frame_for_current_delegate_) {
     return;
+  }
   delegate_->DidCompletePageScaleAnimation();
 }
 
@@ -438,9 +453,11 @@ void LayerTreeView::NotifyThroughputTrackerResults(
 }
 
 void LayerTreeView::DidObserveFirstScrollDelay(
+    int source_frame_number,
     base::TimeDelta first_scroll_delay,
     base::TimeTicks first_scroll_timestamp) {
-  if (!delegate_) {
+  if (!delegate_ ||
+      source_frame_number < first_source_frame_for_current_delegate_) {
     return;
   }
   delegate_->DidObserveFirstScrollDelay(first_scroll_delay,

@@ -288,6 +288,7 @@ class LayerTreeHostImplTest : public testing::Test,
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
 
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {
     first_scroll_observed++;

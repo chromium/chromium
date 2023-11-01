@@ -64,7 +64,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void DidCompletePageScaleAnimation();
   void BeginMainFrame(
       std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state);
-  void DidCompleteCommit(CommitTimestamps);
+  void DidCompleteCommit(int source_frame_number, CommitTimestamps);
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       std::vector<PresentationTimeCallbackBuffer::Callback>
@@ -73,7 +73,8 @@ class CC_EXPORT ProxyMain : public Proxy {
           successful_presentation_callbacks,
       const gfx::PresentationFeedback& feedback);
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
-  void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,
+  void DidObserveFirstScrollDelay(int source_frame_number,
+                                  base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
   void NotifyTransitionRequestFinished(uint32_t sequence_id);
 

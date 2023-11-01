@@ -462,6 +462,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   }
 
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {}
 
@@ -485,11 +486,13 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
     test_hooks_->WillCommit(commit_state);
   }
 
-  void DidCommit(const base::TimeTicks, const base::TimeTicks) override {
+  void DidCommit(int source_frame_number,
+                 const base::TimeTicks,
+                 const base::TimeTicks) override {
     test_hooks_->DidCommit();
   }
 
-  void DidCommitAndDrawFrame() override {
+  void DidCommitAndDrawFrame(int source_frame_number) override {
     test_hooks_->DidCommitAndDrawFrame();
   }
 
@@ -501,7 +504,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
 
   void DidSubmitCompositorFrame() override {}
   void DidLoseLayerTreeFrameSink() override {}
-  void DidCompletePageScaleAnimation() override {}
+  void DidCompletePageScaleAnimation(int source_frame_number) override {}
   void BeginMainFrameNotExpectedSoon() override {
     test_hooks_->BeginMainFrameNotExpectedSoon();
   }

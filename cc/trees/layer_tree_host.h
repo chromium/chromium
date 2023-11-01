@@ -729,16 +729,16 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       std::unique_ptr<CompletionEvent> completion,
       bool has_updates);
   std::unique_ptr<CommitState> ActivateCommitState();
-  void CommitComplete(const CommitTimestamps&);
+  void CommitComplete(int source_frame_number, const CommitTimestamps&);
   void RequestNewLayerTreeFrameSink();
   void DidInitializeLayerTreeFrameSink();
   void DidFailToInitializeLayerTreeFrameSink();
   std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
       LayerTreeHostImplClient* client);
   void DidLoseLayerTreeFrameSink();
-  void DidCommitAndDrawFrame() {
+  void DidCommitAndDrawFrame(int source_frame_number) {
     DCHECK(IsMainThread());
-    client_->DidCommitAndDrawFrame();
+    client_->DidCommitAndDrawFrame(source_frame_number);
   }
   void DidReceiveCompositorFrameAck() {
     DCHECK(IsMainThread());
@@ -874,7 +874,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return pending_commit_state()->delegated_ink_metadata.get();
   }
 
-  void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,
+  void DidObserveFirstScrollDelay(int source_frame_number,
+                                  base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
 
   void AddViewTransitionRequest(std::unique_ptr<ViewTransitionRequest> request);

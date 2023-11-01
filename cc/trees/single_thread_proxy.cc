@@ -134,6 +134,7 @@ void SingleThreadProxy::RequestNewLayerTreeFrameSink() {
 }
 
 void SingleThreadProxy::DidObserveFirstScrollDelay(
+    int source_frame_number,
     base::TimeDelta first_scroll_delay,
     base::TimeTicks first_scroll_timestamp) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
@@ -207,6 +208,7 @@ void SingleThreadProxy::SetNeedsUpdateLayers() {
 void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   TRACE_EVENT0("cc", "SingleThreadProxy::DoCommit");
   DCHECK(task_runner_provider_->IsMainThread());
+  CHECK_EQ(source_frame_number_for_next_commit_, kInvalidSourceFrameNumber);
 
   IssueImageDecodeFinishedCallbacks();
 
@@ -233,6 +235,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
   DebugScopedSetImplThread impl(task_runner_provider_);
 
+  source_frame_number_for_next_commit_ = commit_state->source_frame_number;
   host_impl_->BeginCommit(commit_state->source_frame_number,
                           commit_state->trace_id);
 
@@ -274,10 +277,13 @@ void SingleThreadProxy::CommitComplete() {
   DCHECK(task_runner_provider_->IsImplThread());
   DCHECK(!host_impl_->pending_tree())
       << "Activation is expected to have synchronously occurred by now.";
+  CHECK_NE(source_frame_number_for_next_commit_, kInvalidSourceFrameNumber);
 
   DebugScopedSetMainThread main(task_runner_provider_);
   layer_tree_host_->DidBeginMainFrame();
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  layer_tree_host_->CommitComplete(source_frame_number_for_next_commit_,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
+  source_frame_number_for_next_commit_ = kInvalidSourceFrameNumber;
 
   next_frame_is_newly_committed_frame_ = true;
 }
@@ -893,16 +899,16 @@ DrawResult SingleThreadProxy::DoComposite(LayerTreeHostImpl::FrameData* frame) {
     bool start_ready_animations = draw_frame;
     host_impl_->UpdateAnimationState(start_ready_animations);
   }
-  DidCommitAndDrawFrame();
+  DidCommitAndDrawFrame(host_impl_->active_tree()->source_frame_number());
 
   return draw_result;
 }
 
-void SingleThreadProxy::DidCommitAndDrawFrame() {
+void SingleThreadProxy::DidCommitAndDrawFrame(int source_frame_number) {
   if (next_frame_is_newly_committed_frame_) {
     DebugScopedSetMainThread main(task_runner_provider_);
     next_frame_is_newly_committed_frame_ = false;
-    layer_tree_host_->DidCommitAndDrawFrame();
+    layer_tree_host_->DidCommitAndDrawFrame(source_frame_number);
   }
 }
 

@@ -220,7 +220,8 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
         render_pass->quad_list.front()->shared_quad_state->are_contents_opaque);
     completion_event->Signal();
   }
-  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  host->CommitComplete(commit_state->source_frame_number,
+                       {base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_TRUE(layer->contents_opaque());
   layer->SetBackgroundColor({0.2f, 0.3f, 0.4f, 0.9f});
@@ -255,7 +256,8 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     EXPECT_FALSE(
         render_pass->quad_list.front()->shared_quad_state->are_contents_opaque);
   }
-  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  host->CommitComplete(commit_state->source_frame_number,
+                       {base::TimeTicks(), base::TimeTicks::Now()});
 }
 
 TEST_F(SolidColorLayerImplTest, Occlusion) {

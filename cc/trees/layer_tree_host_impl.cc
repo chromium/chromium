@@ -3951,11 +3951,13 @@ void LayerTreeHostImpl::DidChangeBrowserControlsPosition() {
 }
 
 void LayerTreeHostImpl::DidObserveScrollDelay(
+    int source_frame_number,
     base::TimeDelta scroll_delay,
     base::TimeTicks scroll_timestamp) {
   // Record First Scroll Delay.
   if (!has_observed_first_scroll_delay_) {
-    client_->DidObserveFirstScrollDelay(scroll_delay, scroll_timestamp);
+    client_->DidObserveFirstScrollDelay(source_frame_number, scroll_delay,
+                                        scroll_timestamp);
     has_observed_first_scroll_delay_ = true;
   }
 }
@@ -5224,13 +5226,14 @@ void LayerTreeHostImpl::ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
   // presentation timestamp.
   std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks;
   callbacks.push_back(base::BindOnce(
-      [](base::TimeTicks event_creation,
+      [](base::TimeTicks event_creation, int source_frame_number,
          LayerTreeHostImpl* layer_tree_host_impl,
          base::TimeTicks presentation_timestamp) {
         layer_tree_host_impl->DidObserveScrollDelay(
-            presentation_timestamp - event_creation, event_creation);
+            source_frame_number, presentation_timestamp - event_creation,
+            event_creation);
       },
-      creation_timestamp, this));
+      creation_timestamp, active_tree_->source_frame_number(), this));
 
   // Register the callback to run with the presentation timestamp corresponding
   // to the given `frame_token`.
