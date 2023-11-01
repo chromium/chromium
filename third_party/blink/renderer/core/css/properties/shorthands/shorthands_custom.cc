@@ -200,8 +200,8 @@ bool ParseBackgroundOrMaskPosition(
     const CSSParserContext& context,
     absl::optional<WebFeature> three_value_position,
     HeapVector<CSSPropertyValue, 64>& properties) {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
+  const CSSValue* result_x = nullptr;
+  const CSSValue* result_y = nullptr;
   if (!css_parsing_utils::ConsumeBackgroundPosition(
           range, context, css_parsing_utils::UnitlessQuirk::kAllow,
           three_value_position, result_x, result_y) ||

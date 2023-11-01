@@ -223,6 +223,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;
 
+  static const size_t kValueListSeparatorBits = 2;
+  enum ValueListSeparator { kSpaceSeparator, kCommaSeparator, kSlashSeparator };
+
  protected:
   enum ClassType {
     kNumericLiteralClass,
@@ -316,9 +319,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kAxisClass,
     // Do not append non-list class types here.
   };
-
-  static const size_t kValueListSeparatorBits = 2;
-  enum ValueListSeparator { kSpaceSeparator, kCommaSeparator, kSlashSeparator };
 
   ClassType GetClassType() const { return static_cast<ClassType>(class_type_); }
 

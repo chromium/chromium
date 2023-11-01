@@ -41,6 +41,12 @@ CSSValueList::CSSValueList(ValueListSeparator list_separator)
   value_list_separator_ = list_separator;
 }
 
+CSSValueList::CSSValueList(ValueListSeparator list_separator,
+                           HeapVector<Member<const CSSValue>, 4> values)
+    : CSSValue(kValueListClass), values_(std::move(values)) {
+  value_list_separator_ = list_separator;
+}
+
 void CSSValueList::Append(const CSSValue& value) {
   values_.push_back(value);
   // Note: this will be changed if we need to support tree scoped names and

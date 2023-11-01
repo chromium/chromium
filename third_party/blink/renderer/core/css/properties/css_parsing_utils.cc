@@ -4084,18 +4084,13 @@ CSSValue* ConsumeSingleTimelineInset(CSSParserTokenRange& range,
                                             CSSValuePair::kDropIdenticalValues);
 }
 
-void AddBackgroundValue(CSSValue*& list, const CSSValue* value) {
-  if (list) {
-    if (!list->IsBaseValueList()) {
-      CSSValue* first_value = list;
-      list = CSSValueList::CreateCommaSeparated();
-      To<CSSValueList>(list)->Append(*first_value);
-    }
-    To<CSSValueList>(list)->Append(*value);
-  } else {
-    // To conserve memory we don't actually wrap a single value in a list.
-    list = const_cast<CSSValue*>(value);
+const CSSValue* GetSingleValueOrMakeList(
+    CSSValue::ValueListSeparator list_separator,
+    HeapVector<Member<const CSSValue>, 4> values) {
+  if (values.size() == 1u) {
+    return values.front().Get();
   }
+  return MakeGarbageCollected<CSSValueList>(list_separator, std::move(values));
 }
 
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenRange& range) {
@@ -4197,8 +4192,11 @@ bool ConsumeBackgroundPosition(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                UnitlessQuirk unitless,
                                absl::optional<WebFeature> three_value_position,
-                               CSSValue*& result_x,
-                               CSSValue*& result_y) {
+                               const CSSValue*& result_x,
+                               const CSSValue*& result_y) {
+  HeapVector<Member<const CSSValue>, 4> values_x;
+  HeapVector<Member<const CSSValue>, 4> values_y;
+
   do {
     CSSValue* position_x = nullptr;
     CSSValue* position_y = nullptr;
@@ -4212,9 +4210,16 @@ bool ConsumeBackgroundPosition(CSSParserTokenRange& range,
     // argument to ask the parser to set this flag.
     SetAllowsNegativePercentageReference(position_x);
     SetAllowsNegativePercentageReference(position_y);
-    AddBackgroundValue(result_x, position_x);
-    AddBackgroundValue(result_y, position_y);
+    values_x.push_back(position_x);
+    values_y.push_back(position_y);
   } while (ConsumeCommaIncludingWhitespace(range));
+
+  // To conserve memory we don't wrap single values in lists.
+  result_x =
+      GetSingleValueOrMakeList(CSSValue::kCommaSeparator, std::move(values_x));
+  result_y =
+      GetSingleValueOrMakeList(CSSValue::kCommaSeparator, std::move(values_y));
+
   return true;
 }
 
@@ -4361,8 +4366,8 @@ bool ParseBackgroundOrMask(bool important,
           : WebkitMaskShorthand(shorthand_id);
 
   const unsigned longhand_count = shorthand.length();
-  CSSValue* longhands[10] = {nullptr};
-  DCHECK_LE(longhand_count, 10u);
+  HeapVector<Member<const CSSValue>, 4> longhands[10];
+  CHECK_LE(longhand_count, 10u);
 
   bool implicit = false;
   do {
@@ -4419,10 +4424,10 @@ bool ParseBackgroundOrMask(bool important,
           }
           parsed_longhand[i] = true;
           found_property = true;
-          AddBackgroundValue(longhands[i], value);
+          longhands[i].push_back(value);
           if (value_y) {
             parsed_longhand[i + 1] = true;
-            AddBackgroundValue(longhands[i + 1], value_y);
+            longhands[i + 1].push_back(value_y);
           }
         }
       }
@@ -4448,15 +4453,14 @@ bool ParseBackgroundOrMask(bool important,
              property.IDEquals(CSSPropertyID::kMaskClip) ||
              property.IDEquals(CSSPropertyID::kWebkitMaskClip)) &&
             origin_value) {
-          AddBackgroundValue(longhands[i], origin_value);
+          longhands[i].push_back(origin_value);
           continue;
         }
 
         if (shorthand_id == CSSPropertyID::kAlternativeMask) {
-          AddBackgroundValue(longhands[i],
-                             To<Longhand>(property).InitialValue());
+          longhands[i].push_back(To<Longhand>(property).InitialValue());
         } else {
-          AddBackgroundValue(longhands[i], CSSInitialValue::Create());
+          longhands[i].push_back(CSSInitialValue::Create());
         }
       }
     }
@@ -4467,11 +4471,17 @@ bool ParseBackgroundOrMask(bool important,
 
   for (unsigned i = 0; i < longhand_count; ++i) {
     const CSSProperty& property = *shorthand.properties()[i];
-    if (property.IDEquals(CSSPropertyID::kBackgroundSize) && longhands[i] &&
+    if (property.IDEquals(CSSPropertyID::kBackgroundSize) &&
+        !longhands[i].empty() &&
         context.UseLegacyBackgroundSizeShorthandBehavior()) {
       continue;
     }
-    AddProperty(property.PropertyID(), shorthand.id(), *longhands[i], important,
+
+    // To conserve memory we don't wrap a single value in a list.
+    const CSSValue* longhand = GetSingleValueOrMakeList(
+        CSSValue::kCommaSeparator, std::move(longhands[i]));
+
+    AddProperty(property.PropertyID(), shorthand.id(), *longhand, important,
                 implicit ? IsImplicitProperty::kImplicit
                          : IsImplicitProperty::kNotImplicit,
                 properties);
