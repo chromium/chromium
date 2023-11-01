@@ -19,6 +19,8 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -32,6 +34,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
+import {SearchBoxElement} from './search/search_box.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 import {getAcceleratorId, getCategoryNameStringId, isCustomizationAllowed} from './shortcut_utils.js';
@@ -66,7 +69,8 @@ declare global {
  * customization app.
  */
 
-const ShortcutCustomizationAppElementBase = I18nMixin(PolymerElement);
+const ShortcutCustomizationAppElementBase =
+    I18nMixin(FindShortcutMixin(PolymerElement));
 
 export class ShortcutCustomizationAppElement extends
     ShortcutCustomizationAppElementBase implements
@@ -346,6 +350,28 @@ export class ShortcutCustomizationAppElement extends
             source, action);
     this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
         .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
+  }
+
+  // Override FindShortcutMixin methods.
+  override handleFindShortcut(modalContextOpen: boolean): boolean {
+    if (modalContextOpen) {
+      return false;
+    }
+    this.getSearchFieldElement().getSearchInput().focus();
+    return true;
+  }
+
+  // Override FindShortcutMixin methods.
+  override searchInputHasFocus(): boolean {
+    return this.getSearchFieldElement().isSearchFocused();
+  }
+
+  private getSearchFieldElement(): CrToolbarSearchFieldElement {
+    const searchBox =
+        strictQuery('search-box', this.shadowRoot, SearchBoxElement);
+    const searchField = strictQuery(
+        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
+    return searchField;
   }
 
   setAcceleratorUpdateInProgressForTesting(acceleratorUpdateInProgress:

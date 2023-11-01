@@ -10,6 +10,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -22,6 +23,7 @@ import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo, fakeSear
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
+import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
@@ -1438,5 +1440,35 @@ suite('shortcutCustomizationAppTest', function() {
     const policyIndicator = getPage().shadowRoot!.querySelector(
                                 '#policyIndicator') as HTMLDivElement;
     assertFalse(!!policyIndicator);
+  });
+
+  test('HandleFindShortcut', async () => {
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+
+    let searchBox =
+        strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
+    let searchField = strictQuery(
+        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
+    assertFalse(searchField.isSearchFocused());
+
+    // press ctrl + f.
+    const keyboardEvent = new KeyboardEvent('keydown', {
+      key: 'f',
+      keyCode: 70,
+      code: 'KeyF',
+      ctrlKey: true,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+    });
+    getPage().dispatchEvent(keyboardEvent);
+    await flushTasks();
+
+    searchBox =
+        strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
+    searchField = strictQuery(
+        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
+    assertTrue(searchField.isSearchFocused());
   });
 });
