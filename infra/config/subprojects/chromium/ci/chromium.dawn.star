@@ -754,6 +754,9 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|ASAN|Builder",
         short_name = "x64",
     ),
+    # Building DXC from source + ASAN results in longer run times, so
+    # increase default timeout.
+    execution_timeout = 4 * time.hour,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
