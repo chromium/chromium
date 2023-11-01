@@ -1193,7 +1193,7 @@ class _IRBuilder(object):
                           node=None):
         """Constructs a new Operation.IR from simple parameters."""
         if not return_type:
-            return_type = self._create_type('void')
+            return_type = self._create_type('undefined')
         elif isinstance(return_type, str):
             return_type = self._create_type(return_type)
         if isinstance(extended_attributes, dict):

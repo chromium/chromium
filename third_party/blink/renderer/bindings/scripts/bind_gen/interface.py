@@ -806,9 +806,10 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
                                   overriding_args=overriding_args)))
 
         nodes = []
-        is_return_type_void = ((not cg_context.return_type
-                                or cg_context.return_type.unwrap().is_void) and
-                               not cg_context.does_override_idl_return_type)
+        is_return_type_void = (
+            (not cg_context.return_type
+             or cg_context.return_type.unwrap().is_undefined)
+            and not cg_context.does_override_idl_return_type)
         if not (is_return_type_void
                 or cg_context.does_override_idl_return_type):
             return_type = blink_type_info(cg_context.return_type).value_t
@@ -1692,7 +1693,8 @@ def make_v8_set_return_value(cg_context):
     if cg_context.does_override_idl_return_type:
         return T("bindings::V8SetReturnValue(${info}, ${return_value});")
 
-    if not cg_context.return_type or cg_context.return_type.unwrap().is_void:
+    if (not cg_context.return_type
+            or cg_context.return_type.unwrap().is_undefined):
         # Request a SymbolNode |return_value| to define itself without
         # rendering any text.
         return T("<% return_value.request_symbol_definition() %>")
@@ -2348,9 +2350,10 @@ def list_no_alloc_direct_call_callbacks(cg_context):
 
     Example:
       Given the following Web IDL fragments,
-        void f(DOMString);                                             // (a)
-        [NoAllocDirectCall] void f(Node node);                         // (b)
-        [NoAllocDirectCall] void f(optional long a, optional long b);  // (c)
+        undefined f(DOMString);                            // (a)
+        [NoAllocDirectCall] undefined f(Node node);        // (b)
+        [NoAllocDirectCall] undefined f(optional long a,
+                                        optional long b);  // (c)
       the following callback functions should be generated,
         void F(v8::Local<v8::Value> node);  // (b)
         void F();                           // (c)
@@ -2527,7 +2530,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
         map(lambda arg: "{} {}".format(arg.v8_type, arg.v8_arg_name),
             arg_list)) +
                  ["v8::FastApiCallbackOptions& v8_arg_callback_options"])
-    return_type = ("void" if function_like.return_type.is_void else
+    return_type = ("void" if function_like.return_type.is_undefined else
                    blink_type_info(function_like.return_type).value_t)
 
     func_def = CxxFuncDefNode(name=function_name,
@@ -4681,7 +4684,7 @@ def _make_operation_registration_table(table_name, operation_entries):
             T("};"),
             T("// Disable compiler warnings for unused functions."),
             ListNode([
-                F("(void){};", nadc_entry.callback_name)
+                F("std::ignore = {};", nadc_entry.callback_name)
                 for entry in operation_entries
                 for nadc_entry in entry.no_alloc_direct_call_callbacks
             ]),

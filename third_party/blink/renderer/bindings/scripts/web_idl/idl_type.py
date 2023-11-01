@@ -220,8 +220,8 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
     def keyword_typename(self):
         """
         Returns the keyword name of the type if this is a simple built-in type,
-        e.g. "any", "boolean", "unsigned long long", "void", etc.  Otherwise,
-        returns None.
+        e.g. "any", "boolean", "unsigned long long", "undefined", etc.
+        Otherwise, returns None.
         """
         return None
 
@@ -289,7 +289,7 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
         For example, given the following IDL fragments,
 
           typedef [ExtAttr1] long NewLong;
-          void f([ExtAttr2] NewLong arg);
+          undefined f([ExtAttr2] NewLong arg);
 
         arg.idl_type.extended_attributes returns [ExtAttr2],
         arg.idl_type.unwrap().extended_attributes returns [ExtAttr1], and
@@ -395,8 +395,8 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
         return False
 
     @property
-    def is_void(self):
-        """Returns True if this is type 'void'."""
+    def is_undefined(self):
+        """Returns True if this is type 'undefined'."""
         return False
 
     @property
@@ -754,7 +754,7 @@ class SimpleType(IdlType):
         return self._name == 'any'
 
     @property
-    def is_void(self):
+    def is_undefined(self):
         return self._name == 'undefined' or self._name == 'void'
 
 
