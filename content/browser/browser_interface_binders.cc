@@ -970,13 +970,14 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
     map->Add<blink::mojom::MediaDevicesDispatcherHost>(
         base::BindRepeating(&MediaDevicesDispatcherHost::Create,
-                            host->GetProcess()->GetID(), host->GetRoutingID(),
+                            host->GetGlobalId(),
+
                             base::Unretained(media_stream_manager)),
         GetIOThreadTaskRunner({}));
 
     map->Add<blink::mojom::MediaStreamDispatcherHost>(
         base::BindRepeating(&MediaStreamDispatcherHost::Create,
-                            host->GetProcess()->GetID(), host->GetRoutingID(),
+                            host->GetGlobalId(),
                             base::Unretained(media_stream_manager)),
         GetIOThreadTaskRunner({}));
 

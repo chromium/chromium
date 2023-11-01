@@ -37,8 +37,7 @@ class MediaStreamManager;
 class CONTENT_EXPORT MediaStreamDispatcherHost
     : public blink::mojom::MediaStreamDispatcherHost {
  public:
-  MediaStreamDispatcherHost(int render_process_id,
-                            int render_frame_id,
+  MediaStreamDispatcherHost(GlobalRenderFrameHostId render_frame_host_id,
                             MediaStreamManager* media_stream_manager);
 
   MediaStreamDispatcherHost(const MediaStreamDispatcherHost&) = delete;
@@ -47,8 +46,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
 
   ~MediaStreamDispatcherHost() override;
   static void Create(
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver);
 

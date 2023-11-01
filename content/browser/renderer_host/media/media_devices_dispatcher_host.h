@@ -31,8 +31,7 @@ class MediaStreamManager;
 class CONTENT_EXPORT MediaDevicesDispatcherHost
     : public blink::mojom::MediaDevicesDispatcherHost {
  public:
-  MediaDevicesDispatcherHost(int render_process_id,
-                             int render_frame_id,
+  MediaDevicesDispatcherHost(GlobalRenderFrameHostId render_frame_host_id,
                              MediaStreamManager* media_stream_manager);
 
   MediaDevicesDispatcherHost(const MediaDevicesDispatcherHost&) = delete;
@@ -42,8 +41,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   ~MediaDevicesDispatcherHost() override;
 
   static void Create(
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver);
 
@@ -144,8 +142,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
           void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback);
 
   // The following const fields can be accessed on any thread.
-  const int render_process_id_;
-  const int render_frame_id_;
+  const GlobalRenderFrameHostId render_frame_host_id_;
 
   // The following fields can only be accessed on the IO thread.
   const raw_ptr<MediaStreamManager> media_stream_manager_;

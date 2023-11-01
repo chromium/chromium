@@ -127,10 +127,9 @@ class MockMediaStreamDispatcherHost
     : public MediaStreamDispatcherHost,
       public blink::mojom::MediaStreamDeviceObserver {
  public:
-  MockMediaStreamDispatcherHost(int render_process_id,
-                                int render_frame_id,
+  MockMediaStreamDispatcherHost(GlobalRenderFrameHostId render_frame_host_id,
                                 MediaStreamManager* manager)
-      : MediaStreamDispatcherHost(render_process_id, render_frame_id, manager),
+      : MediaStreamDispatcherHost(render_frame_host_id, manager),
         task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
   ~MockMediaStreamDispatcherHost() override {}
 
@@ -334,8 +333,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     salt_and_origin_.set_has_focus(true);
     salt_and_origin_.set_is_background(false);
     host_ = std::make_unique<MockMediaStreamDispatcherHost>(
-        kRenderFrameHostId.child_id, kRenderFrameHostId.frame_routing_id,
-        media_stream_manager_.get());
+        kRenderFrameHostId, media_stream_manager_.get());
     host_->set_get_salt_and_origin_cb_for_testing(
         base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
                             base::Unretained(this)));
@@ -805,7 +803,8 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsDifferentRenderId) {
 
   // Generate second stream from another render frame.
   host_ = std::make_unique<MockMediaStreamDispatcherHost>(
-      kRenderFrameHostId.child_id, kRenderFrameHostId.frame_routing_id + 1,
+      GlobalRenderFrameHostId{kRenderFrameHostId.child_id,
+                              kRenderFrameHostId.frame_routing_id + 1},
       media_stream_manager_.get());
   host_->set_get_salt_and_origin_cb_for_testing(
       base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
@@ -1346,9 +1345,9 @@ TEST_F(MediaStreamDispatcherHostTest,
        RegisterAndUnregisterWithMediaStreamManager) {
   {
     mojo::Remote<blink::mojom::MediaStreamDispatcherHost> client;
-    MediaStreamDispatcherHost::Create(
-        kRenderFrameHostId.child_id, kRenderFrameHostId.frame_routing_id,
-        media_stream_manager_.get(), client.BindNewPipeAndPassReceiver());
+    MediaStreamDispatcherHost::Create(kRenderFrameHostId,
+                                      media_stream_manager_.get(),
+                                      client.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(client.is_bound());
     EXPECT_EQ(media_stream_manager_->num_dispatcher_hosts(), 1u);
   }

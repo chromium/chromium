@@ -214,10 +214,9 @@ void MediaStreamDispatcherHostTestcase::AddMediaStreamDispatcherHostImpl(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // MediaStreamDispatcherHost is a self-owned receiver.
-  content::MediaStreamDispatcherHost::Create(
-      render_frame_host_->GetProcess()->GetID(),
-      render_frame_host_->GetRoutingID(), media_stream_manager_.get(),
-      std::move(receiver));
+  content::MediaStreamDispatcherHost::Create(render_frame_host_->GetGlobalId(),
+                                             media_stream_manager_.get(),
+                                             std::move(receiver));
 }
 
 // Component(s) which we fuzz

@@ -218,10 +218,9 @@ struct MediaStreamDispatcherHost::PendingAccessRequest {
 };
 
 MediaStreamDispatcherHost::MediaStreamDispatcherHost(
-    int render_process_id,
-    int render_frame_id,
+    GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager)
-    : render_frame_host_id_(render_process_id, render_frame_id),
+    : render_frame_host_id_(render_frame_host_id),
       requester_id_(next_requester_id_++),
       media_stream_manager_(media_stream_manager),
       get_salt_and_origin_cb_(
@@ -248,15 +247,14 @@ MediaStreamDispatcherHost::~MediaStreamDispatcherHost() {
 }
 
 void MediaStreamDispatcherHost::Create(
-    int render_process_id,
-    int render_frame_id,
+    GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   media_stream_manager->RegisterDispatcherHost(
-      std::make_unique<MediaStreamDispatcherHost>(
-          render_process_id, render_frame_id, media_stream_manager),
+      std::make_unique<MediaStreamDispatcherHost>(render_frame_host_id,
+                                                  media_stream_manager),
       std::move(receiver));
 }
 
