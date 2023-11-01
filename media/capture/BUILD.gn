@@ -329,6 +329,8 @@ component("capture_lib") {
       "video/chromeos/gpu_memory_buffer_tracker_cros.h",
       "video/chromeos/jpeg_accelerator_provider.cc",
       "video/chromeos/jpeg_accelerator_provider.h",
+      "video/chromeos/mojo_service_manager_observer.cc",
+      "video/chromeos/mojo_service_manager_observer.h",
       "video/chromeos/pixel_format_utils.cc",
       "video/chromeos/pixel_format_utils.h",
       "video/chromeos/request_builder.cc",
