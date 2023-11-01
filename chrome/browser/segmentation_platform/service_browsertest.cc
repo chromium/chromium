@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -25,6 +27,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 #include "components/segmentation_platform/embedder/default_model/optimization_target_segmentation_dummy.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
@@ -36,6 +39,7 @@
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
@@ -97,6 +101,11 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
         "segmentation-platform-disable-model-execution-delay");
   }
 
+  SegmentationPlatformService* GetService() {
+    return segmentation_platform::SegmentationPlatformServiceFactory::
+        GetForProfile(chrome_test_utils::GetProfile(this));
+  }
+
   bool HasClientResultPref(const std::string& segmentation_key) {
     PrefService* pref_service = chrome_test_utils::GetProfile(this)->GetPrefs();
     std::unique_ptr<ClientResultPrefs> result_prefs_ =
@@ -132,12 +141,38 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
 
   void WaitForPlatformInit() {
     base::RunLoop wait_for_init;
-    SegmentationPlatformService* service =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(chrome_test_utils::GetProfile(this));
+    SegmentationPlatformService* service = GetService();
     while (!service->IsPlatformInitialized()) {
       wait_for_init.RunUntilIdle();
     }
+  }
+
+  void ExpectDatabaseQuery(const std::vector<std::string>& metrics,
+                           const ModelProvider::Request& result) {
+    DatabaseClient* client = GetService()->GetDatabaseClient();
+    ASSERT_TRUE(client);
+
+    proto::SegmentationModelMetadata metadata;
+    MetadataWriter writer(&metadata);
+    writer.SetDefaultSegmentationMetadataConfig();
+    for (const std::string& metric : metrics) {
+      DatabaseApiClients::AddSumQuery(writer, metric, /*days=*/1);
+    }
+
+    base::RunLoop wait;
+    client->ProcessFeatures(
+        metadata, base::Time::Now() + base::Minutes(1),
+        base::BindOnce(
+            [](base::OnceClosure quit,
+               const ModelProvider::Request& expected_result,
+               DatabaseClient::ResultStatus status,
+               const ModelProvider::Request& result) {
+              EXPECT_EQ(status, DatabaseClient::ResultStatus::kSuccess);
+              EXPECT_EQ(expected_result, result);
+              std::move(quit).Run();
+            },
+            wait.QuitClosure(), result));
+    wait.Run();
   }
 
   void WaitForSegmentInfoDatabaseUpdate(
@@ -155,9 +190,7 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
 
   void ExpectClassificationResult(const std::string& segmentation_key,
                                   PredictionStatus expected_prediction_status) {
-    SegmentationPlatformService* service =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(chrome_test_utils::GetProfile(this));
+    SegmentationPlatformService* service = GetService();
     PredictionOptions options;
     options.on_demand_execution = false;
     base::RunLoop wait_for_segment;
@@ -561,6 +594,26 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
 
   // There are 2 UKM metrics written to the database, count = 2.
   EXPECT_EQ(ModelProvider::Request({2}), input_feature_in_last_execution_);
+}
+
+IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest, DatabaseApi) {
+  WaitForPlatformInit();
+
+  ExpectDatabaseQuery({}, {});
+  ExpectDatabaseQuery({"test1"}, {0});
+
+  DatabaseClient::StructuredEvent e1("TestEvent", {{"test1", 1}, {"test2", 2}});
+
+  DatabaseClient::StructuredEvent e2("TestEvent",
+                                     {{"test1", 10}, {"test2", 20}});
+
+  SegmentationPlatformService* service = GetService();
+  DatabaseClient* client = service->GetDatabaseClient();
+  client->AddEvent(e1);
+  client->AddEvent(e2);
+  ExpectDatabaseQuery({}, {});
+  ExpectDatabaseQuery({"test1"}, {11});
+  ExpectDatabaseQuery({"test1", "test2"}, {11, 22});
 }
 
 }  // namespace segmentation_platform

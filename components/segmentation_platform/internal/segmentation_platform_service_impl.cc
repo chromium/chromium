@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 
+#include <memory>
 #include <string>
 
 #include "base/command_line.h"
@@ -19,6 +20,7 @@
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/database_client_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/sync_device_info_observer.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -198,6 +200,10 @@ ServiceProxy* SegmentationPlatformServiceImpl::GetServiceProxy() {
   return proxy_.get();
 }
 
+DatabaseClient* SegmentationPlatformServiceImpl::GetDatabaseClient() {
+  return database_client_.get();
+}
+
 bool SegmentationPlatformServiceImpl::IsPlatformInitialized() {
   return storage_init_status_.has_value() && storage_init_status_.value();
 }
@@ -232,6 +238,8 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
       storage_service_->cached_result_provider());
 
   proxy_->SetExecutionService(&execution_service_);
+  database_client_ = std::make_unique<DatabaseClientImpl>(
+      &execution_service_, storage_service_->ukm_data_manager());
 
   for (auto& selector : segment_selectors_) {
     selector.second->OnPlatformInitialized(&execution_service_);

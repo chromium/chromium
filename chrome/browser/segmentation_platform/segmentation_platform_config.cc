@@ -13,6 +13,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/search/ntp_features.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
+#include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
@@ -165,7 +166,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(TabletProductivityUserModel::GetConfig());
   configs.emplace_back(MostVisitedTilesUser::GetConfig());
 #endif
-
   configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(SearchUserModel::GetConfig());
   configs.emplace_back(FeedUserSegment::GetConfig());
@@ -175,6 +175,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(DeviceSwitcherModel::GetConfig());
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
+  configs.emplace_back(DatabaseApiClients::GetConfig());
 
   // Model used for testing.
   configs.emplace_back(OptimizationTargetSegmentationDummy::GetConfig());

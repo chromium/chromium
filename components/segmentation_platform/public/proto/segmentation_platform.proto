@@ -96,4 +96,6 @@ enum SegmentId {
   PASSWORD_MANAGER_USER = 1007;
   // Segment for users who use most visited tiles.
   MOST_VISITED_TILES_USER = 1008;
+  // Default model used for tracking metrics used by DatabaseClient API.
+  DATABASE_API_CLIENTS = 1009;
 };

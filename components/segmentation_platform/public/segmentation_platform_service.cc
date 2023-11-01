@@ -15,4 +15,8 @@ ServiceProxy* SegmentationPlatformService::GetServiceProxy() {
   return nullptr;
 }
 
+DatabaseClient* SegmentationPlatformService::GetDatabaseClient() {
+  return nullptr;
+}
+
 }  // namespace segmentation_platform

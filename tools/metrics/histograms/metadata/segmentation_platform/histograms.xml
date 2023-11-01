@@ -82,6 +82,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeStartAndroidV2"/>
   <variant name="ContextualPageActions"/>
   <variant name="CrossDeviceUser"/>
+  <variant name="DatabaseApiClients"/>
   <variant name="DesktopNtpModule"/>
   <variant name="DeviceSwitcher"/>
   <variant name="DeviceTier"/>
@@ -114,6 +115,7 @@ chromium-metrics-reviews@google.com.
     </obsolete>
   </variant>
   <variant name="CrossDeviceUserSegment"/>
+  <variant name="DatabaseApiClients"/>
   <variant name="DesktopNtpModule"/>
   <variant name="DeviceSwitcher"/>
   <variant name="DeviceTier">

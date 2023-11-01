@@ -5,6 +5,8 @@ ConfigParserTest.*
 ContextualPageActionsModelTest.*
 CrossDeviceUserModelTest.*
 CustomInputProcessorTest.*
+DatabaseApiClientsTest.*
+DatabaseClientImplTest.*
 DatabaseMaintenanceImplTest.*
 DeviceSwitcherModelTest.*
 DeviceSwitcherResultDispatcherTest.*

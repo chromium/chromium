@@ -13,6 +13,7 @@
 #include "base/types/id_type.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -125,6 +126,14 @@ class SegmentationPlatformService : public KeyedService,
 
   // Called to get the proxy that is used for debugging purpose.
   virtual ServiceProxy* GetServiceProxy();
+
+  // Get access to the segmentation databases using the client.
+  // WARNING: This will return nullptr till `IsPlatformInitialized()` is false.
+  // You can observe ServiceProxy to get notified when platform is initialized.
+  // TODO(ssid): Remove the initialization requirement by handling waiting for
+  // init internally.
+  // TODO(ssid): Add a Java version of this API.
+  virtual DatabaseClient* GetDatabaseClient();
 
   // Returns true when platform finished initializing, and can execute models.
   // The `GetSelectedSegment()` calls work without full platform initialization

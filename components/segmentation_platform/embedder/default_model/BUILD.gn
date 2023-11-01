@@ -8,6 +8,8 @@ static_library("default_model") {
     "contextual_page_actions_model.h",
     "cross_device_user_segment.cc",
     "cross_device_user_segment.h",
+    "database_api_clients.cc",
+    "database_api_clients.h",
     "device_switcher_model.cc",
     "device_switcher_model.h",
     "device_switcher_result_dispatcher.cc",
@@ -72,6 +74,7 @@ source_set("unit_tests") {
   sources = [
     "contextual_page_actions_model_unittest.cc",
     "cross_device_user_segment_unittest.cc",
+    "database_api_clients_unittest.cc",
     "device_switcher_model_unittest.cc",
     "device_switcher_result_dispatcher_unittest.cc",
     "feed_user_segment_unittest.cc",

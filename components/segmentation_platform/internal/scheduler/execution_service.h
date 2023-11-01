@@ -87,6 +87,10 @@ class ExecutionService {
   // Executes daily maintenance and collection tasks.
   void RunDailyTasks(bool is_startup);
 
+  processing::FeatureListQueryProcessor* feature_processor() {
+    return feature_list_query_processor_.get();
+  }
+
   void set_training_data_collector_for_testing(
       std::unique_ptr<TrainingDataCollector> collector) {
     training_data_collector_ = std::move(collector);
