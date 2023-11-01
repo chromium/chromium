@@ -6487,6 +6487,13 @@ targets.legacy_basic_suite(
         "wpt_tests_suite": targets.legacy_test_config(
             test = "chrome_wpt_tests",
             results_handler = "layout tests",
+            args = [
+                "--test-type",
+                "testharness",
+                "reftest",
+                "crashtest",
+                "print-reftest",
+            ],
             swarming = targets.swarming(
                 shards = 15,
             ),

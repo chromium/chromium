@@ -1102,6 +1102,11 @@ if (use_blink && !is_cronet_build) {
     script_test("content_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
+        "--test-type",
+        "testharness",
+        "reftest",
+        "crashtest",
+        "print-reftest",
         "--no-show-results",
         "--zero-tests-executed-ok",
       ]

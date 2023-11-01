@@ -3151,6 +3151,11 @@ if (current_toolchain == default_toolchain) {
     args = [
       "--product",
       "chrome_android",
+      "--test-type",
+      "testharness",
+      "reftest",
+      "crashtest",
+      "print-reftest",
       "--zero-tests-executed-ok",
       "--browser-apk",
       "@WrappedPath(apks/ChromePublic.apk)",

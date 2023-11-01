@@ -676,7 +676,10 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             '--test-types',
             nargs='*',
             choices=test_types,
-            default=['testharness', 'reftest', 'crashtest', 'print-reftest'],
+            default=[
+                'testharness', 'reftest', 'crashtest', 'print-reftest',
+                'wdspec'
+            ],
             metavar='TYPE',
             help=f'Test types to run (choices: {", ".join(test_types)})')
         testing_group.add_argument('--no-wpt-internal',

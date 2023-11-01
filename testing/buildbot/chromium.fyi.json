@@ -48204,6 +48204,13 @@
   "linux-wpt-fyi-rel": {
     "isolated_scripts": [
       {
+        "args": [
+          "--test-type",
+          "testharness",
+          "reftest",
+          "crashtest",
+          "print-reftest"
+        ],
         "merge": {
           "args": [
             "--verbose"

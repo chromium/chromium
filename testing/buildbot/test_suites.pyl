@@ -5473,6 +5473,13 @@
       'wpt_tests_suite': {
         'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
+        'args': [
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+        ],
         'swarming': {
           'shards': 15,
         },

@@ -193,8 +193,6 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertEqual(options.retry_unexpected, 11)
             self.assertEqual(options.default_exclude, True)
             self.assertEqual(set(options.exclude), set())
-            # `*webdriver/` tests are implicitly excluded by default.
-            self.assertNotIn('wdspec', options.test_types)
             self.assertAlmostEqual(options.timeout_multiplier, 2.5)
             self.assertTrue(options.fully_parallel)
             self.assertIsNot(options.run_by_dir, 0)
