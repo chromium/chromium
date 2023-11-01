@@ -7821,7 +7821,7 @@
   {
     "name": "use-client-gmb-interface",
     "owners": [ "vikassoni@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "use-custom-messages-domain",
