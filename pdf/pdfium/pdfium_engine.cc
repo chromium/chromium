@@ -3340,6 +3340,9 @@ void PDFiumEngine::DrawSelections(int progressive_index,
   base::span<uint8_t> region;
   size_t stride;
   GetRegion(dirty_in_screen.origin(), image_data, region, stride);
+  if (region.empty()) {
+    return;
+  }
 
   std::vector<gfx::Rect> highlighted_rects;
   gfx::Rect visible_rect = GetVisibleRect();
@@ -3492,9 +3495,7 @@ void PDFiumEngine::Highlight(base::span<uint8_t> buffer,
                              int color_green,
                              int color_blue,
                              std::vector<gfx::Rect>& highlighted_rects) const {
-  if (buffer.empty()) {
-    return;
-  }
+  CHECK(!buffer.empty());
 
   gfx::Rect new_rect = rect;
   for (const auto& highlighted : highlighted_rects)
