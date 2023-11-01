@@ -2107,22 +2107,15 @@ std::vector<std::string> TestLauncher::CollectTests() {
 
   // If `kEnforceExactPositiveFilter` is set, all test cases listed in the
   // exact positive filter for the current shard should exist in the
-  // `enforced_positive_tests`. Otherwise, print the missing cases and fail
-  // loudly.
+  // `enforced_positive_tests`. Otherwise, fail loudly.
   if (enforce_exact_postive_filter_) {
-    bool found_exact_positive_filter_not_enforced = false;
     for (const auto& filter : positive_exact_filter) {
-      if (!ShouldRunInCurrentShard(filter) ||
-          Contains(enforced_positive_tests, std::string(filter))) {
+      if (!ShouldRunInCurrentShard(filter)) {
         continue;
       }
-      if (!found_exact_positive_filter_not_enforced) {
-        LOG(ERROR) << "Found exact positive filter not enforced:";
-        found_exact_positive_filter_not_enforced = true;
-      }
-      LOG(ERROR) << filter;
+      CHECK(Contains(enforced_positive_tests, std::string(filter)))
+          << "Found exact positive filter not enforced: " << filter;
     }
-    CHECK(!found_exact_positive_filter_not_enforced);
   }
 
   return test_names;
