@@ -109,17 +109,6 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-class PrerenderHoldbackBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderHoldbackBrowserTest() {
-    preloading_config_override_.SetHoldback("Prerender", "SpeculationRules",
-                                            true);
-  }
-
- private:
-  content::test::PreloadingConfigOverride preloading_config_override_;
-};
-
 // An end-to-end test of prerendering and activating.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAndActivate) {
   base::HistogramTester histogram_tester;
@@ -411,8 +400,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
 }
 
 // Tests that DevTools open overrides PreloadingConfig's holdback.
-IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
-                       PreloadingHoldbackOverridden) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PreloadingHoldbackOverridden) {
+  content::test::PreloadingConfigOverride preloading_config_override;
+  preloading_config_override.SetHoldback("Prerender", "SpeculationRules", true);
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
@@ -450,8 +440,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
 
 // Tests that Prerender2 cannot be triggered when PreloadingConfig's
 // holdback is not overridden by DevTools.
-IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
-                       PreloadingHoldbackNotOverridden) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PreloadingHoldbackNotOverridden) {
+  content::test::PreloadingConfigOverride preloading_config_override;
+  preloading_config_override.SetHoldback("Prerender", "SpeculationRules", true);
+
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
