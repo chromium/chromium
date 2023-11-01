@@ -26,9 +26,10 @@ void NavigationEntryRestoreContextImpl::AddFrameNavigationEntry(
   if (entry->item_sequence_number() == 0) {
     return;
   }
-  Key key(entry->item_sequence_number(), entry->frame_unique_name(),
-          entry->url());
-  auto [it, inserted] = entries_.insert({key, entry});
+  auto [it, inserted] =
+      entries_.try_emplace(Key(entry->item_sequence_number(),
+                               entry->frame_unique_name(), entry->url()),
+                           entry);
   // The checks here should be consistent with GetFrameNavigationEntry and this
   // is only expected to be called after that function fails to find an entry,
   // so we don't expect there to be an entry for this key already.
@@ -53,13 +54,13 @@ NavigationEntryRestoreContextImpl::GetFrameNavigationEntry(
 bool NavigationEntryRestoreContextImpl::Key::Compare::operator()(
     const Key& x,
     const Key& y) const {
-  if (x.item_sequence_number != y.item_sequence_number) {
-    return x.item_sequence_number > y.item_sequence_number;
+  if (x.item_sequence_number_ != y.item_sequence_number_) {
+    return x.item_sequence_number_ > y.item_sequence_number_;
   }
-  if (x.unique_name != y.unique_name) {
-    return x.unique_name > y.unique_name;
+  if (x.unique_name_ != y.unique_name_) {
+    return x.unique_name_ > y.unique_name_;
   }
-  return x.url > y.url;
+  return x.url_ > y.url_;
 }
 
 }  // namespace content
