@@ -70,13 +70,6 @@ namespace {
 const char kDNSCanaryCheckAddress[] = "http://testdnscanarycheck.com";
 const char kTLSCanaryCheckAddress[] = "http://testtlscanarycheck.com";
 
-PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
-  return static_cast<PreloadingFailureReason>(
-      static_cast<int>(status) +
-      static_cast<int>(
-          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
-}
-
 class TestPrefetchOriginProber : public PrefetchOriginProber {
  public:
   TestPrefetchOriginProber(BrowserContext* browser_context,

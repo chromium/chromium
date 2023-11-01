@@ -131,20 +131,6 @@ PrefetchStatus PrefetchStatusFromIneligibleReason(
   }
 }
 
-static_assert(
-    static_cast<int>(PrefetchStatus::kMaxValue) +
-        static_cast<int>(
-            PreloadingFailureReason::kPreloadingFailureReasonCommonEnd) <=
-    static_cast<int>(
-        PreloadingFailureReason::kPreloadingFailureReasonContentEnd));
-
-PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
-  return static_cast<PreloadingFailureReason>(
-      static_cast<int>(status) +
-      static_cast<int>(
-          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
-}
-
 absl::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     PrefetchStatus prefetch_status) {
   switch (prefetch_status) {

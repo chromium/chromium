@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STATUS_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STATUS_H_
 
+#include "content/public/browser/preloading.h"
+
 namespace content {
 
 // The various states that a prefetch can go through or terminate with. Used in
@@ -213,6 +215,22 @@ enum class PrefetchStatus {
   // The max value of the PrefetchStatus. Update this when new enums are added.
   kMaxValue = kPrefetchEvicted,
 };
+
+// Mapping from `PrefetchStatus` to `PreloadingFailureReason`.
+static_assert(
+    static_cast<int>(PrefetchStatus::kMaxValue) +
+        static_cast<int>(
+            PreloadingFailureReason::kPreloadingFailureReasonCommonEnd) <=
+    static_cast<int>(
+        PreloadingFailureReason::kPreloadingFailureReasonContentEnd));
+
+inline PreloadingFailureReason ToPreloadingFailureReason(
+    PrefetchStatus prefetch_container_metrics) {
+  return static_cast<PreloadingFailureReason>(
+      static_cast<int>(prefetch_container_metrics) +
+      static_cast<int>(
+          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+}
 
 }  // namespace content
 

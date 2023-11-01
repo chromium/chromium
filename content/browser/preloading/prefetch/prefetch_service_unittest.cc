@@ -85,13 +85,6 @@ const char kHTMLBody[] = R"(
         <body></body>
       </html>)";
 
-PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
-  return static_cast<PreloadingFailureReason>(
-      static_cast<int>(status) +
-      static_cast<int>(
-          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
-}
-
 class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
  public:
   explicit MockPrefetchServiceDelegate(int num_on_prefetch_likely_calls = 1) {
