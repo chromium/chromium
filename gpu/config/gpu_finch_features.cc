@@ -36,7 +36,7 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 bool FieldIsInBlocklist(const char* current_value, std::string blocklist_str) {
   std::vector<std::string> blocklist = base::SplitString(
-      blocklist_str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      blocklist_str, "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const std::string& blocklisted_value : blocklist) {
     if (base::StartsWith(current_value, blocklisted_value,
                          base::CompareCase::INSENSITIVE_ASCII)) {
