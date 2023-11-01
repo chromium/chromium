@@ -984,7 +984,7 @@ bool IsSharedStorageWritableEligibleForNavigationRequest(
     const GURL& url) {
   // False if the <iframe> does not have the "sharedstoragewritable" opt-in
   // attribute.
-  if (!frame_tree_node->shared_storage_writable()) {
+  if (!frame_tree_node->shared_storage_writable_opted_in()) {
     return false;
   }
 
@@ -1673,7 +1673,7 @@ NavigationRequest::NavigationRequest(
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
       base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118)) {
     shared_storage_writable_opted_in_ =
-        frame_tree_node_->shared_storage_writable();
+        frame_tree_node_->shared_storage_writable_opted_in();
     shared_storage_writable_eligible_ =
         IsSharedStorageWritableEligibleForNavigationRequest(
             frame_tree_node_, common_params_->url);

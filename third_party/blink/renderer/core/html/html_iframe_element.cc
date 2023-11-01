@@ -603,7 +603,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
   if (RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
           GetExecutionContext()) &&
       GetExecutionContext()->IsSecureContext()) {
-    attributes->shared_storage_writable =
+    attributes->shared_storage_writable_opted_in =
         !FastGetAttribute(html_names::kSharedstoragewritableAttr).IsNull();
   }
 

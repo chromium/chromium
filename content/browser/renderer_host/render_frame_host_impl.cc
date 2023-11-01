@@ -7860,7 +7860,7 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
     return;
   }
 
-  if (attributes->shared_storage_writable &&
+  if (attributes->shared_storage_writable_opted_in &&
       (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118))) {
     bad_message::ReceivedBadMessage(
         GetProcess(),

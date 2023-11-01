@@ -509,7 +509,7 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
   blink::mojom::IframeAttributesPtr child_attributes =
       blink::mojom::IframeAttributes::New();
-  child_attributes->shared_storage_writable = true;
+  child_attributes->shared_storage_writable_opted_in = true;
   child_frame->frame_tree_node()->SetAttributes(std::move(child_attributes));
 
   // Create and start a simulated `NavigationRequest` for the child frame.
@@ -545,7 +545,7 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
           fenced_frame_root->AppendChild("child_of_fenced"));
   blink::mojom::IframeAttributesPtr child_of_fenced_frame_attributes =
       blink::mojom::IframeAttributes::New();
-  child_of_fenced_frame_attributes->shared_storage_writable = true;
+  child_of_fenced_frame_attributes->shared_storage_writable_opted_in = true;
   child_of_fenced_frame->frame_tree_node()->SetAttributes(
       std::move(child_of_fenced_frame_attributes));
 
