@@ -125,7 +125,6 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Seçilmiş 1 elementi silin}other{Seçilmiş # elementi silin}}</translation>
 <translation id="1633659023549081553">Chrome'un əsas səhifəsində yeni məzmunu kəşf edin</translation>
 <translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
-<translation id="1642309806724967937">Ayarlardan asılı olaraq Chrome kukilər və cari URL-i də göndərə bilər</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> tarixində yaradılmış səhifənin oflayn nüsxəsini görürsünüz</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1657932388559784161">Səhifə statistikası üzrə aşağı vərəq bağlanıb</translation>
@@ -703,7 +702,6 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="4738836084190194332">Sonuncu dəfə sinxronizasiya olunub: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Ünvan panelində təkmilləşdirilmiş təkliflər alacaqsınız</translation>
 <translation id="4742970037960872810">Vurğulamanı silin</translation>
-<translation id="4743664893327841597">Ünvan paneli və ya axtarış xanasına yazdıqlarınız defolt axtarış mexanizminə göndərilir</translation>
 <translation id="4749960740855309258">Yeni panel açın</translation>
 <translation id="4750356170202299988">Gənclər üçün kontent</translation>
 <translation id="4758061975920522644">Yalnız şəkil paylaşın</translation>

@@ -125,7 +125,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{選択された 1 件のアイテムを削除します}other{選択された # 件のアイテムを削除します}}</translation>
 <translation id="1633659023549081553">Chrome のホームページで新しいコンテンツにアクセスできます</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
-<translation id="1642309806724967937">設定によっては、Chrome から Cookie や現在の URL が送信されることもあります</translation>
 <translation id="164269334534774161">このページの <ph name="CREATION_TIME" /> のオフライン コピーを表示しています</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1657932388559784161">ページの関連情報のボトムシートは閉じています
@@ -704,7 +703,6 @@
 <translation id="4738836084190194332">最終同期: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">アドレスバーにより関連性の高い候補が表示されます</translation>
 <translation id="4742970037960872810">テキストの選択を解除</translation>
-<translation id="4743664893327841597">アドレスバーまたは検索ボックスに入力した内容は、デフォルトの検索エンジンに送信されます</translation>
 <translation id="4749960740855309258">新しいタブを開く</translation>
 <translation id="4750356170202299988">若者向けのコンテンツ</translation>
 <translation id="4758061975920522644">画像のみ共有</translation>

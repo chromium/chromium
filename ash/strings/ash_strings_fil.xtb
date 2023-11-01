@@ -122,6 +122,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1419738280318246476">I-unlock ang device para maisagawa ang pagkilos sa notification</translation>
 <translation id="1420408895951708260">I-toggle ang Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Oo</translation>
+<translation id="1435537621343861112">Hindi masimulan ang dictation. Naka-off ang iyong mikropono.</translation>
 <translation id="1455242230282523554">Ipakita ang mga setting ng wika</translation>
 <translation id="1460620680449458626">Naka-mute ang volume.</translation>
 <translation id="14648076227129703">Pinapayagan nito ang access sa camera para sa <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may pahintulot sa camera</translation>
@@ -1440,7 +1441,6 @@ Kaka-install lang</translation>
 <translation id="679368458793552943">Mag-zoom in kapag naka-on ang magnifier</translation>
 <translation id="6794287755901682422">Ang item na ito ay may: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Na-edit kamakailan</translation>
-<translation id="6802196538183166658">Buksan ang Mga Mabilisang Setting sa pamamagitan ng pagpili sa oras</translation>
 <translation id="6802687695197837794">Pinapayagan nito ang access para sa <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may mga pahintulot sa camera at mikropono</translation>
 <translation id="6803622936009808957">Hindi ma-mirror ang mga display dahil walang mga sinusuportahang resolusyon na nakita. Pumasok na lang sa pinalawak na desktop.</translation>
 <translation id="6809556495807506746">Hindi available ang mga kontrol</translation>

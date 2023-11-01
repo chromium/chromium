@@ -125,7 +125,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
 <translation id="1633659023549081553">Discover new content on Chrome’s homepage</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Depending on your settings, Chrome may also send cookies and your current URL</translation>
 <translation id="164269334534774161">You are viewing an offline copy of this page from <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1657932388559784161">Page insights bottom sheet is closed</translation>
@@ -703,7 +702,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4738836084190194332">Last synced: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">You’ll get improved suggestions in the address bar</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
-<translation id="4743664893327841597">What you type in the address bar or search box is sent to your default search engine</translation>
 <translation id="4749960740855309258">Open a new tab</translation>
 <translation id="4750356170202299988">Content for young minds</translation>
 <translation id="4758061975920522644">Share image only</translation>

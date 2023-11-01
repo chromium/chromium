@@ -32,6 +32,7 @@
 <translation id="1142732900304639782">இந்த மொழிகளுக்கு மொழிபெயர்ப்பு வேண்டாம்:</translation>
 <translation id="1145536944570833626">ஏற்கனவே உள்ள தரவை நீக்கு.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள்.</translation>
+<translation id="115483310321669804"><ph name="PASSWORD" /> கடவுச்சொல்லைப் பயன்படுத்தும்</translation>
 <translation id="1173894706177603556">பெயர் மாற்று</translation>
 <translation id="1174479719160874822">திரையின் அளவு சிறியதாக இருந்தால் Chrome மொபைல் தளத்திற்குக் கோரிக்கை விடுக்கும்</translation>
 <translation id="1177863135347784049">பிரத்தியேகம்</translation>
@@ -125,7 +126,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{தேர்ந்தெடுத்த 1 உருப்படியை அகற்றும்}other{தேர்ந்தெடுத்த # உருப்படிகளை அகற்றும்}}</translation>
 <translation id="1633659023549081553">Chromeமின் முகப்புப் பக்கத்தில் புதிய உள்ளடக்கத்தைக் கண்டறியலாம்</translation>
 <translation id="1641113438599504367">பாதுகாப்பாக உலாவுதல்</translation>
-<translation id="1642309806724967937">உங்கள் அமைப்புகளைப் பொறுத்து, குக்கீகளையும் உங்களின் தற்போதைய URLலையும் Chrome அனுப்பக்கூடும்</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> அன்றைக்கான இந்தப் பக்கத்தின் ஆஃப்லைன் நகலைப் பார்க்கிறீர்கள்</translation>
 <translation id="1644574205037202324">இதுவரை பார்த்தவை</translation>
 <translation id="1657932388559784161">பக்க புள்ளிவிவரங்கள் உள்ள அடிப்புறத் தாள் மூடப்பட்டது</translation>
@@ -149,6 +149,7 @@
 <translation id="1779766957982586368">சாளரத்தை மூடுக</translation>
 <translation id="1791662854739702043">நிறுவப்பட்டது</translation>
 <translation id="1792959175193046959">எப்போது வேண்டுமானாலும் இயல்புப் பதிவிறக்க இடத்தை மாற்றலாம்</translation>
+<translation id="1796666869097395659">பிறகு வந்து பார்க்கும் வகையில் பக்கத்தைச் சிறிதாக்கலாம்</translation>
 <translation id="1807246157184219062">வெளிச்சம்</translation>
 <translation id="1810845389119482123">ஒத்திசைவின் முதற்கட்ட அமைவு நிறைவடையவில்லை</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ஐப் பயன்படுத்தி <ph name="SITE_ETLD_PLUS_ONE" /> ஐத் தொடர முடியாது</translation>
@@ -703,7 +704,6 @@
 <translation id="4738836084190194332">கடைசியாக ஒத்திசைத்தது: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">இன்னும் துல்லியமான பரிந்துரைகளை முகவரிப் பட்டியில் பெறுவீர்கள்</translation>
 <translation id="4742970037960872810">ஹைலைட்டை அகற்று</translation>
-<translation id="4743664893327841597">முகவரிப் பட்டி அல்லது தேடல் பெட்டியில் டைப் செய்பவை உங்களின் இயல்புத் தேடல் இன்ஜினுக்கு அனுப்பப்படும்</translation>
 <translation id="4749960740855309258">புதிய தாவலைத் திறக்கும்</translation>
 <translation id="4750356170202299988">இளம் வயதினருக்கான உள்ளடக்கம்</translation>
 <translation id="4758061975920522644">படத்தை மட்டும் பகிரும்</translation>
@@ -1345,6 +1345,7 @@
 <translation id="7887174313503389866">முக்கியமான தனியுரிமை மற்றும் பாதுகாப்புக் கட்டுப்பாடுகள் குறித்த டெமோவைப் பாருங்கள். கூடுதல் விருப்பங்களுக்கு, தனிப்பட்ட அமைப்புகளுக்குச் செல்லவும்.</translation>
 <translation id="7896724475402191389">இளம் வயதினருக்கான உள்ளடக்கம் - முடக்கப்பட்டுள்ளது</translation>
 <translation id="7903184275147100332">இதற்கு ஒரு நிமிடம் ஆகக்கூடும்</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">ஆப்ஸ் நிறுவப்பட்டது</translation>
 <translation id="7919123827536834358">தானாக மொழிபெயர்க்கப்படும் மொழிகள்</translation>
 <translation id="7926975587469166629">கார்டின் புனைப்பெயர்</translation>

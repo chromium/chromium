@@ -125,7 +125,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1633659023549081553">Descubre novo contido na páxina de inicio de Chrome</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
-<translation id="1642309806724967937">En función da túa configuración, é posible que Chrome tamén envíe cookies e o teu URL actual</translation>
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1657932388559784161">O panel inferior de estatísticas da páxina está pechado</translation>
@@ -703,7 +702,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Recibirás suxestións melloradas na barra de enderezos</translation>
 <translation id="4742970037960872810">Deixar de salientar texto</translation>
-<translation id="4743664893327841597">O que escribas na barra de enderezos ou na caixa de busca enviarase ao teu buscador predeterminado</translation>
 <translation id="4749960740855309258">Abrir unha nova pestana</translation>
 <translation id="4750356170202299988">Contido para mentes novas</translation>
 <translation id="4758061975920522644">Compartir só imaxe</translation>

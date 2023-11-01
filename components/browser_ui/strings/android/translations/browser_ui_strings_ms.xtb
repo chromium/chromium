@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Muat turun dijeda</translation>
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1426410128494586442">Ya</translation>
-<translation id="1446450296470737166">Benarkan kawalan penuh peranti MIDI</translation>
 <translation id="1448064542941920355">Zum keluar</translation>
 <translation id="1510341833810331442">Laman tidak dibenarkan menyimpan data pada peranti anda</translation>
 <translation id="1547123415014299762">Kuki pihak ketiga dibenarkan</translation>
@@ -117,6 +116,7 @@
 <translation id="2968755619301702150">Pemapar sijil</translation>
 <translation id="2979365474350987274">Kuki pihak ketiga adalah terhad</translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
+<translation id="3013291976881901233">Peranti MIDI</translation>
 <translation id="301521992641321250">Disekat secara automatik</translation>
 <translation id="3069226013421428034">Benarkan log masuk pihak ketiga untuk laman tertentu.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Tamat tempoh esok}other{Tamat tempoh dalam masa # hari}}</translation>

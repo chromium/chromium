@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1426410128494586442">是</translation>
-<translation id="1446450296470737166">允許全權控制 MIDI 裝置。</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1510341833810331442">不允許網站在裝置上儲存資料</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">舉報濫用</translation>
 <translation id="2968755619301702150">憑證檢視者</translation>
 <translation id="3008272652534848354">重設權限</translation>
+<translation id="3013291976881901233">MIDI 裝置</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>

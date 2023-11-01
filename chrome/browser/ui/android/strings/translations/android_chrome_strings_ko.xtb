@@ -125,7 +125,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
 <translation id="1633659023549081553">Chrome 홈페이지에서 새로운 콘텐츠를 발견하세요.</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
-<translation id="1642309806724967937">설정에 따라 Chrome에서 쿠키 및 현재 URL을 전송할 수도 있습니다.</translation>
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1657932388559784161">페이지 통계 하단 시트가 닫힘</translation>
@@ -703,7 +702,6 @@
 <translation id="4738836084190194332">마지막 동기화 시간: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">주소 표시줄에 더 개선된 추천 항목이 표시됩니다.</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
-<translation id="4743664893327841597">주소 표시줄이나 검색창에 입력하는 내용은 기본 검색엔진으로 전송됩니다.</translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
 <translation id="4750356170202299988">어린이를 위한 콘텐츠</translation>
 <translation id="4758061975920522644">이미지만 공유</translation>

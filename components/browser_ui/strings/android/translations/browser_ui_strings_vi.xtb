@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1426410128494586442">Có</translation>
-<translation id="1446450296470737166">Cho phép kiểm soát hoàn toàn thiết bị MIDI</translation>
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="1510341833810331442">Các trang web không được phép lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="1547123415014299762">Cho phép sử dụng cookie của bên thứ ba</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Báo cáo lạm dụng</translation>
 <translation id="2968755619301702150">Trình xem chứng chỉ</translation>
 <translation id="3008272652534848354">Đặt lại quyền</translation>
+<translation id="3013291976881901233">Thiết bị MIDI</translation>
 <translation id="301521992641321250">Tự động bị chặn</translation>
 <translation id="3069226013421428034">Cho phép bên thứ ba đăng nhập đối với một trang web cụ thể.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>

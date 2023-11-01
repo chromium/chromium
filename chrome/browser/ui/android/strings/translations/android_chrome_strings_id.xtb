@@ -125,7 +125,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hapus 1 item yang dipilih}other{Hapus # item yang dipilih}}</translation>
 <translation id="1633659023549081553">Temukan konten baru di halaman beranda Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Bergantung pada setelan Anda, Chrome juga dapat mengirim cookie dan URL Anda saat ini</translation>
 <translation id="164269334534774161">Anda melihat salinan offline halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1657932388559784161">Sheet bawah analisis halaman ditutup</translation>
@@ -703,7 +702,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4738836084190194332">Terakhir disinkronkan: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Anda akan mendapatkan saran yang lebih baik di kolom URL</translation>
 <translation id="4742970037960872810">Hapus sorotan</translation>
-<translation id="4743664893327841597">Kata yang Anda ketik di kolom URL atau kotak penelusuran akan dikirim ke mesin telusur default Anda</translation>
 <translation id="4749960740855309258">Membuka tab baru</translation>
 <translation id="4750356170202299988">Konten untuk anak-anak</translation>
 <translation id="4758061975920522644">Hanya bagikan gambar</translation>

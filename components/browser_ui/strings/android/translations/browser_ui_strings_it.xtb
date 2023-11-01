@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Download sospeso</translation>
 <translation id="1415402041810619267">URL troncato</translation>
 <translation id="1426410128494586442">Sì</translation>
-<translation id="1446450296470737166">Controllo completo dispos. MIDI</translation>
 <translation id="1448064542941920355">Diminuisci lo zoom</translation>
 <translation id="1510341833810331442">I siti non sono autorizzati a salvare dati sul dispositivo</translation>
 <translation id="1547123415014299762">Sono consentiti i cookie di terze parti</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Segnala abuso</translation>
 <translation id="2968755619301702150">Visualizzatore certificati</translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
+<translation id="3013291976881901233">Dispositivi MIDI</translation>
 <translation id="301521992641321250">Bloccata automaticamente</translation>
 <translation id="3069226013421428034">Consenti l'accesso di terze parti per un sito specifico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Scade domani}other{Scade tra # giorni}}</translation>

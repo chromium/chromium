@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Спампоўка прыпынена</translation>
 <translation id="1415402041810619267">URL-адрас абрэзаны</translation>
 <translation id="1426410128494586442">Так</translation>
-<translation id="1446450296470737166">Дазв. поўны кантроль MIDI-прылад</translation>
 <translation id="1448064542941920355">Паменшыць маштаб</translation>
 <translation id="1510341833810331442">Сайтам не дазволена захоўваць даныя на вашай прыладзе</translation>
 <translation id="1547123415014299762">Староннія файлы cookie дазволены</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Паскардзіцца на парушэнне</translation>
 <translation id="2968755619301702150">Звесткі пра сертыфікат</translation>
 <translation id="3008272652534848354">Скінуць дазволы</translation>
+<translation id="3013291976881901233">Прылады MIDI</translation>
 <translation id="301521992641321250">Заблакіравана аўтаматычна</translation>
 <translation id="3069226013421428034">Дазволіць уваход праз староннія сэрвісы для канкрэтнага сайта.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Тэрмін дзеяння заканчваецца заўтра}one{Тэрмін дзеяння заканчваецца праз # дзень}few{Тэрмін дзеяння заканчваецца праз # дні}many{Тэрмін дзеяння заканчваецца праз # дзён}other{Тэрмін дзеяння заканчваецца праз # дня}}</translation>

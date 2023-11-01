@@ -125,7 +125,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Таңдалған 1 элементті өшіру}other{Таңдалған # элементті өшіру}}</translation>
 <translation id="1633659023549081553">Chrome-ның негізгі бетінен жаңа контентті көріңіз.</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">Сонымен қатар параметрлеріңізге байланысты Chrome cookie файлдары мен қазіргі URL мекенжайыңызды жіберуі мүмкін.</translation>
 <translation id="164269334534774161">Осы беттің <ph name="CREATION_TIME" /> күнгі офлайн көшірмесі шығарылды</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="1657932388559784161">Бет статистикасының төменгі парақшасы жабылды</translation>
@@ -703,7 +702,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4738836084190194332">Соңғы синхрондалған уақыты: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Мекенжай жолағында жақсартылған ұсыныстар аласыз.</translation>
 <translation id="4742970037960872810">Ерекшелемеу</translation>
-<translation id="4743664893327841597">Мекенжай жолағында немесе іздеу өрісінде тергеніңіз әдепкі іздеу жүйесіне жіберіледі.</translation>
 <translation id="4749960740855309258">Жаңа қойынды ашу</translation>
 <translation id="4750356170202299988">Жеткіншектерге арналған контент</translation>
 <translation id="4758061975920522644">Тек кескін бөлісу</translation>

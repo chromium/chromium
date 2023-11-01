@@ -125,7 +125,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 个所选项}other{移除 # 个所选项}}</translation>
 <translation id="1633659023549081553">在 Chrome 主页上发现新内容</translation>
 <translation id="1641113438599504367">安全浏览</translation>
-<translation id="1642309806724967937">Chrome 可能还会发送 Cookie 和当前网址，具体取决于您的设置</translation>
 <translation id="164269334534774161">您目前浏览的是此网页的离线副本（创建时间：<ph name="CREATION_TIME" />）</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1657932388559784161">显示网页数据洞见的底部工作表已关闭</translation>
@@ -703,7 +702,6 @@
 <translation id="4738836084190194332">上次同步时间：<ph name="WHEN" /></translation>
 <translation id="4741753828624614066">您会在地址栏中获得经过改进的建议</translation>
 <translation id="4742970037960872810">撤消突出显示</translation>
-<translation id="4743664893327841597">系统会将您在地址栏或搜索框中输入的内容发送至默认搜索引擎</translation>
 <translation id="4749960740855309258">打开新标签页</translation>
 <translation id="4750356170202299988">为青少年提供的内容</translation>
 <translation id="4758061975920522644">仅分享图片</translation>
@@ -1345,6 +1343,7 @@
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
 <translation id="7896724475402191389">为青少年提供的内容 - 已关闭</translation>
 <translation id="7903184275147100332">请稍等片刻</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">已安装应用</translation>
 <translation id="7919123827536834358">自动翻译这些语言</translation>
 <translation id="7926975587469166629">卡的昵称</translation>

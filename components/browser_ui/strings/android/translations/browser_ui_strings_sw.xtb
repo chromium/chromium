@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Upakuaji umesitishwa</translation>
 <translation id="1415402041810619267">URL imepunguzwa</translation>
 <translation id="1426410128494586442">Ndiyo</translation>
-<translation id="1446450296470737166">Ruhusu udhibiti kamili wa vifaa vya MIDI</translation>
 <translation id="1448064542941920355">Punguza ukuzaji</translation>
 <translation id="1510341833810331442">Tovuti haziruhusiwi kuhifadhi data kwenye kifaa chako</translation>
 <translation id="1547123415014299762">Vidakuzi vya washirika wengine vinaruhusiwa</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Ripoti matumizi mabaya</translation>
 <translation id="2968755619301702150">Kitazamaji vyeti</translation>
 <translation id="3008272652534848354">Badilisha ruhusa</translation>
+<translation id="3013291976881901233">Vifaa vya MIDI</translation>
 <translation id="301521992641321250">Imezuiwa kiotomatiki</translation>
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>

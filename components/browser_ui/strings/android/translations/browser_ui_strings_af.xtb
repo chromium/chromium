@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Aflaai is onderbreek</translation>
 <translation id="1415402041810619267">URL is afgekap</translation>
 <translation id="1426410128494586442">Ja</translation>
-<translation id="1446450296470737166">Laat vol MIDI-toestelbeheer toe</translation>
 <translation id="1448064542941920355">Verklein zoem</translation>
 <translation id="1510341833810331442">Werwe word nie toegelaat om data op jou toestel te stoor nie</translation>
 <translation id="1547123415014299762">Derdepartywebkoekies word toegelaat</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Gee misbruik aan</translation>
 <translation id="2968755619301702150">Sertifikaatbekyker</translation>
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
+<translation id="3013291976881901233">MIDI-toestelle</translation>
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
 <translation id="3069226013421428034">Laat aanmelding deur derde partye vir ’n spesifieke werf toe.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>

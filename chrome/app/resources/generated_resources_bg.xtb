@@ -2709,7 +2709,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3053273573829329829">Активиране на ПИН на потребителя</translation>
 <translation id="3054766768827382232">Ако деактивирате това, периферните ви устройства може да работят по-добре, но личните ви данни може да бъдат изложени на риск от неупълномощена употреба.</translation>
 <translation id="3055113921564083271">Премахнати от вас интереси</translation>
-<translation id="3055590424724986000">Посредством доставчик по ваш избор</translation>
 <translation id="3056438898277655057">Разрешаване на <ph name="SPECIFIC_NAME" /> да осъществява достъп до USB устройства. <ph name="SPECIFIC_NAME" /> няма да запомни дадено USB устройство, след като бъде премахнато.</translation>
 <translation id="3058498974290601450">Можете по всяко време да включите синхронизирането в настройките</translation>
 <translation id="3058517085907878899">Задаване на име на устройството</translation>
@@ -3430,7 +3429,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3673622964532248901">Нямате разрешение за предаване към това устройство.</translation>
 <translation id="3675683621636519363">Изпращане на сигнали за сривове, диагностична информация и данни за употребата до ChromeOS Flex</translation>
 <translation id="367645871420407123">не попълвайте, ако искате паролата на root да е стандартната от тестовия образ</translation>
-<translation id="3677106374019847299">Въведете персонализиран доставчик</translation>
 <translation id="3677911431265050325">Заявка за мобилния сайт</translation>
 <translation id="3677959414150797585">Включва приложения, уеб страници и др. Изпраща статистически данни, за да подобри предложенията, само ако сте избрали да споделяте данни за употребата.</translation>
 <translation id="3678156199662914018">Разширение: <ph name="EXTENSION_NAME" /></translation>
@@ -3837,7 +3835,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3962119236270174787">Стандартна защита срещу уебсайтове, изтеглени файлове и разширения, за които е известно, че са опасни</translation>
 <translation id="3963753386716096475">Използване на друг телефон, таблет или ключ за сигурност</translation>
 <translation id="3964480518399667971">Изключване на мобилната мрежа</translation>
-<translation id="3965811923470826124">Със</translation>
 <translation id="3965965397408324205">Изход от <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Изберете друга папка...</translation>
 <translation id="3966094581547899417">Подробности за точката за достъп</translation>
@@ -4289,7 +4286,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="434198521554309404">Бързо. Сигурно. Лесно.</translation>
 <translation id="4342417854108207000">С разрешение за редактиране на файловете и папките на устройството</translation>
 <translation id="4343250402091037179">За да търсите в конкретен сайт или в част от Chrome, въведете съответния пряк път в адресната лента и натиснете предпочитаната от вас клавишна комбинация.</translation>
-<translation id="434404122609091467">Посредством текущия ви доставчик на услуги</translation>
 <translation id="4345457680916430965">&amp;Отваряне в(ъв) <ph name="APP" /></translation>
 <translation id="4345587454538109430">Конфигуриране...</translation>
 <translation id="4345732373643853732">Потребителското име не е известно на сървъра</translation>
@@ -6437,7 +6433,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6080689532560039067">Проверете системния си час</translation>
 <translation id="6082877069782862752">Задаване на функции за клавишите</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> е част от група без име</translation>
-<translation id="6085886413119427067">Определя начин за свързване с уебсайтовете през сигурна връзка</translation>
 <translation id="6086004606538989567">Профилът, който потвърдихте, не е упълномощен да използва това устройство.</translation>
 <translation id="6086846494333236931">Инсталирано от администратора ви</translation>
 <translation id="6087746524533454243">Търсите страницата с информация за браузъра? Посетете</translation>
@@ -6944,7 +6939,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6508248480704296122">Свързано със <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Приложение: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Лиценз за мултимедия</translation>
-<translation id="6511279028091289182">Определя начин за свързване с уебсайтовете през сигурна връзка. За целта се използва доставчик на управлявани услуги на адрес <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="6511607461419653612">Рестартирайте своя Chromebook и опитайте отново</translation>
 <translation id="6511827214781912955">Добре е да изтриете „<ph name="FILENAME" />“, така че другите хора, които използват това устройство, да не могат да видят паролите ви</translation>
 <translation id="6513247462497316522">Google Chrome ще използва мобилни данни, ако не сте свързани с друга мрежа.</translation>
@@ -10274,7 +10268,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9108072915170399168">Текущата настройка за преноса на данни е „Без интернет“</translation>
 <translation id="9108294543511800041">Вече можете да преглеждате скорошните снимки, мултимедийни файлове и известия, които имате на телефона си</translation>
 <translation id="9108674852930645435">Вижте новите неща в <ph name="DEVICE_TYPE" /></translation>
-<translation id="9108808586816295166">Сигурният DNS може да не е налице по всяко време</translation>
 <translation id="9109122242323516435">За да освободите място, изтрийте файлове от хранилището на устройството.</translation>
 <translation id="9109283579179481106">Свързване с мобилна мрежа</translation>
 <translation id="9110739391922513676">Настройване на Microsoft 365 така, че да отваря файлове</translation>

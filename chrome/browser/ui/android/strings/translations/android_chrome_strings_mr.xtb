@@ -125,7 +125,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 निवडलेला आयटम काढून टाका}other{# निवडलेले आयटम काढून टाका}}</translation>
 <translation id="1633659023549081553">Chrome च्या होम पेजवर नवीन आशय पहा</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
-<translation id="1642309806724967937">तुमच्या सेटिंग्जनुसार, Chrome हे कुकी आणि तुमची सध्याची URL देखील पाठवू शकते</translation>
 <translation id="164269334534774161">तुम्ही <ph name="CREATION_TIME" /> पासून या पेजची ऑफलाइन प्रत पाहत आहात</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1657932388559784161">तळाशी असलेल्या शीटमध्ये पेज इनसाइट बंद केल्या आहेत</translation>
@@ -703,7 +702,6 @@
 <translation id="4738836084190194332">अखेरचे संकालित: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">तुम्हाला अ‍ॅड्रेस बारमध्ये सुधारित सूचना मिळतील</translation>
 <translation id="4742970037960872810">हायलाइट काढून टाका</translation>
-<translation id="4743664893327841597">तुम्ही अ‍ॅड्रेस बार किंवा सर्च बॉक्समध्ये टाइप केलेल्या गोष्टी तुमच्या डीफॉल्ट शोध इंजीनला पाठवल्या जातात</translation>
 <translation id="4749960740855309258">एक नवीन टॅब उघडा</translation>
 <translation id="4750356170202299988">लहान मुलांसाठीचा आशय</translation>
 <translation id="4758061975920522644">फक्त इमेज शेअर करा</translation>

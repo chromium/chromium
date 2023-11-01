@@ -125,7 +125,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 არჩეული ერთეულის ამოშლა}other{# არჩეული ერთეულის ამოშლა}}</translation>
 <translation id="1633659023549081553">აღმოაჩინეთ ახალი კონტენტი Chrome-ის მთავარ გვერდზე</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
-<translation id="1642309806724967937">თქვენი პარამეტრების მიხედვით, Chrome-მა, შესაძლოა, გაგზავნოს ქუქი-ჩანაწერები და თქვენი ამჟამინდელი URL-ც</translation>
 <translation id="164269334534774161">თქვენ ამ გვერდის ხაზგარეშე ასლს ნახულობთ, რომლის შექმნის თარიღია: <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">ისტორია</translation>
 <translation id="1657932388559784161">გვერდის ანალიზის ქვედა ფურცელი დახურულია</translation>
@@ -703,7 +702,6 @@
 <translation id="4738836084190194332">ბოლო სინქრონიზაცია: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">თქვენ მოგეწოდებათ გაუმჯობესებული შემოთავაზებები მისამართთა ზოლში</translation>
 <translation id="4742970037960872810">გამოყოფის ამოშლა</translation>
-<translation id="4743664893327841597">თქვენ მიერ მისამართთა ზოლში ან საძიებო ველში აკრეფილი ტექსტი გაეგზავნება თქვენს ნაგულისხმევ საძიებო სისტემას</translation>
 <translation id="4749960740855309258">ახალ ჩანართში გახსნა</translation>
 <translation id="4750356170202299988">კონტენტი მოზარდებისთვის</translation>
 <translation id="4758061975920522644">მხოლოდ სურათის გაზიარება</translation>

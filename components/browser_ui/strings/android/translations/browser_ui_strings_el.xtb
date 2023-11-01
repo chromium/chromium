@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Η λήψη διακόπηκε προσωρινά.</translation>
 <translation id="1415402041810619267">Περικομμένο URL</translation>
 <translation id="1426410128494586442">Ναι</translation>
-<translation id="1446450296470737166">Να επιτρέπεται πλήρης έλεγχος σε MIDI</translation>
 <translation id="1448064542941920355">Σμίκρυνση</translation>
 <translation id="1510341833810331442">Οι ιστότοποι δεν επιτρέπεται να αποθηκεύουν δεδομένα στη συσκευή σας</translation>
 <translation id="1547123415014299762">Επιτρέπονται τα cookie τρίτου μέρους</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Αναφορά κατάχρησης</translation>
 <translation id="2968755619301702150">Πρόγρ. προβολής πιστοποιητικού</translation>
 <translation id="3008272652534848354">Επαναφορά αδειών</translation>
+<translation id="3013291976881901233">Συσκευές MIDI</translation>
 <translation id="301521992641321250">Αποκλείστηκε αυτόματα</translation>
 <translation id="3069226013421428034">Να επιτρέπεται η σύνδεση τρίτου μέρους για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Λήγει αύριο}other{Λήγει σε # ημέρες}}</translation>

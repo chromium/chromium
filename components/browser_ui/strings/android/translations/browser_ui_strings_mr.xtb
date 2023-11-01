@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">डाउनलोडला विराम दिला</translation>
 <translation id="1415402041810619267">URL कापली गेली</translation>
 <translation id="1426410128494586442">होय</translation>
-<translation id="1446450296470737166">MIDI डिव्हाइसेसच्या पूर्ण नियंत्रणास अनुमती द्या</translation>
 <translation id="1448064542941920355">झूम कमी करते</translation>
 <translation id="1510341833810331442">साइटना तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती नाही</translation>
 <translation id="1547123415014299762">तृतीय पक्ष कुकीना अनुमती आहे</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">गैरवापराची तक्रार करा</translation>
 <translation id="2968755619301702150">सर्टिफिकेट दर्शक</translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
+<translation id="3013291976881901233">MIDI डिव्हाइस</translation>
 <translation id="301521992641321250">आपोआप ब्लॉक केलेले</translation>
 <translation id="3069226013421428034">विशिष्ट साइटसाठी तृतीय पक्ष साइन-इनला अनुमती द्या.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{उद्या एक्स्पायर होईल}other{# दिवसांमध्ये एक्स्पायर होईल}}</translation>

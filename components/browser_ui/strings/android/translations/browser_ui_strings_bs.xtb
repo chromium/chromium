@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1415402041810619267">URL je odsječen</translation>
 <translation id="1426410128494586442">Da</translation>
-<translation id="1446450296470737166">Puna kontrola MIDI uređaja</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
 <translation id="1510341833810331442">Web lokacijama nije dozvoljeno da pohranjuju podatke na uređaj</translation>
 <translation id="1547123415014299762">Kolačići treće strane su dozvoljeni</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Prijavite zloupotrebu</translation>
 <translation id="2968755619301702150">Preglednik certifikata</translation>
 <translation id="3008272652534848354">Poništi odobrenja</translation>
+<translation id="3013291976881901233">MIDI uređaji</translation>
 <translation id="301521992641321250">Automatski blokirano</translation>
 <translation id="3069226013421428034">Dozvolite prijavu trećih stana za određenu web lokaciju.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>

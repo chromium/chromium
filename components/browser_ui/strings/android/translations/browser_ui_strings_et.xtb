@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Allalaadimine peatatud</translation>
 <translation id="1415402041810619267">Lühendatud URL</translation>
 <translation id="1426410128494586442">Jah</translation>
-<translation id="1446450296470737166">MIDI-seadm. täieliku juht. lub.</translation>
 <translation id="1448064542941920355">Suumi vähendamine</translation>
 <translation id="1510341833810331442">Saitidel ei ole lubatud teie seadmesse andmeid salvestada</translation>
 <translation id="1547123415014299762">Kolmanda osapoole küpsisefailid on lubatud</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Teata väärkasutusest</translation>
 <translation id="2968755619301702150">Sertifikaadikuvaja</translation>
 <translation id="3008272652534848354">Lähtesta load</translation>
+<translation id="3013291976881901233">MIDI-seadmed</translation>
 <translation id="301521992641321250">Automaatselt blokeeritud</translation>
 <translation id="3069226013421428034">Konkreetse saidi jaoks kolmanda osapoole sisselogimise lubamine.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Aegub homme}other{Aegub # päeva pärast}}</translation>

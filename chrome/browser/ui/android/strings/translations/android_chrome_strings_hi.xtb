@@ -125,7 +125,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 चयनित आइटम निकालें}one{# चयनित आइटम निकालें}other{# चयनित आइटम निकालें}}</translation>
 <translation id="1633659023549081553">Chrome के होम पेज पर जाकर, नया कॉन्टेंट खोजें</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
-<translation id="1642309806724967937">आपकी सेटिंग के आधार पर, Chrome कुकी और आपका मौजूदा यूआरएल भी भेज सकता है</translation>
 <translation id="164269334534774161">आप <ph name="CREATION_TIME" /> से इस पेज की ऑफ़लाइन कॉपी देख रहे हैं</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1657932388559784161">पेज की अहम जानकारी वाली बॉटम शीट बंद है</translation>
@@ -698,7 +697,6 @@
 <translation id="4738836084190194332">अंतिम बार सिंक किया गया: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">आपको पता बार में बेहतर सुझाव मिलेंगे</translation>
 <translation id="4742970037960872810">हाइलाइट हटाएं</translation>
-<translation id="4743664893327841597">पता बार या खोज बॉक्स में टाइप किए गए टेक्स्ट को, आपके डिफ़ॉल्ट सर्च इंजन को भेज दिया जाता है</translation>
 <translation id="4749960740855309258">नया टैब खोलें</translation>
 <translation id="4750356170202299988">बच्चों के लिए कॉन्टेंट</translation>
 <translation id="4758061975920522644">सिर्फ़ इमेज शेयर करें</translation>
@@ -1333,6 +1331,7 @@
 <translation id="7887174313503389866">गाइड की मदद से, निजता और सुरक्षा से जुड़े मुख्य कंट्रोल के बारे में जानकारी पाएं. ज़्यादा विकल्पों के लिए, हर एक सेटिंग पर जाएं.</translation>
 <translation id="7896724475402191389">बच्चों के लिए कॉन्टेंट - बंद है</translation>
 <translation id="7903184275147100332">इसमें एक मिनट लग सकता है</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">ऐप्लिकेशन इंस्टॉल हो गया है</translation>
 <translation id="7919123827536834358">अपने-आप इन भाषाओं का अनुवाद करें</translation>
 <translation id="7926975587469166629">कार्ड का कोई दूसरा नाम</translation>

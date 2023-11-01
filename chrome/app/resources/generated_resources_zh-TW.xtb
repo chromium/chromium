@@ -2698,7 +2698,6 @@
 <translation id="3053273573829329829">啟用使用者 PIN 碼</translation>
 <translation id="3054766768827382232">停用這項功能可以提高周邊裝置的效能，但也可能讓有心人士能夠在未經授權的情況下使用你的個人資料。</translation>
 <translation id="3055113921564083271">已移除的感興趣主題</translation>
-<translation id="3055590424724986000">使用你選取的供應商</translation>
 <translation id="3056438898277655057">請授權 <ph name="SPECIFIC_NAME" /> 存取 USB 裝置。移除後，<ph name="SPECIFIC_NAME" /> 不會記住這部 USB 裝置。</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3058517085907878899">為裝置命名</translation>
@@ -3419,7 +3418,6 @@
 <translation id="3673622964532248901">你的權限不足，無法投放到這部裝置。</translation>
 <translation id="3675683621636519363">將當機報告和診斷與使用資料傳送到 ChromeOS Flex</translation>
 <translation id="367645871420407123">如果您要將 Root 密碼設為測試映像檔的預設值，請保留空白</translation>
-<translation id="3677106374019847299">輸入自訂供應商</translation>
 <translation id="3677911431265050325">切換為行動版網站</translation>
 <translation id="3677959414150797585">包括應用程式、網頁等。只有當你選擇提供使用資料時，系統才會傳送統計資料用來改善建議項目。</translation>
 <translation id="3678156199662914018">擴充功能：<ph name="EXTENSION_NAME" /></translation>
@@ -3824,7 +3822,6 @@
 <translation id="3962119236270174787">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制</translation>
 <translation id="3963753386716096475">使用其他手機、平板電腦或安全金鑰</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
-<translation id="3965811923470826124">包含</translation>
 <translation id="3965965397408324205">離開<ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">選擇其他資料夾...</translation>
 <translation id="3966094581547899417">無線基地台詳細資料</translation>
@@ -4276,7 +4273,6 @@
 <translation id="434198521554309404">快速、安全又便利。</translation>
 <translation id="4342417854108207000">允許編輯裝置上的檔案或資料夾</translation>
 <translation id="4343250402091037179">如要搜尋特定網站或 Chrome，請在網址列輸入相應的快捷字詞，然後按下你慣用的鍵盤快速鍵。</translation>
-<translation id="434404122609091467">使用目前的服務供應商</translation>
 <translation id="4345457680916430965">在 <ph name="APP" /> 中開啟(&amp;O)</translation>
 <translation id="4345587454538109430">設定...</translation>
 <translation id="4345732373643853732">伺服器無法辨識使用者名稱</translation>
@@ -6418,7 +6414,6 @@
 <translation id="6080689532560039067">請檢查你的系統時間</translation>
 <translation id="6082877069782862752">對應按鍵</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名群組</translation>
-<translation id="6085886413119427067">判斷如何透過安全連線連上網站</translation>
 <translation id="6086004606538989567">你驗證的帳戶未經授權，無法存取這部裝置。</translation>
 <translation id="6086846494333236931">由您的管理員安裝</translation>
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
@@ -6925,7 +6920,6 @@
 <translation id="6508248480704296122">與「<ph name="NAME_PH" />」相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒體授權</translation>
-<translation id="6511279028091289182">安全 DNS 會判斷如何透過安全連線連上網站。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商</translation>
 <translation id="6511607461419653612">請重新啟動 Chromebook，然後再試一次</translation>
 <translation id="6511827214781912955">建議你刪除「<ph name="FILENAME" />」，讓這部裝置的其他使用者無法查看你的密碼</translation>
 <translation id="6513247462497316522">如果你沒有連線至其他網路，Google Chrome 將使用行動數據網路連線。</translation>
@@ -10255,7 +10249,6 @@
 <translation id="9108072915170399168">目前的數據用量設定是不使用網際網路</translation>
 <translation id="9108294543511800041">你現在可以查看手機最近的相片、媒體和通知</translation>
 <translation id="9108674852930645435">探索 <ph name="DEVICE_TYPE" /> 的新功能</translation>
-<translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>
 <translation id="9109122242323516435">如要釋出空間，請刪除裝置儲存空間內的檔案</translation>
 <translation id="9109283579179481106">連線至行動網路</translation>
 <translation id="9110739391922513676">設定使用 Microsoft 365 開啟檔案</translation>

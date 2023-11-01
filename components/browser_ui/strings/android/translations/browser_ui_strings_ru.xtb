@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
 <translation id="1426410128494586442">Да</translation>
-<translation id="1446450296470737166">Полный доступ к управлению MIDI-устройствами</translation>
 <translation id="1448064542941920355">Уменьшить масштаб</translation>
 <translation id="1510341833810331442">Сайтам запрещено сохранять данные на вашем устройстве</translation>
 <translation id="1547123415014299762">Сторонние файлы cookie разрешены</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Сообщить о нарушении</translation>
 <translation id="2968755619301702150">Просмотр сертификатов</translation>
 <translation id="3008272652534848354">Сбросить все разрешения</translation>
+<translation id="3013291976881901233">MIDI-устройства</translation>
 <translation id="301521992641321250">Заблокировано автоматически</translation>
 <translation id="3069226013421428034">Разрешить вход через сторонние сервисы для определенного сайта.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Срок действия истекает завтра}one{Срок действия истекает через # день}few{Срок действия истекает через # дня}many{Срок действия истекает через # дней}other{Срок действия истекает через # дня}}</translation>
@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Доступные параметры указаны в нижней части экрана</translation>
 <translation id="7250468141469952378">Выбрано: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Разрешено: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Вы запретили сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете. <ph name="BEGIN_LINK" />Управлять параметрами защиты от слежения<ph name="END_LINK" /> можно в настройках.</translation>
 <translation id="7302486331832100261">Обычно вы блокируете уведомления. Чтобы разрешить их показ, нажмите "Подробнее".</translation>
 <translation id="7366415735885268578">Добавление сайта</translation>
 <translation id="7368695150573390554">Офлайн-данные будут удалены.</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}one{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}few{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}many{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}other{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>
 <translation id="8609465669617005112">Переместить вверх</translation>
+<translation id="8649036394979866943">Chrome ограничивает большинству сайтов возможность использовать сторонние файлы cookie для отслеживания ваших действий в интернете. <ph name="BEGIN_LINK" />Управлять параметрами защиты от слежения<ph name="END_LINK" /> можно в настройках.</translation>
 <translation id="8676374126336081632">Очистить</translation>
 <translation id="8681886425883659911">Объявления блокируются на сайтах, где есть навязчивая или вводящая в заблуждение реклама</translation>
 <translation id="868929229000858085">Поиск контактов</translation>

@@ -122,6 +122,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1419738280318246476">Chcete-li provést akci s oznámením, odemkněte zařízení</translation>
 <translation id="1420408895951708260">Zapnout nebo vypnout noční režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ano</translation>
+<translation id="1435537621343861112">Diktování nelze spustit. Máte vypnutý mikrofon.</translation>
 <translation id="1455242230282523554">Zobrazit jazykové nastavení</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
 <translation id="14648076227129703">Umožňuje přístup k fotoaparátu aplikacím <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům s příslušným oprávněním</translation>
@@ -1440,7 +1441,6 @@ Nová instalace</translation>
 <translation id="679368458793552943">Přiblížit, když je zapnutá lupa</translation>
 <translation id="6794287755901682422">Tato položka má: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Nedávno upraveno</translation>
-<translation id="6802196538183166658">Otevřít Rychlé nastavení výběrem času</translation>
 <translation id="6802687695197837794">Tímto povolíte přístup aplikacím <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon.</translation>
 <translation id="6803622936009808957">Zobrazení nelze zrcadlit, protože nebyla nalezena podporovaná rozlišení. Místo toho se spustil režim rozšířené pracovní plochy.</translation>
 <translation id="6809556495807506746">Ovládací prvky nejsou k dispozici</translation>

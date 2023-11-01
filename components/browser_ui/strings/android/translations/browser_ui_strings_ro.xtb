@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1426410128494586442">Da</translation>
-<translation id="1446450296470737166">Control complet dispozitive MIDI</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="1510341833810331442">Site-urile nu au permisiunea de a salva date pe dispozitiv</translation>
 <translation id="1547123415014299762">Sunt permise cookie-urile terță parte</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">Raportează un abuz</translation>
 <translation id="2968755619301702150">Vizualizator de certificate</translation>
 <translation id="3008272652534848354">Resetează permisiunile</translation>
+<translation id="3013291976881901233">Dispozitive MIDI</translation>
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3069226013421428034">Permite conectarea terță parte pentru un anumit site.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>

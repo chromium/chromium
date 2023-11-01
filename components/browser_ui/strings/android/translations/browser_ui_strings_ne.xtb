@@ -22,7 +22,6 @@
 <translation id="1384959399684842514">डाउनलोड रोकिएको छ</translation>
 <translation id="1415402041810619267">URL छोटो बनाइयो</translation>
 <translation id="1426410128494586442">हो</translation>
-<translation id="1446450296470737166">MIDI डिभाइसहरूको पूर्ण नियन्त्रणलाई अनुमति दिनुहोस्</translation>
 <translation id="1448064542941920355">जुमको स्तर घटाउनुहोस्</translation>
 <translation id="1510341833810331442">साइटहरूलाई तपाईंको डिभाइसमा जानकारी सेभ गर्ने अनुमति दिइएको छैन</translation>
 <translation id="1547123415014299762">तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिइन्छ</translation>
@@ -116,6 +115,7 @@
 <translation id="2932883381142163287">दुरूपयोग रिपोर्ट गर्नुहोस्</translation>
 <translation id="2968755619301702150">प्रमाणपत्र दर्शक</translation>
 <translation id="3008272652534848354">अनुमतिहरू रिसेट गर्नुहोस्</translation>
+<translation id="3013291976881901233">MIDI यन्त्रहरू</translation>
 <translation id="301521992641321250">स्वतः रोक लगाइयो</translation>
 <translation id="3069226013421428034">निश्चित साइटमा तेस्रो पक्षको खातामार्फत साइन इन गर्न दिनुहोस्।</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{भोलि म्याद सकिन्छ}other{# दिनमा म्याद सकिन्छ}}</translation>

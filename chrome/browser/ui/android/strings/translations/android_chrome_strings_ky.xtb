@@ -125,7 +125,6 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Тандалган 1 нерсени алып салуу}other{Тандалган # нерсени алып салуу}}</translation>
 <translation id="1633659023549081553">Chrome’дун башкы бетиндеги жаңы макалаларды окуңуз</translation>
 <translation id="1641113438599504367">Коопсуз серептөө</translation>
-<translation id="1642309806724967937">Параметрлерге жараша Chrome cookie файлдарын жана учурдагы URL дарегин да жөнөтүшү мүмкүн</translation>
 <translation id="164269334534774161">Бул барактын оффлайн көчүрмөсү <ph name="CREATION_TIME" /> түзүлгөн</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="1657932388559784161">Барактын статистикасынын ылдыйкы экраны жабылды</translation>
@@ -703,7 +702,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4738836084190194332">Акыркы жолу качан шайкештирилген: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Дарек тилкесинде жакшыртылган сунуштарды аласыз</translation>
 <translation id="4742970037960872810">Бөлүп көрсөтүүнү өчүрүү</translation>
-<translation id="4743664893327841597">Дарек тилкесине же издөө кутучасына жазылган нерселер демейки издөө каражатына жөнөтүлөт</translation>
 <translation id="4749960740855309258">Жаңы өтмөк ачуу</translation>
 <translation id="4750356170202299988">Жаштарга арналган контент</translation>
 <translation id="4758061975920522644">Сүрөттү гана бөлүшүү</translation>
