@@ -278,6 +278,15 @@ void ChromeAutofillClientIOS::OnUnmaskVerificationResult(
   unmask_controller_.OnVerificationResult(result);
 }
 
+payments::MandatoryReauthManager*
+ChromeAutofillClientIOS::GetOrCreatePaymentsMandatoryReauthManager() {
+  if (!payments_reauth_manager_) {
+    payments_reauth_manager_ =
+        std::make_unique<payments::MandatoryReauthManager>(this);
+  }
+  return payments_reauth_manager_.get();
+}
+
 void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
     SaveCreditCardOptions options,

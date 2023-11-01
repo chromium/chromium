@@ -1536,8 +1536,7 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
   autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
       card->record_type(), authentication_method,
       autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
-  // TODO(crbug.com/1427216): Add the iOS branching logic as well.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   client_->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
       base::BindOnce(

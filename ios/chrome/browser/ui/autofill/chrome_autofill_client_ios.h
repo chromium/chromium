@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
@@ -90,6 +91,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
+  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
+      override;
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(
@@ -187,6 +190,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
+  std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 
   // A weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;

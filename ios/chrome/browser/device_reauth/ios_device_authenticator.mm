@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
 
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 
 IOSDeviceAuthenticator::IOSDeviceAuthenticator(
     id<ReauthenticationProtocol> reauth_module,
@@ -42,10 +43,8 @@ void IOSDeviceAuthenticator::AuthenticateWithMessage(
     }
   };
 
-  // TODO(crbug.com/1427216): Populate finalized string here. The mock for this
-  // string may need to be updated.
   [authentication_module_
-      attemptReauthWithLocalizedReason:@""
+      attemptReauthWithLocalizedReason:base::SysUTF16ToNSString(message)
                   canReusePreviousAuth:can_reuse_previous_auth
                                handler:completion_handler];
 }

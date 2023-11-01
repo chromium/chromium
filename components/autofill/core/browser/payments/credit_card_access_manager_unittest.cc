@@ -597,7 +597,8 @@ TEST_F(CreditCardAccessManagerTest, ServerCardGetDeletionConfirmationText) {
   EXPECT_EQ(body, std::u16string());
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_IOS)
 // Parameters of the CreditCardAccessManagerMandatoryReauthTest:
 // - bool feature_flag_is_on: Whether the mandatory re-auth feature flag is
 // turned on or off.
@@ -666,7 +667,7 @@ class CreditCardAccessManagerMandatoryReauthTest
     // flag is on and the pref is enabled, or if the device is automotive.
     if (IsMandatoryReauthEnabled()) {
       ON_CALL(mandatory_reauth_manager(),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
               AuthenticateWithMessage)
           .WillByDefault(testing::WithArg<1>(
 #elif BUILDFLAG(IS_ANDROID)
@@ -680,7 +681,7 @@ class CreditCardAccessManagerMandatoryReauthTest
               })));
     } else {
       EXPECT_CALL(mandatory_reauth_manager(),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
                   AuthenticateWithMessage)
 #elif BUILDFLAG(IS_ANDROID)
                   Authenticate)
@@ -879,7 +880,8 @@ INSTANTIATE_TEST_SUITE_P(,
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_IOS)
 
 // Tests retrieving local cards.
 TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {

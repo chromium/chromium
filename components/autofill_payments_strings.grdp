@@ -547,6 +547,18 @@
       Google Chrome is trying to verify it's you so it can fill in your payment info.
     </message>
   </if>
+  <if expr="is_ios">
+    <if expr="_google_chrome">
+      <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
+        Verify it's you so Google Chrome can fill in your payment info.
+      </message>
+    </if>
+    <if expr="not _google_chrome">
+      <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
+        Verify it's you so Chromium can fill in your payment info.
+      </message>
+    </if>
+  </if>
 
   <!-- WebAuthn fingerprint opt-in dialog -->
   <!-- Desktop only -->
