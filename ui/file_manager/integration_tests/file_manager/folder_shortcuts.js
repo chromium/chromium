@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {createShortcut, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -155,7 +155,7 @@ async function removeShortcut(appId, directory) {
 async function expectSelection(appId, currentDir, shortcutDir) {
   await remoteCall.waitForFiles(appId, currentDir.contents);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.waitForShortcutItemByLabel(shortcutDir.name);
+  await directoryTree.waitForFocusedShortcutItemByLabel(shortcutDir.name);
 }
 
 /**
@@ -205,6 +205,13 @@ testcase.traverseFolderShortcuts = async () => {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key));
 
+  // Make sure direcotry change is finished before focusing on the tree.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive/D');
+
+  // The focus is on file list now after Ctrl+3, in order to use `:focus`
+  // selector in the below `expectSelection` we need to focus the tree first.
+  await directoryTree.focusTree();
+
   // Check: current directory and selection should be D.
   await expectSelection(appId, DIRECTORY.D, DIRECTORY.D);
 
@@ -242,6 +249,11 @@ testcase.addRemoveFolderShortcuts = async () => {
 
   // Open another Files app window on Drive.
   const appId2 = await openFilesAppOnDrive();
+
+  // appId1 window is focused now because that's the last opened window. We are
+  // asserting on the appId1 window below, in order to use ":focus" selector in
+  // `expectSelection`, we need to make sure the appId1 window is focused first.
+  await sendTestMessage({appId: appId1, name: 'focusWindow'});
 
   // Create a shortcut to D.
   await createShortcut(appId1, DIRECTORY.D.name);

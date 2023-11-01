@@ -164,7 +164,7 @@ export class DirectoryTreeContainer {
     this.store_.subscribe(this);
   }
 
-  onStateChanged(state: State) {
+  async onStateChanged(state: State) {
     if (this.shouldRefreshNavigationRoots_(state)) {
       this.store_.dispatch(refreshNavigationRoots());
       // Skip this render, and the refreshNavigationRoots() action will trigger
@@ -186,6 +186,9 @@ export class DirectoryTreeContainer {
         if (this.shouldFocusOnNextSelectedItem_) {
           this.shouldFocusOnNextSelectedItem_ = false;
           this.tree.focusedItem = element;
+          // Wait for the selected change finishes (e.g. expand all its parents)
+          // before we can focus on the element below.
+          await element.updateComplete;
           element.focus();
         }
       }

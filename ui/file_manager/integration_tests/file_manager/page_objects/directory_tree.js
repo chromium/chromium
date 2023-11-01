@@ -125,6 +125,19 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the shortcut tree item with the label to have focused (aka
+   * "selected" in the old tree implementation) state.
+   *
+   * @param {string} label Label of the tree item
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForFocusedShortcutItemByLabel(label) {
+    return this.remoteCall_.waitForElement(
+        this.appId_,
+        this.selectors_.itemByLabel(label, {focused: true, shortcut: true}));
+  }
+
+  /**
    * Wait for the tree item with the label to have the the current directory
    * aria-description attribute.
    *

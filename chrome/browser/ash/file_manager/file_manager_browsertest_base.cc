@@ -3962,6 +3962,18 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "focusWindow") {
+    const std::string* app_id = value.FindString("appId");
+    ASSERT_TRUE(app_id);
+
+    content::WebContents* web_contents;
+    CHECK(base::Contains(swa_web_contents_, *app_id))
+        << "Couldn't find the SWA WebContents for appId: " << *app_id;
+    web_contents = swa_web_contents_[*app_id];
+    web_contents->Focus();
+    return;
+  }
+
   if (HandleGuestOsCommands(name, value, output)) {
     return;
   }

@@ -1448,10 +1448,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("traverseFolderShortcuts")
             .NewDirectoryTree()
             .FeatureIds({"screenplay-42c556fb-303c-45b2-910b-3ecc5ec71b92"}),
-        // TODO(b/307656817): enable the test
-        // TestCase("addRemoveFolderShortcuts")
-        //     .NewDirectoryTree()
-        //     .FeatureIds({"screenplay-1ae94bd0-60a7-4bb9-925d-78312d7c045d"}),
+        TestCase("addRemoveFolderShortcuts")
+            .NewDirectoryTree()
+            .FeatureIds({"screenplay-1ae94bd0-60a7-4bb9-925d-78312d7c045d"}),
         // Section end - browser tests for new directory tree
         TestCase("traverseFolderShortcuts")
             .FeatureIds({"screenplay-42c556fb-303c-45b2-910b-3ecc5ec71b92"}),

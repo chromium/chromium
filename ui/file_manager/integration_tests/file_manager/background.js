@@ -377,7 +377,7 @@ export async function createShortcut(appId, directoryName) {
       ['[command="#pin-folder"]:not([hidden]):not([disabled])']));
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.waitForItemByLabel(directoryName);
+  await directoryTree.waitForShortcutItemByLabel(directoryName);
 }
 
 /**
