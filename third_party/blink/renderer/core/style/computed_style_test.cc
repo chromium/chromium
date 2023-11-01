@@ -406,13 +406,11 @@ TEST_F(ComputedStyleTest, BorderWidth) {
   builder.SetBorderBottomWidth(LayoutUnit(5));
   const ComputedStyle* style = builder.TakeStyle();
   EXPECT_EQ(style->BorderBottomWidth(), 0);
-  EXPECT_EQ(style->BorderBottom().Width(), 5);
 
   builder = ComputedStyleBuilder(*style);
   builder.SetBorderBottomStyle(EBorderStyle::kSolid);
   style = builder.TakeStyle();
   EXPECT_EQ(style->BorderBottomWidth(), 5);
-  EXPECT_EQ(style->BorderBottom().Width(), 5);
 }
 
 TEST_F(ComputedStyleTest, CursorList) {

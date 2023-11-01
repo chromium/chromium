@@ -64,8 +64,8 @@ void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
       return;
     }
 
-    LayoutUnit border_padding(parent_style.BorderBlockStart().Width() +
-                              parent_style.BorderBlockEnd().Width() +
+    LayoutUnit border_padding(parent_style.BorderBlockStartWidth() +
+                              parent_style.BorderBlockEndWidth() +
                               parent_style.PaddingBlockStart().GetFloatValue() +
                               parent_style.PaddingBlockEnd().GetFloatValue());
 

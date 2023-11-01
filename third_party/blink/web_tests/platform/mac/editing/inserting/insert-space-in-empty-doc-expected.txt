@@ -12,7 +12,7 @@ layer at (0,0)
 layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-      LayoutNGBlockFlow {DIV} at (0,0) size 784x56 [border: (2px solid #FF0000)]
+      LayoutNGBlockFlow {DIV} at (0,0) size 784x56 [border: (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000)]
         LayoutText {#text} at (14,14) size 38x28
           text run at (14,14) width 38: " foo"
 caret: position 4 of child 0 {#text} of child 1 {DIV} of body

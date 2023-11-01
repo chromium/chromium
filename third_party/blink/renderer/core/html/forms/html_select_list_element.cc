@@ -77,11 +77,7 @@ class PreviewPopoverInnerElement : public HTMLDivElement {
           button_style.BorderTopRightRadius());
     }
     if (button_style.HasAuthorBorder()) {
-      style_builder.SetBorderBottomColor(
-          button_style.BorderBottom().GetColor());
-      style_builder.SetBorderLeftColor(button_style.BorderLeft().GetColor());
-      style_builder.SetBorderRightColor(button_style.BorderRight().GetColor());
-      style_builder.SetBorderTopColor(button_style.BorderTop().GetColor());
+      style_builder.SetBorderColorFrom(button_style);
 
       style_builder.SetBorderBottomWidth(button_style.BorderBottomWidth());
       style_builder.SetBorderLeftWidth(button_style.BorderLeftWidth());

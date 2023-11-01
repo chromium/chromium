@@ -5,12 +5,12 @@ layer at (0,0)
 layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-      LayoutNGBlockFlow {DIV} at (0,0) size 784x128 [border: (2px solid #FF0000)]
+      LayoutNGBlockFlow {DIV} at (0,0) size 784x128 [border: (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000)]
         LayoutText {#text} at (0,0) size 0x0
 layer at (22,22)
   LayoutNGBlockFlow {IMG} at (14,14) size 550x100
 layer at (22,22)
-  LayoutNGBlockFlow {SPAN} at (0,0) size 550x100 [border: (1px solid #C0C0C0)]
+  LayoutNGBlockFlow {SPAN} at (0,0) size 550x100 [border: (1px solid #C0C0C0) (1px solid #C0C0C0) (1px solid #C0C0C0) (1px solid #C0C0C0)]
     LayoutImage (floating) {IMG} at (2,2) size 16x16
     LayoutInline {SPAN} at (18,2) size 480x27
       LayoutText {#text} at (18,2) size 480x27

@@ -6,7 +6,7 @@ layer at (0,0)
 layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-      LayoutNGBlockFlow {DIV} at (0,0) size 784x184 [border: (2px solid #0000FF)]
+      LayoutNGBlockFlow {DIV} at (0,0) size 784x184 [border: (2px solid #0000FF) (2px solid #0000FF) (2px solid #0000FF) (2px solid #0000FF)]
         LayoutNGBlockFlow {DIV} at (14,14) size 756x56
           LayoutText {#text} at (0,0) size 60x28
             text run at (0,0) width 60: "Tests:"
@@ -23,7 +23,7 @@ layer at (0,0)
           LayoutText {#text} at (0,56) size 165x28
             text run at (0,56) width 165: "one tw three four"
       LayoutNGBlockFlow {DIV} at (0,208) size 784x32
-        LayoutNGBlockFlow {DIV} at (0,0) size 784x32 [border: (2px solid #FF0000)]
+        LayoutNGBlockFlow {DIV} at (0,0) size 784x32 [border: (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000)]
           LayoutText {#text} at (2,2) size 177x28
             text run at (2,2) width 177: "one two three four"
 caret: position 7 of child 0 {#text} of child 1 {DIV} of child 3 {DIV} of body

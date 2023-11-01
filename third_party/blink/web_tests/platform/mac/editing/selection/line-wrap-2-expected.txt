@@ -7,7 +7,7 @@ layer at (0,0)
       LayoutNGBlockFlow {P} at (0,0) size 784x18
         LayoutText {#text} at (0,0) size 232x18
           text run at (0,0) width 232: "Only 'baz' should be selected below."
-      LayoutNGBlockFlow {DIV} at (50,34) size 52x38 [border: (1px solid #000000)]
+      LayoutNGBlockFlow {DIV} at (50,34) size 52x38 [border: (1px solid #000000) (1px solid #000000) (1px solid #000000) (1px solid #000000)]
         LayoutText {#text} at (1,1) size 46x18
           text run at (1,1) width 46: "foo bar"
         LayoutInline {A} at (1,19) size 23x18 [color=#0000EE]

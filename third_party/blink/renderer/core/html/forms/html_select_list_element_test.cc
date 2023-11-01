@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -296,7 +297,7 @@ TEST_F(HTMLSelectListElementTest, SuggestedValueClearedWhenValueSet) {
 Color GetBorderColorForSuggestedOptionPopover(HTMLSelectListElement* element) {
   const ComputedStyle& popover_style =
       element->SuggestedOptionPopoverForTesting()->ComputedStyleRef();
-  return popover_style.BorderTop().GetColor().GetColor();
+  return popover_style.VisitedDependentColor(GetCSSPropertyBorderTopColor());
 }
 
 // Test HTMLSelectListElement preview popover inherits border color from the

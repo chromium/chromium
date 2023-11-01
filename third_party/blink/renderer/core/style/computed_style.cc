@@ -100,13 +100,6 @@
 
 namespace blink {
 
-struct SameSizeAsBorderValue {
-  StyleColor color_;
-  unsigned bitfield_;
-};
-
-ASSERT_SIZE(BorderValue, SameSizeAsBorderValue);
-
 // Since different compilers/architectures pack ComputedStyle differently,
 // re-create the same structure for an accurate size comparison.
 //

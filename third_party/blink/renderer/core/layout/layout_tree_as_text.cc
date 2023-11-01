@@ -207,7 +207,6 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
         box.BorderLeft()) {
       ts << " [border:";
 
-      BorderValue prev_border = o.StyleRef().BorderTop();
       if (!box.BorderTop()) {
         ts << " none";
       } else {
@@ -216,37 +215,28 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
         ts << o.ResolveColor(GetCSSPropertyBorderTopColor()) << ")";
       }
 
-      if (!o.StyleRef().BorderRightEquals(prev_border)) {
-        prev_border = o.StyleRef().BorderRight();
-        if (!box.BorderRight()) {
-          ts << " none";
-        } else {
-          ts << " (" << box.BorderRight() << "px ";
-          PrintBorderStyle(ts, o.StyleRef().BorderRightStyle());
-          ts << o.ResolveColor(GetCSSPropertyBorderRightColor()) << ")";
-        }
+      if (!box.BorderRight()) {
+        ts << " none";
+      } else {
+        ts << " (" << box.BorderRight() << "px ";
+        PrintBorderStyle(ts, o.StyleRef().BorderRightStyle());
+        ts << o.ResolveColor(GetCSSPropertyBorderRightColor()) << ")";
       }
 
-      if (!o.StyleRef().BorderBottomEquals(prev_border)) {
-        prev_border = box.StyleRef().BorderBottom();
-        if (!box.BorderBottom()) {
-          ts << " none";
-        } else {
-          ts << " (" << box.BorderBottom() << "px ";
-          PrintBorderStyle(ts, o.StyleRef().BorderBottomStyle());
-          ts << o.ResolveColor(GetCSSPropertyBorderBottomColor()) << ")";
-        }
+      if (!box.BorderBottom()) {
+        ts << " none";
+      } else {
+        ts << " (" << box.BorderBottom() << "px ";
+        PrintBorderStyle(ts, o.StyleRef().BorderBottomStyle());
+        ts << o.ResolveColor(GetCSSPropertyBorderBottomColor()) << ")";
       }
 
-      if (!o.StyleRef().BorderLeftEquals(prev_border)) {
-        prev_border = o.StyleRef().BorderLeft();
-        if (!box.BorderLeft()) {
-          ts << " none";
-        } else {
-          ts << " (" << box.BorderLeft() << "px ";
-          PrintBorderStyle(ts, o.StyleRef().BorderLeftStyle());
-          ts << o.ResolveColor(GetCSSPropertyBorderLeftColor()) << ")";
-        }
+      if (!box.BorderLeft()) {
+        ts << " none";
+      } else {
+        ts << " (" << box.BorderLeft() << "px ";
+        PrintBorderStyle(ts, o.StyleRef().BorderLeftStyle());
+        ts << o.ResolveColor(GetCSSPropertyBorderLeftColor()) << ")";
       }
 
       ts << "]";
