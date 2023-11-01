@@ -214,6 +214,7 @@ class CORE_EXPORT CSSSelector {
 
   enum PseudoType {
     kPseudoActive,
+    kPseudoActiveViewTransition,
     kPseudoAfter,
     kPseudoAny,
     kPseudoAnyLink,

@@ -1680,6 +1680,41 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       output_.push_back(std::move(selector));
       return true;
     }
+    case CSSSelector::kPseudoActiveViewTransition: {
+      if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
+        return false;
+      }
+
+      Vector<AtomicString> types;
+      for (;;) {
+        const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
+        // If the only ident is '*' then break out of the loop, and set empty
+        // ident list.
+        if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*') {
+          if (types.empty() && block.AtEnd()) {
+            break;
+          }
+          return false;
+        }
+
+        if (ident.GetType() != kIdentToken) {
+          return false;
+        }
+        types.push_back(ident.Value().ToAtomicString());
+
+        if (block.AtEnd()) {
+          break;
+        }
+
+        const CSSParserToken& comma = block.ConsumeIncludingWhitespace();
+        if (comma.GetType() != kCommaToken || block.AtEnd()) {
+          return false;
+        }
+      }
+      selector.SetIdentList(std::make_unique<Vector<AtomicString>>(types));
+      output_.push_back(std::move(selector));
+      return true;
+    }
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionOld:

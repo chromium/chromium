@@ -807,6 +807,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void FocusStateChanged();
   void FocusVisibleStateChanged();
   void FocusWithinStateChanged();
+  void ActiveViewTransitionStateChanged();
   void SetDragged(bool) override;
 
   void UpdateSelectionOnFocus(SelectionBehaviorOnFocus);
@@ -1204,6 +1205,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetAffectedByLogicalCombinationsInHas();
   bool AffectedByMultipleHas() const;
   void SetAffectedByMultipleHas();
+  bool AncestorsOrSiblingsAffectedByActiveViewTransitionInHas() const;
+  void SetAncestorsOrSiblingsAffectedByActiveViewTransitionInHas();
 
   // This is meant to be used by document's resize observer to notify that the
   // size has changed.

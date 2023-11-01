@@ -61,8 +61,9 @@ enum class DynamicRestyleFlags {
   kAffectedByLastChildRules = 1 << 11,
   kChildrenOrSiblingsAffectedByFocusWithin = 1 << 12,
   kChildrenOrSiblingsAffectedByFocusVisible = 1 << 13,
+  kChildrenOrSiblingsAffectedByActiveViewTransition = 1 << 14,
 
-  kNumberOfDynamicRestyleFlags = 14,
+  kNumberOfDynamicRestyleFlags = 15,
 
   kChildrenAffectedByStructuralRules =
       kChildrenAffectedByFirstChildRules | kChildrenAffectedByLastChildRules |
@@ -204,6 +205,14 @@ class CORE_EXPORT ContainerNode : public Node {
   }
   void SetChildrenOrSiblingsAffectedByActive() {
     SetRestyleFlag(DynamicRestyleFlags::kChildrenOrSiblingsAffectedByActive);
+  }
+  bool ChildrenOrSiblingsAffectedByActiveViewTransition() const {
+    return HasRestyleFlag(
+        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByActiveViewTransition);
+  }
+  void SetChildrenOrSiblingsAffectedByActiveViewTransition() {
+    SetRestyleFlag(
+        DynamicRestyleFlags::kChildrenOrSiblingsAffectedByActiveViewTransition);
   }
 
   bool ChildrenOrSiblingsAffectedByDrag() const {

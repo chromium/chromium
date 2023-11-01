@@ -89,9 +89,18 @@ class CORE_EXPORT ViewTransitionSupplement
   void WillInsertBody();
 
  private:
-  DOMViewTransition* StartTransition(Document& document,
-                                     V8ViewTransitionCallback* callback,
-                                     ExceptionState& exception_state);
+  static DOMViewTransition* StartViewTransitionInternal(
+      ScriptState*,
+      Document&,
+      V8ViewTransitionCallback* callback,
+      const absl::optional<Vector<String>>& types,
+      ExceptionState&);
+
+  DOMViewTransition* StartTransition(
+      Document& document,
+      V8ViewTransitionCallback* callback,
+      const absl::optional<Vector<String>>& types,
+      ExceptionState& exception_state);
   void StartTransition(Document& document,
                        ViewTransition::ViewTransitionStateCallback callback);
   void StartTransition(Document& document,

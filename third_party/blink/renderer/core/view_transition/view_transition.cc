@@ -111,15 +111,17 @@ const char* ViewTransition::StateToString(State state) {
 ViewTransition* ViewTransition::CreateFromScript(
     Document* document,
     V8ViewTransitionCallback* callback,
+    const absl::optional<Vector<String>>& types,
     Delegate* delegate) {
   CHECK(document->GetExecutionContext());
   return MakeGarbageCollected<ViewTransition>(PassKey(), document, callback,
-                                              delegate);
+                                              types, delegate);
 }
 
 ViewTransition::ViewTransition(PassKey,
                                Document* document,
                                V8ViewTransitionCallback* update_dom_callback,
+                               const absl::optional<Vector<String>>& types,
                                Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kScript),
@@ -131,7 +133,12 @@ ViewTransition::ViewTransition(PassKey,
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *document->GetExecutionContext(),
           *this,
-          update_dom_callback)) {
+          update_dom_callback)),
+      types_(types) {
+  CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled() || !types_);
+  if (auto* originating_element = document_->documentElement()) {
+    originating_element->ActiveViewTransitionStateChanged();
+  }
   ProcessCurrentState();
 }
 
@@ -240,7 +247,11 @@ bool ViewTransition::AdvanceTo(State state) {
   DCHECK(CanAdvanceTo(state)) << "Current state " << static_cast<int>(state_)
                               << " new state " << static_cast<int>(state);
   state_ = state;
-
+  if (IsTerminalState(state_)) {
+    if (auto* originating_element = document_->documentElement()) {
+      originating_element->ActiveViewTransitionStateChanged();
+    }
+  }
   // If we need to run in a lifecycle, but we're not in one, then make sure to
   // schedule an animation in case we wouldn't get one naturally.
   if (StateRunsInViewTransitionStepsDuringMainFrame(state_) !=
@@ -556,6 +567,34 @@ bool ViewTransition::MatchForOnlyChild(
   if (!style_tracker_)
     return false;
   return style_tracker_->MatchForOnlyChild(pseudo_id, view_transition_name);
+}
+
+bool ViewTransition::MatchForActiveViewTransition(
+    const Vector<AtomicString>& pseudo_types) {
+  CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled());
+
+  if (IsTerminalState(state_)) {
+    return false;
+  }
+
+  // Empty pseudo types is :active-view-transition(*), which should match as
+  // long as there is a view transition.
+  if (pseudo_types.empty()) {
+    return true;
+  }
+
+  // If types are not specified, then there is no match (other than above)
+  if (!types_ || types_->empty()) {
+    return false;
+  }
+
+  // At least one pseudo type has to match at least one of the transition types.
+  for (auto& pseudo_type : pseudo_types) {
+    if (types_->Contains(pseudo_type)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void ViewTransition::ContextDestroyed() {

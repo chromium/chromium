@@ -127,6 +127,9 @@ namespace blink {
 //    - AncestorsOrSiblingsAffectedByFocusVisibleInHas :
 //        Indicates that this element may matched a :focus-visible inside
 //        :has().
+//    - AncestorsOrSiblingsAffectedByActiveViewTransitionInHas :
+//        Indicates that this element may matched a :active-view-transition
+//        inside :has().
 //
 //    SelectorChecker::CheckPseudoClass check the flags on an element when it
 //    checks the pseudo classes on the element.
@@ -202,6 +205,7 @@ struct HasInvalidationFlags {
   unsigned ancestors_or_siblings_affected_by_active_in_has : 1;
   unsigned ancestors_or_siblings_affected_by_focus_in_has : 1;
   unsigned ancestors_or_siblings_affected_by_focus_visible_in_has : 1;
+  unsigned ancestors_or_siblings_affected_by_active_view_transition_in_has : 1;
   unsigned affected_by_logical_combinations_in_has : 1;
 
   unsigned affected_by_multiple_has : 1;
@@ -216,6 +220,7 @@ struct HasInvalidationFlags {
         ancestors_or_siblings_affected_by_active_in_has(false),
         ancestors_or_siblings_affected_by_focus_in_has(false),
         ancestors_or_siblings_affected_by_focus_visible_in_has(false),
+        ancestors_or_siblings_affected_by_active_view_transition_in_has(false),
         affected_by_multiple_has(false) {}
 };
 

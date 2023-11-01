@@ -56,9 +56,11 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
   // Creates and starts a same-document ViewTransition initiated using the
   // script API.
-  static ViewTransition* CreateFromScript(Document*,
-                                          V8ViewTransitionCallback*,
-                                          Delegate*);
+  static ViewTransition* CreateFromScript(
+      Document*,
+      V8ViewTransitionCallback*,
+      const absl::optional<Vector<String>>& types,
+      Delegate*);
 
   // Creates a ViewTransition to cache the state of a Document before a
   // navigation. The cached state is provided to the caller using the
@@ -78,7 +80,11 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                                                          Delegate*);
 
   // Script-based constructor.
-  ViewTransition(PassKey, Document*, V8ViewTransitionCallback*, Delegate*);
+  ViewTransition(PassKey,
+                 Document*,
+                 V8ViewTransitionCallback*,
+                 const absl::optional<Vector<String>>& types,
+                 Delegate*);
   // Navigation-initiated for-snapshot constructor.
   ViewTransition(PassKey, Document*, ViewTransitionStateCallback, Delegate*);
   // Navigation-initiated from-snapshot constructor.
@@ -93,6 +99,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // is the only child.
   bool MatchForOnlyChild(PseudoId pseudo_id,
                          const AtomicString& view_transition_name) const;
+
+  // Returns true if the transition matches :active-view-transition with the
+  // given types.
+  bool MatchForActiveViewTransition(const Vector<AtomicString>& pseudo_types);
 
   // ExecutionContextLifecycleObserver implementation.
   void ContextDestroyed() override;
@@ -352,6 +362,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool dom_callback_succeeded_ = false;
   bool first_animating_frame_ = true;
   bool context_destroyed_ = false;
+
+  absl::optional<Vector<String>> types_;
 };
 
 }  // namespace blink

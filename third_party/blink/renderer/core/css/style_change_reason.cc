@@ -58,6 +58,7 @@ const char kZoom[] = "Zoom";
 
 namespace style_change_extra_data {
 DEFINE_GLOBAL(AtomicString, g_active);
+DEFINE_GLOBAL(AtomicString, g_active_view_transition);
 DEFINE_GLOBAL(AtomicString, g_disabled);
 DEFINE_GLOBAL(AtomicString, g_drag);
 DEFINE_GLOBAL(AtomicString, g_focus);
@@ -71,6 +72,8 @@ void Init() {
   DCHECK(IsMainThread());
 
   new (WTF::NotNullTag::kNotNull, (void*)&g_active) AtomicString(":active");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_active_view_transition)
+      AtomicString(":active_view_transition");
   new (WTF::NotNullTag::kNotNull, (void*)&g_disabled) AtomicString(":disabled");
   new (WTF::NotNullTag::kNotNull, (void*)&g_drag) AtomicString(":-webkit-drag");
   new (WTF::NotNullTag::kNotNull, (void*)&g_focus) AtomicString(":focus");

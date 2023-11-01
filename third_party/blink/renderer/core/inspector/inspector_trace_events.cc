@@ -279,6 +279,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
 #define DEFINE_STRING_MAPPING(pseudoType) \
   case CSSSelector::k##pseudoType:        \
     return #pseudoType;
+    DEFINE_STRING_MAPPING(PseudoActiveViewTransition)
     DEFINE_STRING_MAPPING(PseudoUnknown)
     DEFINE_STRING_MAPPING(PseudoEmpty)
     DEFINE_STRING_MAPPING(PseudoFirstChild)

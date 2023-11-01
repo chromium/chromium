@@ -4585,6 +4585,12 @@ struct Element::AffectedByPseudoStateChange {
         ancestors_or_siblings =
             element.AncestorsOrSiblingsAffectedByActiveInHas();
         break;
+      case CSSSelector::kPseudoActiveViewTransition:
+        children_or_siblings =
+            element.ChildrenOrSiblingsAffectedByActiveViewTransition();
+        ancestors_or_siblings =
+            element.AncestorsOrSiblingsAffectedByActiveViewTransitionInHas();
+        break;
       default:
         // Activate :has() invalidation for all allowed pseudo classes.
         //
@@ -6147,6 +6153,17 @@ void Element::FocusVisibleStateChanged() {
   PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
 }
 
+void Element::ActiveViewTransitionStateChanged() {
+  if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
+    return;
+  }
+  SetNeedsStyleRecalc(kLocalStyleChange,
+                      StyleChangeReasonForTracing::CreateWithExtraData(
+                          style_change_reason::kPseudoClass,
+                          style_change_extra_data::g_active_view_transition));
+  PseudoStateChanged(CSSSelector::kPseudoActiveViewTransition);
+}
+
 void Element::FocusWithinStateChanged() {
   if (GetComputedStyle() && GetComputedStyle()->AffectedByFocusWithin()) {
     StyleChangeType change_type =
@@ -6311,6 +6328,17 @@ bool Element::AncestorsOrSiblingsAffectedByHoverInHas() const {
 
 void Element::SetAncestorsOrSiblingsAffectedByHoverInHas() {
   EnsureElementRareData().SetAncestorsOrSiblingsAffectedByHoverInHas();
+}
+
+bool Element::AncestorsOrSiblingsAffectedByActiveViewTransitionInHas() const {
+  return HasRareData() &&
+         GetElementRareData()
+             ->AncestorsOrSiblingsAffectedByActiveViewTransitionInHas();
+}
+
+void Element::SetAncestorsOrSiblingsAffectedByActiveViewTransitionInHas() {
+  EnsureElementRareData()
+      .SetAncestorsOrSiblingsAffectedByActiveViewTransitionInHas();
 }
 
 bool Element::AncestorsOrSiblingsAffectedByActiveInHas() const {
