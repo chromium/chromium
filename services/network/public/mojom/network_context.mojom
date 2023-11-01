@@ -1368,14 +1368,16 @@ interface NetworkContext {
   // |additional_headers| are miscellaneous HTTP headers to be added to the
   // request. Headers semantically relevant to the WebSocket handshake such
   // as "sec-websocket-protocol" and "origin" are handled separately, (e.g.,
-  // "sec-websocket-protocol" is constructed from  |requested_protocols| in
-  // this message). |site_for_cookies| represents the first-party origin for
-  // the request. |options| may be a combination of the kWebSocketOption* flags.
-  // |isolation_info| includes SiteForCookies, top frame origin, and current
-  // frame origin, and is used to isolate shared network stack resources based
-  // on the context. It must have RediredMode::kUpdateNothing. Currently,
-  // |isolation_info|'s SiteForCookies field is ignored, but it will eventually
-  // replace the |site_for_cookies| parameter.
+  // "sec-websocket-protocol" is constructed from  |requested_protocols| in this
+  // message). |site_for_cookies| represents the first-party origin for the
+  // request. |has_storage_access| is whether the calling context has opted into
+  // using a "storage-access" permission grant. |options| may be a combination
+  // of the kWebSocketOption* flags.  |isolation_info| includes SiteForCookies,
+  // top frame origin, and current frame origin, and is used to isolate shared
+  // network stack resources based on the context. It must have
+  // RediredMode::kUpdateNothing. Currently, |isolation_info|'s SiteForCookies
+  // field is ignored, but it will eventually replace the |site_for_cookies|
+  // parameter.
   //
   // If |header_client| is set, requests with the kURLLoadOptionUseHeaderClient
   // option will callback to the |header_client|, allowing the Cookie/Referrer
@@ -1403,6 +1405,7 @@ interface NetworkContext {
       url.mojom.Url url,
       array<string> requested_protocols,
       SiteForCookies site_for_cookies,
+      bool has_storage_access,
       IsolationInfo isolation_info,
       array<HttpHeader> additional_headers,
       int32 process_id,

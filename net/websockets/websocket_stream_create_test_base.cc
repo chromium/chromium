@@ -108,6 +108,7 @@ void WebSocketStreamCreateTestBase::CreateAndConnectStream(
     const std::vector<std::string>& sub_protocols,
     const url::Origin& origin,
     const SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     std::unique_ptr<base::OneShotTimer> timer) {
@@ -115,10 +116,10 @@ void WebSocketStreamCreateTestBase::CreateAndConnectStream(
       this, connect_run_loop_.QuitClosure());
   auto api_delegate = std::make_unique<TestWebSocketStreamRequestAPI>();
   stream_request_ = WebSocketStream::CreateAndConnectStreamForTesting(
-      socket_url, sub_protocols, origin, site_for_cookies, isolation_info,
-      additional_headers, url_request_context_host_.GetURLRequestContext(),
-      NetLogWithSource(), TRAFFIC_ANNOTATION_FOR_TESTS,
-      std::move(connect_delegate),
+      socket_url, sub_protocols, origin, site_for_cookies, has_storage_access,
+      isolation_info, additional_headers,
+      url_request_context_host_.GetURLRequestContext(), NetLogWithSource(),
+      TRAFFIC_ANNOTATION_FOR_TESTS, std::move(connect_delegate),
       timer ? std::move(timer) : std::make_unique<base::OneShotTimer>(),
       std::move(api_delegate));
 }

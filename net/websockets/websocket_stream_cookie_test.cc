@@ -65,7 +65,8 @@ class TestBase : public WebSocketStreamCreateTestBase {
             /*send_additional_request_headers=*/{}, /*extra_headers=*/{}),
         response_body);
     CreateAndConnectStream(url, NoSubProtocols(), origin, site_for_cookies,
-                           isolation_info, HttpRequestHeaders(), nullptr);
+                           /*has_storage_access=*/false, isolation_info,
+                           HttpRequestHeaders(), nullptr);
   }
 };
 

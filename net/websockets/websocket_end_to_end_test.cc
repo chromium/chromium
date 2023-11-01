@@ -342,7 +342,8 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
                                                   context_.get());
     channel_->SendAddChannelRequest(
         GURL(socket_url), sub_protocols_, origin, site_for_cookies,
-        isolation_info, HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS);
+        /*has_storage_access=*/false, isolation_info, HttpRequestHeaders(),
+        TRAFFIC_ANNOTATION_FOR_TESTS);
     event_interface_->WaitForResponse();
     return !event_interface_->failed();
   }

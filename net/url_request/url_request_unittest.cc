@@ -85,6 +85,7 @@
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store_test_helpers.h"
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/disk_cache/disk_cache.h"
@@ -1539,6 +1540,55 @@ TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesWsSchemeUpgrade) {
   // Observe that the scheme has been upgraded to wss.
   EXPECT_TRUE(req->url().SchemeIsCryptographic());
   EXPECT_TRUE(req->url().SchemeIs(url::kWssScheme));
+}
+
+// Test that same-site requests with "wss" scheme retain the
+// `kStorageAccessGrantEligible` override, even if the initiator origin uses the
+// HTTPS version of the site.
+TEST_F(URLRequestTest, WssRequestsAreEligibleForStorageAccess) {
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  const GURL https_url = https_server.GetURL("a.test", "/defaultresponse");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kWssScheme);
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  auto& network_delegate = *context_builder->set_network_delegate(
+      std::make_unique<TestNetworkDelegate>());
+  auto context = context_builder->Build();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(
+      context->CreateRequest(https_url.ReplaceComponents(replacements),
+                             DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+                             /*is_for_websockets=*/true));
+
+  req->SetExtraRequestHeaders(WebSocketCommonTestHeaders());
+
+  auto websocket_stream_create_helper =
+      std::make_unique<TestWebSocketHandshakeStreamCreateHelper>();
+  req->SetUserData(kWebSocketHandshakeUserDataKey,
+                   std::move(websocket_stream_create_helper));
+
+  req->set_has_storage_access(true);
+  req->set_initiator(url::Origin::Create(https_url));
+
+  req->Start();
+  d.RunUntilComplete();
+
+  // Expect failure because test server is not set up to provide websocket
+  // responses.
+  ASSERT_EQ(network_delegate.error_count(), 1);
+  ASSERT_EQ(network_delegate.last_error(), ERR_INVALID_RESPONSE);
+
+  CookieSettingOverrides expected_overides;
+  expected_overides.Put(CookieSettingOverride::kStorageAccessGrantEligible);
+
+  EXPECT_THAT(network_delegate.cookie_setting_overrides_records(),
+              testing::ElementsAre(expected_overides, expected_overides));
 }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 

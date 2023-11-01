@@ -411,6 +411,7 @@ WebSocket::WebSocket(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     const url::Origin& origin,
@@ -469,12 +470,13 @@ WebSocket::WebSocket(
         FROM_HERE,
         base::BindOnce(&WebSocket::AddChannel, weak_ptr_factory_.GetWeakPtr(),
                        url, requested_protocols, site_for_cookies,
-                       isolation_info, std::move(additional_headers)),
+                       has_storage_access, isolation_info,
+                       std::move(additional_headers)),
         delay_);
     return;
   }
-  AddChannel(url, requested_protocols, site_for_cookies, isolation_info,
-             std::move(additional_headers));
+  AddChannel(url, requested_protocols, site_for_cookies, has_storage_access,
+             isolation_info, std::move(additional_headers));
 }
 
 WebSocket::~WebSocket() {
@@ -602,13 +604,15 @@ void WebSocket::AddChannel(
     const GURL& socket_url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers) {
   DVLOG(3) << "WebSocket::AddChannel @" << reinterpret_cast<void*>(this)
            << " socket_url=\"" << socket_url << "\" requested_protocols=\""
            << base::JoinString(requested_protocols, ", ") << "\" origin=\""
            << origin_ << "\" site_for_cookies=\""
-           << site_for_cookies.ToDebugString() << "\"";
+           << site_for_cookies.ToDebugString()
+           << "\" has_storage_access=" << has_storage_access;
 
   DCHECK(!channel_);
 
@@ -630,9 +634,9 @@ void WebSocket::AddChannel(
       headers_to_pass.SetHeader(header->name, header->value);
     }
   }
-  channel_->SendAddChannelRequest(socket_url, requested_protocols, origin_,
-                                  site_for_cookies, isolation_info,
-                                  headers_to_pass, traffic_annotation_);
+  channel_->SendAddChannelRequest(
+      socket_url, requested_protocols, origin_, site_for_cookies,
+      has_storage_access, isolation_info, headers_to_pass, traffic_annotation_);
 }
 
 void WebSocket::OnWritable(MojoResult result,

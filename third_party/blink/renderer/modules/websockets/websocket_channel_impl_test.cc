@@ -215,6 +215,7 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
         const Vector<String>& requested_protocols,
         const net::SiteForCookies& site_for_cookies,
         const String& user_agent,
+        bool has_storage_access,
         mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
             handshake_client,
         const absl::optional<base::UnguessableToken>& throttling_profile_id)
@@ -1613,6 +1614,7 @@ class MockWebSocketConnector : public mojom::blink::WebSocketConnector {
        const Vector<String>&,
        const net::SiteForCookies&,
        const String&,
+       bool,
        mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>,
        const absl::optional<base::UnguessableToken>&));
 };
@@ -1648,7 +1650,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
       handshake_clients;
   auto handshake_client_add_action =
       [&handshake_clients](
-          Unused, Unused, Unused, Unused,
+          Unused, Unused, Unused, Unused, Unused,
           mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
               handshake_client,
           Unused) { handshake_clients.Add(std::move(handshake_client)); };
@@ -1665,7 +1667,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
 
   {
     InSequence s;
-    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
+    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _, _))
         .Times(WebSocketChannelImpl::kMaxWebSocketsPerRenderProcess)
         .WillRepeatedly(handshake_client_add_action);
 
@@ -1681,7 +1683,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*successful_handshake_throttle, ThrottleHandshake(_, _, _));
-    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
+    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _, _))
         .WillOnce(handshake_client_add_action);
     EXPECT_CALL(*successful_handshake_throttle, Destructor());
   }

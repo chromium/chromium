@@ -46,6 +46,8 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -219,6 +221,8 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     base::PathService::Get(content::DIR_TEST_DATA, &path);
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromDirectory(path);
+    https_server_.ServeFilesFromSourceDirectory(
+        net::GetWebSocketTestDataDirectory());
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&HandleEchoCookiesWithCorsRequest));
@@ -443,6 +447,19 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     // we need, so our script is a no-op.
     ASSERT_TRUE(content::ExecJs(
         browser()->tab_strip_model()->GetActiveWebContents(), ""));
+  }
+
+  void OpenConnectToPage(content::RenderFrameHost* frame,
+                         const net::SpawnedTestServer& wss_server) {
+    std::string query = base::StrCat(
+        {"url=", wss_server.GetURL(kHostB, "echo-request-headers").spec()});
+    GURL::Replacements replacements;
+    replacements.SetQueryStr(query);
+
+    ASSERT_TRUE(content::NavigateToURLFromRenderer(
+        frame, https_server()
+                   .GetURL(kHostB, "/connect_to.html")
+                   .ReplaceComponents(replacements)));
   }
 
   net::test_server::EmbeddedTestServer& https_server() { return https_server_; }
@@ -1526,6 +1543,50 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   EXPECT_EQ(
       content::EvalJs(GetFrame(), "fetch_from_worker('/echoheader?cookie');"),
       "cross-site=b.test");
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       WebsocketRequestsUseStorageAccessGrants) {
+  net::SpawnedTestServer wss_server(
+      net::SpawnedTestServer::TYPE_WSS,
+      net::SpawnedTestServer::SSLOptions(
+          net::SpawnedTestServer::SSLOptions::CERT_TEST_NAMES),
+      net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(wss_server.Start());
+
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  content::DOMMessageQueue message_queue(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  // Before the document opts into Storage Access, the WebSocket should not send
+  // unpartitioned cookies during the connection.
+  {
+    OpenConnectToPage(GetFrame(), wss_server);
+
+    std::string message;
+    EXPECT_TRUE(message_queue.WaitForMessage(&message));
+    EXPECT_THAT(message, testing::Not(testing::HasSubstr("cross-site=b.test")));
+  }
+
+  // Get storage access and then do a self-initiated same-site navigation to the
+  // connect_to.html, so that the websocket's frame has storage access
+  // upon load (and therefore has storage access when it creates the websocket).
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // After the document opts into Storage Access, the WebSocket *should* send
+  // unpartitioned cookies during the connection.
+  {
+    OpenConnectToPage(GetFrame(), wss_server);
+    ASSERT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+    std::string message;
+    EXPECT_TRUE(message_queue.WaitForMessage(&message));
+    EXPECT_THAT(message, testing::HasSubstr("cross-site=b.test"));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

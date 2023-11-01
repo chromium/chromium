@@ -117,7 +117,8 @@ void EnclaveWebSocketClient::Connect() {
   replacement.SetPathStr(username_);
   socket_url = service_url_.ReplaceComponents(replacement);
   network_context_->CreateWebSocket(
-      socket_url, {}, net::SiteForCookies(), net::IsolationInfo(),
+      socket_url, {}, net::SiteForCookies(), /*has_storage_access=*/false,
+      net::IsolationInfo(),
       /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
       url::Origin::Create(socket_url),
       network::mojom::kWebSocketOptionBlockAllCookies,
