@@ -1600,7 +1600,7 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
         web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
     if (native_window && item) {
       InsecureDownloadDialogBridge::GetInstance()->CreateDialog(
-          item, target_path.BaseName(), native_window,
+          item, item->GetFileNameToReportUser(), native_window,
           base::BindOnce(HandleInsecureDownloadInfoBarResult, item,
                          std::move(target_info), std::move(callback)));
       return;
