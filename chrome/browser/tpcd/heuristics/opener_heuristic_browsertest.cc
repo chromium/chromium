@@ -34,6 +34,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -278,12 +279,12 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
 
 // TODO(crbug.com/1469394): Flaky on android.
 #if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NewTabsDoNotHavePopupState DISABLED_NewTabsDoNotHavePopupState
+#define MAYBE_NewTabURLsHavePopupState DISABLED_NewTabURLsHavePopupState
 #else
-#define MAYBE_NewTabsDoNotHavePopupState NewTabsDoNotHavePopupState
+#define MAYBE_NewTabURLsHavePopupState NewTabURLsHavePopupState
 #endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       MAYBE_NewTabsDoNotHavePopupState) {
+                       MAYBE_NewTabURLsHavePopupState) {
   WebContents* web_contents = GetActiveWebContents();
   GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
 
@@ -296,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   auto* popup_tab_helper =
       OpenerHeuristicTabHelper::FromWebContents(observer.popup());
   ASSERT_TRUE(popup_tab_helper);
-  ASSERT_FALSE(popup_tab_helper->popup_observer_for_testing());
+  ASSERT_TRUE(popup_tab_helper->popup_observer_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
