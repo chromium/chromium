@@ -11,9 +11,12 @@
 #include "cc/paint/paint_record.h"
 #include "printing/common/metafile_utils.h"
 #include "printing/mojom/print.mojom.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
@@ -24,6 +27,7 @@
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace printing {
 
@@ -155,9 +159,9 @@ TEST(MetafileSkiaTest, MultiPictureDocumentTypefaces) {
 #endif
   constexpr size_t kNumTypefaces = 2;
   sk_sp<SkTypeface> typeface1 =
-      SkTypeface::MakeFromName(kTypefaceName1, SkFontStyle());
+      skia::MakeTypefaceFromName(kTypefaceName1, SkFontStyle());
   sk_sp<SkTypeface> typeface2 =
-      SkTypeface::MakeFromName(kTypefaceName2, SkFontStyle());
+      skia::MakeTypefaceFromName(kTypefaceName2, SkFontStyle());
   const SkFont font1 = SkFont(typeface1, 10);
   const SkFont font2 = SkFont(typeface2, 12);
 

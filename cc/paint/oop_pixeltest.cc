@@ -37,6 +37,7 @@
 #include "gpu/command_buffer/service/graphite_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ipc/common/gpu_client_ids.h"
+#include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -1601,10 +1602,10 @@ TEST_F(OopPixelTest, DrawRectColorSpace) {
 }
 
 sk_sp<SkTextBlob> BuildTextBlob(
-    sk_sp<SkTypeface> typeface = SkTypeface::MakeDefault(),
+    sk_sp<SkTypeface> typeface = skia::DefaultTypeface(),
     bool use_lcd_text = false) {
   if (!typeface) {
-    typeface = SkTypeface::MakeFromName("monospace", SkFontStyle());
+    typeface = skia::MakeTypefaceFromName("monospace", SkFontStyle());
   }
 
   SkFont font;
@@ -1876,7 +1877,7 @@ class OopTextBlobPixelTest
       filter = nullptr;
     }
 
-    auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
+    auto text_blob = BuildTextBlob(skia::DefaultTypeface(), UseLcdText());
 
     if (strategy == TextBlobStrategy::kDirect) {
       // Draw text directly to the SkSurface.
@@ -1964,7 +1965,7 @@ class OopTextBlobPixelTest
                   sk_sp<PaintFilter> filter) {
     TextBlobStrategy strategy = GetTextBlobStrategy(GetParam());
 
-    auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
+    auto text_blob = BuildTextBlob(skia::DefaultTypeface(), UseLcdText());
 
     PaintFlags text_flags;
     text_flags.setStyle(PaintFlags::kFill_Style);
@@ -2137,8 +2138,8 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   options.playback_rect = options.full_raster_rect;
   options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
 
-  auto sk_typeface_1 = SkTypeface::MakeFromName("monospace", SkFontStyle());
-  auto sk_typeface_2 = SkTypeface::MakeFromName("roboto", SkFontStyle());
+  auto sk_typeface_1 = skia::MakeTypefaceFromName("monospace", SkFontStyle());
+  auto sk_typeface_2 = skia::MakeTypefaceFromName("roboto", SkFontStyle());
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();

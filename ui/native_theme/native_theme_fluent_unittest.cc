@@ -4,6 +4,7 @@
 
 #include "ui/native_theme/native_theme_fluent.h"
 
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -95,7 +96,7 @@ class NativeThemeFluentTest : public ::testing::Test,
   // Mocks the availability of the font for drawing arrow icons.
   void SetArrowIconsAvailable(bool enabled) {
     if (enabled) {
-      theme_.typeface_ = SkTypeface::MakeDefault();
+      theme_.typeface_ = skia::DefaultTypeface();
       EXPECT_TRUE(theme_.ArrowIconsAvailable());
     } else {
       theme_.typeface_ = nullptr;

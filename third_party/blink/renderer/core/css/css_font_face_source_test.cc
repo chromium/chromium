@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
 
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -19,7 +20,7 @@ class DummyFontFaceSource : public CSSFontFaceSource {
       const FontDescription&,
       const FontSelectionCapabilities&) override {
     return SimpleFontData::Create(
-        FontPlatformData(SkTypeface::MakeDefault(), /* name */ std::string(),
+        FontPlatformData(skia::DefaultTypeface(), /* name */ std::string(),
                          /* text_size */ 0, /* synthetic_bold */ false,
                          /* synthetic_italic */ false,
                          TextRenderingMode::kAutoTextRendering, {}));

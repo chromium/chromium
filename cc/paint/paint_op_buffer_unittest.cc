@@ -35,23 +35,24 @@
 #include "cc/test/test_skcanvas.h"
 #include "cc/test/transfer_cache_test_helper.h"
 #include "skia/buildflags.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkClipOp.h"
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkBlendMode.h"
-#include "third_party/skia/include/core/SkTileMode.h"
-#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkClipOp.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkMatrix.h"
-#include "third_party/skia/include/core/SkSamplingOptions.h"
-#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
-#include "third_party/skia/include/core/SkMaskFilter.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "third_party/skia/include/effects/SkLayerDrawLooper.h"
@@ -293,7 +294,8 @@ TEST(PaintOpBufferTest, SaveDrawTextBlobRestore) {
 
   PaintFlags paint_flags;
   EXPECT_TRUE(paint_flags.SupportsFoldingAlpha());
-  buffer.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()), 0.0f,
+  SkFont font = skia::DefaultFont();
+  buffer.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", font), 0.0f,
                               0.0f, paint_flags);
   buffer.push<RestoreOp>();
 
@@ -1668,12 +1670,10 @@ void PushDrawSkottieOps(PaintOpBuffer* buffer) {
 
 void PushDrawTextBlobOps(PaintOpBuffer* buffer) {
   static std::vector<std::vector<sk_sp<SkTypeface>>> test_typefaces = {
+      [] { return std::vector<sk_sp<SkTypeface>>{skia::DefaultTypeface()}; }(),
       [] {
-        return std::vector<sk_sp<SkTypeface>>{SkTypeface::MakeDefault()};
-      }(),
-      [] {
-        return std::vector<sk_sp<SkTypeface>>{SkTypeface::MakeDefault(),
-                                              SkTypeface::MakeDefault()};
+        return std::vector<sk_sp<SkTypeface>>{skia::DefaultTypeface(),
+                                              skia::DefaultTypeface()};
       }(),
   };
   static std::vector<sk_sp<SkTextBlob>> test_paint_blobs = {
@@ -3930,8 +3930,9 @@ TEST(PaintOpBufferTest, HasDrawOpsAndHasDrawTextOps) {
   buffer2.push<DrawRecordOp>(buffer1.ReleaseAsRecord());
   EXPECT_TRUE(buffer2.has_draw_ops());
   EXPECT_FALSE(buffer2.has_draw_text_ops());
-  buffer2.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()),
-                               0.0f, 0.0f, PaintFlags());
+  SkFont font = skia::DefaultFont();
+  buffer2.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", font), 0.0f,
+                               0.0f, PaintFlags());
   EXPECT_TRUE(buffer2.has_draw_ops());
   EXPECT_TRUE(buffer2.has_draw_text_ops());
   buffer2.push<DrawRectOp>(SkRect::MakeWH(4, 5), PaintFlags());
@@ -3975,8 +3976,9 @@ TEST(PaintOpBufferTest, NeedsAdditionalInvalidationForLCDText) {
   EXPECT_FALSE(buffer1.has_effects_preventing_lcd_text_for_save_layer_alpha());
 
   PaintOpBuffer buffer2;
-  buffer2.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()),
-                               0.0f, 0.0f, PaintFlags());
+  SkFont font = skia::DefaultFont();
+  buffer2.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", font), 0.0f,
+                               0.0f, PaintFlags());
   buffer2.push<SaveLayerOp>(PaintFlags());
   EXPECT_TRUE(buffer2.has_draw_ops());
   EXPECT_FALSE(buffer2.has_save_layer_alpha_ops());
@@ -4000,8 +4002,8 @@ TEST(PaintOpBufferTest, NeedsAdditionalInvalidationForLCDText) {
         buffer3.NeedsAdditionalInvalidationForLCDText(record2.buffer()));
   }
   {
-    buffer1.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", SkFont()),
-                                 0.0f, 0.0f, PaintFlags());
+    buffer1.push<DrawTextBlobOp>(SkTextBlob::MakeFromString("abc", font), 0.0f,
+                                 0.0f, PaintFlags());
     EXPECT_TRUE(buffer1.has_draw_text_ops());
     EXPECT_TRUE(buffer1.has_save_layer_alpha_ops());
     EXPECT_FALSE(

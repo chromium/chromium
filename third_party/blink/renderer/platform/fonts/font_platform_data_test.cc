@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
 #include "base/test/task_environment.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
@@ -118,7 +119,7 @@ TEST_F(FontPlatformDataTest, TypefaceDigestCrossPlatform_SameDigest) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(FontPlatformDataTest, GeometricPrecision) {
   const float saved_device_scale_factor = FontCache::DeviceScaleFactor();
-  sk_sp<SkTypeface> typeface = SkTypeface::MakeDefault();
+  sk_sp<SkTypeface> typeface = skia::DefaultTypeface();
   const std::string name("name");
   const auto create_font_platform_data = [&]() {
     return FontPlatformData(typeface, name,

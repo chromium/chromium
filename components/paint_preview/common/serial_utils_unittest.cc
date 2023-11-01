@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/file_stream.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkBmpDecoder.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
@@ -106,7 +107,7 @@ TEST(PaintPreviewSerialUtils, TestSerialPictureNotInMap) {
 TEST(PaintPreviewSerialUtils, TestSerialTypeface) {
   PictureSerializationContext picture_ctx;
 
-  auto typeface = SkTypeface::MakeDefault();
+  auto typeface = skia::DefaultTypeface();
   TypefaceUsageMap usage_map;
   std::unique_ptr<GlyphUsage> usage =
       std::make_unique<SparseGlyphUsage>(typeface->countGlyphs());
@@ -172,7 +173,7 @@ TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
 TEST(PaintPreviewSerialUtils, TestSerialNoTypefaceInMap) {
   PictureSerializationContext picture_ctx;
 
-  auto typeface = SkTypeface::MakeDefault();
+  auto typeface = skia::DefaultTypeface();
   TypefaceUsageMap usage_map;
   TypefaceSerializationContext typeface_ctx(&usage_map);
   ImageSerializationContext ictx;

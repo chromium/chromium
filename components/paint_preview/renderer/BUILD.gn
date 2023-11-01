@@ -41,6 +41,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//cc/paint",
     "//components/paint_preview/common:test_utils",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
   ]
