@@ -13,6 +13,7 @@
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
@@ -103,6 +104,11 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     // Avoid getting blocked by modal print error dialogs. Must be called after
     // the UI thread is up and running.
     SetShowPrintErrorDialogForTest(base::DoNothing());
+    if (UseService()) {
+      print_backend_service_ =
+          printing::PrintBackendServiceTestImpl::LaunchForTesting(
+              test_remote_, test_print_backend_.get(), /*sandboxed=*/true);
+    }
     PDFExtensionTestBase::SetUpOnMainThread();
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -115,6 +121,7 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
 #endif
   void TearDownOnMainThread() override {
     PDFExtensionTestBase::TearDownOnMainThread();
+    printing::PrintBackendServiceManager::ResetForTesting();
     SetShowPrintErrorDialogForTest(base::NullCallback());
   }
   void TearDown() override {
@@ -179,6 +186,8 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
   scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
   printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
+  mojo::Remote<printing::mojom::PrintBackendService> test_remote_;
+  std::unique_ptr<printing::PrintBackendServiceTestImpl> print_backend_service_;
   bool observing_print_job_ = false;
   bool print_job_destroyed_ = false;
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
