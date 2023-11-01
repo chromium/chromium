@@ -138,7 +138,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   void* memory(size_t plane) override {
     DCHECK(mapped_);
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return IOSurfaceGetBaseAddressOfPlane(iosurface_, plane);
+    return IOSurfaceGetBaseAddressOfPlane(iosurface_.get(), plane);
   }
   void Unmap() override {
     DCHECK(mapped_);
@@ -148,7 +148,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   gfx::BufferFormat GetFormat() const override { return format_; }
   int stride(size_t plane) const override {
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    return IOSurfaceGetWidthOfPlane(iosurface_, plane);
+    return IOSurfaceGetWidthOfPlane(iosurface_.get(), plane);
   }
   gfx::GpuMemoryBufferId GetId() const override {
     NOTREACHED();
@@ -167,7 +167,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
       uint64_t tracing_process_id,
       int importance) const override {}
 
-  IOSurfaceRef iosurface() { return iosurface_; }
+  IOSurfaceRef iosurface() { return iosurface_.get(); }
 
  private:
   bool mapped_;

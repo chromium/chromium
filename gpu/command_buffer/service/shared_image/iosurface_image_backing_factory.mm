@@ -59,7 +59,7 @@ void SetIOSurfaceColorSpace(IOSurfaceRef io_surface,
   base::apple::ScopedCFTypeRef<CFDataRef> cf_data =
       gfx::DisplayICCProfiles::GetInstance()->GetDataForColorSpace(color_space);
   if (cf_data) {
-    IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"), cf_data);
+    IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"), cf_data.get());
   } else {
     IOSurfaceSetColorSpace(io_surface, color_space);
   }
@@ -442,7 +442,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
   // this, which, if subsequently used to determine parameters for bounds
   // checking, could result in an out-of-bounds memory access.
   {
-    uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface);
+    uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface.get());
     const bool override_rgba_to_bgra =
 #if BUILDFLAG(IS_IOS)
         false;
@@ -455,8 +455,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
           << "IOSurface pixel format does not match specified buffer format.";
       return nullptr;
     }
-    gfx::Size io_surface_size(IOSurfaceGetWidth(io_surface),
-                              IOSurfaceGetHeight(io_surface));
+    gfx::Size io_surface_size(IOSurfaceGetWidth(io_surface.get()),
+                              IOSurfaceGetHeight(io_surface.get()));
     if (io_surface_size != size) {
       LOG(ERROR) << "IOSurface size does not match specified size.";
       return nullptr;
