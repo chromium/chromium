@@ -115,8 +115,6 @@ absl::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
 bool ShouldInteractWithArc() {
   auto* lacros_service = chromeos::LacrosService::Get();
   return lacros_service &&
-         // Check if the feature is enabled.
-         chromeos::BrowserParamsProxy::Get()->WebAppsEnabled() &&
          // Only use ARC installation flow if we know that remote ash-chrome is
          // capable of installing from Play Store in lacros-chrome, to avoid
          // redirecting users to the Play Store if they cannot install

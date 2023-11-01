@@ -1172,23 +1172,12 @@ struct BrowserInitParams {
   [MinVersion=16]
   Account? device_account@16;
 
-  // Whether the lacros web apps is enabled in ash-chrome. When this flag is on
-  // the ash-chrome will interact with web apps publishing from lacros-chrome
-  // instead of ash-chrome.
-  // Added in M92.
   [MinVersion=17]
-  bool web_apps_enabled@17;
-
+  bool REMOVED_17@17;
   [MinVersion=18]
   bool REMOVED_18@18;
-
-  // When this flag is |true|, Lacros is the primary browser and Ash is the
-  // secondary backup.
-  // When this flag is |false|, Lacros is a secondary browser.
-  // This flag should be deprecated before a full launch of Lacros, as it relies
-  // on the assumption that Ash is always available as a browser.
   [MinVersion=19]
-  bool standalone_browser_is_primary@19;
+  bool REMOVED_19@19;
 
   [MinVersion=20]
   NativeThemeInfo? native_theme_info@20;
@@ -1234,9 +1223,8 @@ struct BrowserInitParams {
   [MinVersion=38]
   uint64 ukm_client_id@38;
 
-  // When this flag is |true|, Lacros is the only browser.
   [MinVersion=27]
-  bool standalone_browser_is_only_browser@27;
+  bool REMOVED_27@27;
 
   // When this flag is set, lacros will publish chrome apps to the app service.
   [MinVersion=28]
@@ -1568,18 +1556,8 @@ struct BrowserPostLoginParams {
   // Added in M91.
   Account? device_account@7;
 
-  // Whether the lacros web apps is enabled in ash-chrome. When this flag is on
-  // the ash-chrome will interact with web apps publishing from lacros-chrome
-  // instead of ash-chrome.
-  // Added in M92.
-  bool web_apps_enabled@8;
-
-  // When this flag is |true|, Lacros is the primary browser and Ash is the
-  // secondary backup.
-  // When this flag is |false|, Lacros is a secondary browser.
-  // This flag should be deprecated before a full launch of Lacros, as it relies
-  // on the assumption that Ash is always available as a browser.
-  bool standalone_browser_is_primary@9;
+  bool REMOVED_8@8;
+  bool REMOVED_9@9;
 
   // Specifies what requests the startup_urls.
   // This can be effective only when startup_urls is specified.
@@ -1591,8 +1569,7 @@ struct BrowserPostLoginParams {
   // Added in M96.
   array<url.mojom.Url>? REMOVED_11@11;
 
-  // When this flag is |true|, Lacros is the only browser.
-  bool standalone_browser_is_only_browser@12;
+  bool REMOVED_12@12;
 
   // When this flag is set, lacros will publish chrome apps to the app service.
   bool publish_chrome_apps@13;

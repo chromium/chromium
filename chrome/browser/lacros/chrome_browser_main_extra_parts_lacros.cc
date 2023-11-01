@@ -230,10 +230,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     extensions_controller_->Initialize(extensions_publisher_->publisher());
   }
 
-  if (chromeos::BrowserParamsProxy::Get()->WebAppsEnabled()) {
-    web_app_provider_bridge_ =
-        std::make_unique<crosapi::WebAppProviderBridgeLacros>();
-  }
+  web_app_provider_bridge_ =
+      std::make_unique<crosapi::WebAppProviderBridgeLacros>();
 
   EmbeddedA11yManagerLacros::GetInstance()->Init();
 

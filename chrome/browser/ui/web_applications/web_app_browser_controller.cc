@@ -735,7 +735,7 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_service = chromeos::LacrosService::Get();
-  if (chromeos::BrowserParamsProxy::Get()->WebAppsEnabled() && lacros_service &&
+  if (lacros_service &&
       lacros_service->IsAvailable<crosapi::mojom::WebAppService>() &&
       lacros_service->GetInterfaceVersion<crosapi::mojom::WebAppService>() >=
           int{crosapi::mojom::WebAppService::MethodMinVersions::
