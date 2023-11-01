@@ -22,7 +22,7 @@ namespace reporting {
 // static
 BASE_FEATURE(kEnableNetworkBandwidthReporting,
              "EnableNetworkBandwidthReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 NetworkBandwidthSampler::NetworkBandwidthSampler(
     ::network::NetworkQualityTracker* network_quality_tracker,

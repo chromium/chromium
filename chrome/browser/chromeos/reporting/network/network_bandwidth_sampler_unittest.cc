@@ -46,7 +46,7 @@ class NetworkBandwidthSamplerTest : public ::testing::Test {
   raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
-TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedByDefault) {
+TEST_F(NetworkBandwidthSamplerTest, ReportsDownloadSpeedByDefault) {
   UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
   NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
                                   profile_->GetWeakPtr());
@@ -54,7 +54,12 @@ TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedByDefault) {
   ::reporting::test::TestEvent<absl::optional<MetricData>> test_event;
   sampler.MaybeCollect(test_event.cb());
   const auto result = test_event.result();
-  ASSERT_FALSE(result.has_value());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->telemetry_data()
+                .networks_telemetry()
+                .bandwidth_data()
+                .download_speed_kbps(),
+            kInitDownloadSpeedKbps);
 }
 
 TEST_F(NetworkBandwidthSamplerTest, ReportsDownloadSpeedWhenPrefSet) {
@@ -95,6 +100,8 @@ TEST_F(NetworkBandwidthSamplerTest,
 }
 
 TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedWhenPrefUnset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableNetworkBandwidthReporting);
   SetPrefValue(false);
   UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
   NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
