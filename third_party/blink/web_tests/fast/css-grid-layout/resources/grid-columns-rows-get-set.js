@@ -71,9 +71,9 @@ testGridDefinitionsSetJSValues("minmax(auto, 0fr)", "minmax(auto, .0fr)", "0px",
 debug("");
 debug("Test getting and setting grid-template-columns and grid-template-rows to calc() values through JS");
 testGridDefinitionsSetJSValues("calc(150px)", "calc(75px)", "150px", "75px");
-testGridDefinitionsSetJSValues("calc(50% - 30px)", "calc(75px + 10%)", "370px", "135px");
+testGridDefinitionsSetJSValues("calc(50% - 30px)", "calc(10% + 75px)", "370px", "135px");
 testGridDefinitionsSetJSValues("minmax(25%, calc(30px))", "minmax(calc(75%), 40px)", "200px", "450px", "minmax(25%, calc(30px))", "minmax(calc(75%), 40px)");
-testGridDefinitionsSetJSValues("minmax(10%, calc(30px + 10%))", "minmax(calc(25% - 50px), 200px)", "110px", "200px", "minmax(10%, calc(30px + 10%))", "minmax(calc(25% - 50px), 200px)");
+testGridDefinitionsSetJSValues("minmax(10%, calc(30px + 10%))", "minmax(calc(25% - 50px), 200px)", "110px", "200px", "minmax(10%, calc(10% + 30px))", "minmax(calc(25% - 50px), 200px)");
 
 debug("");
 debug("Test setting grid-template-columns and grid-template-rows to bad values through JS");

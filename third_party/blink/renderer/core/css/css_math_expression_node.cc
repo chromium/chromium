@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -279,6 +280,8 @@ struct CSSMathExpressionNodeWithOperator {
   void Trace(Visitor* visitor) const { visitor->Trace(node); }
 };
 using UnitsVector = HeapVector<CSSMathExpressionNodeWithOperator>;
+using UnitsVectorHashMap =
+    HeapHashMap<CSSPrimitiveValue::UnitType, Member<UnitsVector>>;
 
 bool IsNumericNodeWithDoubleValue(const CSSMathExpressionNode* node) {
   return node->IsNumericLiteral() && HasDoubleValue(node->ResolvedUnitType());
@@ -369,7 +372,147 @@ void CombineNumericChildrenFromNode(const CSSMathExpressionNode* root,
     }
   }
   // Save all non add/sub operations.
-  all_children.emplace_back(CSSMathExpressionNodeWithOperator(op, root));
+  all_children.emplace_back(op, root);
+}
+
+// This function collects numeric values that have double value
+// in the numeric_children vector under the same type and saves all the complex
+// children and their correct simplified operator in complex_children.
+void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
+                                    CSSMathOperator op,
+                                    UnitsVectorHashMap& numeric_children,
+                                    UnitsVector& complex_children,
+                                    bool is_in_nesting = false) {
+  // Go deeper inside the operation node if possible.
+  if (auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
+      operation && operation->IsAddOrSubtract()) {
+    const CSSMathOperator operation_op = operation->OperatorType();
+    is_in_nesting |= operation->IsNestedCalc();
+    // Nest from the left (first op) to the right (second op).
+    CollectNumericChildrenFromNode(operation->GetOperands().front(), op,
+                                   numeric_children, complex_children,
+                                   is_in_nesting);
+    // Change the sign of expression, if we are nesting (inside brackets).
+    op = MaybeChangeOperatorSignIfNesting(is_in_nesting, op, operation_op);
+    CollectNumericChildrenFromNode(operation->GetOperands().back(), op,
+                                   numeric_children, complex_children,
+                                   is_in_nesting);
+    return;
+  }
+  CSSPrimitiveValue::UnitType unit_type = root->ResolvedUnitType();
+  // If we have numeric with double value - collect in numeric_children.
+  if (IsNumericNodeWithDoubleValue(root)) {
+    if (auto it = numeric_children.find(unit_type);
+        it != numeric_children.end()) {
+      it->value->emplace_back(op, root);
+    } else {
+      numeric_children.insert(
+          unit_type, MakeGarbageCollected<UnitsVector>(
+                         1, CSSMathExpressionNodeWithOperator(op, root)));
+    }
+    return;
+  }
+  // Save all non add/sub operations.
+  complex_children.emplace_back(op, root);
+}
+
+CSSMathExpressionNode* AddNodeToSumNode(CSSMathExpressionNode* sum_node,
+                                        const CSSMathExpressionNode* node,
+                                        CSSMathOperator op) {
+  // If the sum node is nullptr, create and return the numeric literal node.
+  if (!sum_node) {
+    return MaybeNegateFirstNode(op, node)->Copy();
+  }
+  // If the node is numeric with double values,
+  // add the numeric literal node with |value| and
+  // operator to match the value's sign.
+  if (IsNumericNodeWithDoubleValue(node)) {
+    double value = node->DoubleValue();
+    CSSMathExpressionNode* new_node = CSSMathExpressionNumericLiteral::Create(
+        std::abs(value), node->ResolvedUnitType());
+    // Change the operator correctly.
+    if (value < 0.0f && op == CSSMathOperator::kAdd) {
+      // + -10 -> -10
+      op = CSSMathOperator::kSubtract;
+    } else if (value < 0.0f && op == CSSMathOperator::kSubtract) {
+      // - -10 -> + 10.
+      op = CSSMathOperator::kAdd;
+    }
+    return MakeGarbageCollected<CSSMathExpressionOperation>(
+        sum_node, new_node, op, sum_node->Category(),
+        sum_node->CanBeResolvedWithConversionData());
+  }
+  // Add the node to the sum_node otherwise.
+  return MakeGarbageCollected<CSSMathExpressionOperation>(
+      sum_node, node, op, sum_node->Category(),
+      sum_node->CanBeResolvedWithConversionData());
+}
+
+CSSMathExpressionNode* AddNodesVectorToSumNode(CSSMathExpressionNode* sum_node,
+                                               const UnitsVector& vector) {
+  for (const auto& [op, node] : vector) {
+    sum_node = AddNodeToSumNode(sum_node, node, op);
+  }
+  return sum_node;
+}
+
+// This function follows:
+// https://drafts.csswg.org/css-values-4/#sort-a-calculations-children
+// As in Blink the math expression tree is binary, we need to collect all the
+// elements of this tree together and create a new tree as a result.
+CSSMathExpressionNode* MaybeSortSumNode(
+    const CSSMathExpressionOperation* root) {
+  CHECK(root->IsAddOrSubtract());
+  CHECK_EQ(root->GetOperands().size(), 2u);
+  // Hash map of vectors of numeric literal values with double value with the
+  // same unit type.
+  UnitsVectorHashMap numeric_children;
+  // Vector of all non add/sub operation children.
+  UnitsVector complex_children;
+  // Collect all the numeric literal with double value in one vector.
+  // Note: using kAdd here as the operator for the first child
+  // (e.g. a - b = +a - b, a + b = +a + b)
+  CollectNumericChildrenFromNode(root, CSSMathOperator::kAdd, numeric_children,
+                                 complex_children, false);
+  // Form the final node.
+  CSSMathExpressionNode* final_node = nullptr;
+  // From spec: If nodes contains a number, remove it from nodes and append it
+  // to ret.
+  if (auto it = numeric_children.find(CSSPrimitiveValue::UnitType::kNumber);
+      it != numeric_children.end()) {
+    final_node = AddNodesVectorToSumNode(final_node, *it->value);
+    numeric_children.erase(it);
+  }
+  // From spec: If nodes contains a percentage, remove it from nodes and append
+  // it to ret.
+  if (auto it = numeric_children.find(CSSPrimitiveValue::UnitType::kPercentage);
+      it != numeric_children.end()) {
+    final_node = AddNodesVectorToSumNode(final_node, *it->value);
+    numeric_children.erase(it);
+  }
+  // Now, sort the rest numeric values alphabatically.
+  // From spec: If nodes contains any dimensions, remove them from nodes, sort
+  // them by their units, ordered ASCII case-insensitively, and append them to
+  // ret.
+  auto comp = [&](const CSSPrimitiveValue::UnitType& key_a,
+                  const CSSPrimitiveValue::UnitType& key_b) {
+    return strcmp(CSSPrimitiveValue::UnitTypeToString(key_a),
+                  CSSPrimitiveValue::UnitTypeToString(key_b)) < 0;
+  };
+  Vector<CSSPrimitiveValue::UnitType> keys;
+  keys.reserve(numeric_children.size());
+  for (const CSSPrimitiveValue::UnitType& key : numeric_children.Keys()) {
+    keys.push_back(key);
+  }
+  std::sort(keys.begin(), keys.end(), comp);
+  // Now, add those numeric nodes in the sorted order.
+  for (const auto& unit_type : keys) {
+    final_node =
+        AddNodesVectorToSumNode(final_node, *numeric_children.at(unit_type));
+  }
+  // Now, add all the complex (non-numerics with double value) values.
+  final_node = AddNodesVectorToSumNode(final_node, complex_children);
+  return final_node;
 }
 
 // This function follows:
@@ -1613,31 +1756,48 @@ String CSSMathExpressionOperation::CustomCSSText() const {
     case CSSMathOperator::kMultiply:
     case CSSMathOperator::kDivide: {
       DCHECK_EQ(operands_.size(), 2u);
+
+      // As per
+      // https://drafts.csswg.org/css-values-4/#sort-a-calculations-children
+      // we should sort the dimensions of the sum node.
+      const CSSMathExpressionOperation* operation = this;
+      if (IsAddOrSubtract()) {
+        const CSSMathExpressionNode* node = MaybeSortSumNode(this);
+        // Note: we can hit here, since CSS Typed OM doesn't currently follow
+        // the same simplifications as CSS Values spec.
+        // https://github.com/w3c/csswg-drafts/issues/9451
+        if (!node->IsOperation()) {
+          return node->CustomCSSText();
+        }
+        operation = To<CSSMathExpressionOperation>(node);
+      }
+      CSSMathOperator op = operation->OperatorType();
+      const Operands& operands = operation->GetOperands();
+
       StringBuilder result;
 
       const bool left_side_needs_parentheses =
-          (operands_[0]->IsOperation() && !operands_[0]->IsMathFunction()) &&
-          operator_ != CSSMathOperator::kAdd &&
-          operator_ != CSSMathOperator::kSubtract;
+          (operands[0]->IsOperation() && !operands[0]->IsMathFunction()) &&
+          op != CSSMathOperator::kAdd && op != CSSMathOperator::kSubtract;
       if (left_side_needs_parentheses) {
         result.Append('(');
       }
-      result.Append(operands_[0]->CustomCSSText());
+      result.Append(operands[0]->CustomCSSText());
       if (left_side_needs_parentheses) {
         result.Append(')');
       }
 
       result.Append(' ');
-      result.Append(ToString(operator_));
+      result.Append(ToString(op));
       result.Append(' ');
 
       const bool right_side_needs_parentheses =
-          (operands_[1]->IsOperation() && !operands_[1]->IsMathFunction()) &&
-          operator_ != CSSMathOperator::kAdd;
+          (operands[1]->IsOperation() && !operands[1]->IsMathFunction()) &&
+          op != CSSMathOperator::kAdd;
       if (right_side_needs_parentheses) {
         result.Append('(');
       }
-      result.Append(operands_[1]->CustomCSSText());
+      result.Append(operands[1]->CustomCSSText());
       if (right_side_needs_parentheses) {
         result.Append(')');
       }
