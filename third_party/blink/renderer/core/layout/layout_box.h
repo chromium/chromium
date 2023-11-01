@@ -867,7 +867,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       TransformState&,
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
-  LayoutUnit ContainingBlockLogicalHeightForGetComputedStyle() const;
+  LayoutUnit ContainingBlockLogicalHeightForRelPositioned() const;
 
   LayoutUnit ContainingBlockLogicalWidthForContent() const override;
 

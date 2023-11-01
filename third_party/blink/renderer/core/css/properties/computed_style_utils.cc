@@ -801,8 +801,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValueForLength(offset, style);
   }
 
-  if (RuntimeEnabledFeatures::GetComputedStyleOutOfFlowInsetsFixEnabled() &&
-      box && box->IsOutOfFlowPositioned()) {
+  if (box && box->IsOutOfFlowPositioned()) {
     // LayoutBox::OutOfFlowInsetsForGetComputedStyle() are relative to the
     // container's writing direction. Convert it to physical.
     const PhysicalBoxStrut& insets =
@@ -828,9 +827,9 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValue(inset, style);
   }
 
-  if (offset.IsPercentOrCalc() && box && layout_object->IsPositioned()) {
+  if (offset.IsPercentOrCalc() && box && box->IsPositioned()) {
     LayoutUnit containing_block_size;
-    if (layout_object->IsStickyPositioned()) {
+    if (box->IsStickyPositioned()) {
       const LayoutBox* scroll_container = box->ContainingScrollContainer();
       DCHECK(scroll_container);
       bool use_inline_size =
@@ -838,96 +837,50 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       containing_block_size = use_inline_size
                                   ? scroll_container->ContentLogicalWidth()
                                   : scroll_container->ContentLogicalHeight();
-      UseCounter::Count(layout_object->GetDocument(),
+      UseCounter::Count(box->GetDocument(),
                         WebFeature::kPercentOrCalcStickyUsedOffset);
     } else {
+      DCHECK(box->IsRelPositioned());
       containing_block_size =
           is_horizontal_property ==
-                  layout_object->ContainingBlock()->IsHorizontalWritingMode()
+                  box->ContainingBlock()->IsHorizontalWritingMode()
               ? box->ContainingBlockLogicalWidthForContent()
-              : box->ContainingBlockLogicalHeightForGetComputedStyle();
-      if (layout_object->IsRelPositioned()) {
-        UseCounter::Count(layout_object->GetDocument(),
-                          WebFeature::kPercentOrCalcRelativeUsedOffset);
-      }
+              : box->ContainingBlockLogicalHeightForRelPositioned();
+      UseCounter::Count(box->GetDocument(),
+                        WebFeature::kPercentOrCalcRelativeUsedOffset);
     }
 
     return ZoomAdjustedPixelValue(ValueForLength(offset, containing_block_size),
                                   style);
   }
 
-  if (offset.IsAuto() && layout_object) {
-    // If the property applies to a positioned element and the resolved value of
-    // the display property is not none, the resolved value is the used value.
-    // Position offsets have special meaning for position sticky so we return
-    // auto when offset.isAuto() on a sticky position object:
-    // https://crbug.com/703816.
-    if (layout_object->IsRelPositioned()) {
-      UseCounter::Count(layout_object->GetDocument(),
-                        WebFeature::kAutoRelativeUsedOffset);
-      // If e.g. left is auto and right is not auto, then left's computed value
-      // is negative right. So we get the opposite length unit and see if it is
-      // auto.
-      if (opposite.IsAuto()) {
-        return CSSNumericLiteralValue::Create(
-            0, CSSPrimitiveValue::UnitType::kPixels);
-      }
-
-      if (opposite.IsPercentOrCalc()) {
-        if (box) {
-          LayoutUnit containing_block_size =
-              is_horizontal_property == layout_object->ContainingBlock()
-                                            ->IsHorizontalWritingMode()
-                  ? box->ContainingBlockLogicalWidthForContent()
-                  : box->ContainingBlockLogicalHeightForGetComputedStyle();
-          return ZoomAdjustedPixelValue(
-              -FloatValueForLength(opposite, containing_block_size), style);
-        }
-        // FIXME:  fall back to auto for position:relative, display:inline
-        return CSSIdentifierValue::Create(CSSValueID::kAuto);
-      }
-
-      Length negated_opposite = Negate(opposite);
-      return ZoomAdjustedPixelValueForLength(negated_opposite, style);
+  if (offset.IsAuto() && layout_object && layout_object->IsRelPositioned()) {
+    UseCounter::Count(layout_object->GetDocument(),
+                      WebFeature::kAutoRelativeUsedOffset);
+    // If e.g. left is auto and right is not auto, then left's computed value
+    // is negative right. So we get the opposite length unit and see if it is
+    // auto.
+    if (opposite.IsAuto()) {
+      return CSSNumericLiteralValue::Create(
+          0, CSSPrimitiveValue::UnitType::kPixels);
     }
 
-    if (layout_object->IsOutOfFlowPositioned() && layout_object->IsBox()) {
-      CHECK(
-          !RuntimeEnabledFeatures::GetComputedStyleOutOfFlowInsetsFixEnabled());
-      // For fixed and absolute positioned elements, the top, left, bottom, and
-      // right are defined relative to the corresponding sides of the containing
-      // block.
-      LayoutBlock* container = layout_object->ContainingBlock();
-
-      // client_offset is the distance from this object's border edge to the
-      // container's padding edge. Thus it includes margins which we subtract
-      // below.
-      const PhysicalOffset client_offset =
-          box->PhysicalLocation() -
-          PhysicalOffset(container->ClientLeft(), container->ClientTop());
-
-      LayoutUnit position;
-
-      switch (property.PropertyID()) {
-        case CSSPropertyID::kLeft:
-          position = client_offset.left - box->MarginLeft();
-          break;
-        case CSSPropertyID::kTop:
-          position = client_offset.top - box->MarginTop();
-          break;
-        case CSSPropertyID::kRight:
-          position = container->ClientWidth() - box->MarginRight() -
-                     (box->OffsetWidth() + client_offset.left);
-          break;
-        case CSSPropertyID::kBottom:
-          position = container->ClientHeight() - box->MarginBottom() -
-                     (box->OffsetHeight() + client_offset.top);
-          break;
-        default:
-          NOTREACHED();
+    if (opposite.IsPercentOrCalc()) {
+      if (box) {
+        LayoutUnit containing_block_size =
+            is_horizontal_property ==
+                    layout_object->ContainingBlock()->IsHorizontalWritingMode()
+                ? box->ContainingBlockLogicalWidthForContent()
+                : box->ContainingBlockLogicalHeightForRelPositioned();
+        return ZoomAdjustedPixelValue(
+            -FloatValueForLength(opposite, containing_block_size), style);
       }
-      return ZoomAdjustedPixelValue(position, style);
+      // FIXME:  fall back to auto for position:relative, display:inline
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
     }
+
+    Length negated_opposite = Negate(opposite);
+    return ZoomAdjustedPixelValueForLength(negated_opposite, style);
   }
 
   if (offset.IsAuto()) {

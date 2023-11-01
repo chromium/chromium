@@ -2516,16 +2516,15 @@ PhysicalRect LayoutBox::ClipRect(const PhysicalOffset& location) const {
   return clip_rect;
 }
 
-LayoutUnit LayoutBox::ContainingBlockLogicalHeightForGetComputedStyle() const {
+LayoutUnit LayoutBox::ContainingBlockLogicalHeightForRelPositioned() const {
   NOT_DESTROYED();
-  DCHECK(IsPositioned());
+  DCHECK(IsRelPositioned());
 
+  // TODO(ikilpatrick): This is resolving percentages against incorrectly if
+  // the container is an inline.
   auto* cb = To<LayoutBoxModelObject>(Container());
-  LayoutUnit height = ContainingBlockLogicalHeightForPositioned(cb);
-  if (IsRelPositioned() || IsStickyPositioned()) {
-    height -= cb->PaddingLogicalHeight();
-  }
-  return height;
+  return ContainingBlockLogicalHeightForPositioned(cb) -
+         cb->PaddingLogicalHeight();
 }
 
 LayoutUnit LayoutBox::ContainingBlockLogicalWidthForContent() const {
