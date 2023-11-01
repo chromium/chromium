@@ -10,10 +10,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/logging.h"
-#include "base/test/bind.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/metrics/structured/key_data_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,31 +29,30 @@ constexpr char kProfileProjectName[] = "TestProjectOne";
 constexpr char kDeviceProjectName[] = "TestProjectFour";
 constexpr char kCrOSEventsProjectName[] = "CrOSEvents";
 
-class KeyDataProviderAshTest : public testing::Test {
+class KeyDataProviderAshTest : public testing::Test, KeyDataProvider::Observer {
  protected:
   void SetUp() override {
     CHECK(temp_dir_.CreateUniqueTempDir());
 
-    base::RunLoop run_loop;
-    base::OnceClosure callback =
-        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); });
+    run_loop_ = std::make_unique<base::RunLoop>();
     key_data_provider_ = std::make_unique<KeyDataProviderAsh>(
         DeviceKeyFilePath(), /*write_delay=*/base::Milliseconds(0));
-    key_data_provider_->InitializeDeviceKey(std::move(callback));
+    key_data_provider_->AddObserver(this);
     Wait();
-    run_loop.Run();
+    run_loop_->Run();
   }
+
+  void TearDown() override { key_data_provider_->RemoveObserver(this); }
+
+  void OnKeyReady() override { run_loop_->Quit(); }
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
   void SetUpProfileKeys() {
-    base::RunLoop run_loop;
-    base::OnceClosure callback =
-        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); });
-    key_data_provider_->InitializeProfileKey(ProfileKeyFilePath(),
-                                             std::move(callback));
+    run_loop_ = std::make_unique<base::RunLoop>();
+    key_data_provider_->InitializeProfileKey(ProfileKeyFilePath());
     Wait();
-    run_loop.Run();
+    run_loop_->Run();
   }
 
   KeyData* GetCurrentKeyData(const std::string& project_name) {
@@ -86,6 +85,9 @@ class KeyDataProviderAshTest : public testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
+
+  // Used to wait for keys.
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 }  // namespace

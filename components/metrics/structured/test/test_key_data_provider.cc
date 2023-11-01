@@ -12,13 +12,22 @@
 namespace metrics::structured {
 
 TestKeyDataProvider::TestKeyDataProvider(const base::FilePath& device_key_path)
-    : device_key_path_(device_key_path), profile_key_path_(base::FilePath()) {}
+    : TestKeyDataProvider(device_key_path, base::FilePath()) {}
 
 TestKeyDataProvider::TestKeyDataProvider(const base::FilePath& device_key_path,
                                          const base::FilePath& profile_key_path)
-    : device_key_path_(device_key_path), profile_key_path_(profile_key_path) {}
+    : device_key_path_(device_key_path), profile_key_path_(profile_key_path) {
+  device_key_data_ = std::make_unique<KeyDataProviderFile>(
+      device_key_path_, base::Milliseconds(0));
+  device_key_data_->AddObserver(this);
+}
 
-TestKeyDataProvider::~TestKeyDataProvider() = default;
+TestKeyDataProvider::~TestKeyDataProvider() {
+  device_key_data_->RemoveObserver(this);
+  if (profile_key_data_) {
+    profile_key_data_->RemoveObserver(this);
+  }
+}
 
 absl::optional<uint64_t> TestKeyDataProvider::GetId(
     const std::string& project_name) {
@@ -109,10 +118,6 @@ bool TestKeyDataProvider::IsReady() {
   return device_key_data_->IsReady();
 }
 
-void TestKeyDataProvider::OnKeyReady() {
-  device_key_data_->OnKeyReady();
-}
-
 bool TestKeyDataProvider::HasProfileKey() {
   return profile_key_data_ && profile_key_data_->IsReady();
 }
@@ -121,16 +126,8 @@ bool TestKeyDataProvider::HasDeviceKey() {
   return device_key_data_ && device_key_data_->IsReady();
 }
 
-void TestKeyDataProvider::InitializeDeviceKey(base::OnceClosure callback) {
-  DCHECK(!device_key_path_.empty());
-
-  device_key_data_ = std::make_unique<KeyDataProviderFile>(
-      device_key_path_, base::Milliseconds(0), std::move(callback));
-}
-
 void TestKeyDataProvider::InitializeProfileKey(
-    const base::FilePath& profile_path,
-    base::OnceClosure callback) {
+    const base::FilePath& profile_path) {
   // If the profile path has not been set, then set it here.
   if (profile_key_path_.empty()) {
     profile_key_path_ = profile_path;
@@ -139,7 +136,8 @@ void TestKeyDataProvider::InitializeProfileKey(
   DCHECK(!profile_key_path_.empty());
 
   profile_key_data_ = std::make_unique<KeyDataProviderFile>(
-      profile_key_path_, base::Milliseconds(0), std::move(callback));
+      profile_key_path_, base::Milliseconds(0));
+  profile_key_data_->AddObserver(this);
 }
 
 void TestKeyDataProvider::Purge() {
@@ -150,6 +148,11 @@ void TestKeyDataProvider::Purge() {
   if (device_key_data_->IsReady()) {
     device_key_data_->Purge();
   }
+}
+
+void TestKeyDataProvider::OnKeyReady() {
+  // Notifies observers both when device and profile keys are ready.
+  NotifyKeyReady();
 }
 
 }  // namespace metrics::structured

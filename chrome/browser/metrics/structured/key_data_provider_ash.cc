@@ -30,9 +30,18 @@ KeyDataProviderAsh::KeyDataProviderAsh()
 
 KeyDataProviderAsh::KeyDataProviderAsh(const base::FilePath& device_key_path,
                                        base::TimeDelta write_delay)
-    : device_key_path_(device_key_path), write_delay_(write_delay) {}
+    : device_key_path_(device_key_path), write_delay_(write_delay) {
+  device_key_ =
+      std::make_unique<KeyDataProviderFile>(device_key_path_, write_delay_);
+  device_key_->AddObserver(this);
+}
 
-KeyDataProviderAsh::~KeyDataProviderAsh() = default;
+KeyDataProviderAsh::~KeyDataProviderAsh() {
+  device_key_->RemoveObserver(this);
+  if (profile_key_) {
+    profile_key_->RemoveObserver(this);
+  }
+}
 
 bool KeyDataProviderAsh::IsReady() {
   DCHECK(device_key_);
@@ -40,8 +49,7 @@ bool KeyDataProviderAsh::IsReady() {
 }
 
 void KeyDataProviderAsh::OnKeyReady() {
-  DCHECK(device_key_);
-  return device_key_->OnKeyReady();
+  NotifyKeyReady();
 }
 
 KeyData* KeyDataProviderAsh::GetKeyData(const std::string& project_name) {
@@ -85,18 +93,8 @@ absl::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
   return absl::nullopt;
 }
 
-void KeyDataProviderAsh::InitializeDeviceKey(base::OnceClosure callback) {
-  if (HasDeviceKey()) {
-    return;
-  }
-
-  device_key_ = std::make_unique<KeyDataProviderFile>(
-      device_key_path_, write_delay_, std::move(callback));
-}
-
 void KeyDataProviderAsh::InitializeProfileKey(
-    const base::FilePath& profile_path,
-    base::OnceClosure callback) {
+    const base::FilePath& profile_path) {
   // Only the primary user's keys should be loaded. If there is already is a
   // profile key, no-op.
   if (HasProfileKey()) {
@@ -104,7 +102,8 @@ void KeyDataProviderAsh::InitializeProfileKey(
   }
 
   profile_key_ = std::make_unique<KeyDataProviderFile>(
-      profile_path.Append(kProfileKeyPath), write_delay_, std::move(callback));
+      profile_path.Append(kProfileKeyPath), write_delay_);
+  profile_key_->AddObserver(this);
 }
 
 KeyData* KeyDataProviderAsh::GetDeviceKeyData() {

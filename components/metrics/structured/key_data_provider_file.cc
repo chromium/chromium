@@ -11,13 +11,9 @@
 
 namespace metrics::structured {
 
-KeyDataProviderFile::KeyDataProviderFile(
-    const base::FilePath& file_path,
-    base::TimeDelta write_delay,
-    base::OnceClosure on_key_ready_callback)
-    : file_path_(file_path),
-      write_delay_(write_delay),
-      on_key_ready_callback_(std::move(on_key_ready_callback)) {
+KeyDataProviderFile::KeyDataProviderFile(const base::FilePath& file_path,
+                                         base::TimeDelta write_delay)
+    : file_path_(file_path), write_delay_(write_delay) {
   key_data_ =
       std::make_unique<KeyData>(file_path_, write_delay_,
                                 base::BindOnce(&KeyDataProviderFile::OnKeyReady,
@@ -32,10 +28,7 @@ bool KeyDataProviderFile::IsReady() {
 
 void KeyDataProviderFile::OnKeyReady() {
   is_data_loaded_ = true;
-
-  if (!on_key_ready_callback_.is_null()) {
-    std::move(on_key_ready_callback_).Run();
-  }
+  NotifyKeyReady();
 }
 
 absl::optional<uint64_t> KeyDataProviderFile::GetId(
@@ -66,12 +59,8 @@ KeyData* KeyDataProviderFile::GetKeyData(const std::string& project_name) {
 }
 
 // Unimplemented as this API will be removed.
-void KeyDataProviderFile::InitializeDeviceKey(base::OnceClosure callback) {}
-
-// Unimplemented as this API will be removed.
 void KeyDataProviderFile::InitializeProfileKey(
-    const base::FilePath& profile_path,
-    base::OnceClosure callback) {}
+    const base::FilePath& profile_path) {}
 
 KeyData* KeyDataProviderFile::GetDeviceKeyData() {
   // This API will be removed.

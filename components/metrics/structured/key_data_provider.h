@@ -6,6 +6,8 @@
 #define COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/metrics/structured/key_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -22,25 +24,28 @@ namespace metrics::structured {
 // be ready once InitializeProfileKey has been called.
 class KeyDataProvider {
  public:
-  KeyDataProvider() = default;
+  // Observer to be notified of events regarding the KeyDataProvider state.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a key is ready to be used.
+    virtual void OnKeyReady() = 0;
+  };
+
+  KeyDataProvider();
 
   KeyDataProvider(const KeyDataProvider& key_data_provider) = delete;
   KeyDataProvider& operator=(const KeyDataProvider& key_data_provider) = delete;
 
-  virtual ~KeyDataProvider() = default;
+  virtual ~KeyDataProvider();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Returns true if the keys are ready to be used.
   virtual bool IsReady() = 0;
 
-  // Callback to be made once the key is ready.
-  virtual void OnKeyReady() = 0;
-
-  // Initializes the device key data.
-  virtual void InitializeDeviceKey(base::OnceClosure callback) = 0;
-
   // Called whenever a profile key should be initialized.
-  virtual void InitializeProfileKey(const base::FilePath& profile_path,
-                                    base::OnceClosure callback) = 0;
+  virtual void InitializeProfileKey(const base::FilePath& profile_path) = 0;
 
   // Retrieves the ID for given |project_name|.
   //
@@ -79,6 +84,13 @@ class KeyDataProvider {
 
   virtual bool HasProfileKey() = 0;
   virtual bool HasDeviceKey() = 0;
+
+ protected:
+  // Notifies observers that the key is ready.
+  void NotifyKeyReady();
+
+ private:
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace metrics::structured

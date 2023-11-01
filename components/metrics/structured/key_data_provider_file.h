@@ -16,19 +16,15 @@
 namespace metrics::structured {
 
 // KeyDataProvider implementation that stores the keys in a file.
-class KeyDataProviderFile : public KeyDataProvider {
+class KeyDataProviderFile : public KeyDataProvider, KeyDataProvider::Observer {
  public:
   KeyDataProviderFile(const base::FilePath& file_path,
-                      base::TimeDelta write_delay,
-                      base::OnceClosure on_key_ready_callback);
+                      base::TimeDelta write_delay);
   ~KeyDataProviderFile() override;
 
   // KeyDataProvider:
   bool IsReady() override;
-  void OnKeyReady() override;
-  void InitializeDeviceKey(base::OnceClosure callback) override;
-  void InitializeProfileKey(const base::FilePath& profile_path,
-                            base::OnceClosure callback) override;
+  void InitializeProfileKey(const base::FilePath& profile_path) override;
   absl::optional<uint64_t> GetId(const std::string& project_name) override;
   absl::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;
@@ -39,13 +35,15 @@ class KeyDataProviderFile : public KeyDataProvider {
   bool HasProfileKey() override;
   bool HasDeviceKey() override;
 
+  // KeyDataProvider::Observer:
+  void OnKeyReady() override;
+
  private:
   const base::FilePath file_path_;
   const base::TimeDelta write_delay_;
   bool is_data_loaded_ = false;
 
   std::unique_ptr<KeyData> key_data_;
-  base::OnceClosure on_key_ready_callback_;
 
   base::WeakPtrFactory<KeyDataProviderFile> weak_ptr_factory_{this};
 };

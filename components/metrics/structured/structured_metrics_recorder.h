@@ -55,7 +55,8 @@ namespace metrics::structured {
 //
 // On a call to ProvideUmaEventMetrics, the cache of unsent logs is added to
 // a ChromeUserMetricsExtension for upload, and is then cleared.
-class StructuredMetricsRecorder : public Recorder::RecorderImpl {
+class StructuredMetricsRecorder : public Recorder::RecorderImpl,
+                                  KeyDataProvider::Observer {
  public:
   explicit StructuredMetricsRecorder(
       metrics::MetricsProvider* system_profile_provider);
@@ -85,6 +86,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   bool can_provide_metrics() const {
     return recording_enabled() && is_init_state(InitState::kInitialized);
   }
+
+  // KeyDataProvider::Observer:
+  void OnKeyReady() override;
 
   // Returns pointer to in-memory events.
   EventsProto* events() { return events_->get(); }
@@ -124,8 +128,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   };
 
   bool is_init_state(InitState state) const { return init_state_ == state; }
-
-  void OnKeyDataInitialized();
 
   void OnRead(ReadStatus status);
   void OnWrite(WriteStatus status);

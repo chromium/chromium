@@ -25,7 +25,7 @@ namespace metrics::structured {
 // created in specified path |profile_path|. If |profile_key_path| is provided
 // in the ctor, then |profile_path| provided in InitializeProfileKey will be
 // ignored.
-class TestKeyDataProvider : public KeyDataProvider {
+class TestKeyDataProvider : public KeyDataProvider, KeyDataProvider::Observer {
  public:
   explicit TestKeyDataProvider(const base::FilePath& device_key_path);
   TestKeyDataProvider(const base::FilePath& device_key_path,
@@ -34,7 +34,6 @@ class TestKeyDataProvider : public KeyDataProvider {
 
   // KeyDataProvider:
   bool IsReady() override;
-  void OnKeyReady() override;
   absl::optional<uint64_t> GetId(const std::string& project_name) override;
   absl::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;
@@ -43,10 +42,11 @@ class TestKeyDataProvider : public KeyDataProvider {
   KeyData* GetProfileKeyData() override;
   bool HasProfileKey() override;
   bool HasDeviceKey() override;
-  void InitializeDeviceKey(base::OnceClosure callback) override;
-  void InitializeProfileKey(const base::FilePath& profile_path,
-                            base::OnceClosure callback) override;
+  void InitializeProfileKey(const base::FilePath& profile_path) override;
   void Purge() override;
+
+  // KeyDataProvider::Observer
+  void OnKeyReady() override;
 
  private:
   base::FilePath device_key_path_;

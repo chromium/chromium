@@ -65,7 +65,9 @@ StructuredMetricsRecorder::StructuredMetricsRecorder(
 
 StructuredMetricsRecorder::~StructuredMetricsRecorder() {
   Recorder::GetInstance()->RemoveObserver(this);
-  DCHECK(!IsInObserverList());
+  if (key_data_provider_) {
+    key_data_provider_->RemoveObserver(this);
+  }
 }
 
 void StructuredMetricsRecorder::EnableRecording() {
@@ -92,6 +94,11 @@ void StructuredMetricsRecorder::DisableRecording() {
   }
 #endif
   disallowed_projects_.clear();
+}
+
+void StructuredMetricsRecorder::OnKeyReady() {
+  DCHECK(base::CurrentUIThread::IsSet());
+  UpdateAndCheckInitState();
 }
 
 void StructuredMetricsRecorder::ProvideUmaEventMetrics(
@@ -134,16 +141,7 @@ void StructuredMetricsRecorder::ProvideEventMetrics(
 void StructuredMetricsRecorder::InitializeKeyDataProvider(
     std::unique_ptr<KeyDataProvider> key_data_provider) {
   key_data_provider_ = std::move(key_data_provider);
-
-  key_data_provider_->InitializeDeviceKey(
-      base::BindOnce(&StructuredMetricsRecorder::OnKeyDataInitialized,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void StructuredMetricsRecorder::OnKeyDataInitialized() {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  UpdateAndCheckInitState();
+  key_data_provider_->AddObserver(this);
 }
 
 void StructuredMetricsRecorder::OnRead(const ReadStatus status) {
@@ -220,10 +218,7 @@ void StructuredMetricsRecorder::OnProfileAdded(
   }
   init_state_ = InitState::kProfileAdded;
 
-  key_data_provider_->InitializeProfileKey(
-      profile_path,
-      base::BindOnce(&StructuredMetricsRecorder::OnKeyDataInitialized,
-                     weak_factory_.GetWeakPtr()));
+  key_data_provider_->InitializeProfileKey(profile_path);
 
   // The directory used to store unsent logs. Relative to the user's cryptohome.
   // This file is created by chromium.

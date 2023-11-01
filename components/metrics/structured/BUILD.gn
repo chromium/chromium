@@ -13,6 +13,7 @@ static_library("structured") {
     "event_storage.h",
     "key_data.cc",
     "key_data.h",
+    "key_data_provider.cc",
     "key_data_provider.h",
     "key_data_provider_file.cc",
     "key_data_provider_file.h",
