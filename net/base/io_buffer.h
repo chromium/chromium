@@ -106,8 +106,9 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   int size_ = 0;
 };
 
-// DEPRECATED - use IOBuffer.
-// TODO(tsepez): mass rename this class out of existence.
+// Currently, this is the same as IOBuffer.
+// TODO(tsepez): Long-term this should become the only class which owns
+// its buffers, with IOBuffer becoming a non-owning root class.
 class NET_EXPORT IOBufferWithSize : public IOBuffer {
  public:
   IOBufferWithSize();
