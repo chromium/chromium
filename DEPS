@@ -2025,7 +2025,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'fPHX_MBertiek7YhMCHva4TLmtDJuS8E4I33MMoq6XYC',
+        'version': 'nqVqgVhY5dmuXzzrZsSqT1jfh5tH8fUJVA9cFYL9GggC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
