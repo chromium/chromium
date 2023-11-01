@@ -332,6 +332,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "assert_extras.ts",
+    "common/deep_linking_mixin.ts",
     "common/global_scroll_target_mixin.ts",
     "common/lacros_extension_control_browser_proxy.ts",
     "common/load_time_booleans.ts",
@@ -344,7 +345,6 @@ build_webui("build") {
     "crostini_page/crostini_shared_usb_devices.ts",
     "date_time_page/date_time_types.ts",
     "date_time_page/timezone_browser_proxy.ts",
-    "deep_linking_mixin.ts",
     "device_page/cros_audio_config.ts",
     "device_page/device_page_browser_proxy.ts",
     "device_page/display_settings_mojo_interface_provider.ts",
