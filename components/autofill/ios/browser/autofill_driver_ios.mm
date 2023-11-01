@@ -94,18 +94,21 @@ std::vector<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  // TODO(crbug.com/1441410) Add Undo support on iOS.
-  if (action_type == mojom::ActionType::kUndo) {
-    return {};
+  switch (action_type) {
+    case mojom::ActionType::kUndo:
+      // TODO(crbug.com/1441410) Add Undo support on iOS.
+      return {};
+    case mojom::ActionType::kFill:
+      web::WebFrame* frame = web_frame();
+      if (frame) {
+        [bridge_ fillFormData:data inFrame:frame];
+      }
+      std::vector<FieldGlobalId> safe_fields;
+      for (const auto& field : data.fields) {
+        safe_fields.push_back(field.global_id());
+      }
+      return safe_fields;
   }
-  web::WebFrame* frame = web_frame();
-  if (frame) {
-    [bridge_ fillFormData:data inFrame:frame];
-  }
-  std::vector<FieldGlobalId> safe_fields;
-  for (const auto& field : data.fields)
-    safe_fields.push_back(field.global_id());
-  return safe_fields;
 }
 
 void AutofillDriverIOS::ApplyFieldAction(
