@@ -115,7 +115,7 @@ export class SettingsUserListElement extends SettingsUserListElementBase {
 
   private setUsers_(users: chrome.usersPrivate.User[]): void {
     this.users_ = users;
-    this.users_.sort(function(a, b) {
+    this.users_.sort((a, b) => {
       if (a.isOwner !== b.isOwner) {
         return b.isOwner ? 1 : -1;
       } else {

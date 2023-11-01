@@ -26,6 +26,10 @@ module.exports = {
         allowedNames: ['is', 'template', 'properties', 'observers'],
       },
     ],
+    /**
+     * https://google.github.io/styleguide/tsguide.html#function-expressions
+     */
+    'prefer-arrow-callback': 'error',
     'quote-props': ['error', 'consistent-as-needed'],
   },
   // clang-format on

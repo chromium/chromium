@@ -178,7 +178,7 @@ export class SettingsSchedulerSliderElement extends
     super.connectedCallback();
 
     this.isRTL_ = window.getComputedStyle(this).direction === 'rtl';
-    this.$.sliderContainer.addEventListener('contextmenu', function(e) {
+    this.$.sliderContainer.addEventListener('contextmenu', (e) => {
       // Prevent the context menu from interfering with dragging the knobs using
       // touch.
       e.preventDefault();

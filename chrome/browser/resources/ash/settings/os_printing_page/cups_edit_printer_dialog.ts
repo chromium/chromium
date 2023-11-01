@@ -233,7 +233,7 @@ export class SettingsCupsEditPrinterDialogElement extends
   }
 
   override onActiveNetworksChanged(networks: NetworkStateProperties[]): void {
-    this.isOnline_ = networks.some(function(network) {
+    this.isOnline_ = networks.some((network) => {
       return OncMojo.connectionStateIsConnected(network.connectionState);
     });
   }

@@ -427,7 +427,7 @@ export class SettingsChromeVoxSubpageElement extends
     // TODO(b/271422242): voiceName can actually be omitted in the TTS engine.
     // We should generate a name in that case.
     voices.forEach(voice => voice.name = voice.name || '');
-    voices.sort(function(a, b) {
+    voices.sort((a, b) => {
       function score(voice: TtsHandlerVoice): number {
         // Prefer Google tts voices over all others.
         if (voice.extensionId === GOOGLE_TTS_EXTENSION_ID) {
