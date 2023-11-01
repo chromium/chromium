@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -25,12 +26,15 @@ import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.policy.PolicyService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -143,6 +147,17 @@ public abstract class FirstRunActivityBase
         // recordForegroundStartTimeWithNative() after the post-native initialization has started.
         // See http://crrev.com/436530.
         UmaUtils.recordForegroundStartTimeWithNative();
+    }
+
+    @Override
+    protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        return new ActivityProfileProvider(getLifecycleDispatcher()) {
+            @Nullable
+            @Override
+            protected OTRProfileID createOffTheRecordProfileID() {
+                throw new IllegalStateException("Attempting to access incognito in the FRE");
+            }
+        };
     }
 
     @Override

@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial.VariationsGroup;
@@ -118,6 +119,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock private Profile mProfileMock;
+    @Mock private ProfileProvider mProfileProviderMock;
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
     @Mock private PolicyLoadListener mPolicyLoadListenerMock;
@@ -145,14 +147,17 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
     @Before
     public void setUp() {
-        OneshotSupplierImpl<Profile> profileSupplier =
+        OneshotSupplierImpl<ProfileProvider> profileSupplier =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            OneshotSupplierImpl<Profile> supplier = new OneshotSupplierImpl<>();
-                            supplier.set(mProfileMock);
+                            OneshotSupplierImpl<ProfileProvider> supplier =
+                                    new OneshotSupplierImpl<>();
+                            when(mProfileProviderMock.getOriginalProfile())
+                                    .thenReturn(mProfileMock);
+                            supplier.set(mProfileProviderMock);
                             return supplier;
                         });
-        when(mFirstRunPageDelegateMock.getProfileSupplier()).thenReturn(profileSupplier);
+        when(mFirstRunPageDelegateMock.getProfileProviderSupplier()).thenReturn(profileSupplier);
 
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);

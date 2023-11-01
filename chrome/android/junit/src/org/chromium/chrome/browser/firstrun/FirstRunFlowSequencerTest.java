@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -66,7 +67,7 @@ public class FirstRunFlowSequencerTest {
         private final boolean mShouldShowSearchEnginePage;
 
         TestFirstRunFlowSequencerDelegate(
-                OneshotSupplier<Profile> profileSupplier,
+                OneshotSupplier<ProfileProvider> profileSupplier,
                 boolean isSyncAllowed,
                 boolean shouldShowSearchEnginePage) {
             super(profileSupplier);
@@ -90,7 +91,7 @@ public class FirstRunFlowSequencerTest {
         public boolean calledOnFlowIsKnown;
 
         public TestFirstRunFlowSequencer(
-                Activity activity, OneshotSupplier<Profile> profileSupplier) {
+                Activity activity, OneshotSupplier<ProfileProvider> profileSupplier) {
             super(
                     activity,
                     profileSupplier,
@@ -111,11 +112,12 @@ public class FirstRunFlowSequencerTest {
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
-    private OneshotSupplierImpl<Profile> mProfileSupplier;
+    private OneshotSupplierImpl<ProfileProvider> mProfileSupplier;
 
     @Before
     public void setUp() {
         Profile profile = mock(Profile.class);
+        ProfileProvider profileProvider = mock(ProfileProvider.class);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(profile))
                 .thenReturn(mIdentityManagerMock);
@@ -125,7 +127,8 @@ public class FirstRunFlowSequencerTest {
         mActivityController = Robolectric.buildActivity(Activity.class);
         mActivity = mActivityController.setup().get();
         mProfileSupplier = new OneshotSupplierImpl<>();
-        mProfileSupplier.set(profile);
+        when(profileProvider.getOriginalProfile()).thenReturn(profile);
+        mProfileSupplier.set(profileProvider);
     }
 
     @After

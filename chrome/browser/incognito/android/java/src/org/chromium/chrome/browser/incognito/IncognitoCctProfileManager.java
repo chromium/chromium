@@ -11,9 +11,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 import javax.inject.Inject;
@@ -35,12 +36,14 @@ public class IncognitoCctProfileManager implements UnownedUserData {
     private static final UnownedUserDataKey<IncognitoCctProfileManager> KEY =
             new UnownedUserDataKey<>(IncognitoCctProfileManager.class);
 
-    private OTRProfileID mOTRProfileID;
     private final WindowAndroid mWindowAndroid;
+    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     @Inject
-    public IncognitoCctProfileManager(WindowAndroid windowAndroid) {
+    public IncognitoCctProfileManager(
+            WindowAndroid windowAndroid, OneshotSupplier<ProfileProvider> profileProviderSupplier) {
         mWindowAndroid = windowAndroid;
+        mProfileProviderSupplier = profileProviderSupplier;
         attach(mWindowAndroid, this);
     }
 
@@ -82,17 +85,15 @@ public class IncognitoCctProfileManager implements UnownedUserData {
     }
 
     public Profile getProfile() {
-        if (mOTRProfileID == null) mOTRProfileID = OTRProfileID.createUnique("CCT:Incognito");
-        return Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
-                mOTRProfileID, /*createIfNeeded=*/true);
+        return mProfileProviderSupplier.get().getOffTheRecordProfile(/* createIfNeeded= */ true);
     }
 
     public void destroyProfile() {
-        if (mOTRProfileID != null) {
-            Profile.getLastUsedRegularProfile()
-                    .getOffTheRecordProfile(mOTRProfileID, /*createIfNeeded=*/true)
+        if (mProfileProviderSupplier.get().hasOffTheRecordProfile()) {
+            mProfileProviderSupplier
+                    .get()
+                    .getOffTheRecordProfile(/* createIfNeeded= */ false)
                     .destroyWhenAppropriate();
-            mOTRProfileID = null;
         }
         detach(this);
     }

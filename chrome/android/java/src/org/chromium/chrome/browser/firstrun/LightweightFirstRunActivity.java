@@ -78,20 +78,22 @@ public class LightweightFirstRunActivity
 
         setFinishOnTouchOutside(true);
 
-        mFirstRunFlowSequencer = new FirstRunFlowSequencer(
-                this, getProfileSupplier(), getChildAccountStatusSupplier()) {
-            @Override
-            public void onFlowIsKnown(Bundle freProperties) {
-                if (freProperties == null) {
-                    completeFirstRunExperience();
-                    return;
-                }
+        mFirstRunFlowSequencer =
+                new FirstRunFlowSequencer(
+                        this, getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
+                    @Override
+                    public void onFlowIsKnown(Bundle freProperties) {
+                        if (freProperties == null) {
+                            completeFirstRunExperience();
+                            return;
+                        }
 
-                boolean isChild = freProperties.getBoolean(
-                        SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
-                initializeViews(isChild);
-            }
-        };
+                        boolean isChild =
+                                freProperties.getBoolean(
+                                        SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
+                        initializeViews(isChild);
+                    }
+                };
         mFirstRunFlowSequencer.start();
         onInitialLayoutInflationComplete();
     }

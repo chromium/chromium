@@ -24,6 +24,7 @@ import androidx.browser.customtabs.TrustedWebUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -51,11 +52,14 @@ import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsMod
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
@@ -180,6 +184,22 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 () -> mDelegateFactory.getEphemeralTabCoordinator(), mBackPressManager,
                 () -> mTabController);
         return mBaseCustomTabRootUiCoordinator;
+    }
+
+    @Override
+    protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        return new ActivityProfileProvider(getLifecycleDispatcher()) {
+            @Nullable
+            @Override
+            protected OTRProfileID createOffTheRecordProfileID() {
+                if (getIntentDataProvider().isIncognito()) {
+                    return OTRProfileID.createUnique("CCT:Incognito");
+                } else {
+                    throw new IllegalStateException(
+                            "Attempting to create an incogntio profile in a non-incognito session");
+                }
+            }
+        };
     }
 
     @Override

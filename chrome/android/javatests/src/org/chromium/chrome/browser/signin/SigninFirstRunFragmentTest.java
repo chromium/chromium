@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial.VariationsGroup;
@@ -159,6 +160,7 @@ public class SigninFirstRunFragmentTest {
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
     @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
+    @Mock private ProfileProvider mProfileProvider;
 
     private Promise<Void> mNativeInitializationPromise;
     private final FakeEnterpriseInfo mFakeEnterpriseInfo = new FakeEnterpriseInfo();
@@ -210,14 +212,17 @@ public class SigninFirstRunFragmentTest {
                 .thenReturn(mChildAccountStatusListenerMock);
         when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(false);
 
-        OneshotSupplierImpl<Profile> profileSupplier =
+        OneshotSupplierImpl<ProfileProvider> profileSupplier =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            OneshotSupplierImpl<Profile> supplier = new OneshotSupplierImpl<>();
-                            supplier.set(Profile.getLastUsedRegularProfile());
+                            OneshotSupplierImpl<ProfileProvider> supplier =
+                                    new OneshotSupplierImpl<>();
+                            when(mProfileProvider.getOriginalProfile())
+                                    .thenReturn(Profile.getLastUsedRegularProfile());
+                            supplier.set(mProfileProvider);
                             return supplier;
                         });
-        when(mFirstRunPageDelegateMock.getProfileSupplier()).thenReturn(profileSupplier);
+        when(mFirstRunPageDelegateMock.getProfileProviderSupplier()).thenReturn(profileSupplier);
 
         mActivityTestRule.launchActivity(null);
         mFragment = new CustomSigninFirstRunFragment();

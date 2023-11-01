@@ -111,6 +111,7 @@ import org.chromium.chrome.browser.incognito.IncognitoStartup;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.incognito.IncognitoTabbedSnapshotController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -141,6 +142,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
@@ -928,6 +930,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         new EngagementTimeUtil());
             }
         }
+    }
+
+    @Override
+    protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        return new ActivityProfileProvider(getLifecycleDispatcher());
     }
 
     @Override

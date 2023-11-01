@@ -27,6 +27,8 @@ import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -37,8 +39,12 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -445,6 +451,36 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     @Override
     protected void triggerLayoutInflation() {
         onInitialLayoutInflationComplete();
+    }
+
+    @Override
+    protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
+        ProfileProvider profileProvider =
+                new ProfileProvider() {
+                    @NonNull
+                    @Override
+                    public Profile getOriginalProfile() {
+                        return mInitiatorTab.getProfile().getOriginalProfile();
+                    }
+
+                    @Nullable
+                    @Override
+                    public Profile getOffTheRecordProfile(boolean createIfNeeded) {
+                        if (!mInitiatorTab.getProfile().isOffTheRecord()) {
+                            throw new IllegalStateException(
+                                    "Attempting to access invalid incognito profile from PiP");
+                        }
+                        return mInitiatorTab.getProfile();
+                    }
+
+                    @Override
+                    public boolean hasOffTheRecordProfile() {
+                        return mInitiatorTab.isIncognito();
+                    }
+                };
+        supplier.set(profileProvider);
+        return supplier;
     }
 
     @Override

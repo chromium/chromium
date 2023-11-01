@@ -28,6 +28,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
@@ -40,6 +42,7 @@ import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -57,7 +60,9 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -331,12 +336,39 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     @Override
-    public void finishNativeInitialization() {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        mProfileSupplier.set(profile);
+    protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        ActivityProfileProvider profileProvider =
+                new ActivityProfileProvider(getLifecycleDispatcher()) {
+                    @Nullable
+                    @Override
+                    protected OTRProfileID createOffTheRecordProfileID() {
+                        throw new IllegalStateException(
+                                "Attempting to access incognito from the search activity");
+                    }
+                };
+        profileProvider.onAvailable((provider) -> {
+            mProfileSupplier.set(profileProvider.get().getOriginalProfile());
+        });
+        return profileProvider;
+    }
 
+    @Override
+    public void finishNativeInitialization() {
         super.finishNativeInitialization();
 
+        if (mProfileSupplier.hasValue()) {
+            finishNativeInitializationWithProfile(mProfileSupplier.get());
+        } else {
+            new OneShotCallback<>(
+                    mProfileSupplier,
+                    (profile) -> {
+                        if (isDestroyed()) return;
+                        finishNativeInitializationWithProfile(profile);
+                    });
+        }
+    }
+
+    private void finishNativeInitializationWithProfile(Profile profile) {
         TabDelegateFactory factory =
                 new TabDelegateFactory() {
                     @Override

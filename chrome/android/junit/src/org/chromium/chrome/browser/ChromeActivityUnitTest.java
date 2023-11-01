@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -91,6 +93,11 @@ public class ChromeActivityUnitTest {
         @Override
         protected boolean handleBackPressed() {
             return true;
+        }
+
+        @Override
+        protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+            return null;
         }
     }
 

@@ -28,6 +28,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.MockTabAttributes;
 import org.chromium.chrome.browser.tab.Tab;
@@ -353,6 +355,12 @@ public class TabPersistentStoreTest {
                                     if (getBaseContext() == null) {
                                         attachBaseContext(mAppContext);
                                     }
+                                }
+
+                                @Override
+                                protected OneshotSupplier<ProfileProvider>
+                                        createProfileProvider() {
+                                    throw new IllegalStateException();
                                 }
                             };
                     ApplicationStatus.onStateChangeForTesting(

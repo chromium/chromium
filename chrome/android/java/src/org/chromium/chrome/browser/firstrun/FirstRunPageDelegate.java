@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -86,8 +86,10 @@ public interface FirstRunPageDelegate {
     /** Records MobileFre.FromLaunch.NativeInitialized histogram. **/
     void recordNativeInitializedHistogram();
 
-    /** @return The supplier that provides the Profile (when available). */
-    OneshotSupplier<Profile> getProfileSupplier();
+    /**
+     * @return The supplier that provides the Profile (when available).
+     */
+    OneshotSupplier<ProfileProvider> getProfileProviderSupplier();
 
     /**
      * The supplier that supplies whether reading policy value is necessary.

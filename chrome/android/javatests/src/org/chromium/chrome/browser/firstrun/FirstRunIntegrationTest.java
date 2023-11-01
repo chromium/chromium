@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.partnercustomizations.BasePartnerBrowserCusto
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -530,8 +531,8 @@ public class FirstRunIntegrationTest {
         if (testCase.cctTosDisabled()) skipTosDialogViaPolicy();
 
         FirstRunFlowSequencer.setDelegateFactoryForTesting(
-                (profileSupplier) ->
-                        new TestFirstRunFlowSequencerDelegate(testCase, profileSupplier));
+                (profileProvider) ->
+                        new TestFirstRunFlowSequencerDelegate(testCase, profileProvider));
 
         setUpLocaleManagerDelegate(testCase.searchPromoType());
     }
@@ -1302,8 +1303,8 @@ public class FirstRunIntegrationTest {
         private FirstRunPagesTestCase mTestCase;
 
         public TestFirstRunFlowSequencerDelegate(
-                FirstRunPagesTestCase testCase, OneshotSupplier<Profile> profileSupplier) {
-            super(profileSupplier);
+                FirstRunPagesTestCase testCase, OneshotSupplier<ProfileProvider> profileProvider) {
+            super(profileProvider);
             mTestCase = testCase;
         }
 

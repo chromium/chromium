@@ -86,7 +86,7 @@ public class SyncConsentFirstRunFragment
         // Special case for child accounts. In rare cases, e.g. if Terms & Conditions is clicked,
         // SigninChecker might have been triggered before the FRE ends and started sign-in (the
         // ConsentLevel depends on AllowSyncOffForChildAccounts). In doubt, wait.
-        Profile profile = getPageDelegate().getProfileSupplier().get();
+        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
         IdentityServicesProvider.get().getSigninManager(profile).runAfterOperationInProgress(() -> {
             CoreAccountInfo syncingAccount = IdentityServicesProvider.get()
                                                      .getIdentityManager(profile)
