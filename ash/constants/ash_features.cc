@@ -2592,6 +2592,11 @@ BASE_FEATURE(kFeatureManagementSystemLiveCaption,
              "FeatureManagementSystemLiveCaption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Replaces uses of `SystemNudge` with the new `AnchoredNudge` component.
+BASE_FEATURE(kSystemNudgeMigration,
+             "SystemNudgeMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the ability to play sounds for system services.
 BASE_FEATURE(kSystemSounds, "SystemSounds", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4184,6 +4189,10 @@ bool IsSystemLiveCaptionEnabled() {
   // to `&&`.
   return base::FeatureList::IsEnabled(kSystemLiveCaption) ||
          base::FeatureList::IsEnabled(kFeatureManagementSystemLiveCaption);
+}
+
+bool IsSystemNudgeMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kSystemNudgeMigration);
 }
 
 bool IsSystemTrayShadowEnabled() {
