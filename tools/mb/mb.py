@@ -1206,21 +1206,6 @@ class MetaBuildWrapper:
         if self.Exists(path):
           self.RemoveFile(path)
 
-  def _FilterOutUnneededSkylabDeps(self, deps):
-    """Filter out the runtime dependencies not used by Skylab.
-
-    Skylab is CrOS infra facilities for us to run hardware tests. These files
-    may appear in the test target's runtime_deps for browser lab, but
-    unnecessary for CrOS lab.
-    """
-    file_ignore_list = [
-        re.compile(r'.*build/chromeos.*'),
-        re.compile(r'.*build/cros_cache.*'),
-        # No test target should rely on files in [output_dir]/gen.
-        re.compile(r'^gen/.*'),
-    ]
-    return [f for f in deps if not any(r.match(f) for r in file_ignore_list)]
-
   def _DedupDependencies(self, deps):
     """Remove the deps already contained by other paths."""
 
@@ -1281,12 +1266,6 @@ class MetaBuildWrapper:
       command, extra_files = self.GetSwarmingCommand(target, vals)
       runtime_deps = self.ReadFile(path_to_use).splitlines()
       runtime_deps = self._DedupDependencies(runtime_deps)
-      # TODO(crbug.com/1481305): Lacros gtest may need files from folders
-      # filtered out here. Eventually, we should move the filter to builder
-      # specific config. Before that, leave the filter only for Ash.
-      if ('is_skylab=true' in vals['gn_args']
-          and not 'chromeos_is_browser_only=true' in vals['gn_args']):
-        runtime_deps = self._FilterOutUnneededSkylabDeps(runtime_deps)
 
       canonical_target = target.replace(':','_').replace('/','_')
       ret = self.WriteIsolateFiles(build_dir, command, canonical_target,
