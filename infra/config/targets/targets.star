@@ -334,7 +334,7 @@ targets.console_test_launcher(
     label = "//chromecast/media/cma/backend:cast_audio_backend_unittests",
 )
 
-targets.junit_test(
+targets.generated_script(
     name = "cast_base_junit_tests",
     label = "//chromecast/base:cast_base_junit_tests",
 )
@@ -384,7 +384,7 @@ targets.console_test_launcher(
     label = "//chromecast:cast_shell_browsertests",
 )
 
-targets.junit_test(
+targets.generated_script(
     name = "cast_shell_junit_tests",
     label = "//chromecast/browser/android:cast_shell_junit_tests",
 )

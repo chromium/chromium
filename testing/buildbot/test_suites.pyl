@@ -315,8 +315,20 @@
     },
 
     'cast_junit_tests': {
-      'cast_base_junit_tests': {},
-      'cast_shell_junit_tests': {},
+      'cast_base_junit_tests': {
+        'mixins': [
+          'x86-64',
+          'linux-jammy',
+          'junit-swarming-emulator',
+        ],
+      },
+      'cast_shell_junit_tests': {
+        'mixins': [
+          'x86-64',
+          'linux-jammy',
+          'junit-swarming-emulator',
+        ],
+      },
     },
 
     'cast_video_specific_chromium_gtests': {

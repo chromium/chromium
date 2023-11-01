@@ -264,7 +264,7 @@
   },
   "cast_base_junit_tests": {
     "label": "//chromecast/base:cast_base_junit_tests",
-    "type": "junit_test",
+    "type": "generated_script",
   },
   "cast_base_unittests": {
     "label": "//chromecast/base:cast_base_unittests",
@@ -304,7 +304,7 @@
   },
   "cast_shell_junit_tests": {
     "label": "//chromecast/browser/android:cast_shell_junit_tests",
-    "type": "junit_test",
+    "type": "generated_script",
   },
   "cast_shell_unittests": {
     "label": "//chromecast:cast_shell_unittests",

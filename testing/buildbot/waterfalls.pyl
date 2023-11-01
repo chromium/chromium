@@ -616,7 +616,7 @@
           'cast_shell_apk',
         ],
         'test_suites': {
-          'junit_tests': 'cast_junit_tests',
+          'isolated_scripts': 'cast_junit_tests',
         },
       },
       'Oreo Phone Tester': {

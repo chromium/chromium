@@ -395,8 +395,20 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "cast_junit_tests",
     tests = {
-        "cast_base_junit_tests": None,
-        "cast_shell_junit_tests": None,
+        "cast_base_junit_tests": targets.legacy_test_config(
+            mixins = [
+                "x86-64",
+                "linux-jammy",
+                "junit-swarming-emulator",
+            ],
+        ),
+        "cast_shell_junit_tests": targets.legacy_test_config(
+            mixins = [
+                "x86-64",
+                "linux-jammy",
+                "junit-swarming-emulator",
+            ],
+        ),
     },
 )
 
