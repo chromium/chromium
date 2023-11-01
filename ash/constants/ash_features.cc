@@ -378,10 +378,22 @@ BASE_FEATURE(kCaptureModeAudioMixing,
              "CaptureModeAudioMixing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the tour that walks new users through the Capture Mode feature.
-BASE_FEATURE(kCaptureModeTour,
-             "CaptureModeTour",
+// Enables the nudges/tutorials that inform users of the screen capture keyboard
+// shortcut and feature tile.
+BASE_FEATURE(kCaptureModeEducation,
+             "CaptureModeEducation",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Determines how we educate the user to the screen capture entry points.
+constexpr base::FeatureParam<CaptureModeEducationParam>::Option
+    capture_mode_education_type_options[] = {
+        {CaptureModeEducationParam::kShortcutNudge, "ShortcutNudge"},
+        {CaptureModeEducationParam::kShortcutTutorial, "ShortcutTutorial"},
+        {CaptureModeEducationParam::kSettingsNudge, "SettingsNudge"}};
+const base::FeatureParam<CaptureModeEducationParam> kCaptureModeEducationParam{
+    &kCaptureModeEducation, "CaptureModeEducationType",
+    CaptureModeEducationParam::kShortcutNudge,
+    &capture_mode_education_type_options};
 
 // If enabled, allow eSIM installation bypass the non-cellular internet
 // connectivity check.
@@ -3135,8 +3147,8 @@ bool IsCaptureModeAudioMixingEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeAudioMixing);
 }
 
-bool IsCaptureModeTourEnabled() {
-  return base::FeatureList::IsEnabled(kCaptureModeTour);
+bool IsCaptureModeEducationEnabled() {
+  return base::FeatureList::IsEnabled(kCaptureModeEducation);
 }
 
 bool IsCellularCarrierLockEnabled() {
@@ -4273,8 +4285,7 @@ bool ShouldUseAuthSessionStorage() {
 }
 
 bool IsUserEducationEnabled() {
-  return IsCaptureModeTourEnabled() || IsHoldingSpaceWallpaperNudgeEnabled() ||
-         IsWelcomeTourEnabled();
+  return IsHoldingSpaceWallpaperNudgeEnabled() || IsWelcomeTourEnabled();
 }
 
 bool IsVideoConferenceEnabled() {

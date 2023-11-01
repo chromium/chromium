@@ -103,7 +103,15 @@ BASE_DECLARE_FEATURE(kCameraEffectsSupportedByHardware);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCameraPrivacySwitchNotifications);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeAudioMixing);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeTour);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeEducation);
+enum class CaptureModeEducationParam {
+  kShortcutNudge,
+  kShortcutTutorial,
+  kSettingsNudge
+};
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<CaptureModeEducationParam>
+    kCaptureModeEducationParam;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCellularBypassESimInstallationConnectivityCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularCarrierLock);
@@ -899,7 +907,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAvailable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAlwaysOn();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothQualityReportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeAudioMixingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeTourEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularCarrierLockEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
