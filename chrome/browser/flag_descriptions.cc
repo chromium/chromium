@@ -1188,6 +1188,12 @@ const char kEnableSearchCustomizableShortcutsInLauncherName[] =
 const char kEnableSearchCustomizableShortcutsInLauncherDescription[] =
     "Enable searching for customizable shortcuts in launcher.";
 
+const char kEnableInputDeviceSettingsLoggingName[] =
+    "Enable input deivce settings logging";
+const char kEnableInputDeviceSettingsLoggingDescription[] =
+    "Enable input device settings logging to to get detailed logs of input "
+    "device settings.";
+
 const char kEnableInputDeviceSettingsSplitName[] =
     "Enable input device settings split";
 const char kEnableInputDeviceSettingsSplitDescription[] =

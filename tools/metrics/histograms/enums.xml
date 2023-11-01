@@ -51228,6 +51228,7 @@ from previous Chrome versions.
   <int value="-1086656172"
       label="PrefetchNotificationSchedulingIntegration:disabled"/>
   <int value="-1085492638" label="FetchKeepaliveTimeoutSetting:enabled"/>
+  <int value="-1085386492" label="EnableInputDeviceSettingsLogging:enabled"/>
   <int value="-1084618227" label="CompositeBGColorAnimation:disabled"/>
   <int value="-1084500756" label="EnableViewPpd:enabled"/>
   <int value="-1084055006" label="disable-web-notification-custom-layouts"/>
@@ -54229,6 +54230,7 @@ from previous Chrome versions.
   <int value="359006230"
       label="SupervisedPrefsControlledBySupervisedStore:enabled"/>
   <int value="359601954" label="CrostiniUsbSupport:enabled"/>
+  <int value="359868138" label="EnableInputDeviceSettingsLogging:disabled"/>
   <int value="359896413" label="SplitPartiallyOccludedQuads:disabled"/>
   <int value="359918746"
       label="AutofillEnableVirtualCardsRiskBasedAuthentication:disabled"/>
