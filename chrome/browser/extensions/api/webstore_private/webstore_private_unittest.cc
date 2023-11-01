@@ -207,8 +207,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionEnabled) {
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
   absl::optional<base::Value> response =
       RunFunctionAndReturnValue(function.get(), GenerateArgs(kExtensionId));
-  VerifyResponse(ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_ENABLED,
-                 *response);
+  VerifyResponse(ExtensionInstallStatus::kEnabled, *response);
 }
 
 TEST_F(WebstorePrivateGetExtensionStatusTest, InvalidManifest) {
@@ -226,9 +225,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByManifestType) {
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
   absl::optional<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
-  VerifyResponse(
-      ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_BLOCKED_BY_POLICY,
-      *response);
+  VerifyResponse(ExtensionInstallStatus::kBlockedByPolicy, *response);
 }
 
 TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByPermission) {
@@ -238,9 +235,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByPermission) {
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
   absl::optional<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
-  VerifyResponse(
-      ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_BLOCKED_BY_POLICY,
-      *response);
+  VerifyResponse(ExtensionInstallStatus::kBlockedByPolicy, *response);
 }
 
 TEST_F(WebstorePrivateGetExtensionStatusTest,
@@ -250,8 +245,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest,
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
   absl::optional<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
-  VerifyResponse(ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_INSTALLABLE,
-                 *response);
+  VerifyResponse(ExtensionInstallStatus::kInstallable, *response);
 }
 
 class WebstorePrivateBeginInstallWithManifest3Test
