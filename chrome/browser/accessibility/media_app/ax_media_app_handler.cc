@@ -27,6 +27,17 @@
 #include "ui/gfx/geometry/rect_f.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/gfx/geometry/rect_f.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
 namespace ash {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -183,15 +194,29 @@ void AXMediaAppHandler::OnAXModeAdded(ui::AXMode mode) {
 void AXMediaAppHandler::DocumentUpdated(
     const std::vector<gfx::Insets>& page_locations,
     const std::vector<uint64_t>& dirty_pages) {
-  CHECK_EQ(page_locations.size(), dirty_pages.size());
+  // `page_locations` should contain the new locations of all pages, whilst
+  // `dirty_pages` only the indices of all the pages that need to be OCRed.
+  CHECK_GE(page_locations.size(), dirty_pages.size());
   if (!features::IsBacklightOcrEnabled()) {
     return;
   }
+  page_locations_ = page_locations;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  for (size_t i = 0; i < page_locations.size(); ++i) {
-    dirty_pages_.emplace(page_locations[i], dirty_pages[i]);
+  if (dirty_pages.empty()) {
+    for (size_t i = 0; i < page_locations_.size(); ++i) {
+      UpdatePageLocation(static_cast<uint64_t>(i), page_locations_[i]);
+    }
+  } else {
+    size_t page_locations_size = page_locations.size();
+    pages_.resize(page_locations_size);
+    for (uint64_t dirty_page_index : dirty_pages) {
+      if (dirty_page_index >= static_cast<uint64_t>(page_locations_size)) {
+        continue;
+      }
+      dirty_page_indices_.push(dirty_page_index);
+    }
+    OcrNextDirtyPageIfAny();
   }
-  OcrNextDirtyPageIfAny();
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
@@ -199,22 +224,46 @@ void AXMediaAppHandler::ViewportUpdated(const gfx::Insets& viewport_box,
                                         float scaleFactor) {}
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void AXMediaAppHandler::OcrNextDirtyPageIfAny() {
-  CHECK(features::IsBacklightOcrEnabled());
-  if (dirty_pages_.empty() || !IsOcrServiceEnabled()) {
+void AXMediaAppHandler::UpdatePageLocation(uint64_t page_index,
+                                           const gfx::Insets& page_location) {
+  CHECK_LT(page_index, static_cast<uint64_t>(pages_.size()));
+  ui::AXTreeManager* tree_manager = pages_[page_index].get();
+  if (!tree_manager) {
     return;
   }
-  DirtyPageInfo dirty_page_info = dirty_pages_.front();
-  dirty_pages_.pop();
-  SkBitmap page_bitmap =
-      media_app_->RequestBitmap(dirty_page_info.dirty_page_index);
-  screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
-      page_bitmap, base::BindOnce(&AXMediaAppHandler::OnPageOcred,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(dirty_page_info)));
+  ui::AXTree* tree = tree_manager->ax_tree();
+  CHECK(tree->root());
+  ui::AXNodeData root_data = tree->root()->data();
+  root_data.relative_bounds.bounds =
+      gfx::RectF(page_location.left(), page_location.top(),
+                 page_location.width(), page_location.height());
+  ui::AXTreeUpdate location_update;
+  location_update.root_id = tree->root()->id();
+  location_update.nodes = {root_data};
+  CHECK(tree->Unserialize(location_update)) << tree->error();
 }
 
-void AXMediaAppHandler::OnPageOcred(DirtyPageInfo dirty_page_info,
+void AXMediaAppHandler::OcrNextDirtyPageIfAny() {
+  CHECK(features::IsBacklightOcrEnabled());
+  if (!IsOcrServiceEnabled()) {
+    return;
+  }
+  if (dirty_page_indices_.empty()) {
+    for (size_t i = 0; i < page_locations_.size(); ++i) {
+      UpdatePageLocation(static_cast<uint64_t>(i), page_locations_[i]);
+    }
+    return;
+  }
+  uint64_t dirty_page_index = dirty_page_indices_.front();
+  dirty_page_indices_.pop();
+  SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_index);
+  screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
+      page_bitmap,
+      base::BindOnce(&AXMediaAppHandler::OnPageOcred,
+                     weak_ptr_factory_.GetWeakPtr(), dirty_page_index));
+}
+
+void AXMediaAppHandler::OnPageOcred(uint64_t dirty_page_index,
                                     const ui::AXTreeUpdate& tree_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(features::IsBacklightOcrEnabled());
@@ -231,28 +280,16 @@ void AXMediaAppHandler::OnPageOcred(DirtyPageInfo dirty_page_info,
   complete_tree_update.tree_data.title = "OCR results";
   complete_tree_update.root_id = tree_update.root_id;
   complete_tree_update.nodes = tree_update.nodes;
-  auto [iter, inserted] = pages_.insert(std::make_pair(
-      dirty_page_info.dirty_page_index, std::make_unique<ui::AXTreeManager>()));
-  if (inserted) {
-    iter->second->SetTree(std::make_unique<ui::AXTree>(complete_tree_update));
+  CHECK_LT(dirty_page_index, static_cast<uint64_t>(pages_.size()));
+  if (!pages_[dirty_page_index]) {
+    pages_[dirty_page_index] = std::make_unique<ui::AXTreeManager>(
+        std::make_unique<ui::AXTree>(complete_tree_update));
   } else {
-    CHECK(iter->second->ax_tree());
-    CHECK(iter->second->ax_tree()->Unserialize(complete_tree_update))
-        << iter->second->ax_tree()->error();
+    CHECK(pages_[dirty_page_index]->ax_tree());
+    CHECK(
+        pages_[dirty_page_index]->ax_tree()->Unserialize(complete_tree_update))
+        << pages_[dirty_page_index]->ax_tree()->error();
   }
-  auto* tree = iter->second->ax_tree();
-  CHECK(tree->root());
-  ui::AXNodeData root_data = tree->root()->data();
-  // TODO(nektar): Why are we passing `gfx::Insets` instead of `gfx::Rect`? Talk
-  // to Backlight Team.
-  root_data.relative_bounds.bounds = gfx::RectF(
-      dirty_page_info.page_location.left(), dirty_page_info.page_location.top(),
-      dirty_page_info.page_location.width(),
-      dirty_page_info.page_location.height());
-  ui::AXTreeUpdate location_update;
-  location_update.root_id = tree->root()->id();
-  location_update.nodes = {root_data};
-  CHECK(tree->Unserialize(location_update)) << tree->error();
   // TODO(nektar): Attach the page to the tree for the main PDF document.
   OcrNextDirtyPageIfAny();
 }

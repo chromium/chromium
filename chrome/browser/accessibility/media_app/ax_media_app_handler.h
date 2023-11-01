@@ -26,7 +26,6 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <memory.h>
-#include <map>
 
 #include "base/containers/queue.h"
 #include "base/sequence_checker.h"
@@ -68,8 +67,7 @@ class AXMediaAppHandler final
   void ViewportUpdated(const gfx::Insets& viewport_box, float scaleFactor);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  const std::map<uint64_t, std::unique_ptr<ui::AXTreeManager>>&
-  GetPagesForTesting() {
+  const std::vector<std::unique_ptr<ui::AXTreeManager>>& GetPagesForTesting() {
     return pages_;
   }
 
@@ -95,21 +93,16 @@ class AXMediaAppHandler final
 
  private:
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  struct DirtyPageInfo final {
-    DirtyPageInfo(const gfx::Insets& page_location, uint64_t dirty_page_index)
-        : page_location(page_location), dirty_page_index(dirty_page_index) {}
-
-    const gfx::Insets page_location;
-    uint64_t dirty_page_index;
-  };
-
+  void UpdatePageLocation(uint64_t page_index,
+                          const gfx::Insets& page_location);
   void OcrNextDirtyPageIfAny();
-  void OnPageOcred(DirtyPageInfo dirty_page_info,
+  void OnPageOcred(uint64_t dirty_page_index,
                    const ui::AXTreeUpdate& tree_update);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   // `AXMediaApp` should outlive this handler.
   raw_ptr<AXMediaApp> media_app_;
+  std::vector<gfx::Insets> page_locations_;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   bool is_ocr_service_enabled_for_testing_ = false;
@@ -118,9 +111,9 @@ class AXMediaAppHandler final
   base::ScopedObservation<screen_ai::ScreenAIInstallState,
                           screen_ai::ScreenAIInstallState::Observer>
       screen_ai_component_state_observer_{this};
-  base::queue<DirtyPageInfo> dirty_pages_;
+  base::queue<uint64_t> dirty_page_indices_;
   ui::AXTreeManager document_;
-  std::map<uint64_t, std::unique_ptr<ui::AXTreeManager>> pages_;
+  std::vector<std::unique_ptr<ui::AXTreeManager>> pages_;
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AXMediaAppHandler> weak_ptr_factory_{this};

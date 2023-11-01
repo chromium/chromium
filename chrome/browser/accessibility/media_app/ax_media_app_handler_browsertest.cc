@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -24,6 +23,8 @@
 #include "ui/gfx/geometry/insets.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include <vector>
+
 #include "components/services/screen_ai/public/test/fake_screen_ai_annotator.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -82,54 +83,65 @@ class AXMediaAppHandlerTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AXMediaAppHandlerTest, DocumentUpdated) {
   handler_->DocumentUpdated(
       /*page_locations=*/{gfx::Insets(1u), gfx::Insets(2u), gfx::Insets(3u)},
-      /*dirty_pages=*/{0u, 1u, 5u});
+      /*dirty_pages=*/{0u, 1u, 2u});
   WaitForOcringPages(3u);
 
   ASSERT_EQ(3u, fake_media_app_.PageIndicesWithBitmap().size());
-  EXPECT_EQ(0u, fake_media_app_.PageIndicesWithBitmap()[0]);
-  EXPECT_EQ(1u, fake_media_app_.PageIndicesWithBitmap()[1]);
-  EXPECT_EQ(5u, fake_media_app_.PageIndicesWithBitmap()[2]);
+  for (size_t i = 0; i < fake_media_app_.PageIndicesWithBitmap().size(); ++i) {
+    EXPECT_EQ(static_cast<uint64_t>(i),
+              fake_media_app_.PageIndicesWithBitmap()[i]);
+  }
 
-  const std::map<uint64_t, std::unique_ptr<ui::AXTreeManager>>& pages =
+  const std::vector<std::unique_ptr<ui::AXTreeManager>>& pages =
       handler_->GetPagesForTesting();
   ASSERT_EQ(3u, pages.size());
-  ASSERT_NE(nullptr, pages.at(0u));
-  ASSERT_NE(nullptr, pages.at(1u));
-  ASSERT_NE(nullptr, pages.at(5u));
-  ASSERT_NE(nullptr, pages.at(0u)->ax_tree());
-  ASSERT_NE(nullptr, pages.at(1u)->ax_tree());
-  ASSERT_NE(nullptr, pages.at(5u)->ax_tree());
+  for (const std::unique_ptr<ui::AXTreeManager>& page : pages) {
+    ASSERT_NE(nullptr, page.get());
+    ASSERT_NE(nullptr, page->ax_tree());
+  }
 
   // Remove the tree data, because its tree ID would change every time the test
   // is run, and because it is unimportant for our test purposes.
   ui::AXTreeData tree_data;
-  pages.at(0u)->ax_tree()->UpdateDataForTesting(tree_data);
-  pages.at(1u)->ax_tree()->UpdateDataForTesting(tree_data);
-  pages.at(5u)->ax_tree()->UpdateDataForTesting(tree_data);
+  for (const std::unique_ptr<ui::AXTreeManager>& page : pages) {
+    page->ax_tree()->UpdateDataForTesting(tree_data);
+  }
   EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (1, 1)-(2, 2)\n",
-            pages.at(0u)->ax_tree()->ToString());
+            pages[0]->ax_tree()->ToString());
   EXPECT_EQ("AXTree\nid=-3 staticText name=Testing (2, 2)-(4, 4)\n",
-            pages.at(1u)->ax_tree()->ToString());
+            pages[1]->ax_tree()->ToString());
   EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (3, 3)-(6, 6)\n",
-            pages.at(5u)->ax_tree()->ToString());
+            pages[2]->ax_tree()->ToString());
 
+  // Resize all pages, OCR the second page  again, and add an additional page to
+  // the end.
   handler_->DocumentUpdated(
-      /*page_locations=*/{gfx::Insets(1u)},
-      /*dirty_pages=*/{5u});
-  WaitForOcringPages(1u);
+      /*page_locations=*/{gfx::Insets(2u), gfx::Insets(3u), gfx::Insets(4u),
+                          gfx::Insets(5u)},
+      /*dirty_pages=*/{1u, 3u});
+  WaitForOcringPages(2u);
 
-  ASSERT_EQ(4u, fake_media_app_.PageIndicesWithBitmap().size());
-  EXPECT_EQ(5u, fake_media_app_.PageIndicesWithBitmap()[3]);
+  ASSERT_EQ(5u, fake_media_app_.PageIndicesWithBitmap().size());
+  EXPECT_EQ(1u, fake_media_app_.PageIndicesWithBitmap()[3]);
+  EXPECT_EQ(3u, fake_media_app_.PageIndicesWithBitmap()[4]);
 
-  const std::map<uint64_t, std::unique_ptr<ui::AXTreeManager>>& pages2 =
+  const std::vector<std::unique_ptr<ui::AXTreeManager>>& pages2 =
       handler_->GetPagesForTesting();
-  ASSERT_EQ(3u, pages2.size());
-  ASSERT_NE(nullptr, pages2.at(5u));
-  ASSERT_NE(nullptr, pages2.at(5u)->ax_tree());
+  ASSERT_EQ(4u, pages2.size());
+  for (const std::unique_ptr<ui::AXTreeManager>& page : pages2) {
+    ASSERT_NE(nullptr, page.get());
+    ASSERT_NE(nullptr, page->ax_tree());
+    page->ax_tree()->UpdateDataForTesting(tree_data);
+  }
 
-  pages2.at(5u)->ax_tree()->UpdateDataForTesting(tree_data);
-  EXPECT_EQ("AXTree\nid=-5 staticText name=Testing (1, 1)-(2, 2)\n",
-            pages2.at(5u)->ax_tree()->ToString());
+  EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (2, 2)-(4, 4)\n",
+            pages2[0]->ax_tree()->ToString());
+  EXPECT_EQ("AXTree\nid=-5 staticText name=Testing (3, 3)-(6, 6)\n",
+            pages2[1]->ax_tree()->ToString());
+  EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (4, 4)-(8, 8)\n",
+            pages2[2]->ax_tree()->ToString());
+  EXPECT_EQ("AXTree\nid=-6 staticText name=Testing (5, 5)-(10, 10)\n",
+            pages2[3]->ax_tree()->ToString());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
