@@ -16,9 +16,13 @@ _HEADER = """// Generated from {script_name}. Do not edit!
 #ifndef {include_guard}
 #define {include_guard}
 
+#include <array>
+#include <stddef.h>
+
 namespace {namespace} {{
 
 extern const char* k{variant_name}VariantAllowList[];
+extern const size_t k{variant_name}VariantAllowListSize;
 
 }}  // namespace {namespace}
 
@@ -32,6 +36,9 @@ namespace {namespace} {{
 const char* k{variant_name}VariantAllowList[] = {{
 {variants}
 }};
+
+const size_t k{variant_name}VariantAllowListSize =
+    std::size(k{variant_name}VariantAllowList);
 
 }}  // namespace {namespace}
 """

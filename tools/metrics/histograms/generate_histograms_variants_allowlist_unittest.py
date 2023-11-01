@@ -14,9 +14,13 @@ _EXPECTED_HEADER_FILE_CONTENT = (
 #ifndef TEST_TEST_H_
 #define TEST_TEST_H_
 
+#include <array>
+#include <stddef.h>
+
 namespace test_namespace {
 
 extern const char* kTestNameVariantAllowList[];
+extern const size_t kTestNameVariantAllowListSize;
 
 }  // namespace test_namespace
 
@@ -34,6 +38,9 @@ const char* kTestNameVariantAllowList[] = {
   "DownloadView",
   "PageInfoView",
 };
+
+const size_t kTestNameVariantAllowListSize =
+    std::size(kTestNameVariantAllowList);
 
 }  // namespace test_namespace
 """)

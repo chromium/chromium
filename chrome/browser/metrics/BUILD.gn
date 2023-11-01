@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//components/metrics/generate_expired_histograms_array.gni")
-import("//components/metrics/generate_histograms_variants_allowlist.gni")
 
 source_set("test_support") {
   testonly = true
@@ -34,12 +33,4 @@ generate_expired_histograms_array("expired_histograms_array") {
   header_filename = "expired_histograms_array.h"
   major_branch_date_filepath = "//chrome/MAJOR_BRANCH_DATE"
   milestone_filepath = "//chrome/VERSION"
-}
-
-generate_histograms_variants_allowlist("bubble_histograms_variant") {
-  namespace = "chrome_metrics"
-  input_xml_file = "//tools/metrics/histograms/metadata/views/histograms.xml"
-  header_filename = "bubble_histograms_variant.h"
-  source_filename = "bubble_histograms_variant.cc"
-  allow_list_name = "BubbleName"
 }
