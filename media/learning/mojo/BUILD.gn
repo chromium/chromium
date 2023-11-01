@@ -24,6 +24,8 @@ component("impl") {
   ]
 
   public_deps = [ "//media/learning/mojo/public/cpp" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 # Unit Tests
