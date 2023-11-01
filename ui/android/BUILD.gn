@@ -562,7 +562,6 @@ robolectric_binary("ui_junit_tests") {
     "junit/src/org/chromium/ui/modaldialog/ModalDialogManagerTest.java",
     "junit/src/org/chromium/ui/modaldialog/PendingDialogContainerTest.java",
     "junit/src/org/chromium/ui/modelutil/LazyConstructionPropertyMcpTest.java",
-    "junit/src/org/chromium/ui/modelutil/ListModelBaseTest.java",
     "junit/src/org/chromium/ui/modelutil/ModelListAdapterTest.java",
     "junit/src/org/chromium/ui/modelutil/ModelListPropertyChangeFilterTest.java",
     "junit/src/org/chromium/ui/modelutil/PropertyListModelTest.java",
