@@ -219,6 +219,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
       API_AVAILABLE(ios(15.0));
   void RequestPermissionsWithDecisionHandler(
       NSArray<NSNumber*>* permissions,
+      const GURL& origin,
       PermissionDecisionHandler web_view_decision_handler)
       API_AVAILABLE(ios(15.0));
 

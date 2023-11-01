@@ -1,5 +1,6 @@
 include_rules = [
   "+components/leveldb_proto/public",
+  "+components/security_state",
   "+components/sessions/core/session_id.h",
   "+components/shared_highlighting/core/common",
   "+components/url_formatter",
