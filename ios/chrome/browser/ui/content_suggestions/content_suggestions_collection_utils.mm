@@ -243,14 +243,10 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   [voice_search_button setTranslatesAutoresizingMaskIntoConstraints:NO];
   [search_tab_target addSubview:voice_search_button];
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfig =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-    voice_search_button.configuration = buttonConfig;
-  } else {
-    SetAdjustsImageWhenHighlighted(voice_search_button, NO);
-  }
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  voice_search_button.configuration = buttonConfig;
 
   UIImage* mic_image = DefaultSymbolWithPointSize(
       kMicrophoneSymbol, kSymbolContentSuggestionsPointSize);
@@ -271,14 +267,10 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
   lens_button.translatesAutoresizingMaskIntoConstraints = NO;
   [search_tap_target addSubview:lens_button];
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfig =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-    lens_button.configuration = buttonConfig;
-  } else {
-    SetAdjustsImageWhenHighlighted(lens_button, NO);
-  }
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  lens_button.configuration = buttonConfig;
 
   UIImage* camera_image = CustomSymbolWithPointSize(
       kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
