@@ -351,7 +351,7 @@ BASE_FEATURE(kBorealisProvision,
 // Use the new WebUI installer instead of views installer.
 BASE_FEATURE(kBorealisWebUIInstaller,
              "BorealisWebUIInstaller",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the camera effects are supported by hardware.
 // Note that this feature can be overridden by login_manager based on
