@@ -183,6 +183,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/containers/id_map.h"
+#include "content/browser/webauth/webauth_request_security_checker.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #else
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
@@ -2847,15 +2848,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // and a boolean representing whether the given origin is cross-origin with
   // any frame in this frame's ancestor chain. This extra cross-origin bit is
   // relevant in case callers need it for crypto signature.
-  std::pair<blink::mojom::AuthenticatorStatus, bool>
-  PerformGetAssertionWebAuthSecurityChecks(
+  void PerformGetAssertionWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
-      bool is_payment_credential_get_assertion);
-  blink::mojom::AuthenticatorStatus PerformMakeCredentialWebAuthSecurityChecks(
+      bool is_payment_credential_get_assertion,
+      base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
+          callback);
+  void PerformMakeCredentialWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
-      bool is_payment_credential_creation);
+      bool is_payment_credential_creation,
+      base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 #endif
 
   using JavaScriptResultAndTypeCallback =
@@ -4106,6 +4109,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // interfaces to it can be bound.
   void RendererWidgetCreated();
 
+#if BUILDFLAG(IS_ANDROID)
+  // These functions are called after a WebAuthn relying party check has
+  // completed. See `PerformMakeCredentialWebAuthSecurityChecks` and
+  // `PerformGetAssertionWebAuthSecurityChecks`.
+  void OnGetAssertionWebAuthSecurityChecksCompleted(
+      base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
+          callback,
+      bool is_cross_origin,
+      blink::mojom::AuthenticatorStatus status);
+  void OnMakeCredentialWebAuthSecurityChecksCompleted(
+      base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback,
+      blink::mojom::AuthenticatorStatus status);
+#endif
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -5258,6 +5275,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // If true, the renderer side widget is created after the navigation is
   // committed.
   bool waiting_for_renderer_widget_creation_after_commit_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Holds a reference to a pending remote WebAuthn RP ID validation while one
+  // is ongoing. Destroying this object cancels the validation.
+  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
+      webauthn_remote_rp_id_validation_;
+#endif
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

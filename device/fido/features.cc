@@ -237,4 +237,9 @@ BASE_FEATURE(kWebAuthnAccessibleTimeouts,
              "WebAuthenticationAccessibleTimeouts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnRelatedOrigin,
+             "WebAuthenticationRelatedOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

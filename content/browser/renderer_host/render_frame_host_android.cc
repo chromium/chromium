@@ -231,33 +231,47 @@ jboolean RenderFrameHostAndroid::IsProcessBlocked(
   return render_frame_host_->GetProcess()->IsBlocked();
 }
 
-ScopedJavaLocalRef<jobject>
-RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
+void RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& relying_party_id,
     const base::android::JavaParamRef<jobject>& effective_origin,
-    jboolean is_payment_credential_get_assertion) const {
+    jboolean is_payment_credential_get_assertion,
+    const base::android::JavaParamRef<jobject>& callback) const {
   url::Origin origin = url::Origin::FromJavaObject(effective_origin);
-  std::pair<blink::mojom::AuthenticatorStatus, bool> results =
-      render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
-          ConvertJavaStringToUTF8(env, relying_party_id), origin,
-          is_payment_credential_get_assertion);
-  return Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
-      env, static_cast<jint>(results.first), results.second);
+  render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
+      ConvertJavaStringToUTF8(env, relying_party_id), origin,
+      is_payment_credential_get_assertion,
+      base::BindOnce(
+          [](base::android::ScopedJavaGlobalRef<jobject> callback,
+             blink::mojom::AuthenticatorStatus status, bool is_cross_origin) {
+            base::android::RunObjectCallbackAndroid(
+                callback,
+                Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
+                    base::android::AttachCurrentThread(),
+                    static_cast<jint>(status), is_cross_origin));
+          },
+          base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
-jint RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
+void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& relying_party_id,
     const base::android::JavaParamRef<jobject>& effective_origin,
-    jboolean is_payment_credential_creation) const {
+    jboolean is_payment_credential_creation,
+    const base::android::JavaParamRef<jobject>& callback) const {
   url::Origin origin = url::Origin::FromJavaObject(effective_origin);
-  return static_cast<int32_t>(
-      render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
-          ConvertJavaStringToUTF8(env, relying_party_id), origin,
-          is_payment_credential_creation));
+  render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
+      ConvertJavaStringToUTF8(env, relying_party_id), origin,
+      is_payment_credential_creation,
+      base::BindOnce(
+          [](base::android::ScopedJavaGlobalRef<jobject> callback,
+             blink::mojom::AuthenticatorStatus status) {
+            base::android::RunIntCallbackAndroid(callback,
+                                                 static_cast<int32_t>(status));
+          },
+          base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
 jint RenderFrameHostAndroid::GetLifecycleState(

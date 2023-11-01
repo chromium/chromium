@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -45,6 +46,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/did_commit_navigation_interceptor.h"
+#include "content/test/fake_network_url_loader_factory.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "device/base/features.h"
@@ -146,6 +148,18 @@ constexpr char kExcludeCredentialsRangeErrorMessage[] =
     "RangeError: The `excludeCredentials` attribute exceeds the "
     "maximum allowed size (64).";
 
+constexpr char kRpIdContentTypeMessage[] =
+    "SecurityError: The relying party ID is not a registrable domain suffix "
+    "of, nor equal to the current domain. Subsequently, the "
+    ".well-known/passkey-origins resource of the claimed RP ID had the wrong "
+    "content-type. (It should be application/json.)";
+
+constexpr char kRpIdNoEntryMessage[] =
+    "SecurityError: The relying party ID is not a registrable domain suffix "
+    "of, nor equal to the current domain. Subsequently, fetching the "
+    ".well-known/passkey-origins resource of the claimed RP ID was successful, "
+    "but no listed origin matched the caller.";
+
 // Templates to be used with base::ReplaceStringPlaceholders. Can be
 // modified to include up to 9 replacements. The default values for
 // any additional replacements added should also be added to the
@@ -237,7 +251,8 @@ constexpr char kGetPublicKeyTemplate[] =
     "  challenge: new TextEncoder().encode('climb a mountain'),"
     "  userVerification: '$1',"
     "  allowCredentials: $2,"
-    "  timeout: $3}"
+    "  timeout: $3,"
+    "  rpId: '$4'}"
     "}).then(c => 'OK',"
     "        e => e.toString())";
 
@@ -247,7 +262,8 @@ constexpr char kGetPublicKeyWithAbortSignalTemplate[] =
     "  userVerification: '$1',"
     "  allowCredentials: $2,"
     "  timeout: $3,"
-    "}, signal: $4}"
+    "  rpId: '$4',"
+    "}, signal: $5}"
     ").catch(c => c.toString())";
 
 // Default values for kGetPublicKeyTemplate.
@@ -259,6 +275,7 @@ struct GetParameters {
       "  transports: ['usb', 'nfc', 'ble']}]";
   std::string signal = "";
   std::string timeout = "1000";
+  std::string rp_id = "acme.com";
 };
 
 std::string BuildGetCallWithParameters(const GetParameters& parameters) {
@@ -266,6 +283,7 @@ std::string BuildGetCallWithParameters(const GetParameters& parameters) {
   substitutions.push_back(parameters.user_verification);
   substitutions.push_back(parameters.allow_credentials);
   substitutions.push_back(parameters.timeout);
+  substitutions.push_back(parameters.rp_id);
   if (parameters.signal.empty()) {
     return base::ReplaceStringPlaceholders(kGetPublicKeyTemplate, substitutions,
                                            nullptr);
@@ -428,8 +446,66 @@ class WebAuthBrowserTestContentBrowserClient
     return std::make_unique<WebAuthBrowserTestClientDelegate>(test_state_);
   }
 
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetSystemSharedURLLoaderFactory() override {
+    // This is used by `WebAuthRequestSecurityChecker` to do cross-domain RP ID
+    // validations.
+    return fake_url_loader_factory_;
+  }
+
+  // set_webauthn_origins_response sets the fake HTTP response that will be
+  // returned for all requests for `.well-known/webauthn-origins` requests.
+  void set_webauthn_origins_response(base::StringPiece content_type,
+                                     base::StringPiece authorized_origin) {
+    auto fake_url_loader_factory =
+        std::make_unique<FakeNetworkURLLoaderFactory>(
+            base::StrCat(
+                {"HTTP/1.1 200 OK\nContent-Type: ", content_type, "\n\n"}),
+            base::StrCat({"{\"origins\": [\"", authorized_origin, "\"]}"}),
+            /* network_accessed */ true, net::OK);
+    fake_url_loader_factory_ = base::MakeRefCounted<FakeSharedURLLoaderFactory>(
+        std::move(fake_url_loader_factory));
+  }
+
  private:
+  class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
+   public:
+    explicit FakeSharedURLLoaderFactory(
+        std::unique_ptr<FakeNetworkURLLoaderFactory> fake)
+        : fake_(std::move(fake)) {}
+
+    void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+        override {
+      CHECK(false);
+    }
+
+    std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
+      CHECK(false);
+      return nullptr;
+    }
+
+    void CreateLoaderAndStart(
+        mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+        int32_t request_id,
+        uint32_t options,
+        const network::ResourceRequest& url_request,
+        mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+        const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+        override {
+      fake_->CreateLoaderAndStart(std::move(receiver), request_id, options,
+                                  url_request, std::move(client),
+                                  traffic_annotation);
+    }
+
+   private:
+    friend class base::RefCounted<FakeSharedURLLoaderFactory>;
+    ~FakeSharedURLLoaderFactory() override = default;
+    std::unique_ptr<FakeNetworkURLLoaderFactory> fake_;
+  };
+
   const raw_ptr<WebAuthBrowserTestState> test_state_;
+  const std::string source_origin_;
+  scoped_refptr<FakeSharedURLLoaderFactory> fake_url_loader_factory_;
   WebAuthBrowserTestWebAuthenticationDelegate web_authentication_delegate_{
       test_state_};
 };
@@ -481,6 +557,10 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
   net::EmbeddedTestServer& https_server() { return https_server_; }
 
   WebAuthBrowserTestState* test_state() { return &test_state_; }
+
+  WebAuthBrowserTestContentBrowserClient* test_client() {
+    return test_client_.get();
+  }
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1121,7 +1201,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, HybridRecognised) {
   virtual_device_factory->SetSupportedProtocol(device::ProtocolVersion::kCtap2);
   static const uint8_t kCredentialId[] = {1};
   ASSERT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
-      kCredentialId, "www.acme.com"));
+      kCredentialId, "acme.com"));
 
   GetParameters parameters;
   for (const char* const transport_str : {"hybrid", "cable", "usb"}) {
@@ -1358,6 +1438,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     GetParameters get_params;
     const int credential_id =
         test.cross_origin ? kInnerCredentialID : kOuterCredentialID;
+    get_params.rp_id = create_parameters.rp_id;
     get_params.allow_credentials = base::StringPrintf(
         "[{ type: 'public-key',"
         "   id: new Uint8Array([%d]),"
@@ -1639,7 +1720,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinGetAssertion) {
   constexpr uint8_t credential_id[] = {'A', 'A', 'A'};
 
   device::FakeWinWebAuthnApi fake_api;
-  fake_api.InjectNonDiscoverableCredential(credential_id, "www.acme.com");
+  fake_api.InjectNonDiscoverableCredential(credential_id, "acme.com");
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   GetParameters get_parameters;
@@ -1740,6 +1821,79 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   EXPECT_EQ("hybrid,internal", EvalJs(shell()->web_contents(), kJavascript));
 }
 #endif
+
+class WebAuthCrossDomainTest : public WebAuthBrowserTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    WebAuthBrowserTestBase::SetUpOnMainThread();
+
+    virtual_device_factory_ = InjectVirtualFidoDeviceFactory();
+    virtual_device_factory_->SetTransport(
+        device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+    virtual_device_factory_->SetSupportedProtocol(
+        device::ProtocolVersion::kCtap2);
+  }
+
+ protected:
+  raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
+  const base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnRelatedOrigin};
+};
+
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Create) {
+  CreateParameters parameters;
+  parameters.rp_id = "foo.com";
+  test_client()->set_webauthn_origins_response(
+      "application/json", GetHttpsURL("www.acme.com", "/").spec());
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              BuildCreateCallWithParameters(parameters))
+                           .ExtractString();
+
+  EXPECT_EQ(kOkMessage, result);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadContentType) {
+  CreateParameters parameters;
+  parameters.rp_id = "foo.com";
+  test_client()->set_webauthn_origins_response(
+      "text/plain", GetHttpsURL("www.acme.com", "/").spec());
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              BuildCreateCallWithParameters(parameters))
+                           .ExtractString();
+
+  EXPECT_EQ(kRpIdContentTypeMessage, result);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, CreateBadOrigin) {
+  CreateParameters parameters;
+  parameters.rp_id = "foo.com";
+  test_client()->set_webauthn_origins_response("application/json",
+                                               "https://nottherightdomain.com");
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              BuildCreateCallWithParameters(parameters))
+                           .ExtractString();
+
+  EXPECT_EQ(kRpIdNoEntryMessage, result);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
+  const uint8_t kCredentialId[] = {0x61, 0x6C, 0x6C, 0x6F, 0x77, 0x65,
+                                   0x64, 0x43, 0x72, 0x65, 0x64, 0x65,
+                                   0x6E, 0x74, 0x69, 0x61, 0x6C};
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      device::fido_parsing_utils::Materialize(base::make_span(kCredentialId)),
+      "foo.com"));
+
+  GetParameters parameters;
+  parameters.user_verification = "discouraged";
+  parameters.rp_id = "foo.com";
+  test_client()->set_webauthn_origins_response(
+      "application/json", GetHttpsURL("www.acme.com", "/").spec());
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              BuildGetCallWithParameters(parameters))
+                           .ExtractString();
+  ASSERT_EQ(kOkMessage, result);
+}
 
 class WebAuthLocalClientBackForwardCacheBrowserTest
     : public WebAuthLocalClientBrowserTest {

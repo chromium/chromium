@@ -15179,11 +15179,12 @@ void RenderFrameHostImpl::UpdateIsAdFrame(bool is_ad_frame) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-std::pair<blink::mojom::AuthenticatorStatus, bool>
-RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
+void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin,
-    bool is_payment_credential_get_assertion) {
+    bool is_payment_credential_get_assertion,
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
+        callback) {
   bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
 
   WebAuthRequestSecurityChecker::RequestType request_type =
@@ -15195,54 +15196,91 @@ RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
       GetWebAuthRequestSecurityChecker()->ValidateAncestorOrigins(
           effective_origin, request_type, &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    return std::make_pair(status, is_cross_origin);
+    std::move(callback).Run(status, is_cross_origin);
+    return;
   }
 
   if (!GetContentClient()
            ->browser()
            ->IsSecurityLevelAcceptableForWebAuthn(this, effective_origin)) {
-    return std::make_pair(blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR,
-                          is_cross_origin);
+    std::move(callback).Run(
+        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR, is_cross_origin);
+    return;
   }
 
-  status = GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
-      effective_origin, relying_party_id, request_type,
-      /*remote_desktop_client_override=*/nullptr);
-  return std::make_pair(status, is_cross_origin);
+  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
+      remote_validation =
+          GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
+              effective_origin, relying_party_id, request_type,
+              /*remote_desktop_client_override=*/nullptr,
+              base::BindOnce(&RenderFrameHostImpl::
+                                 OnGetAssertionWebAuthSecurityChecksCompleted,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(callback), is_cross_origin));
+
+  // If `remote_validation` is nullptr then this object may already have been
+  // destroyed.
+  if (remote_validation) {
+    webauthn_remote_rp_id_validation_ = std::move(remote_validation);
+  }
 }
 
-blink::mojom::AuthenticatorStatus
-RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
+void RenderFrameHostImpl::OnGetAssertionWebAuthSecurityChecksCompleted(
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)> callback,
+    bool is_cross_origin,
+    blink::mojom::AuthenticatorStatus status) {
+  webauthn_remote_rp_id_validation_.reset();
+  std::move(callback).Run(status, is_cross_origin);
+}
+
+void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin,
-    bool is_payment_credential_creation) {
-  bool is_cross_origin;
-
+    bool is_payment_credential_creation,
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
+  bool unused_is_cross_origin;
   WebAuthRequestSecurityChecker::RequestType request_type =
       is_payment_credential_creation
           ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
           : WebAuthRequestSecurityChecker::RequestType::kMakeCredential;
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityChecker()->ValidateAncestorOrigins(
-          effective_origin, request_type, &is_cross_origin);
+          effective_origin, request_type, &unused_is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    return status;
+    std::move(callback).Run(status);
+    return;
   }
 
   if (!GetContentClient()
            ->browser()
            ->IsSecurityLevelAcceptableForWebAuthn(this, effective_origin)) {
-    return blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR;
+    std::move(callback).Run(
+        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+    return;
   }
 
-  status = GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
-      effective_origin, relying_party_id, request_type,
-      /*remote_desktop_client_override=*/nullptr);
-  if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    return status;
-  }
+  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
+      remote_validation =
+          GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
+              effective_origin, relying_party_id, request_type,
+              /*remote_desktop_client_override=*/nullptr,
+              base::BindOnce(&RenderFrameHostImpl::
+                                 OnMakeCredentialWebAuthSecurityChecksCompleted,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(callback)));
 
-  return blink::mojom::AuthenticatorStatus::SUCCESS;
+  // If `remote_validation` is nullptr then this object may already have been
+  // destroyed.
+  if (remote_validation) {
+    webauthn_remote_rp_id_validation_ = std::move(remote_validation);
+  }
+}
+
+void RenderFrameHostImpl::OnMakeCredentialWebAuthSecurityChecksCompleted(
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback,
+    blink::mojom::AuthenticatorStatus status) {
+  webauthn_remote_rp_id_validation_.reset();
+  std::move(callback).Run(status);
 }
 #endif
 

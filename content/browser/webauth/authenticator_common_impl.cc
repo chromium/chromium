@@ -542,6 +542,10 @@ struct AuthenticatorCommonImpl::RequestState {
   // The request ID of a pending proxied MakeCredential or GetAssertion request.
   absl::optional<WebAuthenticationRequestProxy::RequestId>
       pending_proxied_request_id;
+
+  // A pending remote validation of an RP ID.
+  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
+      remote_rp_id_validation;
 };
 
 // static
@@ -746,11 +750,34 @@ void AuthenticatorCommonImpl::MakeCredential(
     return;
   }
 
-  status = security_checker_->ValidateDomainAndRelyingPartyID(
-      caller_origin, options->relying_party.id, request_type,
-      options->remote_desktop_client_override);
-  if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    CompleteMakeCredentialRequest(status);
+  const std::string relying_party_id = options->relying_party.id;
+  const blink::mojom::RemoteDesktopClientOverridePtr&
+      remote_desktop_client_override = options->remote_desktop_client_override;
+  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
+      remote_validation = security_checker_->ValidateDomainAndRelyingPartyID(
+          caller_origin, relying_party_id, request_type,
+          remote_desktop_client_override,
+          base::BindOnce(
+              &AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck,
+              weak_factory_.GetWeakPtr(), caller_origin, std::move(options),
+              is_cross_origin_iframe));
+
+  // If `remote_validation` is nullptr then the request may already have
+  // completed.
+  if (remote_validation) {
+    req_state_->remote_rp_id_validation = std::move(remote_validation);
+  }
+}
+
+void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
+    url::Origin caller_origin,
+    blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+    bool is_cross_origin_iframe,
+    blink::mojom::AuthenticatorStatus rp_id_validation_result) {
+  req_state_->remote_rp_id_validation.reset();
+
+  if (rp_id_validation_result != blink::mojom::AuthenticatorStatus::SUCCESS) {
+    CompleteMakeCredentialRequest(rp_id_validation_result);
     return;
   }
 
@@ -838,11 +865,6 @@ void AuthenticatorCommonImpl::MakeCredential(
       CompleteMakeCredentialRequest(
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
-  }
-
-  if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    CompleteMakeCredentialRequest(status);
-    return;
   }
 
   if (!IsFocused()) {
@@ -1113,11 +1135,36 @@ void AuthenticatorCommonImpl::GetAssertion(
     return;
   }
 
-  status = security_checker_->ValidateDomainAndRelyingPartyID(
-      caller_origin, options->relying_party_id, request_type,
-      options->extensions->remote_desktop_client_override);
-  if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    CompleteGetAssertionRequest(status);
+  const std::string relying_party_id = options->relying_party_id;
+  const blink::mojom::RemoteDesktopClientOverridePtr&
+      remote_desktop_client_override =
+          options->extensions->remote_desktop_client_override;
+  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
+      remote_validation = security_checker_->ValidateDomainAndRelyingPartyID(
+          caller_origin, relying_party_id, request_type,
+          remote_desktop_client_override,
+          base::BindOnce(
+              &AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck,
+              weak_factory_.GetWeakPtr(), caller_origin, std::move(options),
+              std::move(payment_options), is_cross_origin_iframe));
+
+  // If `remote_validation` is nullptr then the request may already have
+  // completed.
+  if (remote_validation) {
+    req_state_->remote_rp_id_validation = std::move(remote_validation);
+  }
+}
+
+void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
+    url::Origin caller_origin,
+    blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+    blink::mojom::PaymentOptionsPtr payment_options,
+    bool is_cross_origin_iframe,
+    blink::mojom::AuthenticatorStatus rp_id_validation_result) {
+  req_state_->remote_rp_id_validation.reset();
+
+  if (rp_id_validation_result != blink::mojom::AuthenticatorStatus::SUCCESS) {
+    CompleteGetAssertionRequest(rp_id_validation_result);
     return;
   }
 

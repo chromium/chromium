@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -121,14 +122,26 @@ public class Fido2CredentialRequestRobolectricTest {
 
         Mockito.when(mFrameHost.getLastCommittedURL()).thenReturn(gurl);
         Mockito.when(mFrameHost.getLastCommittedOrigin()).thenReturn(mOrigin);
-        Mockito.when(
-                        mFrameHost.performMakeCredentialWebAuthSecurityChecks(
-                                any(String.class), any(Origin.class), anyBoolean()))
-                .thenReturn(0);
-        Mockito.when(
-                        mFrameHost.performGetAssertionWebAuthSecurityChecks(
-                                any(String.class), any(Origin.class), anyBoolean()))
-                .thenReturn(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            ((Callback<Integer>) invocation.getArguments()[3])
+                                    .onResult(AuthenticatorStatus.SUCCESS);
+                            return null;
+                        })
+                .when(mFrameHost)
+                .performMakeCredentialWebAuthSecurityChecks(
+                        any(String.class), any(Origin.class), anyBoolean(), any(Callback.class));
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[3])
+                                    .onResult(
+                                            new WebAuthSecurityChecksResults(
+                                                    AuthenticatorStatus.SUCCESS, false));
+                            return null;
+                        })
+                .when(mFrameHost)
+                .performGetAssertionWebAuthSecurityChecks(
+                        any(String.class), any(Origin.class), anyBoolean(), any(Callback.class));
 
         // Reset any cached evaluation of whether CredMan should be supported.
         CredManSupportProvider.setupForTesting(true);
@@ -818,6 +831,49 @@ public class Fido2CredentialRequestRobolectricTest {
         verify(mCredManHelperMock, times(1)).cancelConditionalGetAssertion(eq(mFrameHost));
         verify(mBrowserBridgeMock, times(1)).cleanupRequest(any());
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testConditionalGetAssertion_abortedWhileWaitingForRpIdValidation_aborted() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        // Capture the RP ID validation callback and let the request sit
+        // waiting for it.
+        var rpIdValidationCallback = new Callback[1];
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            rpIdValidationCallback[0] = (Callback) invocation.getArguments()[3];
+                            return null;
+                        })
+                .when(mFrameHost)
+                .performGetAssertionWebAuthSecurityChecks(
+                        any(String.class), any(Origin.class), anyBoolean(), any(Callback.class));
+
+        mRequest.handleGetAssertionRequest(
+                mActivity,
+                mRequestOptions,
+                mFrameHost,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                errorStatus -> mCallback.onError(errorStatus));
+
+        // The request should have requested RP ID validation.
+        assertThat(rpIdValidationCallback[0]).isNotNull();
+        // Aborting the request shouldn't do anything yet because it's waiting
+        // for RP ID validation.
+        mRequest.cancelConditionalGetAssertion(mFrameHost);
+        assertThat(mCallback.getStatus()).isEqualTo(null);
+        // When the RP ID validation completes, the overall request should then
+        // be canceled. Any RP ID validation error should be ignored in favour
+        // of `ABORT_ERROR`.
+        rpIdValidationCallback[0].onResult(
+                new WebAuthSecurityChecksResults(AuthenticatorStatus.NOT_ALLOWED_ERROR, false));
+        assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.ABORT_ERROR);
     }
 
     private WebAuthnCredentialDetails createWebAuthnCredential() {

@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
@@ -1193,11 +1194,15 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(false));
-  std::pair<blink::mojom::AuthenticatorStatus, bool> result =
-      main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
-          "doofenshmirtz.evil", url::Origin::Create(url),
-          /*is_payment_credential_get_assertion=*/false);
-  EXPECT_EQ(std::get<blink::mojom::AuthenticatorStatus>(result),
+  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
+      "doofenshmirtz.evil", url::Origin::Create(url),
+      /*is_payment_credential_get_assertion=*/false,
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
+  EXPECT_EQ(status.value(),
             blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
 }
 
@@ -1208,11 +1213,14 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(false));
-  blink::mojom::AuthenticatorStatus result =
-      main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
-          "doofenshmirtz.evil", url::Origin::Create(url),
-          /*is_payment_credential_creation=*/false);
-  EXPECT_EQ(result, blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
+      "doofenshmirtz.evil", url::Origin::Create(url),
+      /*is_payment_credential_creation=*/false,
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s) { status = s; }));
+  EXPECT_EQ(status.value(),
+            blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
 }
 
 TEST_F(RenderFrameHostImplWebAuthnTest,
@@ -1222,12 +1230,15 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(true));
-  std::pair<blink::mojom::AuthenticatorStatus, bool> result =
-      main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
-          "owca.org", url::Origin::Create(url),
-          /*is_payment_credential_get_assertion=*/false);
-  EXPECT_EQ(std::get<blink::mojom::AuthenticatorStatus>(result),
-            blink::mojom::AuthenticatorStatus::SUCCESS);
+  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
+      "owca.org", url::Origin::Create(url),
+      /*is_payment_credential_get_assertion=*/false,
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
+  EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::SUCCESS);
 }
 
 TEST_F(RenderFrameHostImplWebAuthnTest,
@@ -1237,11 +1248,13 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(true));
-  blink::mojom::AuthenticatorStatus result =
-      main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
-          "owca.org", url::Origin::Create(url),
-          /*is_payment_credential_creation=*/false);
-  EXPECT_EQ(result, blink::mojom::AuthenticatorStatus::SUCCESS);
+  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
+      "owca.org", url::Origin::Create(url),
+      /*is_payment_credential_creation=*/false,
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s) { status = s; }));
+  EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::SUCCESS);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

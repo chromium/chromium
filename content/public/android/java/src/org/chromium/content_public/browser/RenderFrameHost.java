@@ -140,34 +140,38 @@ public interface RenderFrameHost {
     boolean areInputEventsIgnored();
 
     /**
-     * Runs security checks associated with a Web Authentication GetAssertion request for the
-     * the given relying party ID and an effective origin. If the request originated from a render
-     * process, then the effective origin is the same as the last committed origin. However, if the
-     * request originated from an internal request from the browser process (e.g. Payments
-     * Autofill), then the relying party ID would not match the renderer's origin, and will
-     * therefore have to provide its own effective origin. `isPaymentCredentialGetAssertion`
-     * indicates whether the security check is done for getting an assertion for Secure Payment
-     * Confirmation (SPC). The return value is a code corresponding to the AuthenticatorStatus
-     * mojo enum.
+     * Runs security checks associated with a Web Authentication GetAssertion request for the given
+     * relying party ID and an effective origin. If the request originated from a render process,
+     * then the effective origin is the same as the last committed origin. However, if the request
+     * originated from an internal request from the browser process (e.g. Payments Autofill), then
+     * the relying party ID would not match the renderer's origin, and will therefore have to
+     * provide its own effective origin. `isPaymentCredentialGetAssertion` indicates whether the
+     * security check is done for getting an assertion for Secure Payment Confirmation (SPC).
      *
-     * @return An object containing (1) the status code indicating the result of the GetAssertion
-     *         request security checks. (2) whether the effectiveOrigin is a cross-origin with any
-     *         frame in this frame's ancestor chain.
+     * <p>This operation may trigger network fetches and thus it takes a `Callback`. The argument to
+     * the callback is an object containing (1) the status code indicating the result of the
+     * GetAssertion request security checks, and (2) whether the effectiveOrigin is a cross-origin
+     * with any frame in this frame's ancestor chain.
      */
-    WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialGetAssertion);
+    void performGetAssertionWebAuthSecurityChecks(
+            String relyingPartyId,
+            Origin effectiveOrigin,
+            boolean isPaymentCredentialGetAssertion,
+            Callback<WebAuthSecurityChecksResults> callback);
 
     /**
-     * Runs security checks associated with a Web Authentication MakeCredential request for the
-     * the given relying party ID, an effective origin and whether MakeCredential is making the
-     * payment credential. See
-     * performGetAssertionWebAuthSecurityChecks for more on |effectiveOrigin|. The return value is a
-     * code corresponding to the AuthenticatorStatus mojo enum.
+     * Runs security checks associated with a Web Authentication MakeCredential request for the the
+     * given relying party ID, an effective origin and whether MakeCredential is making the payment
+     * credential. See performGetAssertionWebAuthSecurityChecks for more on |effectiveOrigin|.
      *
-     * @return Status code indicating the result of the MakeCredential request security checks.
+     * <p>This operation may trigger network fetches and thus it takes a `Callback`. The argument to
+     * the callback is a code corresponding to the AuthenticatorStatus mojo enum.
      */
-    int performMakeCredentialWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation);
+    void performMakeCredentialWebAuthSecurityChecks(
+            String relyingPartyId,
+            Origin effectiveOrigin,
+            boolean isPaymentCredentialCreation,
+            Callback<Integer> callback);
 
     /**
      * @return An identifier for this RenderFrameHost.

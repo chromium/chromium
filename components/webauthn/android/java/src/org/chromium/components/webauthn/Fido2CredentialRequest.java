@@ -39,7 +39,6 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 import org.chromium.net.GURLUtils;
@@ -96,10 +95,12 @@ public class Fido2CredentialRequest
 
     public enum ConditionalUiState {
         NONE,
+        WAITING_FOR_RP_ID_VALIDATION,
         WAITING_FOR_CREDENTIAL_LIST,
         WAITING_FOR_SELECTION,
         REQUEST_SENT_TO_PLATFORM,
-        CANCEL_PENDING
+        CANCEL_PENDING,
+        CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE,
     }
 
     private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
@@ -183,14 +184,30 @@ public class Fido2CredentialRequest
         mErrorCallback = errorCallback;
 
         if (frameHost != null) {
-            int securityCheck = frameHost.performMakeCredentialWebAuthSecurityChecks(
-                    options.relyingParty.id, origin, options.isPaymentCredentialCreation);
-            if (securityCheck != AuthenticatorStatus.SUCCESS) {
-                returnErrorAndResetCallback(securityCheck);
-                return;
-            }
+            frameHost.performMakeCredentialWebAuthSecurityChecks(
+                    options.relyingParty.id,
+                    origin,
+                    options.isPaymentCredentialCreation,
+                    (result) -> {
+                        if (result != AuthenticatorStatus.SUCCESS) {
+                            returnErrorAndResetCallback(result);
+                            return;
+                        }
+                        continueMakeCredentialRequestAfterRpIdValidation(
+                                options, frameHost, maybeClientDataHash, origin);
+                    });
+        } else {
+            continueMakeCredentialRequestAfterRpIdValidation(
+                    options, frameHost, maybeClientDataHash, origin);
         }
+    }
 
+    @SuppressWarnings("NewApi")
+    private void continueMakeCredentialRequestAfterRpIdValidation(
+            PublicKeyCredentialCreationOptions options,
+            RenderFrameHost frameHost,
+            byte[] maybeClientDataHash,
+            Origin origin) {
         // Attestation is only for non-discoverable credentials in the Android
         // platform authenticator and discoverable credentials aren't supported
         // on security keys. There was a bug where discoverable credentials
@@ -235,7 +252,7 @@ public class Fido2CredentialRequest
                             options,
                             convertOriginToString(origin),
                             maybeClientDataHash,
-                            callback,
+                            mMakeCredentialCallback,
                             this::returnErrorAndResetCallback);
             if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
             return;
@@ -293,16 +310,49 @@ public class Fido2CredentialRequest
         mFrameHost = frameHost;
 
         if (frameHost != null) {
-            WebAuthSecurityChecksResults webAuthSecurityChecksResults =
-                    frameHost.performGetAssertionWebAuthSecurityChecks(
-                            options.relyingPartyId, origin, payment != null);
-            if (webAuthSecurityChecksResults.securityCheckResult != AuthenticatorStatus.SUCCESS) {
-                returnErrorAndResetCallback(webAuthSecurityChecksResults.securityCheckResult);
-                return;
-            }
-            mIsCrossOrigin = webAuthSecurityChecksResults.isCrossOrigin;
+            mConditionalUiState = ConditionalUiState.WAITING_FOR_RP_ID_VALIDATION;
+            frameHost.performGetAssertionWebAuthSecurityChecks(
+                    options.relyingPartyId,
+                    origin,
+                    payment != null,
+                    (results) -> {
+                        if (mConditionalUiState
+                                == ConditionalUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE) {
+                            // This request was canceled while waiting for RP ID validation to
+                            // complete.
+                            returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
+                            return;
+                        }
+                        mConditionalUiState = ConditionalUiState.NONE;
+                        if (results.securityCheckResult != AuthenticatorStatus.SUCCESS) {
+                            returnErrorAndResetCallback(results.securityCheckResult);
+                            return;
+                        }
+                        mIsCrossOrigin = results.isCrossOrigin;
+                        continueGetAssertionRequestAfterRpIdValidation(
+                                options,
+                                frameHost,
+                                maybeClientDataHash,
+                                origin,
+                                topOrigin,
+                                payment);
+                    });
+            return;
         }
 
+        mIsCrossOrigin = false;
+        continueGetAssertionRequestAfterRpIdValidation(
+                options, frameHost, maybeClientDataHash, origin, topOrigin, payment);
+    }
+
+    @SuppressWarnings("NewApi")
+    private void continueGetAssertionRequestAfterRpIdValidation(
+            PublicKeyCredentialRequestOptions options,
+            RenderFrameHost frameHost,
+            byte[] maybeClientDataHash,
+            Origin origin,
+            Origin topOrigin,
+            PaymentOptions payment) {
         boolean hasAllowCredentials =
                 options.allowCredentials != null && options.allowCredentials.length != 0;
 
@@ -322,10 +372,17 @@ public class Fido2CredentialRequest
                 && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             if (options.isConditional) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
-                mCredManHelper.startPrefetchRequest(mContext, mFrameHost, options,
-                        convertOriginToString(origin), mIsCrossOrigin,
-                        /*maybeClientDataHash=*/null, callback, this::returnErrorAndResetCallback,
-                        mBarrier, /*ignoreGpm=*/false);
+                mCredManHelper.startPrefetchRequest(
+                        mContext,
+                        mFrameHost,
+                        options,
+                        convertOriginToString(origin),
+                        mIsCrossOrigin,
+                        /* maybeClientDataHash= */ null,
+                        mGetAssertionCallback,
+                        this::returnErrorAndResetCallback,
+                        mBarrier,
+                        /* ignoreGpm= */ false);
             } else if (hasAllowCredentials && mPlayServicesAvailable) {
                 // If the allowlist contains non-discoverable credentials then
                 // the request needs to be routed directly to Play Services.
@@ -336,9 +393,17 @@ public class Fido2CredentialRequest
                                 -> this.maybeDispatchGetAssertionRequest(options,
                                         convertOriginToString(origin), maybeClientDataHash,
                                         /*credentialId=*/null));
-                int response = mCredManHelper.startGetRequest(mContext, mFrameHost, options,
-                        convertOriginToString(origin), mIsCrossOrigin, maybeClientDataHash,
-                        callback, this::returnErrorAndResetCallback, /*ignoreGpm=*/false);
+                int response =
+                        mCredManHelper.startGetRequest(
+                                mContext,
+                                mFrameHost,
+                                options,
+                                convertOriginToString(origin),
+                                mIsCrossOrigin,
+                                maybeClientDataHash,
+                                mGetAssertionCallback,
+                                this::returnErrorAndResetCallback,
+                                /* ignoreGpm= */ false);
                 if (response != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(response);
             }
             return;
@@ -373,13 +438,13 @@ public class Fido2CredentialRequest
             if (getBarrierMode() == Barrier.Mode.BOTH) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.BOTH);
                 mCredManHelper.startPrefetchRequest(
-                        context,
+                        mContext,
                         frameHost,
                         options,
                         callerOriginString,
                         mIsCrossOrigin,
                         maybeClientDataHash,
-                        callback,
+                        mGetAssertionCallback,
                         this::returnErrorAndResetCallback,
                         mBarrier,
                         /* ignoreGpm= */ true);
@@ -409,7 +474,11 @@ public class Fido2CredentialRequest
 
     public void cancelConditionalGetAssertion(RenderFrameHost frameHost) {
         mCredManHelper.cancelConditionalGetAssertion(frameHost);
+
         switch (mConditionalUiState) {
+            case WAITING_FOR_RP_ID_VALIDATION:
+                mConditionalUiState = ConditionalUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE;
+                break;
             case WAITING_FOR_CREDENTIAL_LIST:
                 mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
                 mBarrier.onFido2ApiCancelled();

@@ -443,4 +443,5 @@ Refer to README.md for content description and update process.
  <item id="carrier_lock_manager_fcm_topic" added_in_milestone="120" content_hash_code="00c05900" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/topic_subscription_request.cc" />
  <item id="almanac_app_install" added_in_milestone="120" content_hash_code="048af8ba" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/app_install_almanac_connector.cc" />
  <item id="remoting_report_provisioning_error" added_in_milestone="120" content_hash_code="01928ee5" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
+ <item id="webauthn_rp_id_check" added_in_milestone="121" content_hash_code="048c3faa" os_list="linux,windows,android,chromeos" file_path="content/browser/webauth/webauth_request_security_checker.cc" />
 </annotations>

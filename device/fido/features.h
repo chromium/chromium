@@ -196,6 +196,10 @@ BASE_DECLARE_FEATURE(kWebAuthnScreenReaderMode);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAccessibleTimeouts);
 
+// Support cross-domain RP ID assertions.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

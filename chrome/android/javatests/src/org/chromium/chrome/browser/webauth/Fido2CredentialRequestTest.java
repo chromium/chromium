@@ -434,14 +434,14 @@ public class Fido2CredentialRequestTest {
         }
 
         @Override
-        public int performMakeCredentialWebAuthSecurityChecks(
+        public void performMakeCredentialWebAuthSecurityChecks(
                 String relyingPartyId,
                 Origin effectiveOrigin,
-                boolean isPaymentCredentialCreation) {
-            super.performMakeCredentialWebAuthSecurityChecks(
-                    relyingPartyId, effectiveOrigin, isPaymentCredentialCreation);
+                boolean isPaymentCredentialCreation,
+                Callback<Integer> callback) {
             mIsPaymentCredentialCreation = isPaymentCredentialCreation;
-            return 0;
+            super.performMakeCredentialWebAuthSecurityChecks(
+                    relyingPartyId, effectiveOrigin, isPaymentCredentialCreation, callback);
         }
     }
 
