@@ -79,6 +79,7 @@ export enum AppManagementUserAction {
   FILE_HANDLING_TURNED_ON = 29,
   FILE_HANDLING_TURNED_OFF = 30,
   FILE_HANDLING_OVERFLOW_SHOWN = 31,
+  APP_STORE_LINK_CLICKED = 32,
 }
 
 // A Record (tuple) of app IDs to app used mostly for the supported links

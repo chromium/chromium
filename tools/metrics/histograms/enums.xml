@@ -3276,6 +3276,8 @@ Unknown properties are collapsed to zero. -->
   <int value="28" label="Run on OS Login mode turned off"/>
   <int value="29" label="File Handling turned on"/>
   <int value="30" label="File Handling turned off"/>
+  <int value="31" label="File Handling overflow shown"/>
+  <int value="32" label="App Store Link clicked"/>
 </enum>
 
 <enum name="AppPackageNameAllowlistParseStatus">

@@ -7,7 +7,8 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import './app_management_cros_shared_style.css.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction, AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
+import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -186,6 +187,8 @@ export class AppManagementAppDetailsItem extends
     }
 
     if (this.app !== null) {
+      recordAppManagementUserAction(
+          this.app.type, AppManagementUserAction.APP_STORE_LINK_CLICKED);
       AppManagementBrowserProxy.getInstance().handler.openStorePage(
           this.app.id);
     }
