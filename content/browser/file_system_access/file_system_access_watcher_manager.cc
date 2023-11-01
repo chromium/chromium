@@ -28,6 +28,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-shared.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "content/browser/file_system_access/file_system_access_local_path_watcher.h"
@@ -35,6 +36,56 @@
         // !BUILDFLAG(IS_FUCHSIA)
 
 namespace content {
+
+namespace {
+
+blink::mojom::FileSystemAccessChangeTypePtr ToMojoChangeType(
+    bool error,
+    FileSystemAccessChangeSource::ChangeType change_type) {
+  if (error) {
+    return blink::mojom::FileSystemAccessChangeType::NewErrored(
+        blink::mojom::FileSystemAccessChangeTypeErrored::New());
+  }
+
+  switch (change_type) {
+    case FileSystemAccessChangeSource::ChangeType::kUnsupported:
+      return blink::mojom::FileSystemAccessChangeType::NewUnsupported(
+          blink::mojom::FileSystemAccessChangeTypeUnsupported::New());
+    case FileSystemAccessChangeSource::ChangeType::kCreated:
+      return blink::mojom::FileSystemAccessChangeType::NewCreated(
+          blink::mojom::FileSystemAccessChangeTypeCreated::New());
+    case FileSystemAccessChangeSource::ChangeType::kDeleted:
+      return blink::mojom::FileSystemAccessChangeType::NewDeleted(
+          blink::mojom::FileSystemAccessChangeTypeDeleted::New());
+    case FileSystemAccessChangeSource::ChangeType::kModified:
+      return blink::mojom::FileSystemAccessChangeType::NewModified(
+          blink::mojom::FileSystemAccessChangeTypeModified::New());
+    case FileSystemAccessChangeSource::ChangeType::kMoved:
+      // TODO(https://crbug.com/1488864): Support setting
+      // `former_relative_path`.
+      return blink::mojom::FileSystemAccessChangeType::NewMoved(
+          blink::mojom::FileSystemAccessChangeTypeMoved::New());
+  }
+}
+
+}  // namespace
+
+FileSystemAccessWatcherManager::Observation::Change::Change(
+    storage::FileSystemURL url,
+    blink::mojom::FileSystemAccessChangeTypePtr type,
+    FileSystemAccessChangeSource::FilePathType file_path_type)
+    : url(std::move(url)),
+      type(std::move(type)),
+      file_path_type(file_path_type) {}
+FileSystemAccessWatcherManager::Observation::Change::~Change() = default;
+
+FileSystemAccessWatcherManager::Observation::Change::Change(
+    const FileSystemAccessWatcherManager::Observation::Change& other)
+    : url(other.url),
+      type(other.type->Clone()),
+      file_path_type(other.file_path_type) {}
+FileSystemAccessWatcherManager::Observation::Change::Change(
+    FileSystemAccessWatcherManager::Observation::Change&&) noexcept = default;
 
 FileSystemAccessWatcherManager::Observation::Observation(
     FileSystemAccessWatcherManager* watcher_manager,
@@ -123,17 +174,24 @@ void FileSystemAccessWatcherManager::GetDirectoryObservation(
 
 void FileSystemAccessWatcherManager::OnRawChange(
     const storage::FileSystemURL& changed_url,
-    bool error) {
+    bool error,
+    const FileSystemAccessChangeSource::ChangeInfo& change_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(https://crbug.com/1019297):
-  //   - Batch changes.
-  //   - Ignore changes caused by API implementation details, such as writes to
-  //     swap files.
-  //   - Discard changes corresponding to non-fully-active pages.
+  // TODO(https://crbug.com/1488864): Use `change_info.cookie` to connect
+  // related events.
+  //
+  // TODO(https://crbug.com/1488874): Ignore changes caused by API
+  // implementation details, such as writes to swap files.
+  //
+  // TODO(https://crbug.com/1488875): Discard changes corresponding to
+  // non-fully-active pages.
+  //
+  // TODO(https://crbug.com/1447240): Batch changes.
 
   const std::list<Observation::Change> changes = {
-      {.url = changed_url, .error = error}};
+      {changed_url, ToMojoChangeType(error, change_info.change_type),
+       change_info.file_path_type}};
   for (auto& observation : observations_) {
     if (observation.scope().Contains(changed_url)) {
       observation.NotifyOfChanges(

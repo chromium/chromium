@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
@@ -389,6 +390,12 @@ class FileSystemAccessObserverBrowserTest
     return false;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
+
+  bool SupportsChangeInfo() const {
+    // TODO(https://crbug.com/1425601): Reporting change info and the modified
+    // path are both only supported on inotify, for now.
+    return SupportsReportingModifiedPath();
+  }
 };
 
 // `base::FilePatchWatcher` is not implemented on Fuchsia. See
@@ -613,7 +620,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       ObserveFileReportsModifiedType) {
+                       ObserveFileReportsType) {
   base::FilePath file_path = CreateFileToBePicked();
 
   const std::string script =
@@ -627,10 +634,21 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  // TODO(https://crbug.com/1425601): Support change types. For now, just
-  // confirm that "modified" is plumbed through properly.
+  // TODO(https://crbug.com/1425601): Support change types for the local file
+  // system on more platforms.
+  //
+  // TODO(https://crbug.com/1019297): Consider reporting a consistent change
+  // type when writing to a file via a WritableFileStream. On the local file
+  // system, changes are naively considered "moved" events because the swap file
+  // is moved over the target file. Meanwhile, the BucketFS intentionally
+  // reports the move as a modification if the move overwrote an existing file.
+  const std::string expected_change_type =
+      SupportsChangeInfo()
+          ? (GetTestFileSystemType() == TestFileSystemType::kBucket ? "modified"
+                                                                    : "moved")
+          : "unsupported";
   EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
-              testing::StrEq("modified"));
+              testing::StrEq(expected_change_type));
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
@@ -704,6 +722,41 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          "const observer = new FileSystemObserver(onChange);"
          "await observer.observe(dir, { recursive: false });;"
          "await subDir.remove();"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
+                       ObserveDirectoryReportsCorrectHandleType) {
+  base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  // The modified handle is a file, so the change record should contain a
+  // FileSystemFileHandle.
+  //
+  // TODO(https://crbug.com/1425601): Some platforms do not report the modified
+  // path. In these cases, `changedHandle` will always be the handle passed to
+  // observe().
+  const std::string changed_handle =
+      SupportsReportingModifiedPath() ? "fileInDir" : "dir";
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         "async function onChange(records, observer) {"
+         "  const record = records[0];"
+         "  promiseResolve(await dir.isSameEntry(record.root) &&"
+         "await "+ changed_handle +".isSameEntry(record.changedHandle));"
+         "};"
+         GET_DIRECTORY(GetTestFileSystemType())
+         // Create and declare `fileInDir` before starting the observation, to
+         // ensure it's declared by the time the `onChange` callback is called.
+         "const fileInDir = await dir.getFileHandle('file', { create: true });"
+         "const observer = new FileSystemObserver(onChange);"
+         "await observer.observe(dir, { recursive: false });;"
+         "await fileInDir.remove();"
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on

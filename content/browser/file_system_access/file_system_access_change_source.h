@@ -8,6 +8,7 @@
 #include <list>
 
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -28,6 +29,10 @@ namespace content {
 // This class must constructed, used, and destroyed on the same sequence.
 class CONTENT_EXPORT FileSystemAccessChangeSource {
  public:
+  using ChangeInfo = base::FilePathWatcher::ChangeInfo;
+  using ChangeType = base::FilePathWatcher::ChangeType;
+  using FilePathType = base::FilePathWatcher::FilePathType;
+
   class RawChangeObserver : public base::CheckedObserver {
    public:
     // Naively notifies of all changes from the corresponding change source.
@@ -37,7 +42,8 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
     // `changed_url` must be valid and within the watch scope of the notifying
     // change source.
     virtual void OnRawChange(const storage::FileSystemURL& changed_url,
-                             bool error) = 0;
+                             bool error,
+                             const ChangeInfo& change_info) = 0;
 
     virtual void OnSourceBeingDestroyed(
         FileSystemAccessChangeSource* source) = 0;
@@ -78,11 +84,15 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
   // Called by subclasses to record changes to watched paths. It is illegal for
   // a change source to pass a `changed_url` which is either invalid or not
   // within its watch scope.
-  void NotifyOfChange(const storage::FileSystemURL& changed_url, bool error);
+  void NotifyOfChange(const storage::FileSystemURL& changed_url,
+                      bool error,
+                      const ChangeInfo& change_info);
   // Same as above, but more convenient for subclasses that use file paths
   // rather than FileSystemURLs. Requires that the change source's watch scope
   // has a valid root url and `relative_path` is relative.
-  void NotifyOfChange(const base::FilePath& relative_path, bool error);
+  void NotifyOfChange(const base::FilePath& relative_path,
+                      bool error,
+                      const ChangeInfo& change_info);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
