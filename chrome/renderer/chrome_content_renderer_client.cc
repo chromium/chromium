@@ -798,12 +798,16 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_PLUGINS)
   DCHECK(plugin_element.HasHTMLTagName("object") ||
          plugin_element.HasHTMLTagName("embed"));
+
+  mojo::AssociatedRemote<chrome::mojom::PluginInfoHost> plugin_info_host;
+  render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+      &plugin_info_host);
   // Blink will next try to load a WebPlugin which would end up in
   // OverrideCreatePlugin, sending another IPC only to find out the plugin is
   // not supported. Here it suffices to return false but there should perhaps be
   // a more unified approach to avoid sending the IPC twice.
   chrome::mojom::PluginInfoPtr plugin_info = chrome::mojom::PluginInfo::New();
-  GetPluginInfoHost()->GetPluginInfo(
+  plugin_info_host->GetPluginInfo(
       original_url, render_frame->GetWebFrame()->Top()->GetSecurityOrigin(),
       mime_type, &plugin_info);
   // TODO(ekaramad): Not continuing here due to a disallowed status should take
@@ -864,8 +868,12 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
 
   GURL url(params.url);
 #if BUILDFLAG(ENABLE_PLUGINS)
+  mojo::AssociatedRemote<chrome::mojom::PluginInfoHost> plugin_info_host;
+  render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+      &plugin_info_host);
+
   chrome::mojom::PluginInfoPtr plugin_info = chrome::mojom::PluginInfo::New();
-  GetPluginInfoHost()->GetPluginInfo(
+  plugin_info_host->GetPluginInfo(
       url, render_frame->GetWebFrame()->Top()->GetSecurityOrigin(),
       orig_mime_type, &plugin_info);
   *plugin = CreatePlugin(render_frame, params, *plugin_info);
@@ -907,20 +915,6 @@ bool ChromeContentRendererClient::DeferMediaLoad(
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-
-mojo::AssociatedRemote<chrome::mojom::PluginInfoHost>&
-ChromeContentRendererClient::GetPluginInfoHost() {
-  struct PluginInfoHostHolder {
-    PluginInfoHostHolder() {
-      RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-          &plugin_info_host);
-    }
-    ~PluginInfoHostHolder() {}
-    mojo::AssociatedRemote<chrome::mojom::PluginInfoHost> plugin_info_host;
-  };
-  static base::NoDestructor<PluginInfoHostHolder> holder;
-  return holder->plugin_info_host;
-}
 
 // static
 WebPlugin* ChromeContentRendererClient::CreatePlugin(

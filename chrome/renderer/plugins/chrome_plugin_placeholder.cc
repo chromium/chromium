@@ -204,7 +204,10 @@ void ChromePluginPlaceholder::PluginListChanged() {
   chrome::mojom::PluginInfoPtr plugin_info = chrome::mojom::PluginInfo::New();
   std::string mime_type(GetPluginParams().mime_type.Utf8());
 
-  ChromeContentRendererClient::GetPluginInfoHost()->GetPluginInfo(
+  mojo::AssociatedRemote<chrome::mojom::PluginInfoHost> plugin_info_host;
+  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+      &plugin_info_host);
+  plugin_info_host->GetPluginInfo(
       GetPluginParams().url,
       render_frame()->GetWebFrame()->Top()->GetSecurityOrigin(), mime_type,
       &plugin_info);

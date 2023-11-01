@@ -46,10 +46,9 @@ class ChromeContentBrowserClientPluginsPart
   static void DidCreatePpapiPlugin(content::BrowserPpapiHost* browser_host);
 
  private:
-  void ExposeInterfacesToRenderer(
-      service_manager::BinderRegistry* registry,
-      blink::AssociatedInterfaceRegistry* associated_registry,
-      content::RenderProcessHost* render_process_host) override;
+  void ExposeInterfacesToRendererForRenderFrameHost(
+      content::RenderFrameHost& frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
 };
 
 }  // namespace plugins
