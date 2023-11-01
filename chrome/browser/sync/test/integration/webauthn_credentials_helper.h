@@ -18,7 +18,7 @@
 namespace sync_pb {
 class SyncEntity;
 class WebauthnCredentialSpecifics;
-}
+}  // namespace sync_pb
 
 namespace webauthn_credentials_helper {
 
@@ -110,9 +110,15 @@ webauthn::PasskeyModel& GetModel(int profile_idx);
 
 bool AwaitAllModelsMatch();
 
-// Returns a new WebauthnCredentialSpecifics entity with a random sync ID and
-// credential ID, and fixed RP ID and user ID.
+// Returns a new WebauthnCredentialSpecifics entity with a random sync ID,
+// credential ID and user ID, and a fixed RP ID.
 sync_pb::WebauthnCredentialSpecifics NewPasskey();
+
+// Returns a new WebauthnCredentialSpecifics entity shadowing another one. Sync
+// ID and credential ID are random, while user ID and RP ID will match the other
+// credential.
+sync_pb::WebauthnCredentialSpecifics NewShadowingPasskey(
+    const sync_pb::WebauthnCredentialSpecifics& shadowed);
 
 // Tests that a `sync_pb::SyncEntity` has WebauthnCredentialSpecifics with the
 // given `sync_id`. Use with `ServerPasskeysMatchChecker`.

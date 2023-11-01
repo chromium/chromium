@@ -27,6 +27,7 @@
 namespace {
 
 using testing::IsEmpty;
+using testing::Optional;
 using testing::UnorderedElementsAre;
 
 using webauthn_credentials_helper::EntityHasDisplayName;
@@ -36,6 +37,7 @@ using webauthn_credentials_helper::LocalPasskeysChangedChecker;
 using webauthn_credentials_helper::LocalPasskeysMatchChecker;
 using webauthn_credentials_helper::MockPasskeyModelObserver;
 using webauthn_credentials_helper::NewPasskey;
+using webauthn_credentials_helper::NewShadowingPasskey;
 using webauthn_credentials_helper::PasskeyHasSyncId;
 using webauthn_credentials_helper::PasskeySyncActiveChecker;
 using webauthn_credentials_helper::ServerPasskeysMatchChecker;
@@ -124,15 +126,55 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
           .Wait());
 }
 
-// Getting passkeys by RP ID.
+// The model should retrieve individual passkeys by RP ID and credential ID.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey1a = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey1b = NewPasskey();
+  ASSERT_EQ(passkey1a.rp_id(), passkey1b.rp_id());
+
+  constexpr char kRpId2[] = "rpid2.com";
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+  passkey2.set_rp_id(kRpId2);
+
+  const std::string sync_id1a = InjectPasskeyToFakeServer(passkey1a);
+  const std::string sync_id1b = InjectPasskeyToFakeServer(passkey1b);
+  const std::string sync_id2 = InjectPasskeyToFakeServer(passkey2);
+
+  EXPECT_TRUE(
+      LocalPasskeysMatchChecker(
+          kSingleProfile, UnorderedElementsAre(PasskeyHasSyncId(sync_id1a),
+                                               PasskeyHasSyncId(sync_id1b),
+                                               PasskeyHasSyncId(sync_id2)))
+          .Wait());
+
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1a.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(sync_id1a),
+                                   PasskeyHasSyncId(sync_id1b)));
+  EXPECT_THAT(GetModel().GetPasskeyByCredentialId(passkey1a.rp_id(),
+                                                  passkey1a.credential_id()),
+              Optional(PasskeyHasSyncId(sync_id1a)));
+  EXPECT_THAT(GetModel().GetPasskeyByCredentialId(passkey1b.rp_id(),
+                                                  passkey1b.credential_id()),
+              Optional(PasskeyHasSyncId(sync_id1b)));
+  EXPECT_EQ(
+      GetModel().GetPasskeyByCredentialId(kRpId2, passkey1a.credential_id()),
+      absl::nullopt);
+
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(kRpId2),
+              UnorderedElementsAre(PasskeyHasSyncId(sync_id2)));
+}
+
+// When getting passkeys, shadowed entities should be ignored.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
-                       GetPasskeysByRpId) {
+                       GetPasskeysWithShadows) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   constexpr char kRpId2[] = "rpid2.com";
-  sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
   sync_pb::WebauthnCredentialSpecifics passkey1_shadow = NewPasskey();
-  passkey1.add_newly_shadowed_credential_ids(passkey1_shadow.credential_id());
+  sync_pb::WebauthnCredentialSpecifics passkey1 =
+      NewShadowingPasskey(passkey1_shadow);
   sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
   passkey2.set_rp_id(kRpId2);
   const std::string sync_id1 = InjectPasskeyToFakeServer(passkey1);
@@ -148,8 +190,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 
   EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1.rp_id()),
               UnorderedElementsAre(PasskeyHasSyncId(sync_id1)));
+  EXPECT_THAT(GetModel().GetPasskeyByCredentialId(passkey1.rp_id(),
+                                                  passkey1.credential_id()),
+              Optional(PasskeyHasSyncId(sync_id1)));
+  EXPECT_EQ(GetModel().GetPasskeyByCredentialId(
+                passkey1_shadow.rp_id(), passkey1_shadow.credential_id()),
+            absl::nullopt);
   EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
               UnorderedElementsAre(PasskeyHasSyncId(sync_id2)));
+  EXPECT_THAT(
+      GetModel().GetPasskeyByCredentialId(kRpId2, passkey2.credential_id()),
+      Optional(PasskeyHasSyncId(sync_id2)));
 }
 
 // Deleting a local passkey should remove from the server.
@@ -213,14 +264,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   //                                               +-shadows--> id1
   sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
   sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
-  sync_pb::WebauthnCredentialSpecifics passkey3 = NewPasskey();
-  passkey3.add_newly_shadowed_credential_ids(passkey1.credential_id());
+  passkey2.set_user_id(passkey1.user_id());
+  sync_pb::WebauthnCredentialSpecifics passkey3 = NewShadowingPasskey(passkey1);
   passkey3.add_newly_shadowed_credential_ids(passkey2.credential_id());
-  sync_pb::WebauthnCredentialSpecifics passkey4 = NewPasskey();
-  passkey4.add_newly_shadowed_credential_ids(passkey3.credential_id());
-  sync_pb::WebauthnCredentialSpecifics passkey5 = NewPasskey();
-  passkey5.add_newly_shadowed_credential_ids(passkey4.credential_id());
-  sync_pb::WebauthnCredentialSpecifics passkey6 = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey4 = NewShadowingPasskey(passkey3);
+  sync_pb::WebauthnCredentialSpecifics passkey5 = NewShadowingPasskey(passkey4);
+  sync_pb::WebauthnCredentialSpecifics passkey6 = NewShadowingPasskey(passkey5);
+  // `passkey6` doesn't have explicit shadow entries, but shadows the others
+  // implicitly because of same user_id and more recent timestamp.
+  passkey6.clear_newly_shadowed_credential_ids();
 
   GetModel().AddNewPasskeyForTesting(passkey1);
   GetModel().AddNewPasskeyForTesting(passkey2);
@@ -262,19 +314,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        DoNotDeleteCredentialsForDifferentRpIdOrUserId) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  sync_pb::WebauthnCredentialSpecifics different_rp_id_passkey = NewPasskey();
-  different_rp_id_passkey.set_rp_id("another-rpid.com");
-  GetModel().AddNewPasskeyForTesting(different_rp_id_passkey);
-
-  sync_pb::WebauthnCredentialSpecifics different_user_id_passkey = NewPasskey();
-  different_user_id_passkey.set_user_id(base::RandBytesAsString(16));
-  GetModel().AddNewPasskeyForTesting(different_user_id_passkey);
-
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   GetModel().AddNewPasskeyForTesting(passkey);
 
-  ASSERT_EQ(passkey.rp_id(), different_user_id_passkey.rp_id());
-  ASSERT_EQ(passkey.user_id(), different_rp_id_passkey.user_id());
+  sync_pb::WebauthnCredentialSpecifics different_rp_id_passkey = NewPasskey();
+  different_rp_id_passkey.set_rp_id("another-rpid.com");
+  different_rp_id_passkey.set_user_id(passkey.user_id());
+  GetModel().AddNewPasskeyForTesting(different_rp_id_passkey);
+
+  sync_pb::WebauthnCredentialSpecifics different_user_id_passkey = NewPasskey();
+  ASSERT_EQ(different_user_id_passkey.rp_id(), passkey.rp_id());
+  ASSERT_NE(different_user_id_passkey.user_id(), passkey.user_id());
+  GetModel().AddNewPasskeyForTesting(different_user_id_passkey);
+
   ASSERT_TRUE(ServerPasskeysMatchChecker(
                   UnorderedElementsAre(
                       EntityHasSyncId(passkey.sync_id()),
@@ -296,9 +348,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
-  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewShadowingPasskey(passkey1);
+  // Create a circular shadow chain.
+  ASSERT_EQ(passkey2.newly_shadowed_credential_ids().at(0),
+            passkey1.credential_id());
   passkey1.add_newly_shadowed_credential_ids(passkey2.credential_id());
-  passkey2.add_newly_shadowed_credential_ids(passkey1.credential_id());
   GetModel().AddNewPasskeyForTesting(passkey1);
   GetModel().AddNewPasskeyForTesting(passkey2);
   EXPECT_TRUE(ServerPasskeysMatchChecker(
@@ -306,7 +360,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                                        EntityHasSyncId(passkey2.sync_id())))
                   .Wait());
 
+  // Deleting should fail because neither passkey is head of a shadow chain.
   ASSERT_FALSE(GetModel().DeletePasskey(passkey1.credential_id()));
+  ASSERT_FALSE(GetModel().DeletePasskey(passkey2.credential_id()));
   EXPECT_TRUE(ServerPasskeysMatchChecker(
                   UnorderedElementsAre(EntityHasSyncId(passkey1.sync_id()),
                                        EntityHasSyncId(passkey2.sync_id())))

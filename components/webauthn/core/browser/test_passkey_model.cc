@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webauthn {
 
@@ -46,6 +47,27 @@ base::flat_set<std::string> TestPasskeyModel::GetAllSyncIds() const {
 std::vector<sync_pb::WebauthnCredentialSpecifics>
 TestPasskeyModel::GetAllPasskeys() const {
   return credentials_;
+}
+
+absl::optional<sync_pb::WebauthnCredentialSpecifics>
+TestPasskeyModel::GetPasskeyByCredentialId(
+    const std::string& rp_id,
+    const std::string& credential_id) const {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> rp_passkeys;
+  base::ranges::copy_if(
+      credentials_, std::back_inserter(rp_passkeys),
+      [&rp_id](const auto& passkey) { return passkey.rp_id() == rp_id; });
+  rp_passkeys = passkey_model_utils::FilterShadowedCredentials(rp_passkeys);
+  std::vector<sync_pb::WebauthnCredentialSpecifics> result;
+  base::ranges::copy_if(rp_passkeys, std::back_inserter(result),
+                        [&credential_id](const auto& passkey) {
+                          return passkey.credential_id() == credential_id;
+                        });
+  if (result.empty()) {
+    return absl::nullopt;
+  }
+  CHECK_EQ(result.size(), 1u);
+  return result.front();
 }
 
 std::vector<sync_pb::WebauthnCredentialSpecifics>

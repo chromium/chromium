@@ -23,7 +23,6 @@ using sync_datatype_helper::test;
 namespace {
 
 constexpr char kTestRpId[] = "example.com";
-constexpr char kTestUserId[] = "\x01\x02\x03";
 
 class WebAuthnCredentialsSyncIdEqualsChecker
     : public MultiClientStatusChangeChecker {
@@ -134,9 +133,24 @@ sync_pb::WebauthnCredentialSpecifics NewPasskey() {
   specifics.set_sync_id(base::RandBytesAsString(16));
   specifics.set_credential_id(base::RandBytesAsString(16));
   specifics.set_rp_id(kTestRpId);
-  specifics.set_user_id(kTestUserId);
+  // Pick random user IDs so we don't accidentally create shadow chains. Use
+  // `NewShadowingPasskey` to explicitly test shadowing.
+  specifics.set_user_id(base::RandBytesAsString(16));
   specifics.set_creation_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return specifics;
+}
+
+sync_pb::WebauthnCredentialSpecifics NewShadowingPasskey(
+    const sync_pb::WebauthnCredentialSpecifics& shadowed) {
+  sync_pb::WebauthnCredentialSpecifics specifics;
+  specifics.set_sync_id(base::RandBytesAsString(16));
+  specifics.set_credential_id(base::RandBytesAsString(16));
+  specifics.set_rp_id(shadowed.rp_id());
+  specifics.set_user_id(shadowed.user_id());
+  specifics.set_creation_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.add_newly_shadowed_credential_ids(shadowed.credential_id());
   return specifics;
 }
 

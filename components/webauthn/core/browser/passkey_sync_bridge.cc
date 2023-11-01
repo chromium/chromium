@@ -248,6 +248,29 @@ PasskeySyncBridge::GetAllPasskeys() const {
   return passkeys;
 }
 
+absl::optional<sync_pb::WebauthnCredentialSpecifics>
+PasskeySyncBridge::GetPasskeyByCredentialId(
+    const std::string& rp_id,
+    const std::string& credential_id) const {
+  // Even if a passkey with a credential ID exists, we must not return it if it
+  // has been shadowed. To do that, first collect all passkeys for the RP ID,
+  // then filter shadowed ones, and see if one with the matching credential ID
+  // remains.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
+  for (const auto& passkey : data_) {
+    if (passkey.second.rp_id() == rp_id) {
+      passkeys.emplace_back(passkey.second);
+    }
+  }
+  passkeys = passkey_model_utils::FilterShadowedCredentials(passkeys);
+  for (const auto& passkey : passkeys) {
+    if (passkey.credential_id() == credential_id) {
+      return passkey;
+    }
+  }
+  return absl::nullopt;
+}
+
 std::vector<sync_pb::WebauthnCredentialSpecifics>
 PasskeySyncBridge::GetPasskeysForRelyingPartyId(
     const std::string& rp_id) const {
