@@ -58,6 +58,9 @@
 
 namespace {
 
+const char kTestPackageName[] = "com.example.this";
+const apps::PackageId kTestPackageId(apps::AppType::kArc, "com.example.this");
+
 std::vector<arc::IntentFilter> CreateFilterList(
     const std::string& package_name,
     const std::vector<std::string>& authorities) {
@@ -634,205 +637,152 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
             kTestIntentTitle);
 }
 
-TEST_F(ArcAppsPublisherTest, StartingInstallationRegistersPromiseApp) {
+class ArcAppsPublisherPromiseAppTest : public ArcAppsPublisherTest {
+ public:
+  void SetUp() override {
+    ArcAppsPublisherTest::SetUp();
+    feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+    app_service_proxy()->ReinitializeForTesting(profile());
+    service()->SetSkipAlmanacForTesting(true);
+  }
+
+  apps::PromiseAppService* service() {
+    return app_service_proxy()->PromiseAppService();
+  }
+
+  apps::PromiseAppRegistryCache* cache() {
+    return app_service_proxy()->PromiseAppRegistryCache();
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-  app_service_proxy()->ReinitializeForTesting(profile());
-  apps::PromiseAppService* service = app_service_proxy()->PromiseAppService();
-  apps::PromiseAppRegistryCache* cache =
-      app_service_proxy()->PromiseAppRegistryCache();
+};
 
-  service->SetSkipAlmanacForTesting(true);
-
-  std::string package_name = "com.example.this";
-  apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, package_name);
-
+TEST_F(ArcAppsPublisherPromiseAppTest,
+       StartingInstallationRegistersPromiseApp) {
   // Verify that the promise app is not yet registered.
-  const apps::PromiseApp* promise_app_before = cache->GetPromiseApp(package_id);
-  EXPECT_FALSE(promise_app_before);
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 
-  arc_test()->app_instance()->SendInstallationStarted(package_name);
+  arc_test()->app_instance()->SendInstallationStarted(kTestPackageName);
 
   // Verify that the promise app is now registered.
-  const apps::PromiseApp* promise_app_after = cache->GetPromiseApp(package_id);
-  EXPECT_TRUE(promise_app_after);
+  EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
 }
 
-TEST_F(ArcAppsPublisherTest, InstallationProgressChangeUpdatesPromiseApp) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-  app_service_proxy()->ReinitializeForTesting(profile());
-  apps::PromiseAppRegistryCache* cache =
-      app_service_proxy()->PromiseAppRegistryCache();
-
-  std::string package_name = "com.example.this";
+TEST_F(ArcAppsPublisherPromiseAppTest,
+       InstallationProgressChangeUpdatesPromiseApp) {
   float progress_initial = 0.1;
   float progress_next = 0.9;
-  apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, package_name);
 
   // Add a promise app for testing.
   std::unique_ptr<apps::PromiseApp> promise_app =
-      std::make_unique<apps::PromiseApp>(package_id);
+      std::make_unique<apps::PromiseApp>(kTestPackageId);
   promise_app->progress = progress_initial;
-  cache->OnPromiseApp(std::move(promise_app));
+  cache()->OnPromiseApp(std::move(promise_app));
 
   // Check that the initial progress value is correct.
-  const apps::PromiseApp* promise_app_result = cache->GetPromiseApp(package_id);
+  const apps::PromiseApp* promise_app_result =
+      cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result);
   EXPECT_TRUE(promise_app_result->progress.has_value());
   EXPECT_EQ(promise_app_result->progress.value(), progress_initial);
 
   // Send an update and check the progress value.
-  arc_test()->app_instance()->SendInstallationProgressChanged(package_name,
+  arc_test()->app_instance()->SendInstallationProgressChanged(kTestPackageName,
                                                               progress_next);
-  promise_app_result = cache->GetPromiseApp(package_id);
+  promise_app_result = cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result);
   EXPECT_TRUE(promise_app_result->progress.has_value());
   EXPECT_EQ(promise_app_result->progress.value(), progress_next);
 }
 
-TEST_F(ArcAppsPublisherTest, ProgressUpdateChangesPromiseStatus) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-  app_service_proxy()->ReinitializeForTesting(profile());
-  apps::PromiseAppRegistryCache* cache =
-      app_service_proxy()->PromiseAppRegistryCache();
-
-  std::string package_name = "com.example.this";
-  apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, package_name);
-
+TEST_F(ArcAppsPublisherPromiseAppTest, ProgressUpdateChangesPromiseStatus) {
   // Add a promise app for testing.
   std::unique_ptr<apps::PromiseApp> promise_app =
-      std::make_unique<apps::PromiseApp>(package_id);
+      std::make_unique<apps::PromiseApp>(kTestPackageId);
   promise_app->status = apps::PromiseStatus::kPending;
-  cache->OnPromiseApp(std::move(promise_app));
+  cache()->OnPromiseApp(std::move(promise_app));
 
   // Check that the initial status is kPending.
-  const apps::PromiseApp* promise_app_result = cache->GetPromiseApp(package_id);
+  const apps::PromiseApp* promise_app_result =
+      cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
 
   // Send a progress update and check the status.
-  arc_test()->app_instance()->SendInstallationProgressChanged(package_name,
+  arc_test()->app_instance()->SendInstallationProgressChanged(kTestPackageName,
                                                               0.2);
-  promise_app_result = cache->GetPromiseApp(package_id);
+  promise_app_result = cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kInstalling);
 }
 
-TEST_F(ArcAppsPublisherTest, CancelledInstallationRemovesPromiseApp) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-  app_service_proxy()->ReinitializeForTesting(profile());
-  apps::PromiseAppRegistryCache* cache =
-      app_service_proxy()->PromiseAppRegistryCache();
-
-  std::string package_name = "com.example.this";
-  apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, package_name);
-
+TEST_F(ArcAppsPublisherPromiseAppTest, CancelledInstallationRemovesPromiseApp) {
   // Add a promise app to the cache.
   std::unique_ptr<apps::PromiseApp> promise_app =
-      std::make_unique<apps::PromiseApp>(package_id);
+      std::make_unique<apps::PromiseApp>(kTestPackageId);
   promise_app->status = apps::PromiseStatus::kPending;
-  cache->OnPromiseApp(std::move(promise_app));
+  cache()->OnPromiseApp(std::move(promise_app));
 
   // Check that the promise app exists.
-  const apps::PromiseApp* promise_app_result = cache->GetPromiseApp(package_id);
-  EXPECT_TRUE(promise_app_result);
+  EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
 
   // Confirm that the promise app gets removed after a cancelled/ failed
   // installation update.
-  arc_test()->app_instance()->SendInstallationFinished(package_name, false);
-  promise_app_result = cache->GetPromiseApp(package_id);
-  EXPECT_FALSE(promise_app_result);
+  arc_test()->app_instance()->SendInstallationFinished(kTestPackageName, false);
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 }
 
-TEST_F(ArcAppsPublisherTest, SuccessfulInstallationRemovesPromiseApp) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-  app_service_proxy()->ReinitializeForTesting(profile());
-  apps::PromiseAppRegistryCache* cache =
-      app_service_proxy()->PromiseAppRegistryCache();
-
-  std::string package_name = "com.example.this";
-  apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, package_name);
-
+TEST_F(ArcAppsPublisherPromiseAppTest,
+       SuccessfulInstallationRemovesPromiseApp) {
   // Add a promise app to the cache.
   std::unique_ptr<apps::PromiseApp> promise_app =
-      std::make_unique<apps::PromiseApp>(package_id);
+      std::make_unique<apps::PromiseApp>(kTestPackageId);
   promise_app->status = apps::PromiseStatus::kPending;
-  cache->OnPromiseApp(std::move(promise_app));
+  cache()->OnPromiseApp(std::move(promise_app));
 
   // Check that the promise app exists.
-  const apps::PromiseApp* promise_app_result = cache->GetPromiseApp(package_id);
-  EXPECT_TRUE(promise_app_result);
+  EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
 
   // Confirm that the promise app gets removed after a successfully completed
   // installation.
   const auto& fake_apps = arc_test()->fake_apps();
-  fake_apps[0]->package_name = package_name;
-  std::string app_id = ArcAppListPrefs::GetAppId(package_name, "testActivity");
+  fake_apps[0]->package_name = kTestPackageName;
+  std::string app_id =
+      ArcAppListPrefs::GetAppId(kTestPackageName, "testActivity");
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Confirm that the promise app gets removed after the installed app gets
   // registered.
-  promise_app_result = cache->GetPromiseApp(package_id);
-  EXPECT_FALSE(promise_app_result);
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 }
 
-TEST_F(ArcAppsPublisherTest, PromiseAppsAreSuppressedForPiArc) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-  app_service_proxy()->ReinitializeForTesting(profile());
-  apps::PromiseAppRegistryCache* cache =
-      app_service_proxy()->PromiseAppRegistryCache();
-
+TEST_F(ArcAppsPublisherPromiseAppTest, PromiseAppsAreSuppressedForPiArc) {
   // Set ARC version to P, which we should not create promise apps for.
   apps::ArcApps::SetArcVersionForTesting(arc::kArcVersionP);
 
-  std::string package_name = "com.example.this";
-  apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, package_name);
-
   // Verify that the promise app is not registered to begin with.
-  EXPECT_FALSE(cache->HasPromiseApp(package_id));
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 
   // Trigger an installation event notification.
-  arc_test()->app_instance()->SendInstallationStarted(package_name);
+  arc_test()->app_instance()->SendInstallationStarted(kTestPackageName);
 
   // Verify that the promise app still isn't registered.
-  EXPECT_FALSE(cache->HasPromiseApp(package_id));
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 }
 
-TEST_F(ArcAppsPublisherTest, PromiseAppsAreCreatedForRvcArc) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-  app_service_proxy()->ReinitializeForTesting(profile());
-  apps::PromiseAppRegistryCache* cache =
-      app_service_proxy()->PromiseAppRegistryCache();
-  apps::PromiseAppService* service = app_service_proxy()->PromiseAppService();
-  service->SetSkipAlmanacForTesting(true);
-
+TEST_F(ArcAppsPublisherPromiseAppTest, PromiseAppsAreCreatedForRvcArc) {
   // Set ARC version to R, which should allow promise apps to be created.
   apps::ArcApps::SetArcVersionForTesting(arc::kArcVersionR);
 
-  std::string package_name = "com.example.this";
-  apps::PackageId package_id =
-      apps::PackageId(apps::AppType::kArc, package_name);
-
   // Verify that the promise app is not registered to begin with.
-  EXPECT_FALSE(cache->HasPromiseApp(package_id));
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 
   // Trigger an installation event notification.
-  arc_test()->app_instance()->SendInstallationStarted(package_name);
+  arc_test()->app_instance()->SendInstallationStarted(kTestPackageName);
 
   // Verify that the promise app is registered.
-  EXPECT_TRUE(cache->HasPromiseApp(package_id));
+  EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
 }
 
 // Verifies that only valid intent filters will be published from ARC.
