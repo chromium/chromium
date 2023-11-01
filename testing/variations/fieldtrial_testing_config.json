@@ -1451,23 +1451,6 @@
             ]
         }
     ],
-    "AutofillEnablePaymentsMandatoryReauth": [
-        {
-            "platforms": [
-                "android",
-                "windows",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnablePaymentsMandatoryReauth"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
