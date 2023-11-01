@@ -492,12 +492,6 @@ gfx::Range InputMethodAsh::GetAutocorrectRange() {
   return GetTextInputClient()->GetAutocorrectRange();
 }
 
-gfx::Rect InputMethodAsh::GetAutocorrectCharacterBounds() {
-  if (IsTextInputTypeNone())
-    return gfx::Rect();
-  return GetTextInputClient()->GetAutocorrectCharacterBounds();
-}
-
 gfx::Rect InputMethodAsh::GetTextFieldBounds() {
   if (IsTextInputTypeNone())
     return gfx::Rect();

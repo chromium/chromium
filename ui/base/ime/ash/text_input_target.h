@@ -55,7 +55,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
       uint32_t end,
       const std::vector<ui::ImeTextSpan>& text_spans) = 0;
   virtual gfx::Range GetAutocorrectRange() = 0;
-  virtual gfx::Rect GetAutocorrectCharacterBounds() = 0;
   virtual gfx::Rect GetTextFieldBounds() = 0;
 
   // Sets the autocorrect range to be `range`.
