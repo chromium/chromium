@@ -6,7 +6,7 @@
 chrome.runtime.onConnect.addListener(function onConnect(port) {
   console.log('connected');
   port.onMessage.addListener(function(msg) {
-    console.log('got ' + msg);
+    console.log('got ' + JSON.stringify(msg));
     if (msg.testPostMessage) {
       port.postMessage({success: true});
     } else if (msg.testPostMessageFromTab) {
