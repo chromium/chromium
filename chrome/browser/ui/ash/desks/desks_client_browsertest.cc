@@ -521,7 +521,8 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest,
     std::vector<base::test::FeatureRef> enabled_features = {
         ash::features::kDesksTemplates};
     std::vector<base::test::FeatureRef> disabled_features = {
-        ash::features::kDeskTemplateSync};
+        ash::features::kDeskTemplateSync,
+        ash::features::kFasterSplitScreenSetup};
     if (GetParam()) {
       enabled_features.push_back(chromeos::features::kJelly);
     } else {
