@@ -1480,7 +1480,7 @@
   <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_TITLE" desc="A title used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
     Getting Google Account info...
   </message>
-  <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the  user's credentails are being transferred from the Android device to ChromeOS.">
+  <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
     Transfering Google Account info from your Android phone
   </message>
   <message name="IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE" desc="A title used on OOBE's Quick Start screen for signing-in into their Chromebook using an Android device prompting the user to scan a QR code.">
@@ -1491,6 +1491,18 @@
     <ph name="BR">&lt;br&gt;</ph>
     <ph name="BR">&lt;br&gt;</ph>
     Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$1<ex>Chromebook (123)</ex></ph>...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_TITLE" desc="A title used on Quick Start's enable bluetooth dialog which is shown before starting the quick start flow since bluetooth is needed for transferring the user's credentails from the Android device to ChromeOS.">
+    Turn on Bluetooth?
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CONTENT" desc="The content shown on Quick Start's enable blutooth dialog.">
+    To set up with your Android phone, your Chromebook's Bluetooth needs to be on
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CANCEL" desc="A lable on the button of the enable bluetooth dialog. It lets the user prevent the bluetooth from being enabled and hence does not continue the Quick Start flow.">
+    Cancel
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_ENABLE" desc="A lable on the button of the enable bluetooth dialog. It lets the user allow turning on the bluetooth automatically to continue with the Quick Start flow.">
+    Turn on
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SWIPE_FROM_SHELF_LABEL" desc="The label shown in ChromeOS system shelf above a drag handle UI on the last dialog in the set of screens displayed to the user on the first login to the ChromeOS device. The label informs the user that swiping up from the shelf will start the session.">
     Swipe up to get started
