@@ -50,7 +50,8 @@ namespace settings {
 // Chrome OS CUPS printing settings page UI handler.
 class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                             public ui::SelectFileDialog::Listener,
-                            public CupsPrintersManager::Observer {
+                            public CupsPrintersManager::Observer,
+                            public CupsPrintersManager::LocalPrintersObserver {
  public:
   static std::unique_ptr<CupsPrintersHandler> CreateForTesting(
       Profile* profile,
@@ -215,6 +216,9 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       chromeos::PrinterClass printer_class,
       const std::vector<chromeos::Printer>& printers) override;
 
+  // CupsPrintersManager::LocalPrintersObserver:
+  void OnLocalPrintersUpdated() override;
+
   // Handles getting the EULA URL if available.
   void HandleGetEulaUrl(const base::Value::List& args);
 
@@ -296,6 +300,10 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   base::ScopedObservation<CupsPrintersManager, CupsPrintersManager::Observer>
       printers_manager_observation_{this};
+
+  base::ScopedObservation<CupsPrintersManager,
+                          CupsPrintersManager::LocalPrintersObserver>
+      local_printers_observation_{this};
 
   base::WeakPtrFactory<CupsPrintersHandler> weak_factory_{this};
 };

@@ -1062,7 +1062,7 @@ class CupsPrintersManagerImpl
   base::ObserverList<CupsPrintersManager::Observer>::Unchecked observer_list_;
 
   // Maintains list of observers for updates to local printers.
-  base::ObserverList<CupsPrintersManager::LocalPrintersObserver>::Unchecked
+  base::ObserverList<CupsPrintersManager::LocalPrintersObserver>
       local_printers_observer_list_;
 
   // Holds the current value of the pref |UserPrintersAllowed|.
