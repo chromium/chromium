@@ -418,6 +418,13 @@ struct Resample2d {
   };
 
   InterpolationMode mode;
+  // Specifies the scaling factor in each spatial dimensions of the input.
+  // The scale may not be exactly output size / input size. The backend
+  // needs this information, e.g., for linear interpolation algorithm.
+  array<float, 2>? scales;
+  // Specifies the two consecutive dimensions of the input tensor to which
+  // the interpolation algorithm applies.
+  array<uint32, 2> axes;
 };
 
 // Represents the `MLActivation` which describes an activation function type

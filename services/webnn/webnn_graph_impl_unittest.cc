@@ -1653,8 +1653,13 @@ TEST_F(WebNNGraphImplTest, ReluTest) {
 
 struct Resample2dTester {
   OperandInfo input;
-  mojom::Resample2d::InterpolationMode mode =
-      mojom::Resample2d::InterpolationMode::kNearestNeighbor;
+  struct Resample2dAttributes {
+    mojom::Resample2d::InterpolationMode mode =
+        mojom::Resample2d::InterpolationMode::kNearestNeighbor;
+    absl::optional<std::vector<float>> scales;
+    std::vector<uint32_t> axes = {2, 3};
+  };
+  Resample2dAttributes attributes;
   OperandInfo output;
   bool expected;
 
@@ -1665,13 +1670,14 @@ struct Resample2dTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    builder.BuildResample2d(input_operand_id, output_operand_id, mode);
+    builder.BuildResample2d(input_operand_id, output_operand_id, attributes);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
 };
 
 TEST_F(WebNNGraphImplTest, Resample2dTest) {
   {
+    // Test resample2d with "NearestNeighbor" mode and axes = [2, 3].
     Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                                .dimensions = {1, 1, 2, 4}},
                      .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -1680,14 +1686,31 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
         .Test();
   }
   {
-    // Test resample2d with mode =
-    // "mojom::Resample2d::InterpolationMode::kLinear".
-    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
-                               .dimensions = {1, 1, 2, 4}},
-                     .mode = mojom::Resample2d::InterpolationMode::kLinear,
-                     .output = {.type = mojom::Operand::DataType::kFloat32,
-                                .dimensions = {1, 1, 4, 8}},
-                     .expected = true}
+    // Test resample2d with "Linear" mode, axes = [1, 2] and explicit scales =
+    // [2, 2].
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 4, 1}},
+        .attributes = {.mode = mojom::Resample2d::InterpolationMode::kLinear,
+                       .scales = std::vector<float>{2, 2},
+                       .axes = {1, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 4, 8, 1}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test resample2d with "Linear" mode, axes = [1, 2] and explicit scales =
+    // [2, 2.2] which is not exactly output dimensions / input dimensions.
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 4, 1}},
+        .attributes = {.mode = mojom::Resample2d::InterpolationMode::kLinear,
+                       .scales = std::vector<float>{2, 2.2},
+                       .axes = {1, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 4, 8, 1}},
+        .expected = true}
         .Test();
   }
   {
@@ -1698,6 +1721,151 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
                                 .dimensions = {1, 1, 4, 8}},
                      .expected = false}
         .Test();
+  }
+  {
+    // Test the invalid graph for input is not a 4-D tensor.
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 1, 2, 4}},
+                     .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output is not a 4-D tensor.
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 1, 2}},
+                     .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output dimensions that don't match the
+    // calculated dimensions by scales.
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 4, 1}},
+        .attributes = {.mode = mojom::Resample2d::InterpolationMode::kLinear,
+                       .scales = std::vector<float>{2, 2},
+                       .axes = {1, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 8, 1}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the scale height is too large.
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 34902, 23243}},
+        .attributes = {.mode = mojom::Resample2d::InterpolationMode::kLinear,
+                       .scales = std::vector<float>{232433, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the scale height is too small.
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 2, 4}},
+        .attributes = {.mode = mojom::Resample2d::InterpolationMode::kLinear,
+                       .scales = std::vector<float>{0.02, 0.8}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 0, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the scale width is too large.
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 34902, 23243}},
+        .attributes = {.mode = mojom::Resample2d::InterpolationMode::kLinear,
+                       .scales = std::vector<float>{20, 434324}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the scale width is too small.
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 2, 4}},
+        .attributes = {.mode = mojom::Resample2d::InterpolationMode::kLinear,
+                       .scales = std::vector<float>{0.7, 0.1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 0}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the scales are negative.
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .attributes{.scales = std::vector<float>{1.0, -2.0}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 2, 4, 4}},
+                     .expected = false}
+        .Test();
+  }
+  // Test the invalid graph when the dimensions of the input tensor to which
+  // the interpolation algorithm applies are not two consecutive dimensions.
+  {
+    // With axes = [1, 3].
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .attributes = {.axes = {1, 3}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 2, 2, 8}},
+                     .expected = false}
+        .Test();
+  }
+  {
+    // With axes = [1, 2, 3]
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .attributes = {.axes = {1, 2, 3}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 2, 4, 8}},
+                     .expected = false}
+        .Test();
+  }
+  // Test the invalid graph when the dimension of output doesn't equal to the
+  // dimension of input except along the axes.
+  {
+    // With explicit scales.
+    Resample2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 2, 4}},
+        .attributes = {.scales = std::vector<float>{2, 2}, .axes = {2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 4, 8}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Without explicit scales.
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .attributes = {.axes = {2, 3}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 2, 4, 8}},
+                     .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 1, 2, 4}, mojom::Operand::DataType::kFloat32);
+    builder.BuildResample2d(input_operand_id, input_operand_id,
+                            Resample2dTester::Resample2dAttributes{});
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }
 

@@ -8,6 +8,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "components/ml/webnn/features.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -440,30 +441,6 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
   return output.value();
 }
 
-// The current WebNN spec doesn't define the calculation formula of the output
-// size for resample2d. An issue has been filed to track it -
-// https://github.com/webmachinelearning/webnn/issues/360.
-base::expected<uint32_t, String> CalculateResample2dOutputSize(
-    const uint32_t input_size,
-    const float scale) {
-  // Calculate the output size in double precision floating point number that
-  // ensures values of type uint32_t can be exactly represented.
-  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
-  // The max value of checked_output_size should be 3 * UINT_MAX + 1,
-  // which is smaller than the max safe integer value for double type.
-  auto checked_output_size = base::MakeCheckedNum<double>(input_size) * scale;
-
-  // Check if the value is valid for rounding to uint32_t type.
-  if (!checked_output_size.IsValid<uint32_t>()) {
-    return base::unexpected("The scale is too large.");
-  }
-  const uint32_t output_size =
-      base::ClampFloor<uint32_t>(double(checked_output_size.ValueOrDie()));
-  if (output_size == 0) {
-    return base::unexpected("The scale is too small.");
-  }
-  return output_size;
-}
 }  // namespace
 
 // static
@@ -1417,90 +1394,36 @@ MLOperand* MLGraphBuilder::reshape(
 MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
                                       const MLResample2dOptions* options,
                                       ExceptionState& exception_state) {
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d, the input
-  // must be a 4-D tensor.
-  const auto input_shape = input->Dimensions();
-  if (input_shape.size() != 4) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The input must be a 4-D tensor.");
-    return nullptr;
-  }
-
-  const auto axes = options->getAxesOr({2, 3});
-  if (axes.size() != 2) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The length of axes should be 2.");
-    return nullptr;
-  } else if (!((axes[0] == 0 && axes[1] == 1) ||
-               (axes[0] == 1 && axes[1] == 2) ||
-               (axes[0] == 2 && axes[1] == 3))) {
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d,
-    // the valid values in the sequence are [0, 1], [1, 2] or [2, 3].
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The values of axes are invalid.");
-    return nullptr;
-  }
-
-  Vector<uint32_t> output_shape(input_shape);
+  absl::variant<base::span<const float>, base::span<const uint32_t>>
+      scales_or_sizes;
+  Vector<float> default_scales = {1.0, 1.0};
   if (options->hasSizes()) {
     if (options->hasScales()) {
       ml_context_->LogConsoleWarning(
           "When sizes and scales are both specified, scales argument is "
           "ignored.");
     }
-    if (options->sizes().size() != 2) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The length of sizes should be 2.");
-      return nullptr;
-    } else if (std::any_of(options->sizes().begin(), options->sizes().end(),
-                           [](uint32_t x) { return x == 0; })) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "All sizes should be greater than 0.");
-      return nullptr;
-    }
-    output_shape[axes[0]] = options->sizes()[0];
-    output_shape[axes[1]] = options->sizes()[1];
+    scales_or_sizes = options->sizes();
   } else {
-    const auto scales = options->getScalesOr({1.0f, 1.0f});
-    if (scales.size() != 2) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The length of scales should be 2.");
-      return nullptr;
-    } else if (std::any_of(scales.begin(), scales.end(),
-                           [](float x) { return x <= 0.0f; })) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "All scales should be greater than 0.");
-      return nullptr;
-    }
-    auto output_height =
-        CalculateResample2dOutputSize(input_shape[axes[0]], scales[0]);
-    if (!output_height.has_value()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "Failed to calculate the output height: " + output_height.error());
-      return nullptr;
-    }
-    output_shape[axes[0]] = output_height.value();
-
-    auto output_width =
-        CalculateResample2dOutputSize(input_shape[axes[1]], scales[1]);
-    if (!output_width.has_value()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "Failed to calculate the output width: " + output_width.error());
-      return nullptr;
-    }
-    output_shape[axes[1]] = output_width.value();
+    scales_or_sizes = options->hasScales() ? options->scales() : default_scales;
   }
+
+  auto validated_output = webnn::ValidateResample2dAndInferOutput(
+      ConvertToComponentOperand(input), scales_or_sizes,
+      options->getAxesOr({2, 3}));
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+  // Create resample2d operator and its output operand. Connect the resample2d
+  // operator to its input and output operands.
   auto* resample2d = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kResample2d, options);
-  // According to WebNN spec
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d, the output
-  // tensor of resample2d has the same type as its input.
   auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->Type(), std::move(output_shape), resample2d);
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), resample2d);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());

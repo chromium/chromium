@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "services/webnn/dml/graph_impl.h"
@@ -532,8 +533,31 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
     // The resample2d operator is invalid.
     return false;
   }
-  if (output->data_type != input->data_type) {
-    // The output data type doesn't match input data type.
+
+  // Validate and infer the output for resample2d with given scales or with the
+  // sizes from output dimensions along axes.
+  absl::variant<base::span<const float>, base::span<const uint32_t>>
+      scales_or_sizes;
+  const auto& axes = resample2d->axes;
+  std::vector<uint32_t> sizes;
+  if (resample2d->scales) {
+    scales_or_sizes = resample2d->scales.value();
+  } else {
+    const auto& output_dimensions = output->dimensions;
+    if (axes.size() != 2 || axes[0] >= output_dimensions.size() ||
+        axes[1] >= output_dimensions.size()) {
+      return false;
+    }
+    sizes = {output_dimensions[axes[0]], output_dimensions[axes[1]]};
+    scales_or_sizes = sizes;
+  }
+
+  auto validated_output = ValidateResample2dAndInferOutput(
+      ConvertToComponentOperand(input), scales_or_sizes, axes);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
     return false;
   }
 

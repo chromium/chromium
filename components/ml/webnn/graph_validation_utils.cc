@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 
@@ -577,6 +578,97 @@ base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
                       input_channels};
       break;
   }
+  return Operand(input.data_type, std::move(output_shape));
+}
+
+// The current WebNN spec doesn't define the calculation formula of the output
+// size for resample2d. An issue has been filed to track it -
+// https://github.com/webmachinelearning/webnn/issues/360.
+base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
+    const uint32_t input_size,
+    const float scale) {
+  // Calculate the output size in double precision floating point number that
+  // ensures values of type uint32_t can be exactly represented.
+  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
+  auto checked_output_size = base::MakeCheckedNum<double>(input_size) * scale;
+
+  // Check if the value is valid for rounding to uint32_t type.
+  if (!checked_output_size.IsValid<uint32_t>()) {
+    return base::unexpected("The scale is too large.");
+  }
+  const uint32_t output_size =
+      base::ClampFloor<uint32_t>(double(checked_output_size.ValueOrDie()));
+  if (output_size == 0) {
+    return base::unexpected("The scale is too small.");
+  }
+  return output_size;
+}
+
+base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
+    const Operand& input,
+    const absl::variant<base::span<const float>, base::span<const uint32_t>>&
+        scales_or_sizes,
+    base::span<const uint32_t> axes) {
+  // Validate the input.
+  const auto& input_shape = input.dimensions;
+  if (input_shape.size() != 4) {
+    return base::unexpected("The input must be a 4-D tensor.");
+  }
+
+  // Validate axes.
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d,
+  // the valid values in the sequence are [0, 1], [1, 2] or [2, 3].
+  if (axes.size() != 2) {
+    return base::unexpected("The length of axes should be 2.");
+  }
+  if (!((axes[0] == 0 && axes[1] == 1) || (axes[0] == 1 && axes[1] == 2) ||
+        (axes[0] == 2 && axes[1] == 3))) {
+    return base::unexpected("The values of axes are invalid.");
+  }
+
+  // Validate scales or sizes and infer the output.
+  std::vector<uint32_t> output_shape(input_shape);
+  if (absl::holds_alternative<base::span<const float>>(scales_or_sizes)) {
+    const auto& scales = absl::get<base::span<const float>>(scales_or_sizes);
+    if (scales.size() != 2) {
+      return base::unexpected("The length of scales should be 2.");
+    }
+    if (scales[0] < 0 || scales[1] < 0) {
+      return base::unexpected("All scales should be greater than 0.");
+    }
+
+    auto output_height =
+        CalculateResample2dOutputSize(input_shape[axes[0]], scales[0]);
+    if (!output_height.has_value()) {
+      return base::unexpected("Failed to calculate the output height: " +
+                              output_height.error());
+    }
+    output_shape[axes[0]] = output_height.value();
+
+    auto output_width =
+        CalculateResample2dOutputSize(input_shape[axes[1]], scales[1]);
+    if (!output_width.has_value()) {
+      return base::unexpected("Failed to calculate the output width: " +
+                              output_width.error());
+    }
+    output_shape[axes[1]] = output_width.value();
+  } else if (absl::holds_alternative<base::span<const uint32_t>>(
+                 scales_or_sizes)) {
+    const auto& sizes = absl::get<base::span<const uint32_t>>(scales_or_sizes);
+    if (sizes.size() != 2) {
+      return base::unexpected("The length of sizes should be 2.");
+    }
+    if (sizes[0] == 0 || sizes[1] == 0) {
+      return base::unexpected("All sizes should be greater than 0.");
+    }
+
+    output_shape[axes[0]] = sizes[0];
+    output_shape[axes[1]] = sizes[1];
+  } else {
+    NOTREACHED_NORETURN();
+  }
+
   return Operand(input.data_type, std::move(output_shape));
 }
 

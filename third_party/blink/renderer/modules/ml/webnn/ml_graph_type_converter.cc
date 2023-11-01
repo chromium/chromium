@@ -548,6 +548,19 @@ OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
       break;
   }
 
+  // When the target sizes are specified, the scales argument is ignored.
+  if (!options->hasSizes()) {
+    // If scales are not present, the values are assumed to be [1.0, 1.0].
+    auto scales = options->getScalesOr({1.0, 1.0});
+    CHECK_EQ(scales.size(), 2u);
+    resample2d_mojo->scales = {scales[0], scales[1]};
+  }
+
+  // If axes are not present, the values are assumed to be [2, 3].
+  auto axes = options->getAxesOr({2, 3});
+  CHECK_EQ(axes.size(), 2u);
+  resample2d_mojo->axes = {axes[0], axes[1]};
+
   return blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo));
 }
 

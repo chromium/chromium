@@ -974,10 +974,24 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
   const auto& output_dimensions = output_tensor_desc.GetDimensions();
   size_t input_rank = input_dimensions.size();
   CHECK_EQ(input_rank, output_dimensions.size());
-  std::vector<float> scales(input_rank);
-  for (size_t i = 0; i < input_rank; ++i) {
-    scales[i] =
-        base::checked_cast<float>(output_dimensions[i]) / input_dimensions[i];
+
+  // Use explicit scales if given, otherwise, compute scales from output
+  // dimensions / input dimensions. Then expand scales to full scales (same size
+  // as input rank using axes).
+  std::vector<float> full_scales(input_rank, 1);
+  const auto& scales = resample2d->scales;
+  const auto& axes = resample2d->axes;
+  if (scales) {
+    for (size_t i = 0; i < axes.size(); ++i) {
+      auto axis = axes[i];
+      CHECK_LT(axis, full_scales.size());
+      full_scales[axis] = scales.value()[i];
+    }
+  } else {
+    for (size_t i = 0; i < input_rank; ++i) {
+      full_scales[i] =
+          base::checked_cast<float>(output_dimensions[i]) / input_dimensions[i];
+    }
   }
 
   DML_INTERPOLATION_MODE mode;
@@ -994,8 +1008,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
       .InterpolationMode = mode,
-      .ScaleCount = static_cast<uint32_t>(scales.size()),
-      .Scales = scales.data()};
+      .ScaleCount = static_cast<uint32_t>(full_scales.size()),
+      .Scales = full_scales.data()};
 
   std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* resample2d_node = graph_builder.CreateOperatorNode(

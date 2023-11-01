@@ -229,6 +229,14 @@ base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
     const Operand& input,
     const Pool2dAttributes& attributes);
 
+// Validate and infer output information of 2-D resample operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d
+base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
+    const Operand& input,
+    const absl::variant<base::span<const float>, base::span<const uint32_t>>&
+        scales_or_sizes,
+    base::span<const uint32_t> axes);
+
 // Validate gemm operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm
 base::expected<Operand, std::string> ValidateGemmAndInferOutput(
