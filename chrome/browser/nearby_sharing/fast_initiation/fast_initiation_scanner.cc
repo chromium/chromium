@@ -46,9 +46,11 @@ bool FastInitiationScanner::Factory::IsHardwareSupportAvailable(
   if (factory_instance_)
     return factory_instance_->IsHardwareSupportAvailable();
 
-  return adapter->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
-         device::BluetoothAdapter::
-             LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
+  // The function only returns correct status when adapter is powered.
+  return adapter->IsPowered() &&
+         adapter->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
+             device::BluetoothAdapter::
+                 LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
 }
 
 // static

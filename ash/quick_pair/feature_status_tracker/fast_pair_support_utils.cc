@@ -16,7 +16,7 @@ bool HasHardwareSupport(scoped_refptr<device::BluetoothAdapter> adapter) {
     return false;
   }
 
-  if (!adapter || !adapter->IsPresent()) {
+  if (!adapter || !adapter->IsPresent() || !adapter->IsPowered()) {
     return false;
   }
 
@@ -24,6 +24,7 @@ bool HasHardwareSupport(scoped_refptr<device::BluetoothAdapter> adapter) {
     return true;
   }
 
+  // The function only returns correct status when adapter is powered.
   return adapter->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
          device::BluetoothAdapter::
              LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
