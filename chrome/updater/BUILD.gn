@@ -920,6 +920,11 @@ if (is_win || is_mac || is_linux) {
         "//third_party/ocmock",
       ]
 
+      frameworks = [
+        "Foundation.framework",
+        "Security.framework",
+      ]
+
       data += [
         "//chrome/test/data/updater/CountingMetrics.plist",
         "//chrome/test/data/updater/Keystone.ticketstore",

@@ -41,6 +41,10 @@ class PrivilegedHelperService
       base::SequencedTaskRunner::GetCurrentDefault();
 };
 
+// Returns 0 if and only if the app bundle located at `browser_path` can be
+// copied to a secure temp directory, verified, and then installed.
+int InstallUpdater(const base::FilePath& browser_path);
+
 // Returns true if and only if the app bundle located at `updater_app_bundle`
 // is validly code signed with an updater identifier and appropriate team ID.
 bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle);

@@ -34,6 +34,7 @@
 #include "chrome/updater/mac/privileged_helper/server.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 
 @interface PrivilegedHelperServiceImpl
@@ -138,6 +139,8 @@ constexpr int kFailedToCreateTempDir = -4;
 constexpr int kFailedToCopyToTempDir = -5;
 constexpr int kFailedToVerifyUpdater = -6;
 
+}  // namespace
+
 int InstallUpdater(const base::FilePath& browser_path) {
   std::string user_temp_dir(PATH_MAX, std::string::value_type());
   size_t len = confstr(_CS_DARWIN_USER_TEMP_DIR, user_temp_dir.data(),
@@ -152,10 +155,10 @@ int InstallUpdater(const base::FilePath& browser_path) {
     return kFailedToCreateTempDir;
   }
 
-  if (!base::CopyDirectory(base::FilePath(browser_path)
-                               .Append(kFrameworksPath)
-                               .Append(kProductBundleName),
-                           temp_dir.GetPath(), true)) {
+  if (!CopyDir(base::FilePath(browser_path)
+                   .Append(kFrameworksPath)
+                   .Append(kProductBundleName),
+               temp_dir.GetPath(), false)) {
     return kFailedToCopyToTempDir;
   }
 
@@ -185,8 +188,6 @@ int InstallUpdater(const base::FilePath& browser_path) {
   }
   return exit_code;
 }
-
-}  // namespace
 
 bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
   base::apple::ScopedCFTypeRef<SecRequirementRef> requirement;

@@ -31,12 +31,14 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
+#include "chrome/updater/mac/privileged_helper/service.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #import "chrome/updater/util/mac_util.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
@@ -423,6 +425,27 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
   EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                              &exit_code));
   EXPECT_EQ(0, exit_code);
+}
+
+void PrivilegedHelperInstall(UpdaterScope scope) {
+  ASSERT_EQ(scope, UpdaterScope::kSystem)
+      << "The privileged helper only works at system scope.";
+  base::FilePath src_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_browser = temp_dir.GetPath().Append(
+      "Contents/Frameworks/" BROWSER_PRODUCT_NAME_STRING
+      " Framework.framework/Helpers/");
+  ASSERT_TRUE(base::CreateDirectory(temp_browser));
+  ASSERT_TRUE(CopyDir(src_dir.Append("third_party")
+                          .Append("updater")
+                          .Append("chrome_mac_universal_prod")
+                          .Append(PRODUCT_FULLNAME_STRING ".app"),
+                      temp_browser, false));
+  ASSERT_TRUE(VerifyUpdaterSignature(
+      temp_browser.Append(PRODUCT_FULLNAME_STRING ".app")));
+  ASSERT_EQ(InstallUpdater(temp_dir.GetPath()), 0);
 }
 
 }  // namespace updater::test

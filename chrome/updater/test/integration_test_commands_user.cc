@@ -360,6 +360,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+  void PrivilegedHelperInstall() const override {
+    updater::test::PrivilegedHelperInstall(updater_scope_);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   void ExpectLegacyUpdaterMigrated() const override {
     updater::test::ExpectLegacyUpdaterMigrated(updater_scope_);
   }

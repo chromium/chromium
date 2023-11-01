@@ -479,6 +479,10 @@ class IntegrationTest : public ::testing::Test {
   void RunFakeLegacyUpdater() { test_commands_->RunFakeLegacyUpdater(); }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+  void PrivilegedHelperInstall() { test_commands_->PrivilegedHelperInstall(); }
+#endif  // BUILDFLAG(IS_WIN)
+
   void ExpectAppInstalled(const std::string& appid,
                           const base::Version& expected_version) {
     ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(appid, expected_version));
@@ -1375,6 +1379,18 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+// The privileged helper only exists on macOS. This does not test installation
+// of the helper itself, but is meant to cover its core functionality.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(IntegrationTest, PrivilegedHelperInstall) {
+  if (GetTestScope() != UpdaterScope::kSystem) {
+    return;  // Test is only applicable to system scope.
+  }
+  ASSERT_NO_FATAL_FAILURE(PrivilegedHelperInstall());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
