@@ -120,19 +120,7 @@ const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
   return nullptr;
 }
 
-extern "C" bool V8RecordReplayIsARM();
-
 void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
-  fprintf(stderr, "GetV8FilePath: %s\n", file_name);
-  // The snapshot file is arch specific, record/replay its contents when we recorded
-  // on ARM because we will replay on x64.
-  if (V8RecordReplayIsARM()) {
-    size_t len = recordreplay::RecordReplayValue("GetV8FilePath Length", strlen(file_name));
-    if (recordreplay::IsReplaying()) {
-      file_name = new char[len + 1];
-    }
-    recordreplay::RecordReplayBytes("GetV8FilePath Contents", (char*)file_name, len + 1);
-  }
 #if BUILDFLAG(IS_ANDROID)
   // This is the path within the .apk.
   *path_out =
