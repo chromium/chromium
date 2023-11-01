@@ -38,22 +38,22 @@
   Insert
   </message>
   <message name="IDS_COMPOSE_MENU_1_TITLE" desc="The first style menu title." translateable="false">
-  Auto
-  </message>
-  <message name="IDS_COMPOSE_MENU_2_TITLE" desc="The second style menu title." translateable="false">
-  Fill
+  Distance
   </message>
   <message name="IDS_COMPOSE_MENU_1_OPTION_1" desc="The first option for the first style." translateable="false">
-  Original
+  Close
   </message>
   <message name="IDS_COMPOSE_MENU_1_OPTION_2" desc="The second option for the first style." translateable="false">
-  Edit
+  Far
+  </message>
+  <message name="IDS_COMPOSE_MENU_2_TITLE" desc="The second style menu title." translateable="false">
+  Style
   </message>
   <message name="IDS_COMPOSE_MENU_2_OPTION_1" desc="The first option for the second style." translateable="false">
-  Credit card
+  Low
   </message>
   <message name="IDS_COMPOSE_MENU_2_OPTION_2" desc="The second option for the second style." translateable="false">
-  Password
+  High
   </message>
 
   <!-- Errors -->
