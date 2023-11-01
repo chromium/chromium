@@ -10,6 +10,7 @@ import '../../../discount.mojom-webui.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Cart} from '../../../cart.mojom-webui.js';
@@ -27,6 +28,18 @@ import {VisitTileModuleElement} from './visit_tile.js';
 export const MAX_MODULE_ELEMENT_INSTANCES = 3;
 
 const CLUSTER_MIN_REQUIRED_URL_VISITS = 3;
+
+/**
+ * The overall image presence state of the visit tiles on unloading the page.
+ * This enum must match the numbering for NTPHistoryClustersImageDisplayState in
+ * enums.xml. These values are persisted to logs. Entries should not be
+ * renumbered, removed or reused.
+ */
+export enum HistoryClusterImageDisplayState {
+  NONE = 0,
+  SOME = 1,
+  ALL = 2,
+}
 
 export interface HistoryClustersModuleElement {
   $: {
@@ -131,6 +144,22 @@ export class HistoryClustersModuleElement extends I18nMixin
     HistoryClustersProxyImpl.getInstance().handler.recordLayoutTypeShown(
         this.imagesEnabled_ ? LayoutType.kImages : LayoutType.kTextOnly,
         this.cluster.id);
+
+    // The `pagehide` event fires with the same timing as `unload` and is safe
+    // to use since NTP never enters back/forward-cache.
+    listenOnce(window, 'pagehide', () => {
+      const visitTiles: VisitTileModuleElement[] = Array.from(
+          this.shadowRoot!.querySelectorAll('ntp-history-clusters-visit-tile'));
+      const count = visitTiles.reduce(
+          (acc, tile) => acc + (tile.hasImageUrl() ? 1 : 0), 0);
+      const state = (visitTiles.length === count) ?
+          HistoryClusterImageDisplayState.ALL :
+          (count === 0) ? HistoryClusterImageDisplayState.NONE :
+                          HistoryClusterImageDisplayState.SOME;
+      chrome.metricsPrivate.recordEnumerationValue(
+          `NewTabPage.HistoryClusters.ImageDisplayState`, state,
+          Object.keys(HistoryClusterImageDisplayState).length);
+    });
   }
 
   private computeShowRelatedSearches(): boolean {

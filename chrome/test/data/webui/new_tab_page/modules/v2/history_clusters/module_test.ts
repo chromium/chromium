@@ -6,8 +6,9 @@ import {Discount} from 'chrome://new-tab-page/discount.mojom-webui.js';
 import {Cluster, InteractionState, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {LayoutType} from 'chrome://new-tab-page/history_clusters_layout_type.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters_v2.mojom-webui.js';
-import {DismissModuleInstanceEvent, HistoryClustersProxyImplV2, historyClustersV2Descriptor, HistoryClustersV2ModuleElement, VisitTileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {DismissModuleInstanceEvent, HistoryClustersProxyImplV2, historyClustersV2Descriptor, HistoryClustersV2ModuleElement, HistoryClusterV2ImageDisplayState, PageImageServiceBrowserProxy, VisitTileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -60,6 +61,7 @@ function checkInfoDialogContent(
 
 suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
   let handler: TestMock<PageHandlerRemote>;
+  let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>;
   let metrics: MetricsTracker;
 
   setup(() => {
@@ -68,6 +70,10 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
         PageHandlerRemote,
         mock => HistoryClustersProxyImplV2.setInstance(
             new HistoryClustersProxyImplV2(mock)));
+    imageServiceHandler = installMock(
+        PageImageServiceHandlerRemote,
+        mock => PageImageServiceBrowserProxy.setInstance(
+            new PageImageServiceBrowserProxy(mock)));
     metrics = fakeMetricsPrivate();
   });
 
@@ -400,6 +406,53 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
         assertEquals((numRelatedSearches < 2), relatedSearchesElement.hidden);
         checkInfoDialogContent(moduleElement, 'modulesJourneysInfo');
       });
+    });
+  });
+
+  suite('PagehideMetricNoImages', () => {
+    test('Module records no images state metric on pagehide', async () => {
+      imageServiceHandler.setResultFor(
+          'getPageImageUrl', Promise.resolve(null));
+
+      const moduleElements = await initializeModule(
+          [createSampleCluster(2, {label: '"Sample"'})],
+      );
+      const moduleElement = moduleElements[0];
+      assertTrue(!!moduleElement);
+      await waitAfterNextRender(moduleElement);
+
+      window.dispatchEvent(new Event('pagehide'));
+
+      assertEquals(2, imageServiceHandler.getCallCount('getPageImageUrl'));
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.HistoryClusters.ImageDisplayState`,
+              HistoryClusterV2ImageDisplayState.NONE));
+    });
+  });
+
+  suite('PagehideMetricAllImages', () => {
+    test('Module records all images state metric on pagehide', async () => {
+      imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
+        result: {imageUrl: {url: 'https://example.com/image.png'}},
+      }));
+
+      const moduleElements = await initializeModule(
+          [createSampleCluster(2, {label: '"Sample"'})],
+      );
+      const moduleElement = moduleElements[0];
+      assertTrue(!!moduleElement);
+      await waitAfterNextRender(moduleElement);
+
+      window.dispatchEvent(new Event('pagehide'));
+
+      assertEquals(2, imageServiceHandler.getCallCount('getPageImageUrl'));
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.HistoryClusters.ImageDisplayState`,
+              HistoryClusterV2ImageDisplayState.ALL));
     });
   });
 
