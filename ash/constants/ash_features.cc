@@ -2366,7 +2366,7 @@ BASE_FEATURE(kScanningAppJelly,
 // Enables screensaver customized running time.
 BASE_FEATURE(kScreenSaverDuration,
              "ScreenSaverDuration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sea pen feature in the personalization app.
 BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_DISABLED_BY_DEFAULT);
