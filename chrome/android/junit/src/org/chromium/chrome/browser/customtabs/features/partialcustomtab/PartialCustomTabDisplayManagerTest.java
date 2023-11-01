@@ -392,8 +392,9 @@ public class PartialCustomTabDisplayManagerTest {
         // the density in this case is 1.0
         assertEquals(
                 "Should be 900dp width bottom sheet",
-                BOTTOM_SHEET_MAX_WIDTH_DP,
-                (int) (mPCCTTestRule.getWindowAttributes().width));
+                BOTTOM_SHEET_MAX_WIDTH_DP * mPCCTTestRule.getDisplayDensity(),
+                mPCCTTestRule.getWindowAttributes().width,
+                0.01f);
         assertEquals(
                 "Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET,

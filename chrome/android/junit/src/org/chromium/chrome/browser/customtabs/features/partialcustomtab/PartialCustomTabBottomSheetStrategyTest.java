@@ -1081,8 +1081,9 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.rightMargin);
         assertEquals(
                 "Bottom sheet width should be 900dp",
-                BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE,
-                getWindowAttributes().width);
+                BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE * mPCCTTestRule.getDisplayDensity(),
+                getWindowAttributes().width,
+                0.01f);
     }
 
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})

@@ -311,6 +311,10 @@ public class PartialCustomTabTestRule implements TestRule {
         return mAttributeResults.get(mAttributeResults.size() - 1);
     }
 
+    public float getDisplayDensity() {
+        return mActivity.getResources().getDisplayMetrics().density;
+    }
+
     public void setupDisplayMetricsInMultiWindowMode() {
         mMetrics = new DisplayMetrics();
         mMetrics.widthPixels = DEVICE_WIDTH;

@@ -496,7 +496,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private void positionAtWidth(int width) {
         if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
 
-        int density = (int) (mActivity.getResources().getDisplayMetrics().density);
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         if (isFullHeight() || isFullscreen()) {
             attrs.width = MATCH_PARENT;
@@ -504,8 +503,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         } else {
             int x = 0;
             if (isLandscapeMaxWidth(width)) {
-                width = BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE * density;
-                x = (mDisplayWidth - width) / 2;
+                float density = mActivity.getResources().getDisplayMetrics().density;
+                width = (int) (BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE * density);
+                x = (mDisplayWidth - width) / 2 + mVersionCompat.getXOffset();
             }
             attrs.width = width;
             attrs.x = x;
@@ -954,8 +954,8 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     private boolean isLandscapeMaxWidth(int width) {
-        int density = (int) (mActivity.getResources().getDisplayMetrics().density);
-        return isLandscape() && width / density > BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE;
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        return isLandscape() && width > BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE * density;
     }
 
     @Override
