@@ -1626,7 +1626,7 @@ void StyleResolver::ApplyBaseStyle(
     return;
   }
 
-  if (!style_recalc_context.parent_forces_recalc &&
+  if (style_recalc_context.can_use_incremental_style &&
       CanApplyInlineStyleIncrementally(element, state, style_request)) {
     // We are in a situation where we can reuse the old style
     // and just apply the element's inline style on top of it

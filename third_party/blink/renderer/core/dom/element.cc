@@ -3535,10 +3535,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
   DCHECK(GetDocument().InStyleRecalc());
 
   StyleRecalcContext new_style_recalc_context = style_recalc_context;
-  if ((change.RecalcChildren() ||
-       change.RecalcContainerQueryDependent(*this)) &&
-      NeedsStyleRecalc()) {
-    if (HasRareData()) {
+  if (change.RecalcChildren() || change.RecalcContainerQueryDependent(*this)) {
+    if (NeedsStyleRecalc() && HasRareData()) {
       // This element needs recalc because its parent changed inherited
       // properties or there was some style change in the ancestry which needed
       // a full subtree recalc. In that case we cannot use the BaseComputedStyle
@@ -3547,8 +3545,17 @@ StyleRecalcChange Element::RecalcOwnStyle(
               GetElementRareData()->GetElementAnimations()) {
         element_animations->SetAnimationStyleChange(false);
       }
+      // We can not apply the style incrementally if we're propagating
+      // inherited changes from the parent, as incremental styling would
+      // not include those changes. (Incremental styling is disabled by
+      // default.)
+    } else {
+      // We are not propagating inherited changes from the parent,
+      // and (if other circumstances allow it;
+      // see CanApplyInlineStyleIncrementally()), incremental style
+      // may be used.
+      new_style_recalc_context.can_use_incremental_style = true;
     }
-    new_style_recalc_context.parent_forces_recalc = true;
   }
 
   const ComputedStyle* new_style = nullptr;
