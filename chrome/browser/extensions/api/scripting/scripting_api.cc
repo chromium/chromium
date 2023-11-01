@@ -65,11 +65,11 @@ mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
     api::scripting::StyleOrigin style_origin) {
   mojom::CSSOrigin css_origin = mojom::CSSOrigin::kAuthor;
   switch (style_origin) {
-    case api::scripting::STYLE_ORIGIN_NONE:
-    case api::scripting::STYLE_ORIGIN_AUTHOR:
+    case api::scripting::StyleOrigin::kNone:
+    case api::scripting::StyleOrigin::kAuthor:
       css_origin = mojom::CSSOrigin::kAuthor;
       break;
-    case api::scripting::STYLE_ORIGIN_USER:
+    case api::scripting::StyleOrigin::kUser:
       css_origin = mojom::CSSOrigin::kUser;
       break;
   }
@@ -81,10 +81,10 @@ mojom::ExecutionWorld ConvertExecutionWorld(
     api::scripting::ExecutionWorld world) {
   mojom::ExecutionWorld execution_world = mojom::ExecutionWorld::kIsolated;
   switch (world) {
-    case api::scripting::EXECUTION_WORLD_NONE:
-    case api::scripting::EXECUTION_WORLD_ISOLATED:
+    case api::scripting::ExecutionWorld::kNone:
+    case api::scripting::ExecutionWorld::kIsolated:
       break;  // Default to mojom::ExecutionWorld::kIsolated.
-    case api::scripting::EXECUTION_WORLD_MAIN:
+    case api::scripting::ExecutionWorld::kMain:
       execution_world = mojom::ExecutionWorld::kMain;
   }
 
@@ -457,10 +457,10 @@ ConvertRegisteredContentScriptToSerializedUserScript(
 
   auto convert_execution_world = [](api::scripting::ExecutionWorld world) {
     switch (world) {
-      case api::scripting::EXECUTION_WORLD_NONE:
-      case api::scripting::EXECUTION_WORLD_ISOLATED:
+      case api::scripting::ExecutionWorld::kNone:
+      case api::scripting::ExecutionWorld::kIsolated:
         return api::extension_types::ExecutionWorld::kIsolated;
-      case api::scripting::EXECUTION_WORLD_MAIN:
+      case api::scripting::ExecutionWorld::kMain:
         return api::extension_types::ExecutionWorld::kMain;
     }
   };
@@ -541,12 +541,12 @@ api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
             NOTREACHED_NORETURN()
                 << "Execution world should always be present in serialization.";
           case api::extension_types::ExecutionWorld::kIsolated:
-            return api::scripting::EXECUTION_WORLD_ISOLATED;
+            return api::scripting::ExecutionWorld::kIsolated;
           case api::extension_types::ExecutionWorld::kUserScript:
             NOTREACHED_NORETURN()
                 << "ISOLATED worlds are not supported in this API.";
           case api::extension_types::ExecutionWorld::kMain:
-            return api::scripting::EXECUTION_WORLD_MAIN;
+            return api::scripting::ExecutionWorld::kMain;
         }
       };
 
