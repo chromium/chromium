@@ -1,0 +1,51 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+cr-tab-box {
+  --tabs-background-color: white;
+}
+
+body {
+  background: var(--page-background);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+#topbar {
+  gap: 5px;
+  justify-content: space-between;
+}
+
+.topbar-item {
+  flex: 1;
+}
+
+#left-content {
+  justify-content: flex-start;
+}
+
+#topbar-brand {
+  align-items: center;
+  display: flex;
+}
+
+#topbar-title {
+  font-size: 170%;
+  font-weight: 500;
+  letter-spacing: .25px;
+}
+
+#topbar-brand-logo {
+  background-image: image-set("chrome://theme/current-channel-logo@1x" 1x,
+      "chrome://theme/current-channel-logo@2x" 2x);
+  background-size: cover;
+  height: 24px;
+  margin-inline-end: 10px;
+  width: 24px;
+}

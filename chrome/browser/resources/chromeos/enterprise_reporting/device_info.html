@@ -1,0 +1,51 @@
+<style>
+  .device-info-table {
+    border: none;
+    border-radius: 15px;
+    box-sizing: border-box;
+    height: 100%;
+    margin: 20px;
+    padding: 15px;
+    width: 500px;
+  }
+
+  .device-info-table th {
+    text-align: start;
+  }
+
+  .device-info-table td {
+    text-align: start;
+    vertical-align: top;
+  }
+</style>
+<table class="device-info-table">
+  <tr>
+    <th>Version</th>
+    <td>{{deviceInfoParsed.version}}</td>
+  </tr>
+
+  <tr>
+    <th>Revision</th>
+    <td>{{deviceInfoParsed.revision}}</td>
+  </tr>
+
+  <tr>
+    <th>User Client ID</th>
+    <td>{{deviceInfoParsed.clientId}}</td>
+  </tr>
+
+  <tr>
+    <th>Directory API ID</th>
+    <td>{{deviceInfoParsed.directoryId}}</td>
+  </tr>
+
+  <tr>
+    <th>Enrollment domain</th>
+    <td>{{deviceInfoParsed.enrollmentDomain}}</td>
+  </tr>
+
+  <tr>
+    <th>Obfuscated Customer ID</th>
+    <td>{{deviceInfoParsed.obfuscatedCustomerId}}</td>
+  </tr>
+</table>
