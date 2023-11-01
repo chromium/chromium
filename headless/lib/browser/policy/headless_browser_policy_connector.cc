@@ -145,8 +145,8 @@ HeadlessBrowserPolicyConnector::CreatePlatformProvider() {
   auto loader = std::make_unique<PolicyLoaderMac>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
-      std::make_unique<MacPreferences>(), bundle_id);
+      policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id.get()),
+      std::make_unique<MacPreferences>(), bundle_id.get());
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif BUILDFLAG(IS_POSIX)
