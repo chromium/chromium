@@ -2882,20 +2882,23 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_DOWNLOAD_MANAGER_UI_OTHER" desc="Indicates that clicking on this button shows any downloads that don't fit in the other categories.">
         Other
       </message>
-      <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_GENERIC" desc="Content description for the All chip, clicking on which will show all of your downloads.">
-        {FILE_COUNT, plural, =1 {# File} other {# Files}}
+      <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_ALL" desc="Content description for the All chip, clicking on which will show all of your downloads.">
+        {FILE_COUNT, plural, =1 {All files, 1 file in list} other {All files, # files in list}}
+      </message>
+      <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_OTHER" desc="Content description for the Other chip, clicking on which will show all the downloaded files that aren't images, videos, audios or offline pages.">
+        {FILE_COUNT, plural, =1 {Other 1 file in list} other {Other # files in list}}
       </message>
       <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_IMAGES" desc="Content description for the Images chip, clicking on which will show all the downloaded images.">
-        {FILE_COUNT, plural, =1 {# Image} other {# Images}}
+        {FILE_COUNT, plural, =1 {Images, 1 image in list} other {Images, # images in list}}
       </message>
       <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_VIDEO" desc="Content description for the Video chip, clicking on which will show all the downloaded videos.">
-        {FILE_COUNT, plural, =1 {# Video} other {# Videos}}
+        {FILE_COUNT, plural, =1 {Videos, 1 video in list} other {Videos, # videos in list}}
       </message>
       <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_AUDIO" desc="Content description for the Audio chip, clicking on which will show all the downloaded audio files.">
-        {FILE_COUNT, plural, =1 {# Audio file} other {# Audio files}}
+        {FILE_COUNT, plural, =1 {Audio files, 1 audio file in list} other {Audio files, # audio files in list}}
       </message>
       <message name="IDS_ACCESSIBILITY_DOWNLOAD_MANAGER_UI_PAGES" desc="Content description for the Pages chip, clicking on which will show all the downloaded offline pages.">
-        {FILE_COUNT, plural, =1 {# Page} other {# Pages}}
+        {FILE_COUNT, plural, =1 {Pages, 1 page in list} other {Pages, # pages in list}}
       </message>
       <message name="IDS_DOWNLOAD_PAGE" desc="Download this page.">
         Download this page
