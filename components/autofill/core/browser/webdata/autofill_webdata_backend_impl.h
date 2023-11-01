@@ -210,6 +210,9 @@ class AutofillWebDataBackendImpl
   WebDatabase::State RemoveServerCvc(int64_t instrument_id, WebDatabase* db);
   WebDatabase::State ClearServerCvcs(WebDatabase* db);
 
+  // Method to clear all the local CVCs from the web database.
+  WebDatabase::State ClearLocalCvcs(WebDatabase* db);
+
   // Returns the PaymentsCustomerData from the database.
   std::unique_ptr<WDTypedResult> GetPaymentsCustomerData(WebDatabase* db);
 

@@ -8233,6 +8233,8 @@ Called by update_autofill_enums.py.-->
   <int value="261" label="ClearServerCvcs: Failure"/>
   <int value="270" label="UpdateCreditCardCvc: Success"/>
   <int value="271" label="UpdateCreditCardCvc: Failure"/>
+  <int value="272" label="ClearLocalCvcs: Success"/>
+  <int value="273" label="ClearLocalCvcs: Failure"/>
 </enum>
 
 <enum name="AutoFramingError">

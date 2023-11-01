@@ -148,6 +148,9 @@ class AutofillWebDataService : public WebDataServiceBase {
   void RemoveServerCvc(int64_t instrument_id);
   void ClearServerCvcs();
 
+  // Method to clear all the local CVCs from the web database.
+  void ClearLocalCvcs();
+
   // Initiates the request for local/server credit cards.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the credit cards included in the argument |result|.  The

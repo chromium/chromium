@@ -2463,6 +2463,11 @@ std::vector<std::unique_ptr<ServerCvc>> AutofillTable::GetAllServerCvcs()
   return cvcs;
 }
 
+bool AutofillTable::ClearLocalCvcs() {
+  Delete(db_, kLocalStoredCvcTable);
+  return db_->GetLastChangeCount() > 0;
+}
+
 bool AutofillTable::AddServerCardMetadata(
     const AutofillMetadata& card_metadata) {
   sql::Statement s;

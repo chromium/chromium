@@ -106,7 +106,9 @@ enum class Result {
   kClearServerCvcs_Failure = 261,
   kUpdateCreditCardCvc_Success = 270,
   kUpdateCreditCardCvc_Failure = 271,
-  kMaxValue = kUpdateCreditCardCvc_Failure,
+  kClearLocalCvcs_Success = 272,
+  kClearLocalCvcs_Failure = 273,
+  kMaxValue = kClearLocalCvcs_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -809,6 +811,16 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearServerCvcs(
     return WebDatabase::COMMIT_NEEDED;
   }
   ReportResult(Result::kClearServerCvcs_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::ClearLocalCvcs(WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (AutofillTable::FromWebDatabase(db)->ClearLocalCvcs()) {
+    ReportResult(Result::kClearLocalCvcs_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kClearLocalCvcs_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 

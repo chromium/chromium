@@ -1449,6 +1449,38 @@ TEST_F(AutofillTableTest, UpdateCreditCardCvc_Delete) {
   EXPECT_FALSE(cvc_statement.Step());
 }
 
+TEST_F(AutofillTableTest, LocalCvcs_ClearAll) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  CreditCard card_1 = test::WithCvc(test::GetCreditCard());
+  CreditCard card_2 = test::WithCvc(test::GetCreditCard2());
+  EXPECT_TRUE(table_->AddCreditCard(card_1));
+  EXPECT_TRUE(table_->AddCreditCard(card_2));
+
+  // Get the credit cards and the CVCs should match.
+  std::unique_ptr<CreditCard> db_card_1 = table_->GetCreditCard(card_1.guid());
+  std::unique_ptr<CreditCard> db_card_2 = table_->GetCreditCard(card_2.guid());
+  EXPECT_EQ(card_1.cvc(), db_card_1->cvc());
+  EXPECT_EQ(card_2.cvc(), db_card_2->cvc());
+
+  // Clear all local CVCs from the web database.
+  table_->ClearLocalCvcs();
+
+  sql::Statement cvc_statement(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT guid FROM local_stored_cvc WHERE guid=?"));
+
+  // Verify `card_1` CVC is deleted.
+  cvc_statement.BindString(0, card_1.guid());
+  ASSERT_TRUE(cvc_statement.is_valid());
+  EXPECT_FALSE(cvc_statement.Step());
+  cvc_statement.Reset(/*clear_bound_vars=*/true);
+
+  // Verify `card_2` CVC is deleted.
+  cvc_statement.BindString(0, card_2.guid());
+  ASSERT_TRUE(cvc_statement.is_valid());
+  EXPECT_FALSE(cvc_statement.Step());
+}
+
 // Tests that verify add, update and clear server cvc function working as
 // expected.
 TEST_F(AutofillTableTest, ServerCvc) {

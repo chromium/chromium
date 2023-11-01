@@ -4005,4 +4005,34 @@ TEST_F(PersonalDataManagerTest, IsCountryEligibleForAccountStorage) {
   EXPECT_FALSE(personal_data_->IsCountryEligibleForAccountStorage("IR"));
 }
 
+TEST_F(PersonalDataManagerTest, ClearAllCvcs) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  // Add a server card and its CVC.
+  CreditCard server_card = test::GetMaskedServerCard();
+  const std::u16string server_cvc = u"111";
+  SetServerCards({server_card});
+  personal_data_->AddServerCvc(server_card.instrument_id(), server_cvc);
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+
+  // Add a local card and its CVC.
+  CreditCard local_card = test::GetCreditCard();
+  const std::u16string local_cvc = u"999";
+  local_card.set_cvc(local_cvc);
+  personal_data_->AddCreditCard(local_card);
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+
+  ASSERT_EQ(personal_data_->GetLocalCreditCards().size(), 1U);
+  ASSERT_EQ(personal_data_->GetServerCreditCards().size(), 1U);
+  EXPECT_EQ(personal_data_->GetServerCreditCards()[0]->cvc(), server_cvc);
+  EXPECT_EQ(personal_data_->GetLocalCreditCards()[0]->cvc(), local_cvc);
+
+  // Clear out all the CVCs (local + server).
+  personal_data_->ClearLocalCvcs();
+  personal_data_->ClearServerCvcs();
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+  EXPECT_TRUE(personal_data_->GetServerCreditCards()[0]->cvc().empty());
+  EXPECT_TRUE(personal_data_->GetLocalCreditCards()[0]->cvc().empty());
+}
+
 }  // namespace autofill

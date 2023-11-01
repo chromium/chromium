@@ -340,7 +340,10 @@ class PersonalDataManager : public KeyedService,
   virtual void UpdateServerCvc(int64_t instrument_id,
                                const std::u16string& cvc);
   void RemoveServerCvc(int64_t instrument_id);
-  void ClearServerCvcs();
+  virtual void ClearServerCvcs();
+
+  // Method to clear all local CVCs from the local web database.
+  virtual void ClearLocalCvcs();
 
   // Resets the card for |guid| to the masked state.
   void ResetFullServerCard(const std::string& guid);

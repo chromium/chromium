@@ -845,6 +845,9 @@ class AutofillTable : public WebDatabaseTable,
   // Get all server cvcs from `server_stored_cvc` table.
   std::vector<std::unique_ptr<ServerCvc>> GetAllServerCvcs() const;
 
+  // This will clear all the local cvcs.
+  bool ClearLocalCvcs();
+
   // Methods to add, update, remove and get the metadata for server cards,
   // addresses, and IBANs. Return true if the operations succeeded.
   bool AddServerCardMetadata(const AutofillMetadata& card_metadata);

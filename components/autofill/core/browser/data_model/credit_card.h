@@ -443,6 +443,7 @@ class CreditCard : public AutofillDataModel {
   }
 
   const std::u16string& cvc() const { return cvc_; }
+  void clear_cvc() { cvc_.clear(); }
   void set_cvc(const std::u16string& cvc) { cvc_ = cvc; }
 
  private:

@@ -1190,6 +1190,17 @@ void PersonalDataManager::ClearServerCvcs() {
   Refresh();
 }
 
+void PersonalDataManager::ClearLocalCvcs() {
+  CHECK(database_helper_->GetLocalDatabase())
+      << "Removing Local cvcs without local storage.";
+
+  // Clear the local CVCs in the web database.
+  database_helper_->GetLocalDatabase()->ClearLocalCvcs();
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+
 void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
   for (const auto& card : server_credit_cards_) {
     if (card->guid() == guid) {

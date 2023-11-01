@@ -78,6 +78,9 @@ class TestPersonalDataManager : public PersonalDataManager {
       const override;
   bool IsPaymentMethodsMandatoryReauthEnabled() override;
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
+  void AddServerCvc(int64_t instrument_id, const std::u16string& cvc) override;
+  void ClearServerCvcs() override;
+  void ClearLocalCvcs() override;
 
   // Unique to TestPersonalDataManager:
 
