@@ -6,11 +6,32 @@
 
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
+#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
 
 namespace blink {
+
+namespace {
+
+bool HasSingleInvalidSVGMaskReferenceMaskLayer(const FillLayer& first_layer) {
+  if (first_layer.Next()) {
+    return false;
+  }
+  const auto* svg_mask_reference =
+      DynamicTo<StyleSVGMaskReferenceImage>(first_layer.GetImage());
+  if (!svg_mask_reference) {
+    return false;
+  }
+  return !SVGMaskPainter::MaskIsValid(
+      svg_mask_reference->GetSVGResource(),
+      svg_mask_reference->GetSVGResourceClient());
+}
+
+}  // namespace
 
 absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
     const LayoutObject& object,
@@ -18,29 +39,46 @@ absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
   if (!object.IsBoxModelObject() && !object.IsSVGChild())
     return absl::nullopt;
 
-  // TODO(pdr): The SVG bounding box does not account for mask-clip values like
-  // `no-clip`.
   const ComputedStyle& style = object.StyleRef();
-  if (object.IsSVG()) {
-    if (SVGResourceClient* client = SVGResources::GetClient(object)) {
-      auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, style.MaskerResource());
-      if (masker) {
-        const gfx::RectF reference_box =
-            SVGResources::ReferenceBoxForEffects(object);
-        const float reference_box_zoom =
-            object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;
-        return masker->ResourceBoundingBox(reference_box, reference_box_zoom);
+  if (!RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
+    if (object.IsSVG()) {
+      if (SVGResourceClient* client = SVGResources::GetClient(object)) {
+        auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
+            *client, style.MaskerResource());
+        if (masker) {
+          const gfx::RectF reference_box =
+              SVGResources::ReferenceBoxForEffects(object);
+          const float reference_box_zoom =
+              object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom()
+                                          : 1;
+          return masker->ResourceBoundingBox(reference_box, reference_box_zoom);
+        }
       }
     }
-  }
 
-  if (object.IsSVGChild() && !object.IsSVGForeignObject()) {
-    return absl::nullopt;
+    if (object.IsSVGChild() && !object.IsSVGForeignObject()) {
+      return absl::nullopt;
+    }
   }
 
   if (!style.HasMask())
     return absl::nullopt;
+
+  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
+    if (object.IsSVGChild()) {
+      // This is a kludge. The spec[1] says that a non-existent <mask>
+      // reference should yield an image layer of transparent black.
+      //
+      // [1] https://drafts.fxtf.org/css-masking/#the-mask-image
+      if (HasSingleInvalidSVGMaskReferenceMaskLayer(style.MaskLayers())) {
+        return absl::nullopt;
+      }
+      // foreignObject handled by the regular box code.
+      if (!object.IsSVGForeignObject()) {
+        return SVGMaskPainter::ResourceBoundsForSVGChild(object);
+      }
+    }
+  }
 
   PhysicalRect maximum_mask_region;
   EFillBox maximum_mask_clip = style.MaskLayers().LayersClipMax();

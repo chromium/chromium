@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
@@ -224,19 +225,34 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
     const LayoutObject& layout_object) {
   if (!layout_object.IsSVG() || layout_object.IsText())
     return false;
-  SVGResourceClient* client = SVGResources::GetClient(layout_object);
   // Without an associated client, we will not reference any resources.
-  if (!client)
-    return false;
-  // Fetch all the referenced resources.
-  HeapVector<Member<SVGResource>> resources = CollectResources(layout_object);
-  // This performs a depth-first search for a back-edge in all the
-  // (potentially disjoint) graphs formed by the referenced resources.
-  for (const auto& local_resource : resources) {
-    // The resource can be null if the reference is external but external
-    // references are not allowed.
-    if (local_resource && local_resource->FindCycle(*client))
-      return true;
+  if (SVGResourceClient* client = SVGResources::GetClient(layout_object)) {
+    // Fetch all the referenced resources.
+    HeapVector<Member<SVGResource>> resources = CollectResources(layout_object);
+    // This performs a depth-first search for a back-edge in all the
+    // (potentially disjoint) graphs formed by the referenced resources.
+    for (const auto& local_resource : resources) {
+      // The resource can be null if the reference is external but external
+      // references are not allowed.
+      if (local_resource && local_resource->FindCycle(*client)) {
+        return true;
+      }
+    }
+  }
+  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
+    for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
+         layer = layer->Next()) {
+      const auto* svg_mask_reference =
+          DynamicTo<StyleSVGMaskReferenceImage>(layer->GetImage());
+      if (!svg_mask_reference) {
+        continue;
+      }
+      const SVGResource* svg_resource = svg_mask_reference->GetSVGResource();
+      if (svg_resource &&
+          svg_resource->FindCycle(svg_mask_reference->GetSVGResourceClient())) {
+        return true;
+      }
+    }
   }
   return false;
 }

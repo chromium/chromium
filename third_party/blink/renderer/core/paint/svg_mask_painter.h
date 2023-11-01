@@ -37,8 +37,12 @@ class SVGMaskPainter {
                                    SVGResourceClient& client,
                                    const gfx::RectF& reference_box,
                                    float zoom);
+  static gfx::RectF ResourceBoundsForSVGChild(
+      const LayoutObject& layout_object);
   static EMaskType MaskType(SVGResource* mask_resource,
                             SVGResourceClient& client);
+  static bool MaskIsValid(SVGResource* mask_resource,
+                          SVGResourceClient& client);
 };
 
 }  // namespace blink

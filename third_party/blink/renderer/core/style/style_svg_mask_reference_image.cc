@@ -115,9 +115,4 @@ void StyleSVGMaskReferenceImage::Trace(Visitor* visitor) const {
   StyleImage::Trace(visitor);
 }
 
-StyleSVGResource* StyleSVGMaskReferenceImage::CreateSVGResourceWrapper() {
-  return MakeGarbageCollected<StyleSVGResource>(
-      resource_.Get(), AtomicString(resource_css_value_->RelativeUrl()));
-}
-
 }  // namespace blink

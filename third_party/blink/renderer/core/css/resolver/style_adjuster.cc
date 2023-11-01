@@ -69,7 +69,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
-#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -126,16 +125,6 @@ bool HostIsInputFile(const Element* element) {
   return false;
 }
 
-StyleSVGResource* GetFirstMaskImageAsSVGResource(const SVGElement& element,
-                                                 FillLayer& first_layer) {
-  auto* svg_mask_reference =
-      DynamicTo<StyleSVGMaskReferenceImage>(first_layer.GetImage());
-  if (!svg_mask_reference) {
-    return nullptr;
-  }
-  return svg_mask_reference->CreateSVGResourceWrapper();
-}
-
 void AdjustStyleForSvgElement(const SVGElement& element,
                               ComputedStyleBuilder& builder) {
   // Disable some of text decoration properties.
@@ -149,11 +138,6 @@ void AdjustStyleForSvgElement(const SVGElement& element,
   builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
   builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
   builder.SetTextUnderlinePosition(TextUnderlinePosition::kAuto);
-
-  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    builder.SetMaskerResource(
-        GetFirstMaskImageAsSVGResource(element, builder.AccessMaskLayers()));
-  }
 }
 
 bool ElementForcesStackingContext(Element* element) {

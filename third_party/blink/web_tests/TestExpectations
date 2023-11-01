@@ -500,13 +500,6 @@ crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Fail
 crbug.com/1496470 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
 crbug.com/1496470 external/wpt/css/css-masking/mask-image/mask-image-1c.html [ Failure ]
 
-# Need to support mask-clip and mask-origin on SVG.
-crbug.com/1494136 external/wpt/css/css-masking/mask-image/mask-clip-2.html [ Failure ]
-crbug.com/1494136 external/wpt/css/css-masking/mask-image/mask-origin-3.html [ Failure ]
-
-# Need to support multiple mask images in SVG.
-crbug.com/1496473 external/wpt/css/css-masking/mask-image/mask-image-3i.html [ Failure ]
-
 # See: https://bugzilla.mozilla.org/show_bug.cgi?id=1834644
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
@@ -2774,7 +2767,6 @@ crbug.com/626703 [ Win ] virtual/threaded/external/wpt/css/css-backgrounds/borde
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-005.htm [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-on-g.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-005.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-clip-4.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-006.html [ Failure ]
 crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/content-visibility-on-g.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/light-dark-currentcolor.html [ Failure ]

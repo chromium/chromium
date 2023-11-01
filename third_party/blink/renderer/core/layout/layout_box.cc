@@ -2227,6 +2227,12 @@ void LayoutBox::ImageChanged(WrappedImagePtr image,
       if (layer->GetImage() && image == layer->GetImage()->Data()) {
         SetShouldDoFullPaintInvalidationWithoutLayoutChange(
             PaintInvalidationReason::kImage);
+        if (layer->GetImage()->IsSVGMaskReference() && IsSVGChild()) {
+          // Since an invalid <mask> reference does not yield a paint property
+          // on SVG content (see CSSMaskPainter), we need to update paint
+          // properties when such a reference changes.
+          SetNeedsPaintPropertyUpdate();
+        }
         break;
       }
     }
