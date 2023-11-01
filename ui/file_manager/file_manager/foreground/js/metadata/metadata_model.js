@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {getStore} from '../../../state/store.js';
 
@@ -79,7 +80,7 @@ export class MetadataModel {
 
   /**
    * Obtains metadata for entries.
-   * @param {!Array<!Entry>} entries Entries.
+   * @param {!Array<!Entry|!FilesAppEntry>} entries Entries.
    * @param {!Array<string>} names Metadata property names to be obtained.
    * @return {!Promise<!Array<!MetadataItem>>}
    */
@@ -200,7 +201,7 @@ export class MetadataModel {
 
   /**
    * Obtains metadata cache for entries.
-   * @param {!Array<!Entry>} entries Entries.
+   * @param {!Array<!Entry|!FilesAppEntry>} entries Entries.
    * @param {!Array<string>} names Metadata property names to be obtained.
    * @return {!Array<!MetadataItem>}
    */
@@ -224,7 +225,7 @@ export class MetadataModel {
 
   /**
    * Clears old metadata for newly created entries.
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    */
   notifyEntriesCreated(entries) {
     this.cache_.clear(entriesToURLs(entries));
@@ -249,7 +250,7 @@ export class MetadataModel {
 
   /**
    * Invalidates metadata for updated entries.
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    */
   notifyEntriesChanged(entries) {
     this.cache_.invalidate(this.cache_.generateRequestId(), entries);
@@ -299,14 +300,14 @@ export class MetadataModel {
 /** @final */
 class MetadataProviderCallbackRequest {
   /**
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    * @param {!Array<string>} names
    * @param {!MetadataCacheSet} cache
    * @param {function(!Array<MetadataItem>):undefined} fulfill
    */
   constructor(entries, names, cache, fulfill) {
     /**
-     * @private @type {!Array<!Entry>}
+     * @private @type {!Array<!Entry|!FilesAppEntry>}
      * @const
      */
     this.entries_ = entries;
@@ -334,7 +335,7 @@ class MetadataProviderCallbackRequest {
    * Stores properties to snapshot cache of the callback request.
    * If all the requested property are served, it invokes the callback.
    * @param {number} requestId
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    * @param {!Array<!MetadataItem>} objects
    * @return {boolean} Whether the callback is invoked or not.
    */

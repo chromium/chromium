@@ -20,7 +20,7 @@ import {MetadataModel} from '../metadata/metadata_model.js';
 import {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
 import {FileMetadataFormatter} from './file_metadata_formatter.js';
-import {filelist, FileTableList} from './file_table_list.js';
+import {decorateListItem, FileTableList, isDlpBlocked, renderFileNameLabel, renderFileTypeIcon, renderIconBadge, updateCacheItemInlineStatus, updateListItemExternalProps} from './file_table_list.js';
 import {Table} from './table/table.js';
 import {TableColumn} from './table/table_column.js';
 import {TableColumnModel} from './table/table_column_model.js';
@@ -655,7 +655,7 @@ export class FileTable extends Table {
     self.list.addEventListener(
         'cachedItemRestored',
         // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
-        (e) => filelist.updateCacheItemInlineStatus(
+        (e) => updateCacheItemInlineStatus(
             // @ts-ignore: error TS2339: Property 'metadataModel_' does not
             // exist on type 'Element'.
             e.detail, self.dataModel, self.metadataModel_));
@@ -1009,7 +1009,7 @@ export class FileTable extends Table {
     const mimeType = metadata.contentMimeType;
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
-    const icon = filelist.renderFileTypeIcon(
+    const icon = renderFileTypeIcon(
         // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
         // type 'FileTable'.
         this.ownerDocument, entry, locationInfo, mimeType);
@@ -1022,7 +1022,7 @@ export class FileTable extends Table {
     label.appendChild(icon);
     // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
     // type 'FileTable'.
-    label.appendChild(filelist.renderIconBadge(this.ownerDocument));
+    label.appendChild(renderIconBadge(this.ownerDocument));
     // @ts-ignore: error TS2339: Property 'entry' does not exist on type
     // 'HTMLDivElement'.
     label.entry = entry;
@@ -1030,7 +1030,7 @@ export class FileTable extends Table {
     label.appendChild(
         // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
         // type 'FileTable'.
-        filelist.renderFileNameLabel(this.ownerDocument, entry, locationInfo));
+        renderFileNameLabel(this.ownerDocument, entry, locationInfo));
     if (locationInfo && locationInfo.isDriveBased) {
       // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
       // type 'FileTable'.
@@ -1273,7 +1273,7 @@ export class FileTable extends Table {
       // @ts-ignore: error TS7006: Parameter 'listItem' implicitly has an 'any'
       // type.
       forEachCell('.table-row-cell .date', function(item, entry, listItem) {
-        filelist.updateListItemExternalProps(
+        updateListItemExternalProps(
             listItem, entry,
             // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
             // because it does not have a type annotation.
@@ -1297,7 +1297,7 @@ export class FileTable extends Table {
             isTeamDriveRoot(entry));
         listItem.toggleAttribute(
             'disabled',
-            filelist.isDlpBlocked(
+            isDlpBlocked(
                 // @ts-ignore: error TS2683: 'this' implicitly has type 'any'
                 // because it does not have a type annotation.
                 entry, assert(this.metadataModel_),
@@ -1333,7 +1333,7 @@ export class FileTable extends Table {
     const dlpId = item.id + '-dlp-managed-icon';
     // @ts-ignore: error TS2339: Property 'id' does not exist on type 'void'.
     const encryptedId = item.id + '-encrypted-icon';
-    filelist.decorateListItem(
+    decorateListItem(
         // @ts-ignore: error TS2345: Argument of type 'void' is not assignable
         // to parameter of type 'ListItem'.
         item, entry, assert(this.metadataModel_), assert(this.volumeManager_));

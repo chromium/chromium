@@ -157,7 +157,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/file_manager_ui.js",
   "file_manager/foreground/js/ui/file_metadata_formatter.js",
   "file_manager/foreground/js/ui/file_table.js",
-  "file_manager/foreground/js/ui/file_table_list.js",
   "file_manager/foreground/js/ui/file_tap_handler.js",
   "file_manager/foreground/js/ui/files_alert_dialog.js",
   "file_manager/foreground/js/ui/files_confirm_dialog.js",
@@ -189,7 +188,6 @@ static_js_files = [
 
 ts_files = [
   "file_manager/foreground/elements/xf_circular_progress.ts",
-  "file_manager/foreground/js/ui/table/table_list.ts",
 
   # Common.
   "file_manager/common/js/api.ts",
@@ -260,11 +258,17 @@ ts_files = [
   "file_manager/widgets/xf_tree.ts",
   "file_manager/widgets/xf_tree_item.ts",
   "file_manager/widgets/xf_password_dialog.ts",
+
+  # Foreground UI.
   "file_manager/foreground/js/ui/file_grid.ts",
+  "file_manager/foreground/js/ui/file_table_list.ts",
   "file_manager/foreground/js/ui/grid.ts",
-  "file_manager/foreground/js/ui/list_selection_controller.ts",
   "file_manager/foreground/js/ui/list.ts",
   "file_manager/foreground/js/ui/list_item.ts",
+  "file_manager/foreground/js/ui/list_selection_controller.ts",
+  "file_manager/foreground/js/ui/table/table_list.ts",
+
+  # Banners.
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_low_individual_space_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_low_shared_drive_space_banner.ts",

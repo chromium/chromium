@@ -205,6 +205,9 @@ export class MetadataItem {
     /** @type {boolean|undefined} */
     this.canShare;
 
+    /** @type {boolean|undefined} */
+    this.canPin;
+
     /** @type {string|undefined} */
     this.alternateUrl;
 

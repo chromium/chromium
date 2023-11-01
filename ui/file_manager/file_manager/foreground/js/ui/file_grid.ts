@@ -23,7 +23,7 @@ import {type MetadataModel} from '../metadata/metadata_model.js';
 
 import type {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
-import {filelist} from './file_table_list.js';
+import {decorateListItem, focusParentList, handleKeyDown, handlePointerDownUp, handleTap, isDlpBlocked, renderFileNameLabel, renderFileTypeIcon, renderIconBadge, updateCacheItemInlineStatus, updateInlineStatus} from './file_table_list.js';
 import {FileTapHandler} from './file_tap_handler.js';
 import {Grid, GridSelectionController} from './grid.js';
 import {List} from './list.js';
@@ -118,7 +118,7 @@ export class FileGrid extends Grid {
     // Update the item's inline status when it's restored from List's cache.
     self.addEventListener(
         'cachedItemRestored',
-        (e) => filelist.updateCacheItemInlineStatus(
+        (e) => updateCacheItemInlineStatus(
             e.detail, self.dataModel!, self.metadataModel_!));
   }
 
@@ -686,11 +686,10 @@ export class FileGrid extends Grid {
                              'syncCompletedTime',
                            ])[0] ||
           {} as MetadataItem;
-      filelist.updateInlineStatus(listItem, metadata);
+      updateInlineStatus(listItem, metadata);
       listItem.toggleAttribute(
           'disabled',
-          filelist.isDlpBlocked(
-              entry, this.metadataModel_, this.volumeManager_));
+          isDlpBlocked(entry, this.metadataModel_, this.volumeManager_));
     }
     this.updateGroupHeading_();
   }
@@ -722,8 +721,7 @@ export class FileGrid extends Grid {
     assert(this.metadataModel_);
     assert(this.volumeManager_);
     if (entry) {
-      filelist.decorateListItem(
-          li, entry, this.metadataModel_, this.volumeManager_);
+      decorateListItem(li, entry, this.metadataModel_, this.volumeManager_);
     }
 
     const frame = li.ownerDocument.createElement('div');
@@ -751,16 +749,16 @@ export class FileGrid extends Grid {
         {} as MetadataItem;
 
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
-    const detailIcon = filelist.renderFileTypeIcon(
+    const detailIcon = renderFileTypeIcon(
         li.ownerDocument, entry, locationInfo, metadata.contentMimeType);
 
     const checkmark = li.ownerDocument.createElement('div');
     checkmark.className = 'detail-checkmark';
     detailIcon.appendChild(checkmark);
     bottom.appendChild(detailIcon);
-    bottom.appendChild(filelist.renderIconBadge(li.ownerDocument));
+    bottom.appendChild(renderIconBadge(li.ownerDocument));
     bottom.appendChild(
-        filelist.renderFileNameLabel(li.ownerDocument, entry, locationInfo));
+        renderFileNameLabel(li.ownerDocument, entry, locationInfo));
     frame.appendChild(bottom);
     li.setAttribute('file-name', getEntryLabel(locationInfo, entry));
 
@@ -774,7 +772,7 @@ export class FileGrid extends Grid {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);
     }
     this.updateSharedStatus_(li, entry);
-    filelist.updateInlineStatus(li, metadata);
+    updateInlineStatus(li, metadata);
   }
 
   /**
@@ -1104,20 +1102,19 @@ export class FileGridSelectionController extends GridSelectionController {
     super(selectionModel, grid);
   }
 
-  override handlePointerDownUp(e: Event, index: number) {
-    filelist.handlePointerDownUp.call(this, e, index);
+  override handlePointerDownUp(e: PointerEvent, index: number) {
+    handlePointerDownUp.call(this, e, index);
   }
 
-  override handleTouchEvents(e: Event, index: number) {
+  override handleTouchEvents(e: TouchEvent, index: number) {
     assert(e);
-    if (this.tapHandler_.handleTouchEvents(
-            e, index, filelist.handleTap.bind(this))) {
-      filelist.focusParentList(e);
+    if (this.tapHandler_.handleTouchEvents(e, index, handleTap.bind(this))) {
+      focusParentList(e);
     }
   }
 
   override handleKeyDown(e: KeyboardEvent) {
-    filelist.handleKeyDown.call(this, e);
+    handleKeyDown.call(this, e);
   }
 
   get filesView(): FileGrid {

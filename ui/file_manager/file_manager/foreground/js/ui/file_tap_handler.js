@@ -79,12 +79,11 @@ export class FileTapHandler {
    *    ... if touchend.preventDefault() not called ...
    *      browser events: mouseover > mousedown > [mousemove] > mouseup
    *
-   * @param {!Event} event Touch event.
+   * @param {!TouchEvent} event Touch event.
    * @param {number} index Index of the target item in the file list.
-   * @param {function(!Event, number, !FileTapHandler.TapEvent):boolean}
-callback
-   *     Called when a tap event is detected. Should return true if it has
-   *     taken any action, and false if it ignores the event.
+   * @param {function(!TouchEvent, number, !FileTapHandler.TapEvent):boolean}
+   *     callback Called when a tap event is detected. Should return true if it
+   *     has taken any action, and false if it ignores the event.
    * @return {boolean} True if a tap event was detected and the |callback|
    *     processed the event. False otherwise.
    */
@@ -104,29 +103,21 @@ callback
       case 'touchstart': {
         // Only track the position of the single touch. However, we detect a
         // two-finger tap for opening a context menu of the target.
-        // @ts-ignore: error TS2339: Property 'touches' does not exist on type
-        // 'Event'.
         if (event.touches.length > 2) {
           this.tapStarted_ = false;
           return false;
         } else if (this.activeTouchId_ !== undefined) {
-          // @ts-ignore: error TS2339: Property 'touches' does not exist on type
-          // 'Event'.
           this.isTwoFingerTap_ = event.touches.length === 2;
           return false;
         }
 
         this.resetTouchTracking_();
-        // @ts-ignore: error TS2339: Property 'targetTouches' does not exist on
-        // type 'Event'.
         const touch = event.targetTouches[0];
-        this.activeTouchId_ = touch.identifier;
+        this.activeTouchId_ = touch?.identifier;
         this.tapStarted_ = true;
 
         this.activeItemIndex_ = index;
         this.isLongTap_ = false;
-        // @ts-ignore: error TS2339: Property 'touches' does not exist on type
-        // 'Event'.
         this.isTwoFingerTap_ = event.touches.length === 2;
 
         this.hasLongPressProcessed_ = false;
@@ -141,8 +132,8 @@ callback
           }
         }, FileTapHandler.LONG_PRESS_THRESHOLD_MILLISECONDS);
 
-        this.lastTouchX_ = touch.clientX;
-        this.lastTouchY_ = touch.clientY;
+        this.lastTouchX_ = touch?.clientX ?? 0;
+        this.lastTouchY_ = touch?.clientY ?? 0;
         this.totalMoveX_ = 0;
         this.totalMoveY_ = 0;
       } break;

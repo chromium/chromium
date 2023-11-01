@@ -526,7 +526,7 @@ export function compareLabelAndGroupBottomEntries(
 /**
  * Converts array of entries to an array of corresponding URLs.
  */
-export function entriesToURLs(entries: Entry[]): string[] {
+export function entriesToURLs(entries: Array<Entry|FilesAppEntry>): string[] {
   return entries.map(entry => {
     // When building file_manager_base.js, cachedUrl is not referred other than
     // here. Thus closure compiler raises an error if we refer the property like

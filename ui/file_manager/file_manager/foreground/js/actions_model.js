@@ -274,8 +274,6 @@ class DriveToggleOfflineAction {
                 // @ts-ignore: error TS2322: Type 'FileSystemEntry | undefined'
                 // is not assignable to type 'FileSystemEntry'.
                 .getCache([currentEntry], ['canPin'])[0]
-                // @ts-ignore: error TS2339: Property 'canPin' does not exist on
-                // type 'MetadataItem'.
                 .canPin) {
           chrome.fileManagerPrivate.pinDriveFile(
               // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
@@ -354,10 +352,7 @@ class DriveToggleOfflineAction {
   // '@override' tag because its containing class 'DriveToggleOfflineAction'
   // does not extend another class.
   canExecute() {
-    return this.metadataModel_
-        .getCache(this.entries_, ['canPin'])
-        // @ts-ignore: error TS2339: Property 'canPin' does not exist on type
-        // 'MetadataItem'.
+    return this.metadataModel_.getCache(this.entries_, ['canPin'])
         .some(metadata => metadata.canPin);
   }
 

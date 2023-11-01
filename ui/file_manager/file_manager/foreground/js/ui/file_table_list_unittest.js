@@ -364,11 +364,8 @@ function setupFileTableList() {
   const tableList = /** @type {FileTableList} */ (element.list);
   tableList.dataModel = dataModel;
   // Mock item size.
-  /** @suppress {accessControls} modify protected method in test. */
-  // @ts-ignore: error TS2339: Property 'getDefaultItemHeight_' does not exist
-  // on type 'FileTableList'.
-  tableList.getDefaultItemHeight_ = () => ITEM_HEIGHT;
-  tableList.getGroupHeadingHeight_ = () => GROUP_HEADING_HEIGHT;
+  tableList['getDefaultItemHeight_'] = () => ITEM_HEIGHT;
+  tableList['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
   return tableList;
 }
 
@@ -518,15 +515,15 @@ export function testGetIndexForListOffset() {
   // Item 7       40            320
   // Item 8       40            360
   // Item 9       40            400
-  assertEquals(tableList.getIndexForListOffset_(0), 0);
-  assertEquals(tableList.getIndexForListOffset_(40), 1);
-  assertEquals(tableList.getIndexForListOffset_(100), 2);
-  assertEquals(tableList.getIndexForListOffset_(200), 5);
-  assertEquals(tableList.getIndexForListOffset_(240), 6);
-  assertEquals(tableList.getIndexForListOffset_(300), 7);
+  assertEquals(tableList['getIndexForListOffset_'](0), 0);
+  assertEquals(tableList['getIndexForListOffset_'](40), 1);
+  assertEquals(tableList['getIndexForListOffset_'](100), 2);
+  assertEquals(tableList['getIndexForListOffset_'](200), 5);
+  assertEquals(tableList['getIndexForListOffset_'](240), 6);
+  assertEquals(tableList['getIndexForListOffset_'](300), 7);
   // Note: The returned index could be an invalid array index, which is
   // expected e.g. 10 here is larger than the largest index 9 in the array.
-  assertEquals(tableList.getIndexForListOffset_(400), 10);
+  assertEquals(tableList['getIndexForListOffset_'](400), 10);
 
   // Enable group by.
   // @ts-ignore: error TS2345: Argument of type 'ArrayDataModel' is not
@@ -550,14 +547,14 @@ export function testGetIndexForListOffset() {
   // Item 8       40            460
   // Heading 6    20            480
   // Item 9       40            520
-  assertEquals(tableList.getIndexForListOffset_(0), 0);
-  assertEquals(tableList.getIndexForListOffset_(40), 0);
-  assertEquals(tableList.getIndexForListOffset_(100), 2);
-  assertEquals(tableList.getIndexForListOffset_(200), 3);
-  assertEquals(tableList.getIndexForListOffset_(240), 4);
-  assertEquals(tableList.getIndexForListOffset_(300), 5);
-  assertEquals(tableList.getIndexForListOffset_(400), 7);
-  assertEquals(tableList.getIndexForListOffset_(500), 9);
+  assertEquals(tableList['getIndexForListOffset_'](0), 0);
+  assertEquals(tableList['getIndexForListOffset_'](40), 0);
+  assertEquals(tableList['getIndexForListOffset_'](100), 2);
+  assertEquals(tableList['getIndexForListOffset_'](200), 3);
+  assertEquals(tableList['getIndexForListOffset_'](240), 4);
+  assertEquals(tableList['getIndexForListOffset_'](300), 5);
+  assertEquals(tableList['getIndexForListOffset_'](400), 7);
+  assertEquals(tableList['getIndexForListOffset_'](500), 9);
 }
 
 export function testGetHitElements() {
