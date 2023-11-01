@@ -750,6 +750,11 @@ public final class ProductionSupportedFlagList {
                 "This flag allows non-standard CSS appearance values with page load "
                         + "usage < 0.001% and shows a deprecation warning."),
         Flag.baseFeature(
+                BlinkFeatures.DISCARD_INPUT_EVENTS_TO_RECENTLY_MOVED_FRAMES,
+                "Enables a browser intervention which silently ignores input events "
+                        + "targeting a cross-origin iframe which has moved within its "
+                        + "embedding page recently."),
+        Flag.baseFeature(
                 ContentFeatures.SERVICE_WORKER_STATIC_ROUTER,
                 "Enables Service Worker static routing API."),
         Flag.baseFeature(
