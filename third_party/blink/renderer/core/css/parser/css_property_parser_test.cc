@@ -1278,4 +1278,8 @@ TEST(CSSPropertyParserTest, MaskSizeFromMaskNone) {
   TestMaskParsing("none", CSSPropertyID::kMaskSize, "auto");
 }
 
+TEST(CSSPropertyParserTest, MaskFromMaskNoneRepeatY) {
+  TestMaskParsing("none repeat-y", CSSPropertyID::kAlternativeMask, "repeat-y");
+}
+
 }  // namespace blink

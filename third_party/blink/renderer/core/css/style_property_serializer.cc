@@ -1718,7 +1718,13 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       }
 
       if (shorthand.id() == CSSPropertyID::kAlternativeMask) {
-        if (property->IDEquals(CSSPropertyID::kMaskOrigin)) {
+        if (property->IDEquals(CSSPropertyID::kMaskImage)) {
+          if (auto* image_value = DynamicTo<CSSIdentifierValue>(value)) {
+            if (image_value->GetValueID() == CSSValueID::kNone) {
+              omit_value = true;
+            }
+          }
+        } else if (property->IDEquals(CSSPropertyID::kMaskOrigin)) {
           if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
             mask_origin_value = ident->GetValueID();
           }
@@ -1805,7 +1811,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
     }
     if (shorthand.id() == CSSPropertyID::kAlternativeMask &&
         layer_result.empty()) {
-      result.Append(getValueName(CSSValueID::kNone));
+      layer_result.Append(getValueName(CSSValueID::kNone));
     }
     if (!layer_result.empty()) {
       if (!result.empty()) {

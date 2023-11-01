@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 55 tests; 44 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 tests; 45 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] e.style['mask'] = "none" should set the property value
 [PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue)" should set the property value
 [PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) luminance" should set the property value
@@ -26,8 +26,7 @@ Found 55 tests; 44 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] e.style['mask'] = "border-box no-clip" should set the property value
 [PASS] e.style['mask'] = "intersect no-clip space round 1px 2px / contain stroke-box linear-gradient(to left bottom, red, blue) luminance" should set the property value
 [PASS] e.style['mask'] = "intersect no-clip space round 1px 2px / contain view-box, stroke-box linear-gradient(to left bottom, red, blue) luminance" should set the property value
-[FAIL] e.style['mask'] = "none alpha" should set the property value
-  assert_equals: serialization should be canonical expected "alpha" but got "none alpha"
+[PASS] e.style['mask'] = "none alpha" should set the property value
 [FAIL] e.style['mask'] = "none" should set mask-border-outset
   assert_equals: mask-border-outset should be canonical expected (string) "0" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none" should set mask-border-repeat
