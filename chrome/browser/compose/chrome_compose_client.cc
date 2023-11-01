@@ -31,7 +31,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,7 +47,8 @@ const char kComposeURL[] = "chrome://compose/";
 }  // namespace
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
-    : content::WebContentsUserData<ChromeComposeClient>(*web_contents),
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ChromeComposeClient>(*web_contents),
       translate_language_provider_(new TranslateLanguageProvider()),
       compose_enabling_(translate_language_provider_.get()),
       manager_(this),
@@ -167,6 +170,14 @@ void ChromeComposeClient::RemoveActiveSession() {
   last_compose_field_id_.reset();
 }
 
+void ChromeComposeClient::RemoveAllSessions() {
+  if (debug_session_) {
+    debug_session_.reset();
+  }
+  sessions_.erase(sessions_.begin(), sessions_.end());
+  last_compose_field_id_.reset();
+}
+
 compose::ComposeManager& ChromeComposeClient::GetManager() {
   return manager_;
 }
@@ -222,6 +233,10 @@ void ChromeComposeClient::SetOptimizationGuideForTest(
   opt_guide_ = opt_guide;
 }
 
+int ChromeComposeClient::GetSessionCountForTest() {
+  return sessions_.size();
+}
+
 compose::ComposeHintDecision ChromeComposeClient::GetOptimizationGuidanceForUrl(
     const GURL& url) {
   if (!GetOptimizationGuide()) {
@@ -249,6 +264,11 @@ compose::ComposeHintDecision ChromeComposeClient::GetOptimizationGuidanceForUrl(
   }
 
   return compose_metadata->decision();
+}
+
+// content::WebContentsObserver implementation.
+void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
+  RemoveAllSessions();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeComposeClient);

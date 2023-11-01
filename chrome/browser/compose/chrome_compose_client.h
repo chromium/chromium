@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,12 +32,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
+class Page;
 class WebContents;
 }  // namespace content
 
 // An implementation of `ComposeClient` for Desktop and Android.
 class ChromeComposeClient
     : public compose::ComposeClient,
+      public content::WebContentsObserver,
       public content::WebContentsUserData<ChromeComposeClient>,
       public compose::mojom::ComposeDialogClosePageHandler {
  public:
@@ -83,6 +86,8 @@ class ChromeComposeClient
 
   ComposeEnabling& GetComposeEnabling();
 
+  int GetSessionCountForTest();
+
  protected:
   explicit ChromeComposeClient(content::WebContents* web_contents);
   optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
@@ -92,6 +97,7 @@ class ChromeComposeClient
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;
+
   raw_ptr<Profile> profile_;
 
   // Creates a session for `trigger_field` and initializes it as necessary.
@@ -103,6 +109,15 @@ class ChromeComposeClient
   // Removes `last_compose_field_id_` from `sessions_` and resets
   // `last_compose_field_id_`.
   void RemoveActiveSession();
+
+  // Removes all sessions and resets `last_compose_field_id_`.
+  void RemoveAllSessions();
+
+  // content::WebContentsObserver implementation.
+  // Called when the primary page location changes. This includes reloads.
+  // TODO: Look into using DocumentUserData or keying sessions on render ID
+  // to more accurately save and remove state.
+  void PrimaryPageChanged(content::Page& page) override;
 
   compose::ComposeManagerImpl manager_;
 

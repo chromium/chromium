@@ -19,6 +19,7 @@
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -104,21 +105,23 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
     AddTab(browser(), GetPageUrl());
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
-    client_ = ChromeComposeClient::FromWebContents(contents);
+    client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetSkipShowDialogForTest();
     client_->SetOptimizationGuideForTest(&opt_guide_);
   }
 
-  void ShowDialogAndBindMojo() { ShowDialogAndBindMojo(base::NullCallback()); }
+  void ShowDialogAndBindMojo(ComposeCallback callback = base::NullCallback()) {
+    ShowDialogAndBindMojoWithFieldData(field_data_, std::move(callback));
+  }
 
-  void ShowDialogAndBindMojo(ComposeCallback callback) {
+  void ShowDialogAndBindMojoWithFieldData(
+      autofill::FormFieldData field_data,
+      ComposeCallback callback = base::NullCallback()) {
     // Show the dialog.
     client().ShowComposeDialog(
         autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-        field_data_, std::nullopt, std::move(callback));
+        field_data, std::nullopt, std::move(callback));
 
     BindMojo();
   }
@@ -154,6 +157,11 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockOptimizationGuideDecider& opt_guide() { return opt_guide_; }
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
   autofill::FormFieldData& field_data() { return field_data_; }
+
+  // Get the WebContents for the first browser tab.
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetWebContentsAt(0);
+  }
 
   mojo::Remote<compose::mojom::ComposeDialogClosePageHandler>&
   close_page_handler() {
@@ -227,6 +235,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockOptimizationGuideDecider opt_guide_;
   MockComposeDialog compose_dialog_;
   autofill::FormFieldData field_data_;
+  raw_ptr<content::WebContents> contents_;
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
@@ -913,6 +922,41 @@ TEST_F(ChromeComposeClientTest, ThumbsDownOpensCorrectURL) {
   content::WebContents* new_tab_webcontents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_EQ(bug_url, new_tab_webcontents->GetVisibleURL());
+}
+
+TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
+  ShowDialogAndBindMojo();
+
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillRepeatedly(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+          })));
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillRepeatedly(
+          testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
+            compose_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->SaveWebUIState("first state");
+  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "");
+
+  autofill::FormFieldData field_2;
+  field_2.unique_renderer_id = autofill::FieldRendererId(2);
+  ShowDialogAndBindMojoWithFieldData(field_2);
+
+  // There should be two sessions.
+  EXPECT_EQ(2, client().GetSessionCountForTest());
+
+  // Navigate to a new page.
+  GURL next_page("http://example.com/a.html");
+  NavigateAndCommit(web_contents(), next_page);
+
+  // All session should be deleted.
+  EXPECT_EQ(0, client().GetSessionCountForTest());
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
