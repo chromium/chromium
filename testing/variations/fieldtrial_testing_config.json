@@ -11377,16 +11377,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_ZPSPrefetchOnSRPAndWeb",
+                    "name": "Enabled_ZPSPrefetchOnSRP",
                     "enable_features": [
-                        "ZeroSuggestPrefetchingOnSRP",
+                        "ZeroSuggestPrefetchingOnSRP"
+                    ],
+                    "disable_features": [
                         "ZeroSuggestPrefetchingOnWeb"
                     ]
                 },
                 {
-                    "name": "Enabled_ZPSPrefetchOnSRP",
+                    "name": "Enabled_ZPSPrefetchOnSRPAndWeb",
                     "enable_features": [
-                        "ZeroSuggestPrefetchingOnSRP"
+                        "ZeroSuggestPrefetchingOnSRP",
+                        "ZeroSuggestPrefetchingOnWeb"
                     ]
                 }
             ]
