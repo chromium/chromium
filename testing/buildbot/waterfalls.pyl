@@ -2443,7 +2443,7 @@
         'os_type': 'android',
         'browser_config': 'android-chromium',
         'mixins': [
-          'nougat',
+          'oreo_fleet',
           'bullhead',
           'has_native_resultdb_integration',
         ],
@@ -2470,7 +2470,7 @@
         'os_type': 'android',
         'browser_config': 'android-chromium',
         'mixins': [
-          'nougat',
+          'oreo_fleet',
           'bullhead',
           'has_native_resultdb_integration',
         ],
