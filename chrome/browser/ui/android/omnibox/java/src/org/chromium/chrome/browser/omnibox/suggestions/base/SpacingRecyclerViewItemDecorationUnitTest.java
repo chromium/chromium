@@ -51,7 +51,7 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
         doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
-        assertEquals(ELEMENT_SPACE, mOffsets.right);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
     }
@@ -61,7 +61,7 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
         doReturn(0).when(mRecyclerView).getChildAdapterPosition(mChildView);
         doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
-        assertEquals(ELEMENT_SPACE, mOffsets.left);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.left);
         assertEquals(LEAD_IN_SPACE, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
@@ -71,8 +71,8 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
     public void testSpacing_nonFirstElement() {
         doReturn(1).when(mRecyclerView).getChildAdapterPosition(mChildView);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
-        assertEquals(ELEMENT_SPACE, mOffsets.left);
-        assertEquals(ELEMENT_SPACE, mOffsets.right);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.left);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
     }
@@ -82,10 +82,11 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
         mDecoration.setLeadInSpace(LEAD_IN_SPACE);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
-        assertEquals(ELEMENT_SPACE, mOffsets.right);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
         verify(mRecyclerView, times(0)).invalidateItemDecorations();
+        assertEquals(LEAD_IN_SPACE, mDecoration.getLeadInSpace());
     }
 
     @Test
@@ -93,10 +94,11 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
         mDecoration.setElementSpace(ELEMENT_SPACE);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
-        assertEquals(ELEMENT_SPACE, mOffsets.right);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
         verify(mRecyclerView, times(0)).invalidateItemDecorations();
+        assertEquals(ELEMENT_SPACE, mDecoration.getElementSpace());
     }
 
     @Test
@@ -104,10 +106,11 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
         mDecoration.setLeadInSpace(2 * LEAD_IN_SPACE);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(2 * LEAD_IN_SPACE, mOffsets.left);
-        assertEquals(ELEMENT_SPACE, mOffsets.right);
+        assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
         verify(mRecyclerView).invalidateItemDecorations();
+        assertEquals(2 * LEAD_IN_SPACE, mDecoration.getLeadInSpace());
     }
 
     @Test
@@ -115,9 +118,10 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
         mDecoration.setElementSpace(2 * ELEMENT_SPACE);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
-        assertEquals(2 * ELEMENT_SPACE, mOffsets.right);
+        assertEquals(ELEMENT_SPACE, mOffsets.right);
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
         verify(mRecyclerView).invalidateItemDecorations();
+        assertEquals(2 * ELEMENT_SPACE, mDecoration.getElementSpace());
     }
 }

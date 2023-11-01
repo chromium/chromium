@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import android.content.Context;
@@ -106,107 +103,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                 mView.getPaddingBottom());
     }
 
-    /**
-     * We expect value to be computed as the tile margin value computed is larger than
-     * tile_view_padding
-     */
-    @Test
-    @Config(qualifiers = "sw480dp-port")
-    public void formFactor_itemSpacingPhone_computedPortrait_exactFit() {
-        int carouselWidth = mResources.getDisplayMetrics().widthPixels;
-        int initialPadding = 50;
-        int adjustedWidth = carouselWidth - initialPadding;
-        int baseSpacing = mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
-
-        doReturn(carouselWidth).when(mView).getMeasuredWidth();
-
-        // Adjusted carousel size should be (displayWidth - initialPadding).
-        // Let's compute hypothetical tile size which would yield itemSpacing == baseSpacing
-        // if we were to show 4.5 of them.
-        int totalTileAreaSize = adjustedWidth - (4 * baseSpacing);
-        int singleTileSize = (int) (totalTileAreaSize / 4.5);
-
-        // Quickly verify our logic. We should not deviate by more than 4.5 pixels (rounding).
-        assertEquals((int) (singleTileSize * 4.5 + baseSpacing * 4), adjustedWidth, 4.5);
-
-        // Verify that logic returns baseSpacing as computed itemSpacing.
-        assertEquals(
-                baseSpacing,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.PHONE, singleTileSize, initialPadding, mView));
-    }
-
-    @Test
-    @Config(qualifiers = "sw480dp-port")
-    public void formFactor_itemSpacingPhone_computedPortrait_tightFit() {
-        int carouselWidth = mResources.getDisplayMetrics().widthPixels;
-        int initialPadding = 50;
-        int adjustedWidth = carouselWidth - initialPadding;
-        int baseSpacing = mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
-
-        doReturn(carouselWidth).when(mView).getMeasuredWidth();
-
-        // Adjusted carousel size should be (displayWidth - initialPadding).
-        // Let's compute hypothetical tile size which would yield itemSpacing < baseSpacing
-        // if we were to show 4.5 of them.
-        int totalTileAreaSize = adjustedWidth - (4 * baseSpacing);
-        int singleTileSize = (int) (totalTileAreaSize / 4.5) + 5;
-
-        // Quickly verify our logic. We should exceed the available space, forcing the algorithm to
-        // reduce number of visible items.
-        assertTrue((int) (singleTileSize * 4.5 + baseSpacing * 4) > adjustedWidth);
-        // Compute expected padding in that case.
-        int expectedPadding = (int) (adjustedWidth - 3.5 * singleTileSize) / 3;
-
-        // Verify that logic returns padding for 3.5 tiles.
-        assertEquals(
-                expectedPadding,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.PHONE, singleTileSize, initialPadding, mView));
-    }
-
-    @Test
-    @Config(qualifiers = "sw480dp-port")
-    public void formFactor_itemSpacingPhone_computedPortrait_impossibleFit() {
-        int carouselWidth = mResources.getDisplayMetrics().widthPixels;
-        // No way to fit in 1.5 tiles on screen.
-        int singleTileSize = carouselWidth;
-        int baseSpacing = mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
-
-        assertEquals(
-                baseSpacing,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.PHONE, singleTileSize, 0, mView));
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp-port")
-    public void formFactor_itemSpacingTabletPortrait() {
-        Assert.assertEquals(
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.TABLET, Integer.MAX_VALUE, Integer.MAX_VALUE, mView));
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp-port")
-    public void formFactor_itemSpacingEndToEnd() {
-
-        final int spacingPx =
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
-        Assert.assertEquals(
-                spacingPx,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.TABLET, Integer.MAX_VALUE, Integer.MAX_VALUE, mView));
-
-        mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        var decoration = mView.getItemDecoration();
-        Assert.assertEquals(
-                OmniboxResourceProvider.getSideSpacing(mContext),
-                decoration.getLeadInSpaceForTest());
-        Assert.assertEquals(spacingPx / 2, decoration.getElementSpaceForTest());
-    }
-
     @Test
     public void formFactor_itemDecorationsDoNotAggregate() {
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
@@ -217,24 +113,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
         Assert.assertEquals(1, mView.getItemDecorationCount());
-    }
-
-    @Test
-    @Config(qualifiers = "land")
-    public void formFactor_itemSpacingPhone_landscape() {
-        Assert.assertEquals(
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.PHONE, Integer.MAX_VALUE, Integer.MAX_VALUE, mView));
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp-land")
-    public void formFactor_itemSpacingTablet_landscape() {
-        Assert.assertEquals(
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(
-                        FormFactor.TABLET, Integer.MAX_VALUE, Integer.MAX_VALUE, mView));
     }
 
     @Test
@@ -252,8 +130,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
         var decoration = mView.getItemDecoration();
         Assert.assertEquals(
-                OmniboxResourceProvider.getSideSpacing(mContext),
-                decoration.getLeadInSpaceForTest());
+                OmniboxResourceProvider.getSideSpacing(mContext), decoration.getLeadInSpace());
     }
 
     @Test
@@ -282,6 +159,15 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         Assert.assertEquals(
                 OmniboxResourceProvider.getHeaderStartPadding(mContext)
                         - mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_padding),
-                decoration.getLeadInSpaceForTest());
+                decoration.getLeadInSpace());
+    }
+
+    @Test
+    public void itemDecoration_setItemWidth() {
+        mModel.set(BaseCarouselSuggestionViewProperties.ITEM_WIDTH, 10);
+        Assert.assertEquals(10, mView.getItemDecoration().getItemWidthForTesting());
+
+        mModel.set(BaseCarouselSuggestionViewProperties.ITEM_WIDTH, 30);
+        Assert.assertEquals(30, mView.getItemDecoration().getItemWidthForTesting());
     }
 }

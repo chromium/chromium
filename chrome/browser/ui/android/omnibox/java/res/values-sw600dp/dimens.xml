@@ -7,5 +7,6 @@ found in the LICENSE file.
 
 <resources>
   <dimen name="location_bar_status_icon_area_size">48dp</dimen>
+  <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">16dp</dimen>
 </resources>
 

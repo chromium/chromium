@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
@@ -29,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.base.DynamicSpacingRecyclerViewItemDecoration;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Tests for {@link BaseCarouselSuggestionView}. */
@@ -37,6 +39,7 @@ public class BaseCarouselSuggestionViewUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock SimpleRecyclerViewAdapter mAdapter;
     private @Mock RecyclerViewSelectionController mController;
+    private @Mock DynamicSpacingRecyclerViewItemDecoration mDecoration;
     private @Mock View mChild;
     private @Spy BaseCarouselSuggestionView mView =
             new BaseCarouselSuggestionView(ContextUtils.getApplicationContext(), mAdapter);
@@ -44,6 +47,9 @@ public class BaseCarouselSuggestionViewUnitTest {
     @Before
     public void setUp() {
         mView.setSelectionControllerForTesting(mController);
+        mView.setItemDecorationForTesting(mDecoration);
+
+        assertEquals(mDecoration, mView.getItemDecoration());
         clearInvocations(mView, mAdapter, mController, mChild);
     }
 
@@ -151,5 +157,11 @@ public class BaseCarouselSuggestionViewUnitTest {
         mView.setSelected(false);
         verify(mController, times(1)).setSelectedItem(RecyclerView.NO_POSITION, /* force= */ false);
         verifyNoMoreInteractions(mController);
+    }
+
+    @Test
+    public void onMeasure_updatesElementSpacingWhenSizeChanges() {
+        mView.onMeasure(0, 0);
+        verify(mDecoration).notifyViewMeasuredSizeChanged();
     }
 }

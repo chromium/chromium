@@ -58,8 +58,7 @@ public class ActionChipsView extends RecyclerView {
         final @Px int elementSpace =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
 
-        addItemDecoration(
-                new SpacingRecyclerViewItemDecoration(this, leadInSpace, elementSpace / 2));
+        addItemDecoration(new SpacingRecyclerViewItemDecoration(this, leadInSpace, elementSpace));
     }
 
     @Override
