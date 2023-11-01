@@ -320,7 +320,6 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchFailedNon2XX:
     case PrefetchStatus::kPrefetchFailedMIMENotSupported:
     case PrefetchStatus::kPrefetchIsPrivacyDecoy:
-    case PrefetchStatus::kPrefetchIsStale:
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
     case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
     case PrefetchStatus::kPrefetchHeldback:

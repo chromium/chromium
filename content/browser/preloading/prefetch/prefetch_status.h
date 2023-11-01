@@ -141,8 +141,8 @@ enum class PrefetchStatus {
   kPrefetchIsPrivacyDecoy = 29,
 
   // The prefetch was eligible, but too much time elapsed between the prefetch
-  // and the interception.
-  kPrefetchIsStale = 30,
+  // and the interception. No longer used.
+  // kPrefetchIsStale = 30,
 
   // Deprecated. NSP no longer supported
   // kPrefetchIsStaleWithNSP = 31,

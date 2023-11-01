@@ -234,8 +234,6 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchProxyNotAvailable;
     case PrefetchStatus::kPrefetchIsPrivacyDecoy:
       return Preload::PrefetchStatusEnum::PrefetchIsPrivacyDecoy;
-    case PrefetchStatus::kPrefetchIsStale:
-      return Preload::PrefetchStatusEnum::PrefetchIsStale;
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
       return Preload::PrefetchStatusEnum::PrefetchNotUsedCookiesChanged;
     case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:

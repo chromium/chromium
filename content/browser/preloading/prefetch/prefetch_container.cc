@@ -159,7 +159,6 @@ absl::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
     case PrefetchStatus::kPrefetchIneligibleRetryAfter:
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
-    case PrefetchStatus::kPrefetchIsStale:
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
     case PrefetchStatus::
@@ -264,7 +263,6 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchIneligibleRetryAfter:
       case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
       case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
-      case PrefetchStatus::kPrefetchIsStale:
       case PrefetchStatus::kPrefetchNotUsedProbeFailed:
       case PrefetchStatus::
           kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
