@@ -547,9 +547,15 @@ class SystemAccessProcessPrintBrowserTestBase
           PrintBackendServiceManager::GetInstance().GetClientsRegisteredCount(),
           0u);
     }
-    PrintBackendServiceManager::ResetForTesting();
 #endif
     ASSERT_EQ(print_job_construction_count(), print_job_destruction_count());
+  }
+
+  void TearDownOnMainThread() override {
+    PrintBrowserTest::TearDownOnMainThread();
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    PrintBackendServiceManager::ResetForTesting();
+#endif
   }
 
   // `PrintBackendServiceTestImpl` does a debug check on shutdown that there
