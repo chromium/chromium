@@ -472,20 +472,20 @@ void ZoomModeToZoomSettings(ZoomController::ZoomMode zoom_mode,
   DCHECK(zoom_settings);
   switch (zoom_mode) {
     case ZoomController::ZOOM_MODE_DEFAULT:
-      zoom_settings->mode = api::tabs::ZOOM_SETTINGS_MODE_AUTOMATIC;
-      zoom_settings->scope = api::tabs::ZOOM_SETTINGS_SCOPE_PER_ORIGIN;
+      zoom_settings->mode = api::tabs::ZoomSettingsMode::kAutomatic;
+      zoom_settings->scope = api::tabs::ZoomSettingsScope::kPerOrigin;
       break;
     case ZoomController::ZOOM_MODE_ISOLATED:
-      zoom_settings->mode = api::tabs::ZOOM_SETTINGS_MODE_AUTOMATIC;
-      zoom_settings->scope = api::tabs::ZOOM_SETTINGS_SCOPE_PER_TAB;
+      zoom_settings->mode = api::tabs::ZoomSettingsMode::kAutomatic;
+      zoom_settings->scope = api::tabs::ZoomSettingsScope::kPerTab;
       break;
     case ZoomController::ZOOM_MODE_MANUAL:
-      zoom_settings->mode = api::tabs::ZOOM_SETTINGS_MODE_MANUAL;
-      zoom_settings->scope = api::tabs::ZOOM_SETTINGS_SCOPE_PER_TAB;
+      zoom_settings->mode = api::tabs::ZoomSettingsMode::kManual;
+      zoom_settings->scope = api::tabs::ZoomSettingsScope::kPerTab;
       break;
     case ZoomController::ZOOM_MODE_DISABLED:
-      zoom_settings->mode = api::tabs::ZOOM_SETTINGS_MODE_DISABLED;
-      zoom_settings->scope = api::tabs::ZOOM_SETTINGS_SCOPE_PER_TAB;
+      zoom_settings->mode = api::tabs::ZoomSettingsMode::kDisabled;
+      zoom_settings->scope = api::tabs::ZoomSettingsScope::kPerTab;
       break;
   }
 }
@@ -1115,7 +1115,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       tabs::Query::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  bool loading_status_set = params->query_info.status != tabs::TAB_STATUS_NONE;
+  bool loading_status_set = params->query_info.status != tabs::TabStatus::kNone;
 
   URLPatternSet url_patterns;
   if (params->query_info.url) {
@@ -1149,8 +1149,9 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     index = *params->query_info.index;
 
   std::string window_type;
-  if (params->query_info.window_type != tabs::WINDOW_TYPE_NONE)
+  if (params->query_info.window_type != tabs::WindowType::kNone) {
     window_type = tabs::ToString(params->query_info.window_type);
+  }
 
   base::Value::List result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -2663,9 +2664,9 @@ ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   // "per-origin" scope is only available in "automatic" mode.
-  if (params->zoom_settings.scope == tabs::ZOOM_SETTINGS_SCOPE_PER_ORIGIN &&
-      params->zoom_settings.mode != tabs::ZOOM_SETTINGS_MODE_AUTOMATIC &&
-      params->zoom_settings.mode != tabs::ZOOM_SETTINGS_MODE_NONE) {
+  if (params->zoom_settings.scope == tabs::ZoomSettingsScope::kPerOrigin &&
+      params->zoom_settings.mode != tabs::ZoomSettingsMode::kAutomatic &&
+      params->zoom_settings.mode != tabs::ZoomSettingsMode::kNone) {
     return RespondNow(Error(tabs_constants::kPerOriginOnlyInAutomaticError));
   }
 
@@ -2673,21 +2674,21 @@ ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
   // user-specified |zoom_settings|.
   ZoomController::ZoomMode zoom_mode = ZoomController::ZOOM_MODE_DEFAULT;
   switch (params->zoom_settings.mode) {
-    case tabs::ZOOM_SETTINGS_MODE_NONE:
-    case tabs::ZOOM_SETTINGS_MODE_AUTOMATIC:
+    case tabs::ZoomSettingsMode::kNone:
+    case tabs::ZoomSettingsMode::kAutomatic:
       switch (params->zoom_settings.scope) {
-        case tabs::ZOOM_SETTINGS_SCOPE_NONE:
-        case tabs::ZOOM_SETTINGS_SCOPE_PER_ORIGIN:
+        case tabs::ZoomSettingsScope::kNone:
+        case tabs::ZoomSettingsScope::kPerOrigin:
           zoom_mode = ZoomController::ZOOM_MODE_DEFAULT;
           break;
-        case tabs::ZOOM_SETTINGS_SCOPE_PER_TAB:
+        case tabs::ZoomSettingsScope::kPerTab:
           zoom_mode = ZoomController::ZOOM_MODE_ISOLATED;
       }
       break;
-    case tabs::ZOOM_SETTINGS_MODE_MANUAL:
+    case tabs::ZoomSettingsMode::kManual:
       zoom_mode = ZoomController::ZOOM_MODE_MANUAL;
       break;
-    case tabs::ZOOM_SETTINGS_MODE_DISABLED:
+    case tabs::ZoomSettingsMode::kDisabled:
       zoom_mode = ZoomController::ZOOM_MODE_DISABLED;
   }
 
