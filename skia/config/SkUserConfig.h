@@ -243,6 +243,11 @@ SK_API void SkDebugf_FileLine(const char* file,
 */
 #define SK_IMPROVE_RASTER_PIPELINE_PRECISION
 
+/* Use the AnalyticRRectRenderStep for per-edge AA quads in Graphite,
+ * rather than the new PerEdgeAAQuadRenderStep.
+ */
+#define SK_USE_LEGACY_GRAPHITE_QUAD_RENDERING
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
