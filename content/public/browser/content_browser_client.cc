@@ -1586,6 +1586,13 @@ bool ContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
   return true;
 }
 
+bool ContentBrowserClient::AreDeprecatedAutomaticBeaconCredentialsAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& destination_url,
+    const url::Origin& top_frame_origin) {
+  return false;
+}
+
 bool ContentBrowserClient::
     IsTransientActivationRequiredForShowFileOrDirectoryPicker(
         WebContents* web_contents) {

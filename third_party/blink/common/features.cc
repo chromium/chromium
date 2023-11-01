@@ -785,6 +785,13 @@ BASE_FEATURE(kFencedFramesM120Features,
              "FencedFramesM120Features",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Temporarily un-disable credentials on fenced frame automatic beacons until
+// third party cookie deprecation.
+// TODO(crbug.com/1496395): Remove this after 3PCD.
+BASE_FEATURE(kFencedFramesAutomaticBeaconCredentials,
+             "FencedFramesAutomaticBeaconCredentials",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
              "FileHandlingIcons",

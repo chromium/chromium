@@ -58,6 +58,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
@@ -179,14 +180,15 @@ FencedFrameReporter::ReportingDestinationInfo::operator=(
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     BrowserContext* browser_context,
-    ReportingUrlMap reporting_url_map) {
-  // `private_aggregation_manager_`, `main_frame_origin_`, and `winner_origin_`
+    ReportingUrlMap reporting_url_map,
+    const url::Origin& main_frame_origin) {
+  // `private_aggregation_manager_` and `winner_origin_`
   // are only needed by FLEDGE.
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
           base::PassKey<FencedFrameReporter>(),
           PrivacySandboxInvokingAPI::kSharedStorage,
-          std::move(url_loader_factory), browser_context);
+          std::move(url_loader_factory), browser_context, main_frame_origin);
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
       ReportingDestinationInfo(std::move(reporting_url_map)));
@@ -205,8 +207,8 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
       base::MakeRefCounted<FencedFrameReporter>(
           base::PassKey<FencedFrameReporter>(),
           PrivacySandboxInvokingAPI::kProtectedAudience,
-          std::move(url_loader_factory), browser_context,
-          private_aggregation_manager, main_frame_origin, winner_origin,
+          std::move(url_loader_factory), browser_context, main_frame_origin,
+          private_aggregation_manager, winner_origin,
           allowed_reporting_origins);
   reporter->direct_seller_is_seller_ = direct_seller_is_seller;
   reporter->reporting_metadata_.emplace(
@@ -226,24 +228,26 @@ FencedFrameReporter::FencedFrameReporter(
     PrivacySandboxInvokingAPI invoking_api,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     BrowserContext* browser_context,
+    const url::Origin& main_frame_origin,
     PrivateAggregationManager* private_aggregation_manager,
-    const absl::optional<url::Origin>& main_frame_origin,
     const absl::optional<url::Origin>& winner_origin,
     const absl::optional<std::vector<url::Origin>>& allowed_reporting_origins)
     : url_loader_factory_(std::move(url_loader_factory)),
       attribution_manager_(
           AttributionManager::FromBrowserContext(browser_context)),
       browser_context_(browser_context),
-      private_aggregation_manager_(private_aggregation_manager),
       main_frame_origin_(main_frame_origin),
+      private_aggregation_manager_(private_aggregation_manager),
       winner_origin_(winner_origin),
       allowed_reporting_origins_(allowed_reporting_origins),
       invoking_api_(invoking_api) {
   DCHECK(url_loader_factory_);
   DCHECK(browser_context_);
-  // These should both be nullopt for non-FLEDGE fenced frames, and populated
-  // for FLEDGE fenced frames.
-  DCHECK_EQ(main_frame_origin_.has_value(), winner_origin_.has_value());
+
+  // `winner_origin` should have a value if and only if this a Protected
+  // Audience reporter.
+  DCHECK_EQ(invoking_api == PrivacySandboxInvokingAPI::kProtectedAudience,
+            winner_origin.has_value());
 }
 
 FencedFrameReporter::~FencedFrameReporter() {
@@ -535,7 +539,24 @@ bool FencedFrameReporter::SendReportInternal(
   request->url = destination_url;
   request->mode = network::mojom::RequestMode::kCors;
   request->request_initiator = request_initiator;
+
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  // Allow cookies on automatic beacons while third party cookies are enabled
+  // to help with adoption/debugging.
+  // (https://github.com/WICG/turtledove/issues/866)
+  // TODO(crbug.com/1496395): After 3PCD, this will be dead code and should be
+  // removed.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesAutomaticBeaconCredentials) &&
+      absl::holds_alternative<DestinationEnumEvent>(event_variant) &&
+      absl::get<DestinationEnumEvent>(event_variant).type ==
+          blink::kFencedFrameTopNavigationBeaconType &&
+      GetContentClient()
+          ->browser()
+          ->AreDeprecatedAutomaticBeaconCredentialsAllowed(
+              browser_context_, destination_url, main_frame_origin_)) {
+    request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+  }
   if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
     request->method = net::HttpRequestHeaders::kPostMethod;
   } else {
@@ -714,8 +735,7 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
   DCHECK(private_aggregation_manager_);
   DCHECK(winner_origin_.has_value() &&
          winner_origin_.value().scheme() == url::kHttpsScheme);
-  DCHECK(main_frame_origin_.has_value() &&
-         main_frame_origin_.value().scheme() == url::kHttpsScheme);
+  DCHECK(main_frame_origin_.scheme() == url::kHttpsScheme);
 
   auto it = private_aggregation_event_map_.find(pa_event_type);
   if (it == private_aggregation_event_map_.end()) {
@@ -724,7 +744,7 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
 
   SplitContributionsIntoBatchesThenSendToHost(
       /*requests=*/std::move(it->second), *private_aggregation_manager_,
-      /*reporting_origin=*/winner_origin_.value(), main_frame_origin_.value());
+      /*reporting_origin=*/winner_origin_.value(), main_frame_origin_);
 
   // Remove the entry of key `pa_event_type` from
   // `private_aggregation_event_map_` to avoid possibly sending the same

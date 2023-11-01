@@ -2055,6 +2055,20 @@ class FledgeFencedFrameOriginContentBrowserClient
       bool post_impression_reporting) override {
     return true;
   }
+
+  bool AreDeprecatedAutomaticBeaconCredentialsAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& destination_url,
+      const url::Origin& top_frame_origin) override {
+    return allow_automatic_beacon_credentials_;
+  }
+
+  void SetAllowAutomaticBeaconCredentials(bool allowed) {
+    allow_automatic_beacon_credentials_ = allowed;
+  }
+
+ private:
+  bool allow_automatic_beacon_credentials_ = true;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2089,7 +2103,8 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          // This feature allows `runAdAuction()`'s promise to resolve to a
          // `FencedFrameConfig` object upon developer request.
          {blink::features::kFencedFramesAPIChanges, {}},
-         {blink::features::kFencedFramesM119Features, {}}},
+         {blink::features::kFencedFramesM119Features, {}},
+         {blink::features::kFencedFramesAutomaticBeaconCredentials, {}}},
         {/* disabled_features */});
   }
 
@@ -2229,6 +2244,10 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     EXPECT_EQ(expected_value, header);
     sec_fetch_dest_headers_map_.erase(file_name);
     return !header.empty();
+  }
+
+  void SetAllowAutomaticBeaconCredentials(bool allowed) {
+    content_browser_client_->SetAllowAutomaticBeaconCredentials(allowed);
   }
 
   ~FencedFrameParameterizedBrowserTest() override {
@@ -5056,12 +5075,21 @@ class FencedFrameReportEventBrowserTest
             https_server(), kReportingURL));
     ASSERT_TRUE(https_server()->Start());
 
-    // Set up the embedder and a fenced frame.
-    GURL main_url = https_server()->GetURL("a.test", "/hello.html");
-    EXPECT_TRUE(NavigateToURL(shell(), main_url));
+    // Set up the document.cookie. We will later verify that this is not sent
+    // with the reportEvent() beacon.
+    // TODO(crbug.com/1496395): Remove this block after 3PCD.
+    GURL reporting_cookie_url =
+        https_server()->GetURL(reporting_origin, "/hello.html");
+    EXPECT_TRUE(NavigateToURL(shell(), reporting_cookie_url));
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                               ->GetPrimaryFrameTree()
                               .root();
+    EXPECT_TRUE(ExecJs(
+        root, "document.cookie = 'name=foobarbaz; SameSite=None; Secure';"));
+
+    // Set up the embedder and a fenced frame.
+    GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+    EXPECT_TRUE(NavigateToURL(shell(), main_url));
     EXPECT_TRUE(
         ExecJs(root,
                "var fenced_frame = document.createElement('fencedframe');"
@@ -5261,6 +5289,8 @@ class FencedFrameReportEventBrowserTest
         }
         EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                     "Attribution-Reporting-Support"));
+        // TODO(crbug.com/1496395): Remove this check after 3PCD.
+        EXPECT_EQ(0U, response.http_request()->headers.count("Cookie"));
         response.Done();
         ++response_index;
       } else {
@@ -6903,6 +6933,10 @@ class FencedFrameAutomaticBeaconBrowserTest
 
     // Whether we expect the beacon to send with data or not.
     bool expected_data = true;
+
+    // Whether we expect cookie data to be attached to the beacon.
+    // TODO(crbug.com/1496395): Remove this after 3PCD.
+    bool expected_cookie = true;
   };
 
   static std::string DescribeParams(
@@ -6964,6 +6998,7 @@ class FencedFrameAutomaticBeaconBrowserTest
                                                config.starting_url.path);
     GURL navigation_url = https_server()->GetURL(config.navigation_url.origin,
                                                  config.navigation_url.path);
+
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                               ->GetPrimaryFrameTree()
@@ -6972,8 +7007,7 @@ class FencedFrameAutomaticBeaconBrowserTest
     // Create a FencedFrameReporter and pass it reporting metadata.
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
         CreateFencedFrameReporter();
-    GURL reporting_url(
-        https_server()->GetURL(reporting_origin, "/_report_event_server.html"));
+    GURL reporting_url(https_server()->GetURL(reporting_origin, kReportingURL));
     // Set valid reporting metadata for buyer.
     fenced_frame_reporter->OnUrlMappingReady(
         blink::FencedFrame::ReportingDestination::kBuyer,
@@ -7112,6 +7146,26 @@ class FencedFrameAutomaticBeaconBrowserTest
       target = "_top";
     }
 
+    // Set up the document.cookie for credentialed automatic beacons.
+    // TODO(crbug.com/1496395): Remove this block after 3PCD.
+    GURL reporting_cookie_url =
+        https_server()->GetURL(reporting_origin, "/hello.html");
+    if (config.expected_success) {
+      EXPECT_TRUE(ExecJs(root,
+                         "var cookie_frame = document.createElement('iframe');"
+                         "document.body.appendChild(cookie_frame);"));
+      EXPECT_EQ(2U, root->child_count());
+      FrameTreeNode* cookie_frame_root_node = root->child_at(1);
+      TestFrameNavigationObserver cookie_frame_observer(
+          cookie_frame_root_node->current_frame_host());
+      EXPECT_TRUE(ExecJs(
+          root, JsReplace("cookie_frame.src = $1;", reporting_cookie_url)));
+      cookie_frame_observer.WaitForCommit();
+      EXPECT_TRUE(
+          ExecJs(cookie_frame_root_node,
+                 "document.cookie = 'name=foobarbaz; SameSite=None; Secure';"));
+    }
+
     EXPECT_TRUE(
         ExecJs(ad_frame_root_node,
                JsReplace("window.open($1, $2);", navigation_url, target),
@@ -7161,6 +7215,30 @@ class FencedFrameAutomaticBeaconBrowserTest
         response.http_request()->headers.at("Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
+
+    // Verify the request has credentials attached.
+    // TODO(crbug.com/1496395): Remove this block after 3PCD.
+    if (config.expected_cookie) {
+      EXPECT_EQ("name=foobarbaz",
+                response.http_request()->headers.at("Cookie"));
+      // Send a response that sets new cookies.
+      auto response_packet =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      response_packet->set_code(net::HTTP_OK);
+      response_packet->AddCustomHeader("Set-Cookie",
+                                       "name=qux; SameSite=None; Secure");
+      response.Send(response_packet->ToResponseString());
+
+      // Verify that the cookies got set correctly.
+      EXPECT_TRUE(NavigateToURL(shell(), reporting_cookie_url));
+      root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                 ->GetPrimaryFrameTree()
+                 .root();
+      EXPECT_EQ("name=qux", EvalJs(root, "document.cookie"));
+    } else {
+      EXPECT_EQ(0U, response.http_request()->headers.count("Cookie"));
+    }
+
     response.Done();
 
     histogram_tester_.ExpectUniqueSample(
@@ -7177,8 +7255,6 @@ class FencedFrameAutomaticBeaconBrowserTest
  private:
   // Server must start after ControllableHttpResponse object being constructed.
   void AssertServerStart() override {}
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::HistogramTester histogram_tester_;
 };
@@ -7303,6 +7379,17 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
       .navigation_url = {"b.test", "/fenced_frames/title1.html"},
       .register_destinations = false,
       .expected_data = false,
+  };
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       AutomaticBeaconCredentialsDisallowed) {
+  SetAllowAutomaticBeaconCredentials(false);
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"a.test", "/fenced_frames/title1.html"},
+      .expected_cookie = false,
   };
   RunTest(config);
 }

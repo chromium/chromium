@@ -2643,6 +2643,24 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& top_level_origin);
 
+  // Checks whether credentials should be included in fenced frame automatic
+  // beacon requests, based on user cookie settings. Any cookies sent in an
+  // automatic beacon response header will be honored and stored.
+  //
+  // `destination_url` is the URL that the automatic beacon is being sent to,
+  // and the URL whose origin's cookies will be accessed.
+  //
+  // `top_frame_origin` is the main frame of the page that ran the auction that
+  // resulted in the creation of the FencedFrameReporter that called this
+  // function.
+  //
+  // TODO(crbug.com/1496395): After 3PCD, this will be dead code and should be
+  // removed.
+  virtual bool AreDeprecatedAutomaticBeaconCredentialsAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& destination_url,
+      const url::Origin& top_frame_origin);
+
   // Checks if file or directory pickers from the file system access web API
   // require a user gesture (transient activation). They usually do, but this
   // can be bypassed via admin policy.
