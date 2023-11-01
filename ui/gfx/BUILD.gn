@@ -923,6 +923,10 @@ test("gfx_unittests") {
     deps += [ "//ui/android:ui_java" ]
   }
 
+  if (is_ios) {
+    deps += [ "//ui/gfx:codec_tests_bundle_data" ]
+  }
+
   if (is_android || is_fuchsia) {
     sources += [ "font_fallback_skia_unittest.cc" ]
   }
@@ -1040,8 +1044,12 @@ fuzzer_test("render_text_api_fuzzer") {
 }
 
 if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
+  bundle_data_from_filelist("codec_tests_bundle_data") {
     testonly = true
-    filelist_name = "test/data/unit_tests_bundle_data.filelist"
+    filelist_name = "test/data/codec/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("compositor_tests_bundle_data") {
+    testonly = true
+    filelist_name = "test/data/compositor/unit_tests_bundle_data.filelist"
   }
 }
