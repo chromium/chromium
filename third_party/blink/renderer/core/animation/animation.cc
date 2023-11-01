@@ -623,7 +623,17 @@ bool Animation::PreCommit(
     return false;
   }
 
+  absl::optional<int> replaced_cc_animation_id;
   if (should_cancel) {
+    if (should_start && GetCompositorAnimation()) {
+      // If the animation is being canceled and restarted, pass the replaced
+      // cc::Animation's id along so the compositor can recreate the
+      // cc::Animation with the same id, ensuring continuity in the animation.
+      replaced_cc_animation_id = GetCompositorAnimation()->CcAnimationId();
+      // Preserve the compositor group for a restarted Animation so that
+      // animation events are routed correctly.
+      compositor_group = compositor_group_;
+    }
     CancelAnimationOnCompositor();
     compositor_state_ = nullptr;
   }
@@ -646,7 +656,7 @@ bool Animation::PreCommit(
         // for a marquee element does not depend on having a layout object.
         if (HasActiveAnimationsOnCompositor())
           CancelAnimationOnCompositor();
-        CreateCompositorAnimation();
+        CreateCompositorAnimation(replaced_cc_animation_id);
         StartAnimationOnCompositor(paint_artifact_compositor);
         compositor_state_ = std::make_unique<CompositorState>(*this);
       } else {
@@ -2832,10 +2842,12 @@ void Animation::cancel() {
   NotifyProbe();
 }
 
-void Animation::CreateCompositorAnimation() {
+void Animation::CreateCompositorAnimation(
+    absl::optional<int> replaced_cc_animation_id) {
   if (Platform::Current()->IsThreadedAnimationEnabled() &&
       !compositor_animation_) {
-    compositor_animation_ = CompositorAnimationHolder::Create(this);
+    compositor_animation_ =
+        CompositorAnimationHolder::Create(this, replaced_cc_animation_id);
     AttachCompositorTimeline();
   }
 
@@ -3302,14 +3314,18 @@ void Animation::Trace(Visitor* visitor) const {
 }
 
 Animation::CompositorAnimationHolder*
-Animation::CompositorAnimationHolder::Create(Animation* animation) {
-  return MakeGarbageCollected<CompositorAnimationHolder>(animation);
+Animation::CompositorAnimationHolder::Create(
+    Animation* animation,
+    absl::optional<int> replaced_cc_animation_id) {
+  return MakeGarbageCollected<CompositorAnimationHolder>(
+      animation, replaced_cc_animation_id);
 }
 
 Animation::CompositorAnimationHolder::CompositorAnimationHolder(
-    Animation* animation)
+    Animation* animation,
+    absl::optional<int> replaced_cc_animation_id)
     : animation_(animation) {
-  compositor_animation_ = CompositorAnimation::Create();
+  compositor_animation_ = CompositorAnimation::Create(replaced_cc_animation_id);
   compositor_animation_->SetAnimationDelegate(animation_);
 }
 

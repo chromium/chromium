@@ -2861,7 +2861,8 @@ TEST_F(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   keyframe_effect =
       impl_host->GetElementAnimationsForElementIdForTesting(element_id)
           ->FirstKeyframeEffectForTesting();
-  keyframe_model_impl = keyframe_effect->keyframe_models()[0].get();
+  keyframe_model_impl =
+      keyframe_effect->GetKeyframeModelById(keyframe_model_main->id());
 
   EXPECT_EQ(gfx::KeyframeModel::RUNNING, keyframe_model_impl->run_state());
   EXPECT_TRUE(keyframe_model_main->HasActiveTime(base::TimeTicks()));

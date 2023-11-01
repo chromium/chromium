@@ -898,9 +898,9 @@ TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
   animation->updatePlaybackRate(0.5, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
-  // Compositor animation needs to restart and will have a new compositor group.
+  // Compositor animation needs to restart and will keep its compositor group.
   int post_update_compositor_group = animation->CompositorGroup();
-  EXPECT_NE(compositor_group, post_update_compositor_group);
+  EXPECT_EQ(compositor_group, post_update_compositor_group);
   SyncAnimationOnCompositor(/*needs_start_time*/ true);
 
   // No jump in opacity after changing the playback rate.
@@ -938,9 +938,9 @@ TEST_P(CSSAnimationsCompositorSyncTest, Reverse) {
   // Verify there is no jump in opacity after changing the play direction
   EXPECT_NEAR(0.5, element_->GetComputedStyle()->Opacity(), kTolerance);
 
-  // Compositor animation needs to restart and will have a new compositor group.
+  // Compositor animation needs to restart and will keep its compositor group.
   int post_update_compositor_group = animation->CompositorGroup();
-  EXPECT_NE(compositor_group, post_update_compositor_group);
+  EXPECT_EQ(compositor_group, post_update_compositor_group);
   SyncAnimationOnCompositor(/*needs_start_time*/ true);
 
   // Verify updates to cc Keyframe model.
@@ -981,9 +981,9 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetStartTime) {
   EXPECT_NEAR(250, current_time->GetAsDouble(), kTimeToleranceMilliseconds);
   EXPECT_NEAR(0.75, element_->GetComputedStyle()->Opacity(), kTolerance);
 
-  // Compositor animation needs to restart and will have a new compositor group.
+  // Compositor animation needs to restart and will keep its compositor group.
   int post_update_compositor_group = animation->CompositorGroup();
-  EXPECT_NE(compositor_group, post_update_compositor_group);
+  EXPECT_EQ(compositor_group, post_update_compositor_group);
   SyncAnimationOnCompositor(/*needs_start_time*/ false);
 
   // Verify updates to cc Keyframe model.
@@ -1019,9 +1019,9 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   EXPECT_NEAR(750, current_time->GetAsDouble(), kTimeToleranceMilliseconds);
   EXPECT_NEAR(0.25, element_->GetComputedStyle()->Opacity(), kTolerance);
 
-  // Compositor animation needs to restart and will have a new compositor group.
+  // Compositor animation needs to restart and will keep its compositor group.
   int post_update_compositor_group = animation->CompositorGroup();
-  EXPECT_NE(compositor_group, post_update_compositor_group);
+  EXPECT_EQ(compositor_group, post_update_compositor_group);
   SyncAnimationOnCompositor(/*needs_start_time*/ false);
 
   // Verify updates to cc Keyframe model.

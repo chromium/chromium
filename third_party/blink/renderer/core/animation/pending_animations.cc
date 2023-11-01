@@ -76,6 +76,11 @@ bool PendingAnimations::Update(
     bool has_monotonic_timeline =
         animation->TimelineInternal() &&
         animation->TimelineInternal()->IsMonotonicallyIncreasing();
+    // Note, not setting a compositor group means animation events may be
+    // dropped or mis-routed since they'll all target group 1. This doesn't
+    // cause any issues currently, since blink::Animation only implements
+    // NotifyAnimationStarted, but it would be an issue if Blink ever wanted to
+    // handle the other events in CompositorAnimationDelegate.
     bool use_compositor_group =
         !animation->StartTimeInternal() && has_monotonic_timeline;
     if (animation->PreCommit(use_compositor_group ? compositor_group : 1,
@@ -124,6 +129,10 @@ bool PendingAnimations::Update(
       DCHECK(!animation->StartTimeInternal());
       DCHECK(animation->TimelineInternal()->IsActive() &&
              animation->TimelineInternal()->CurrentTime());
+      // TODO(bokan): This call is intended only to start main thread
+      // animations but nothing prevents it from starting compositor
+      // animations. See discussion at
+      // https://chromium-review.googlesource.com/c/chromium/src/+/4605129/comment/606f1f36_a5725f99/
       animation->NotifyReady(
           animation->TimelineInternal()->CurrentTime().value());
     }
