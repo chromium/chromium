@@ -170,12 +170,6 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
       return;
     }
 
-    if (this.deviceState_ && this.deviceState_.scanning) {
-      // Cellular properties may be invalid while scanning, so keep the
-      // existing properties instead.
-      response.result.typeProperties.cellular =
-          this.managedProperties_!.typeProperties.cellular;
-    }
     this.managedProperties_ = response.result;
 
     if (!this.deviceState_) {

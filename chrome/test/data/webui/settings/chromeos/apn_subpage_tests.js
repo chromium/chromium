@@ -146,30 +146,6 @@ suite('ApnSubpageTest', function() {
         assertEquals(4, counter);
       });
 
-  test(
-      'Keep same cellular properties while network is updating and' +
-          ' scanning is in process',
-      async function() {
-        let props = OncMojo.getDefaultManagedProperties(
-            NetworkType.kCellular, 'cellular_guid', 'cellular');
-        props.typeProperties.cellular = {testProp: true};
-        mojoApi_.setManagedPropertiesForTest(props);
-        await flushTasks();
-        const getApnList = () =>
-            apnSubpage.shadowRoot.querySelector('apn-list');
-        assertTrue(getApnList().managedCellularProperties.testProp);
-        apnSubpage.deviceState_ = {
-          type: NetworkType.kCellular,
-          scanning: true,
-        };
-        props = OncMojo.getDefaultManagedProperties(
-            NetworkType.kCellular, 'cellular_guid', 'cellular');
-        props.typeProperties.cellular = {testProp: false};
-        mojoApi_.setManagedPropertiesForTest(props);
-        await flushTasks();
-        assertTrue(getApnList().managedCellularProperties.testProp);
-      });
-
   test('Error state is propagated to <apn-list>', async function() {
     let props = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_guid', 'cellular');
