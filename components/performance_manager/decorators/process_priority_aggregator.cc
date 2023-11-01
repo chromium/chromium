@@ -156,6 +156,9 @@ base::Value::Dict ProcessPriorityAggregator::DescribeProcessNodeData(
   base::Value::Dict ret;
   ret.Set("user_visible_count", static_cast<int>(data->user_visible_count_));
   ret.Set("user_blocking_count", static_cast<int>(data->user_blocking_count_));
+#if DCHECK_IS_ON()
+  ret.Set("lowest_count", static_cast<int>(data->lowest_count_));
+#endif  // DCHECK_IS_ON()
   return ret;
 }
 
