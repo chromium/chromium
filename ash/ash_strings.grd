@@ -4180,8 +4180,8 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FAST_FORWARD_MEDIA" desc="Label for accelerator action - Fast forward media.">
         Fast forward media
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" desc="Label for accelerator action - Open Quick Settings by selecting the time.">
-        Open Quick Settings by selecting the time
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" desc="Label for accelerator action - Open Quick Settings.">
+        Open Quick Settings
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" desc="Label for accelerator action - Open notifications.">
         Open notifications
