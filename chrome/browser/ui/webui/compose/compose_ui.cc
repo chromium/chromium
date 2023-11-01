@@ -72,18 +72,18 @@ void ComposeUI::BindInterface(
 }
 
 void ComposeUI::BindInterface(
-    mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandlerFactory>
+    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandlerFactory>
         factory) {
-  if (dialog_handler_factory_.is_bound()) {
-    dialog_handler_factory_.reset();
+  if (session_handler_factory_.is_bound()) {
+    session_handler_factory_.reset();
   }
-  dialog_handler_factory_.Bind(std::move(factory));
+  session_handler_factory_.Bind(std::move(factory));
 }
 
-void ComposeUI::CreateComposeDialogPageHandler(
-    mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
+void ComposeUI::CreateComposeSessionPageHandler(
+    mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
         close_handler,
-    mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
+    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
     mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
   DCHECK(dialog.is_valid());
 

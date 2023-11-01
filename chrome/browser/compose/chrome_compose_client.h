@@ -41,7 +41,7 @@ class ChromeComposeClient
     : public compose::ComposeClient,
       public content::WebContentsObserver,
       public content::WebContentsUserData<ChromeComposeClient>,
-      public compose::mojom::ComposeDialogClosePageHandler {
+      public compose::mojom::ComposeClientPageHandler {
  public:
   ChromeComposeClient(const ChromeComposeClient&) = delete;
   ChromeComposeClient& operator=(const ChromeComposeClient&) = delete;
@@ -57,7 +57,7 @@ class ChromeComposeClient
       ComposeCallback callback) override;
   bool HasSession(const autofill::FieldGlobalId& trigger_field_id) override;
 
-  // ComposeDialogClosePageHandler
+  // ComposeClientPageHandler
   // Closes the compose dialog. `reason` describes the user action that
   // triggered the close.
   void CloseUI(compose::mojom::CloseReason reason) override;
@@ -68,9 +68,9 @@ class ChromeComposeClient
                                         content::ContextMenuParams& params);
 
   void BindComposeDialog(
-      mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
-          close_handler,
-      mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
+      mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
+          client_handler,
+      mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog);
 
   void SetModelExecutorForTest(
@@ -141,8 +141,8 @@ class ChromeComposeClient
   // next bind call. With mojo, there is no need to immediately reset the
   // binding when the pipe disconnects. Any callbacks in receiver methods can be
   // safely called even when the pipe is disconnected.
-  mojo::Receiver<compose::mojom::ComposeDialogClosePageHandler>
-      close_page_receiver_;
+  mojo::Receiver<compose::mojom::ComposeClientPageHandler>
+      client_page_receiver_;
 
   // Used to test Compose in a tab at |chrome://compose|.
   std::unique_ptr<ComposeSession> debug_session_;

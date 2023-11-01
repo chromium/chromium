@@ -56,7 +56,7 @@ ComposeSession::ComposeSession(
 ComposeSession::~ComposeSession() = default;
 
 void ComposeSession::Bind(
-    mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
+    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
     mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
   handler_receiver_.reset();
   handler_receiver_.Bind(std::move(handler));
@@ -65,7 +65,7 @@ void ComposeSession::Bind(
   dialog_remote_.Bind(std::move(dialog));
 }
 
-// ComposeDialogPageHandler
+// ComposeSessionPageHandler
 void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
                              const std::string& input) {
   current_state_->has_pending_request = true;

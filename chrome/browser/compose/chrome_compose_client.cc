@@ -52,7 +52,7 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
       translate_language_provider_(new TranslateLanguageProvider()),
       compose_enabling_(translate_language_provider_.get()),
       manager_(this),
-      close_page_receiver_(this) {
+      client_page_receiver_(this) {
   profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
 
@@ -71,12 +71,12 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
 ChromeComposeClient::~ChromeComposeClient() = default;
 
 void ChromeComposeClient::BindComposeDialog(
-    mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
-        close_handler,
-    mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
+    mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
+        client_handler,
+    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
     mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
-  close_page_receiver_.reset();
-  close_page_receiver_.Bind(std::move(close_handler));
+  client_page_receiver_.reset();
+  client_page_receiver_.Bind(std::move(client_handler));
 
   url::Origin origin =
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();

@@ -36,7 +36,7 @@ class WebContents;
 //
 //  This should be owned (indirectly) by the WebContents passed into its
 //  constructor, and the `executor` MUST outlive that WebContents.
-class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
+class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
  public:
   // The callback to Autofill. When run, it fills the passed string into the
   // form field on which it was triggered.
@@ -49,10 +49,10 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
 
   // Binds this to a Compose webui.
   void Bind(
-      mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
+      mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog);
 
-  // ComposeDialogPageHandler
+  // ComposeSessionPageHandler
 
   // Requests a compose response for `input`. The result will be sent through
   // the ComposeDialog interface rather than through a callback, as it might
@@ -80,7 +80,7 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   // Down button is clicked. This implementation is designed for Fishfood only.
   void OpenBugReportingLink() override;
 
-  // Non-ComposeDialogPageHandler Methods
+  // Non-ComposeSessionPageHandler Methods
 
   // Saves the last OK response state to the undo stack.
   void SaveLastOKStateToUndoStack();
@@ -100,7 +100,7 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
 
-  mojo::Receiver<compose::mojom::ComposeDialogPageHandler> handler_receiver_;
+  mojo::Receiver<compose::mojom::ComposeSessionPageHandler> handler_receiver_;
   mojo::Remote<compose::mojom::ComposeDialog> dialog_remote_;
 
   // Initialized during construction, and always remains valid during the

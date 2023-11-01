@@ -6,11 +6,11 @@ module compose.mojom;
 
 // Interface for setting up connection to allow calls between the compose dialog
 // web page and native code.
-interface ComposeDialogPageHandlerFactory {
+interface ComposeSessionPageHandlerFactory {
   // Called from dialog compose JS to set up native handler.
-  CreateComposeDialogPageHandler(
-      pending_receiver<ComposeDialogClosePageHandler> close_handler,
-      pending_receiver<ComposeDialogPageHandler> handler,
+  CreateComposeSessionPageHandler(
+      pending_receiver<ComposeClientPageHandler> client_handler,
+      pending_receiver<ComposeSessionPageHandler> handler,
       pending_remote<ComposeDialog> dialog);
 };
 
@@ -97,7 +97,7 @@ enum CloseReason {
 };
 
 // Interface for calls from Compose dialog JS into the Browser process.
-interface ComposeDialogPageHandler {
+interface ComposeSessionPageHandler {
   // Asks the Browser to compose `input` with `stye` applied. Response contains
   // the modified output.
   Compose(StyleModifiers style, string input);
@@ -134,7 +134,7 @@ interface ComposeDialogPageHandler {
 };
 
 // Interface for calls from Compose dialog JS into the Browser process.
-interface ComposeDialogClosePageHandler {
+interface ComposeClientPageHandler {
   // Asks the receiver to close the compose dialog. `reason` describes
   // the user action that triggered the close.
   CloseUI(CloseReason reason);

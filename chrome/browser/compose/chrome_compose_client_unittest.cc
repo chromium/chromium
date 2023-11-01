@@ -127,13 +127,13 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
   void BindMojo() {
-    close_page_handler_.reset();
+    client_page_handler_.reset();
     page_handler_.reset();
     // Setup Dialog Page Handler.
-    mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
-        close_page_handler_pending_receiver =
-            close_page_handler_.BindNewPipeAndPassReceiver();
-    mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler>
+    mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
+        client_page_handler_pending_receiver =
+            client_page_handler_.BindNewPipeAndPassReceiver();
+    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler>
         page_handler_pending_receiver =
             page_handler_.BindNewPipeAndPassReceiver();
 
@@ -147,7 +147,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
             callback_router_->BindNewPipeAndPassRemote();
 
     // Bind mojo to client.
-    client_->BindComposeDialog(std::move(close_page_handler_pending_receiver),
+    client_->BindComposeDialog(std::move(client_page_handler_pending_receiver),
                                std::move(page_handler_pending_receiver),
                                std::move(callback_router_pending_remote));
   }
@@ -163,12 +163,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return browser()->tab_strip_model()->GetWebContentsAt(0);
   }
 
-  mojo::Remote<compose::mojom::ComposeDialogClosePageHandler>&
-  close_page_handler() {
-    return close_page_handler_;
+  mojo::Remote<compose::mojom::ComposeClientPageHandler>&
+  client_page_handler() {
+    return client_page_handler_;
   }
 
-  mojo::Remote<compose::mojom::ComposeDialogPageHandler>& page_handler() {
+  mojo::Remote<compose::mojom::ComposeSessionPageHandler>& page_handler() {
     return page_handler_;
   }
 
@@ -239,9 +239,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
-  mojo::Remote<compose::mojom::ComposeDialogClosePageHandler>
-      close_page_handler_;
-  mojo::Remote<compose::mojom::ComposeDialogPageHandler> page_handler_;
+  mojo::Remote<compose::mojom::ComposeClientPageHandler> client_page_handler_;
+  mojo::Remote<compose::mojom::ComposeSessionPageHandler> page_handler_;
 };
 
 TEST_F(ChromeComposeClientTest, TestCompose) {
@@ -639,7 +638,7 @@ TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
 // Tests that closing after showing the dialog does not crash the browser.
 TEST_F(ChromeComposeClientTest, TestCloseUI) {
   ShowDialogAndBindMojo();
-  close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 }
 
 // Tests that closing the session at chrome://compose does not crash the
@@ -649,7 +648,7 @@ TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
   // We skip the dialog showing here, as there is no dialog required at this
   // URL.
   BindMojo();
-  close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 }
 
 // Tests that opening the dialog with user selected text will return that text
@@ -980,7 +979,7 @@ TEST_F(ChromeComposeClientTest, TestCannotSendMessagesToNotShownDialog) {
 TEST_F(ChromeComposeClientTest, TestCannotCloseNotShownDialog) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
   EXPECT_DEATH(
-      close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton),
+      client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton),
       "");
 }
 
@@ -989,7 +988,7 @@ TEST_F(ChromeComposeClientTest, TestCannotCloseNotShownDialog) {
 TEST_F(ChromeComposeClientTest, TestCannotSendMessagesAfterClosingDialog) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
   ShowDialogAndBindMojo();
-  close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
   // Any message after closing the session will crash.
   EXPECT_DEATH(page_handler()->SaveWebUIState(""), "");
 }
@@ -1003,7 +1002,7 @@ TEST_F(ChromeComposeClientTest,
   // We skip the dialog showing here, as there is no dialog required at this
   // URL.
   BindMojo();
-  close_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
   // Any message after closing the session will crash.
   EXPECT_DEATH(page_handler()->SaveWebUIState(""), "");
 }

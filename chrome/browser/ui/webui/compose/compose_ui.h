@@ -22,7 +22,7 @@ class ColorChangeHandler;
 }
 
 class ComposeUI : public ui::MojoBubbleWebUIController,
-                  public compose::mojom::ComposeDialogPageHandlerFactory {
+                  public compose::mojom::ComposeSessionPageHandlerFactory {
  public:
   explicit ComposeUI(content::WebUI* web_ui);
 
@@ -30,7 +30,7 @@ class ComposeUI : public ui::MojoBubbleWebUIController,
   ComposeUI& operator=(const ComposeUI&) = delete;
   ~ComposeUI() override;
   void BindInterface(
-      mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandlerFactory>
+      mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandlerFactory>
           factory);
 
   void BindInterface(
@@ -42,13 +42,13 @@ class ComposeUI : public ui::MojoBubbleWebUIController,
   }
 
  private:
-  void CreateComposeDialogPageHandler(
-      mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
+  void CreateComposeSessionPageHandler(
+      mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
           close_handler,
-      mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
+      mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) override;
-  mojo::Receiver<compose::mojom::ComposeDialogPageHandlerFactory>
-      dialog_handler_factory_{this};
+  mojo::Receiver<compose::mojom::ComposeSessionPageHandlerFactory>
+      session_handler_factory_{this};
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   base::WeakPtr<content::WebContents> triggering_web_contents_;

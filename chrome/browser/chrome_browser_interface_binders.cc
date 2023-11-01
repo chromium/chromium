@@ -1734,7 +1734,7 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(ENABLE_COMPOSE)
   if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     RegisterWebUIControllerInterfaceBinder<
-        compose::mojom::ComposeDialogPageHandlerFactory, ComposeUI>(map);
+        compose::mojom::ComposeSessionPageHandlerFactory, ComposeUI>(map);
   }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 }
