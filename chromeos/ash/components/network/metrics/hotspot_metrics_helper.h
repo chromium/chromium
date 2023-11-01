@@ -96,6 +96,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   FRIEND_TEST_ALL_PREFIXES(HotspotCapabilitiesProviderTest,
                            CheckTetheringReadiness_NotAllowed);
   FRIEND_TEST_ALL_PREFIXES(HotspotCapabilitiesProviderTest,
+                           CheckTetheringReadiness_NotAllowedByCarrier);
+  FRIEND_TEST_ALL_PREFIXES(HotspotCapabilitiesProviderTest,
                            CheckTetheringReadiness_UpstreamNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(HotspotCapabilitiesProviderTest,
                            CheckTetheringReadiness_EmptyResult);
@@ -173,7 +175,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kUpstreamNetworkNotAvailable = 2,
     kShillOperationFailed = 3,
     kUnknownResult = 4,
-    kMaxValue = kUnknownResult,
+    kNotAllowedByCarrier = 5,
+    kNotAllowedOnFW = 6,
+    kNotAllowedOnVariant = 7,
+    kNotAllowedUserNotEntitled = 8,
+    kMaxValue = kNotAllowedUserNotEntitled,
   };
 
   // Represents the operation result of enable/disable hotspot used for related

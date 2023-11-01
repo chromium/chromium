@@ -159,6 +159,14 @@ HotspotMetricsHelper::GetCheckReadinessMetricsResult(
   switch (result) {
     case CheckReadinessResult::kReady:
       return HotspotMetricsCheckReadinessResult::kReady;
+    case CheckReadinessResult::kNotAllowedByCarrier:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedByCarrier;
+    case CheckReadinessResult::kNotAllowedOnFW:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedOnFW;
+    case CheckReadinessResult::kNotAllowedOnVariant:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedOnVariant;
+    case CheckReadinessResult::kNotAllowedUserNotEntitled:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedUserNotEntitled;
     case CheckReadinessResult::kNotAllowed:
       return HotspotMetricsCheckReadinessResult::kNotAllowed;
     case CheckReadinessResult::kUpstreamNetworkNotAvailable:

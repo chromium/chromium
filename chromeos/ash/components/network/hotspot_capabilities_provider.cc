@@ -37,6 +37,40 @@ bool IsDisallowedByPlatformCapabilities(
          allow_status == HotspotAllowStatus::kDisallowedNoWiFiSecurityModes;
 }
 
+HotspotCapabilitiesProvider::CheckTetheringReadinessResult
+ShillResultToReadinessResult(const std::string& result) {
+  if (result == shill::kTetheringReadinessReady) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kReady;
+  }
+  if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kUpstreamNetworkNotAvailable;
+  }
+  if (result == shill::kTetheringReadinessNotAllowedByCarrier) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowedByCarrier;
+  }
+  if (result == shill::kTetheringReadinessNotAllowedOnFw) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowedOnFW;
+  }
+  if (result == shill::kTetheringReadinessNotAllowedOnVariant) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowedOnVariant;
+  }
+  if (result == shill::kTetheringReadinessNotAllowedUserNotEntitled) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowedUserNotEntitled;
+  }
+  if (result == shill::kTetheringReadinessNotAllowed) {
+    return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+        kNotAllowed;
+  }
+  NET_LOG(ERROR) << "Unexpected check tethering readiness result: " << result;
+  return HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+      kUnknownResult;
+}
+
 }  // namespace
 
 HotspotCapabilitiesProvider::HotspotCapabilities::HotspotCapabilities(
@@ -237,33 +271,18 @@ void HotspotCapabilitiesProvider::OnCheckReadinessSuccess(
     const std::string& result) {
   using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
   NET_LOG(EVENT) << "Check tethering readiness result: " << result;
+  CheckTetheringReadinessResult readiness_result =
+      ShillResultToReadinessResult(result);
   if (result == shill::kTetheringReadinessReady) {
     SetHotspotAllowStatus(HotspotAllowStatus::kAllowed);
-    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
-        CheckTetheringReadinessResult::kReady);
-    std::move(callback).Run(CheckTetheringReadinessResult::kReady);
-    return;
-  }
-  if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
+  } else if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
     SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoMobileData);
-    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
-        CheckTetheringReadinessResult::kUpstreamNetworkNotAvailable);
-    std::move(callback).Run(
-        CheckTetheringReadinessResult::kUpstreamNetworkNotAvailable);
-    return;
-  }
-  if (result == shill::kTetheringReadinessNotAllowed) {
+  } else {
     SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedReadinessCheckFail);
-    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
-        CheckTetheringReadinessResult::kNotAllowed);
-    std::move(callback).Run(CheckTetheringReadinessResult::kNotAllowed);
-    return;
   }
-  NET_LOG(ERROR) << "Unexpected check tethering readiness result: " << result;
-  SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedReadinessCheckFail);
-  HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
-      CheckTetheringReadinessResult::kUnknownResult);
-  std::move(callback).Run(CheckTetheringReadinessResult::kUnknownResult);
+
+  HotspotMetricsHelper::RecordCheckTetheringReadinessResult(readiness_result);
+  std::move(callback).Run(readiness_result);
 }
 
 void HotspotCapabilitiesProvider::OnCheckReadinessFailure(

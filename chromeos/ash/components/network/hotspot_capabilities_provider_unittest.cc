@@ -243,6 +243,28 @@ TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness_NotAllowed) {
       HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kNotAllowed, 1);
 }
 
+TEST_F(HotspotCapabilitiesProviderTest,
+       CheckTetheringReadiness_NotAllowedByCarrier) {
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kSuccess,
+          shill::kTetheringReadinessNotAllowedByCarrier);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckTetheringReadiness(),
+            HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+                kNotAllowedByCarrier);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::
+          kNotAllowedByCarrier,
+      1);
+}
+
 TEST_F(HotspotCapabilitiesProviderTest, Tethering_PolicyNotAllowed) {
   auto capabilities_dict =
       base::Value::Dict()

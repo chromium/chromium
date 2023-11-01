@@ -57,9 +57,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   enum class CheckTetheringReadinessResult {
     kReady = 0,
     kNotAllowed = 1,
-    kUpstreamNetworkNotAvailable = 2,
-    kShillOperationFailed = 3,
-    kUnknownResult = 4,
+    kNotAllowedByCarrier = 2,
+    kNotAllowedOnFW = 3,
+    kNotAllowedOnVariant = 4,
+    kNotAllowedUserNotEntitled = 5,
+    kUpstreamNetworkNotAvailable = 6,
+    kShillOperationFailed = 7,
+    kUnknownResult = 8,
   };
 
   HotspotCapabilitiesProvider();

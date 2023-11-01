@@ -41867,6 +41867,18 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4"
       label="kUnknownResult: Readiness check doesn't pass because of unknown
              result code."/>
+  <int value="5"
+      label="kNotAllowedByCarrier: Readiness check doesn't pass because the
+             carrier doesn't allow."/>
+  <int value="6"
+      label="kNotAllowedOnFw: Readiness check doesn't pass because the
+             outdated firmware."/>
+  <int value="7"
+      label="kNotAllowedOnVariant: Readiness check doesn't pass because of
+             the hardware limitations."/>
+  <int value="8"
+      label="kNotAllowedUserNotEntitled: Readiness check doesn't pass because
+             user's data plan is not entitled."/>
 </enum>
 
 <enum name="HotspotDisableReason">
