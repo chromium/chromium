@@ -236,9 +236,14 @@ const Font& InlineItem::FontWithSvgScaling() const {
 }
 
 String InlineItem::ToString() const {
-  return String::Format("InlineItem. Type: '%s'. LayoutObject: '%s'",
-                        InlineItemTypeToString(Type()),
-                        GetLayoutObject()->DebugName().Ascii().c_str());
+  String object_info;
+  if (const auto* layout_text = DynamicTo<LayoutText>(GetLayoutObject())) {
+    object_info = layout_text->GetText().EncodeForDebugging();
+  } else {
+    object_info = GetLayoutObject()->DebugName();
+  }
+  return String::Format("InlineItem %s. %s", InlineItemTypeToString(Type()),
+                        object_info.Ascii().c_str());
 }
 
 // Split |items[index]| to 2 items at |offset|.

@@ -310,7 +310,14 @@ class CORE_EXPORT NGLayoutInputNode {
   }
 
 #if DCHECK_IS_ON()
-  void ShowNodeTree() const;
+  String DumpNodeTree(const NGLayoutInputNode* target = nullptr) const;
+
+  // Dump the node tree for the entire document, and mark `this` with an
+  // asterisk.
+  String DumpNodeTreeFromRoot() const;
+
+  void ShowNodeTree(const NGLayoutInputNode* target = nullptr) const;
+  void ShowNodeTreeFromRoot() const;
 #endif
 
   void Trace(Visitor* visitor) const { visitor->Trace(box_); }

@@ -29,42 +29,67 @@ using mojom::blink::FormControlType;
 namespace {
 
 #if DCHECK_IS_ON()
-void AppendNodeToString(NGLayoutInputNode node,
+void AppendSubtreeToString(const NGBlockNode&,
+                           const NGLayoutInputNode* target,
+                           StringBuilder*,
+                           unsigned indent);
+
+void IndentForDump(const NGLayoutInputNode& node,
+                   const NGLayoutInputNode* target,
+                   StringBuilder* string_builder,
+                   unsigned indent) {
+  unsigned start_col = 0;
+  if (node && target && node == *target) {
+    string_builder->Append("*");
+    start_col = 1;
+  }
+  for (unsigned i = start_col; i < indent; i++) {
+    string_builder->Append(" ");
+  }
+}
+
+void AppendNodeToString(const NGLayoutInputNode& node,
+                        const NGLayoutInputNode* target,
                         StringBuilder* string_builder,
                         unsigned indent = 2) {
   if (!node)
     return;
   DCHECK(string_builder);
 
+  IndentForDump(node, target, string_builder, indent);
   string_builder->Append(node.ToString());
   string_builder->Append("\n");
 
-  StringBuilder indent_builder;
-  for (unsigned i = 0; i < indent; i++)
-    indent_builder.Append(" ");
-
   if (auto* block_node = DynamicTo<NGBlockNode>(node)) {
-    NGLayoutInputNode first_child = block_node->FirstChild();
-    for (NGLayoutInputNode node_runner = first_child; node_runner;
-         node_runner = node_runner.NextSibling()) {
-      string_builder->Append(indent_builder.ToString());
-      AppendNodeToString(node_runner, string_builder, indent + 2);
-    }
-  }
-
-  if (auto* inline_node = DynamicTo<InlineNode>(node)) {
+    AppendSubtreeToString(*block_node, target, string_builder, indent + 2);
+  } else if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     const auto& items = inline_node->ItemsData(false).items;
+    indent += 2;
     for (const InlineItem& inline_item : items) {
-      string_builder->Append(indent_builder.ToString());
+      NGBlockNode child_node(nullptr);
+      if (auto* box = DynamicTo<LayoutBox>(inline_item.GetLayoutObject())) {
+        child_node = NGBlockNode(box);
+      }
+      IndentForDump(child_node, target, string_builder, indent);
       string_builder->Append(inline_item.ToString());
       string_builder->Append("\n");
+      if (child_node) {
+        // Dump the subtree of an atomic inline, float, block-in-inline, etc.
+        AppendSubtreeToString(child_node, target, string_builder, indent + 2);
+      }
     }
-    NGLayoutInputNode next_sibling = inline_node->NextSibling();
-    for (NGLayoutInputNode node_runner = next_sibling; node_runner;
-         node_runner = node_runner.NextSibling()) {
-      string_builder->Append(indent_builder.ToString());
-      AppendNodeToString(node_runner, string_builder, indent + 2);
-    }
+    DCHECK(!inline_node->NextSibling());
+  }
+}
+
+void AppendSubtreeToString(const NGBlockNode& node,
+                           const NGLayoutInputNode* target,
+                           StringBuilder* string_builder,
+                           unsigned indent) {
+  NGLayoutInputNode first_child = node.FirstChild();
+  for (NGLayoutInputNode node_runner = first_child; node_runner;
+       node_runner = node_runner.NextSibling()) {
+    AppendNodeToString(node_runner, target, string_builder, indent);
   }
 }
 #endif
@@ -176,7 +201,18 @@ String NGLayoutInputNode::ToString() const {
 }
 
 #if DCHECK_IS_ON()
-void NGLayoutInputNode::ShowNodeTree() const {
+String NGLayoutInputNode::DumpNodeTree(const NGLayoutInputNode* target) const {
+  StringBuilder string_builder;
+  string_builder.Append(".:: Layout input node tree ::.\n");
+  AppendNodeToString(*this, target, &string_builder);
+  return string_builder.ToString();
+}
+
+String NGLayoutInputNode::DumpNodeTreeFromRoot() const {
+  return NGBlockNode(box_->View()).DumpNodeTree(this);
+}
+
+void NGLayoutInputNode::ShowNodeTree(const NGLayoutInputNode* target) const {
   if (getenv("RUNNING_UNDER_RR")) {
     // Printing timestamps requires an IPC to get the local time, which
     // does not work in an rr replay session. Just disable timestamp printing
@@ -187,10 +223,11 @@ void NGLayoutInputNode::ShowNodeTree() const {
     logging::SetLogItems(true, true, false, false);
   }
 
-  StringBuilder string_builder;
-  string_builder.Append(".:: LayoutNG Node Tree ::.\n");
-  AppendNodeToString(*this, &string_builder);
-  DLOG(INFO) << "\n" << string_builder.ToString().Utf8();
+  DLOG(INFO) << "\n" << DumpNodeTree(target).Utf8();
+}
+
+void NGLayoutInputNode::ShowNodeTreeFromRoot() const {
+  NGBlockNode(box_->View()).ShowNodeTree(this);
 }
 #endif
 
