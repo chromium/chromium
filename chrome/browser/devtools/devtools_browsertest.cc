@@ -1913,7 +1913,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CanInspectExtensionOffscreenDoc) {
   ASSERT_EQ(1u, info->views.size());
   const extensions::api::developer_private::ExtensionView& view =
       info->views[0];
-  EXPECT_EQ(extensions::api::developer_private::VIEW_TYPE_OFFSCREEN_DOCUMENT,
+  EXPECT_EQ(extensions::api::developer_private::ViewType::kOffscreenDocument,
             view.type);
   content::WebContents* offscreen_contents =
       offscreen_document->host_contents();

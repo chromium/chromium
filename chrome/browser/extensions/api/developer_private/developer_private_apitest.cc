@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   ASSERT_EQ(2u, info->views.size());
   const api::developer_private::ExtensionView* window_view = nullptr;
   for (const auto& view : info->views) {
-    if (view.type == api::developer_private::VIEW_TYPE_APP_WINDOW) {
+    if (view.type == api::developer_private::ViewType::kAppWindow) {
       window_view = &view;
       break;
     }
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   // The embedded options page should show up.
   ASSERT_EQ(1u, info->views.size());
   const api::developer_private::ExtensionView& view = info->views[0];
-  ASSERT_EQ(api::developer_private::VIEW_TYPE_EXTENSION_GUEST, view.type);
+  ASSERT_EQ(api::developer_private::ViewType::kExtensionGuest, view.type);
 
   // Inspect the embedded options page.
   auto function =
@@ -177,9 +177,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // There should be a worker based background for the extension.
   ASSERT_EQ(1u, info->views.size());
   const api::developer_private::ExtensionView& view = info->views[0];
-  EXPECT_EQ(
-      api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
-      view.type);
+  EXPECT_EQ(api::developer_private::ViewType::kExtensionServiceWorkerBackground,
+            view.type);
   // The service worker should be inactive (indicated by -1 for
   // the process id).
   EXPECT_EQ(-1, view.render_process_id);
@@ -234,9 +233,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // There should be a worker based background for the extension.
   ASSERT_EQ(1u, info->views.size());
   const api::developer_private::ExtensionView& view = info->views[0];
-  EXPECT_EQ(
-      api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
-      view.type);
+  EXPECT_EQ(api::developer_private::ViewType::kExtensionServiceWorkerBackground,
+            view.type);
   EXPECT_NE(-1, view.render_process_id);
 
   // Inspect the service worker page.
@@ -312,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   {
     const api::developer_private::ExtensionView& view = info->views[0];
     EXPECT_EQ(
-        api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
+        api::developer_private::ViewType::kExtensionServiceWorkerBackground,
         view.type);
     EXPECT_NE(-1, view.render_process_id);
     main_render_process_id = view.render_process_id;
@@ -333,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   int incognito_render_process_id = -1;
   for (auto& view : info->views) {
     EXPECT_EQ(
-        api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
+        api::developer_private::ViewType::kExtensionServiceWorkerBackground,
         view.type);
     EXPECT_NE(-1, view.render_process_id);
     if (view.incognito) {
@@ -425,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   // metadata.
   ASSERT_EQ(1u, info->views.size());
   const api::developer_private::ExtensionView& view = info->views[0];
-  EXPECT_EQ(api::developer_private::VIEW_TYPE_OFFSCREEN_DOCUMENT, view.type);
+  EXPECT_EQ(api::developer_private::ViewType::kOffscreenDocument, view.type);
   content::WebContents* offscreen_contents =
       offscreen_document->host_contents();
   EXPECT_EQ(offscreen_url.spec(), view.url);

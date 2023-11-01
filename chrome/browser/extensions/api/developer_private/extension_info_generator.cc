@@ -85,28 +85,28 @@ namespace {
 // Given a Manifest::Type, converts it into its developer_private
 // counterpart.
 developer::ExtensionType GetExtensionType(Manifest::Type manifest_type) {
-  developer::ExtensionType type = developer::EXTENSION_TYPE_EXTENSION;
+  developer::ExtensionType type = developer::ExtensionType::kExtension;
   switch (manifest_type) {
     case Manifest::TYPE_EXTENSION:
-      type = developer::EXTENSION_TYPE_EXTENSION;
+      type = developer::ExtensionType::kExtension;
       break;
     case Manifest::TYPE_THEME:
-      type = developer::EXTENSION_TYPE_THEME;
+      type = developer::ExtensionType::kTheme;
       break;
     case Manifest::TYPE_HOSTED_APP:
-      type = developer::EXTENSION_TYPE_HOSTED_APP;
+      type = developer::ExtensionType::kHostedApp;
       break;
     case Manifest::TYPE_LEGACY_PACKAGED_APP:
-      type = developer::EXTENSION_TYPE_LEGACY_PACKAGED_APP;
+      type = developer::ExtensionType::kLegacyPackagedApp;
       break;
     case Manifest::TYPE_PLATFORM_APP:
-      type = developer::EXTENSION_TYPE_PLATFORM_APP;
+      type = developer::ExtensionType::kPlatformApp;
       break;
     case Manifest::TYPE_SHARED_MODULE:
-      type = developer::EXTENSION_TYPE_SHARED_MODULE;
+      type = developer::ExtensionType::kSharedModule;
       break;
     case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
-      type = developer::EXTENSION_TYPE_EXTENSION;
+      type = developer::ExtensionType::kExtension;
       break;
     default:
       NOTREACHED();
@@ -118,8 +118,9 @@ developer::ExtensionType GetExtensionType(Manifest::Type manifest_type) {
 template <typename ErrorType>
 void PopulateErrorBase(const ExtensionError& error, ErrorType* out) {
   CHECK(out);
-  out->type = error.type() == ExtensionError::MANIFEST_ERROR ?
-      developer::ERROR_TYPE_MANIFEST : developer::ERROR_TYPE_RUNTIME;
+  out->type = error.type() == ExtensionError::MANIFEST_ERROR
+                  ? developer::ErrorType::kManifest
+                  : developer::ErrorType::kRuntime;
   out->extension_id = error.extension_id();
   out->from_incognito = error.from_incognito();
   out->source = base::UTF16ToUTF8(error.source());
@@ -147,14 +148,14 @@ developer::RuntimeError ConstructRuntimeError(const RuntimeError& error) {
   switch (error.level()) {
     case logging::LOGGING_VERBOSE:
     case logging::LOGGING_INFO:
-      result.severity = developer::ERROR_LEVEL_LOG;
+      result.severity = developer::ErrorLevel::kLog;
       break;
     case logging::LOGGING_WARNING:
-      result.severity = developer::ERROR_LEVEL_WARN;
+      result.severity = developer::ErrorLevel::kWarn;
       break;
     case logging::LOGGING_FATAL:
     case logging::LOGGING_ERROR:
-      result.severity = developer::ERROR_LEVEL_ERROR;
+      result.severity = developer::ErrorLevel::kError;
       break;
     default:
       NOTREACHED();
@@ -195,8 +196,8 @@ void ConstructCommands(CommandService* command_service,
         base::UTF16ToUTF8(command.accelerator().GetShortcutText());
     command_value.name = command.command_name();
     command_value.is_active = active;
-    command_value.scope = command.global() ? developer::COMMAND_SCOPE_GLOBAL
-                                           : developer::COMMAND_SCOPE_CHROME;
+    command_value.scope = command.global() ? developer::CommandScope::kGlobal
+                                           : developer::CommandScope::kChrome;
     command_value.is_extension_action = is_extension_action;
     return command_value;
   };
@@ -288,18 +289,17 @@ developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
            ->HasWithheldHostPermissions(extension)) {
     granted_permissions =
         extension_prefs->GetGrantedPermissions(extension.id());
-    runtime_host_permissions.host_access = developer::HOST_ACCESS_ON_ALL_SITES;
+    runtime_host_permissions.host_access = developer::HostAccess::kOnAllSites;
   } else {
     granted_permissions =
         extension_prefs->GetRuntimeGrantedPermissions(extension.id());
     if (granted_permissions->effective_hosts().is_empty()) {
-      runtime_host_permissions.host_access = developer::HOST_ACCESS_ON_CLICK;
+      runtime_host_permissions.host_access = developer::HostAccess::kOnClick;
     } else if (granted_permissions->ShouldWarnAllHosts(false)) {
-      runtime_host_permissions.host_access =
-          developer::HOST_ACCESS_ON_ALL_SITES;
+      runtime_host_permissions.host_access = developer::HostAccess::kOnAllSites;
     } else {
       runtime_host_permissions.host_access =
-          developer::HOST_ACCESS_ON_SPECIFIC_SITES;
+          developer::HostAccess::kOnSpecificSites;
     }
   }
 
@@ -413,16 +413,16 @@ void ExtensionInfoGenerator::CreateExtensionInfo(
       "Only a single generation can be running at a time!";
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
 
-  developer::ExtensionState state = developer::EXTENSION_STATE_NONE;
+  developer::ExtensionState state = developer::ExtensionState::kNone;
   const Extension* ext = nullptr;
   if ((ext = registry->enabled_extensions().GetByID(id)) != nullptr)
-    state = developer::EXTENSION_STATE_ENABLED;
+    state = developer::ExtensionState::kEnabled;
   else if ((ext = registry->disabled_extensions().GetByID(id)) != nullptr)
-    state = developer::EXTENSION_STATE_DISABLED;
+    state = developer::ExtensionState::kDisabled;
   else if ((ext = registry->terminated_extensions().GetByID(id)) != nullptr)
-    state = developer::EXTENSION_STATE_TERMINATED;
+    state = developer::ExtensionState::kTerminated;
   else if ((ext = registry->blocklisted_extensions().GetByID(id)) != nullptr)
-    state = developer::EXTENSION_STATE_BLACKLISTED;
+    state = developer::ExtensionState::kBlacklisted;
 
   if (ext && ui_util::ShouldDisplayInExtensionSettings(*ext)) {
     CreateExtensionInfoHelper(*ext, state);
@@ -453,16 +453,16 @@ void ExtensionInfoGenerator::CreateExtensionsInfo(
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   add_to_list(registry->enabled_extensions(),
-              developer::EXTENSION_STATE_ENABLED);
+              developer::ExtensionState::kEnabled);
   if (include_disabled) {
     add_to_list(registry->disabled_extensions(),
-                developer::EXTENSION_STATE_DISABLED);
+                developer::ExtensionState::kDisabled);
     add_to_list(registry->blocklisted_extensions(),
-                developer::EXTENSION_STATE_BLACKLISTED);
+                developer::ExtensionState::kBlacklisted);
   }
   if (include_terminated) {
     add_to_list(registry->terminated_extensions(),
-                developer::EXTENSION_STATE_TERMINATED);
+                developer::ExtensionState::kTerminated);
   }
 
   if (pending_image_loads_ == 0) {
@@ -575,7 +575,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
         l10n_util::GetStringUTF8(IDS_EXTENSIONS_INSTALL_LOCATION_ENTERPRISE);
   }
 
-  bool is_enabled = state == developer::EXTENSION_STATE_ENABLED;
+  bool is_enabled = state == developer::ExtensionState::kEnabled;
 
   // Commands.
   if (is_enabled)
@@ -690,26 +690,27 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       extension_management->UpdatesFromWebstore(extension);
   if (extension.location() == mojom::ManifestLocation::kInternal &&
       updates_from_web_store) {
-    info->location = developer::LOCATION_FROM_STORE;
+    info->location = developer::Location::kFromStore;
   } else if (Manifest::IsUnpackedLocation(extension.location())) {
-    info->location = developer::LOCATION_UNPACKED;
+    info->location = developer::Location::kUnpacked;
   } else if (extension.was_installed_by_default() &&
              !extension.was_installed_by_oem() && updates_from_web_store) {
-    info->location = developer::LOCATION_INSTALLED_BY_DEFAULT;
+    info->location = developer::Location::kInstalledByDefault;
   } else if (Manifest::IsExternalLocation(extension.location()) &&
              updates_from_web_store) {
-    info->location = developer::LOCATION_THIRD_PARTY;
+    info->location = developer::Location::kThirdParty;
   } else {
-    info->location = developer::LOCATION_UNKNOWN;
+    info->location = developer::Location::kUnknown;
   }
 
   // Location text.
   int location_text = -1;
-  if (info->location == developer::LOCATION_UNKNOWN)
+  if (info->location == developer::Location::kUnknown) {
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_UNKNOWN;
-  else if (extension.location() == mojom::ManifestLocation::kExternalRegistry)
+  } else if (extension.location() ==
+             mojom::ManifestLocation::kExternalRegistry) {
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_3RD_PARTY;
-  else if (extension.is_shared_module())
+  } else if (extension.is_shared_module())
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_SHARED_MODULE;
   if (location_text != -1) {
     info->location_text = l10n_util::GetStringUTF8(location_text);
@@ -782,7 +783,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   info->version = extension.GetVersionForDisplay();
 
-  if (state != developer::EXTENSION_STATE_TERMINATED) {
+  if (state != developer::ExtensionState::kTerminated) {
     info->views = InspectableViewsFinder(profile).
                       GetViewsForExtension(extension, is_enabled);
   }
@@ -846,7 +847,7 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
       detail_page_string = l10n_util::GetStringUTF8(
           IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION);
       panel_page_string =
-          state == developer::EXTENSION_STATE_ENABLED
+          state == developer::ExtensionState::kEnabled
               ? l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON)
               : l10n_util::GetStringUTF8(
                     IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF);
@@ -854,7 +855,7 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
       detail_page_string =
           l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED);
       panel_page_string =
-          state == developer::EXTENSION_STATE_ENABLED
+          state == developer::ExtensionState::kEnabled
               ? l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_ON)
               : l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_OFF);
     }

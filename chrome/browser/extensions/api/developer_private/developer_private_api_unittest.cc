@@ -477,9 +477,12 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
   CHECK(response);
 
   if (response->status != expected_status) {
-    return testing::AssertionFailure() << "Expected status: " <<
-        expected_status << ", found status: " << response->status <<
-        ", message: " << response->message;
+    return testing::AssertionFailure()
+           << "Expected status: "
+           << api::developer_private::ToString(expected_status)
+           << ", found status: "
+           << api::developer_private::ToString(response->status)
+           << ", message: " << response->message;
   }
 
   if (response->override_flags != expected_flags) {
@@ -656,7 +659,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   base::Value::List pack_args;
   pack_args.Append(temp_root_path.AsUTF8Unsafe());
   EXPECT_TRUE(TestPackExtensionFunction(
-      pack_args, api::developer_private::PACK_STATUS_SUCCESS, 0));
+      pack_args, api::developer_private::PackStatus::kSuccess, 0));
 
   // Should have created crx file and pem file.
   EXPECT_TRUE(base::PathExists(crx_path));
@@ -667,14 +670,13 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
 
   // Try to pack again - we should get a warning abot overwriting the crx.
   EXPECT_TRUE(TestPackExtensionFunction(
-      pack_args,
-      api::developer_private::PACK_STATUS_WARNING,
+      pack_args, api::developer_private::PackStatus::kWarning,
       ExtensionCreator::kOverwriteCRX));
 
   // Try to pack again, with the overwrite flag; this should succeed.
   pack_args.Append(ExtensionCreator::kOverwriteCRX);
   EXPECT_TRUE(TestPackExtensionFunction(
-      pack_args, api::developer_private::PACK_STATUS_SUCCESS, 0));
+      pack_args, api::developer_private::PackStatus::kSuccess, 0));
 
   // Try to pack a final time when omitting (an existing) pem file. We should
   // get an error.
@@ -682,7 +684,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   // Remove the pem key and flags arguments.
   pack_args.erase(pack_args.begin() + 1, pack_args.begin() + 3);
   EXPECT_TRUE(TestPackExtensionFunction(
-      pack_args, api::developer_private::PACK_STATUS_ERROR, 0));
+      pack_args, api::developer_private::PackStatus::kError, 0));
 }
 
 // Test developerPrivate.choosePath.
@@ -1278,7 +1280,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDeleteExtensionErrors) {
 
   // Start by removing all errors for the extension of a given type (manifest).
   std::string type_string = api::developer_private::ToString(
-      api::developer_private::ERROR_TYPE_MANIFEST);
+      api::developer_private::ErrorType::kManifest);
   base::Value::List args =
       base::Value::List().Append(base::Value::Dict()
                                      .Set("extensionId", extension->id())
@@ -1908,7 +1910,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   TestEventRouterObserver test_observer(event_router);
   EXPECT_FALSE(WasItemChangedEventDispatched(
       test_observer, extension->id(),
-      api::developer_private::EVENT_TYPE_PERMISSIONS_CHANGED));
+      api::developer_private::EventType::kPermissionsChanged));
 
   URLPatternSet hosts({URLPattern(Extension::kValidHostPermissionSchemes,
                                   "https://example.com/*")});
@@ -1922,7 +1924,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(WasItemChangedEventDispatched(
       test_observer, extension->id(),
-      api::developer_private::EVENT_TYPE_PERMISSIONS_CHANGED));
+      api::developer_private::EventType::kPermissionsChanged));
 
   test_observer.ClearEvents();
 
@@ -1931,7 +1933,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(WasItemChangedEventDispatched(
       test_observer, extension->id(),
-      api::developer_private::EVENT_TYPE_PERMISSIONS_CHANGED));
+      api::developer_private::EventType::kPermissionsChanged));
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, ExtensionUpdatedEventOnPermissionsChange) {
@@ -1957,7 +1959,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ExtensionUpdatedEventOnPermissionsChange) {
   TestEventRouterObserver test_observer(event_router);
   EXPECT_FALSE(WasItemChangedEventDispatched(
       test_observer, dummy_extension->id(),
-      api::developer_private::EVENT_TYPE_PERMISSIONS_CHANGED));
+      api::developer_private::EventType::kPermissionsChanged));
 
   APIPermissionSet apis;
   apis.insert(extensions::mojom::APIPermissionID::kTab);
@@ -1971,7 +1973,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ExtensionUpdatedEventOnPermissionsChange) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(WasItemChangedEventDispatched(
       test_observer, dummy_extension->id(),
-      api::developer_private::EVENT_TYPE_PERMISSIONS_CHANGED));
+      api::developer_private::EventType::kPermissionsChanged));
 
   test_observer.ClearEvents();
 
@@ -1981,7 +1983,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ExtensionUpdatedEventOnPermissionsChange) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(WasItemChangedEventDispatched(
       test_observer, dummy_extension->id(),
-      api::developer_private::EVENT_TYPE_PERMISSIONS_CHANGED));
+      api::developer_private::EventType::kPermissionsChanged));
 }
 
 class DeveloperPrivateApiZipFileUnitTest
@@ -2585,10 +2587,10 @@ TEST_F(DeveloperPrivateApiUnitTest,
   GetMatchingExtensionsForSite(profile(), "http://images.google.com/", &infos);
 
   // "http://images.google.com/" should only match with `extension_2`.
-  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                         extension_2->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
-                         /*can_request_all_sites=*/false)));
+  EXPECT_THAT(infos,
+              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                  extension_2->id(), developer::HostAccess::kOnSpecificSites,
+                  /*can_request_all_sites=*/false)));
 
   service()->DisableExtension(extension_2->id(),
                               disable_reason::DISABLE_USER_ACTION);
@@ -2596,10 +2598,10 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   // "*://*.google.com/" should match with `extension_1` but not `extension_2`
   // since it is disabled.
-  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                         extension_1->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
-                         /*can_request_all_sites=*/false)));
+  EXPECT_THAT(infos,
+              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                  extension_1->id(), developer::HostAccess::kOnSpecificSites,
+                  /*can_request_all_sites=*/false)));
 }
 
 // Test that the host access returned by GetMatchingExtensionsForSite reflects
@@ -2617,8 +2619,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
 
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                         extension->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES,
+                         extension->id(), developer::HostAccess::kOnAllSites,
                          /*can_request_all_sites=*/true)));
   EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
                    ->HasWithheldHostPermissions(*extension));
@@ -2627,25 +2628,23 @@ TEST_F(DeveloperPrivateApiUnitTest,
   modifier.SetWithholdHostPermissions(true);
 
   GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
-  EXPECT_THAT(infos,
-              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                  extension->id(), developer::HostAccess::HOST_ACCESS_ON_CLICK,
-                  /*can_request_all_sites=*/true)));
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                         extension->id(), developer::HostAccess::kOnClick,
+                         /*can_request_all_sites=*/true)));
 
   RunAddHostPermission(profile(), *extension, "*://*.google.com/*",
                        /*should_succeed=*/true, nullptr);
 
   GetMatchingExtensionsForSite(profile(), "http://google.com/", &infos);
-  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                         extension->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
-                         /*can_request_all_sites=*/true)));
-
-  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
   EXPECT_THAT(infos,
               testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                  extension->id(), developer::HostAccess::HOST_ACCESS_ON_CLICK,
+                  extension->id(), developer::HostAccess::kOnSpecificSites,
                   /*can_request_all_sites=*/true)));
+
+  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                         extension->id(), developer::HostAccess::kOnClick,
+                         /*can_request_all_sites=*/true)));
 }
 
 // Tests the UpdateSiteAccess function when called on an extension with no
@@ -2670,7 +2669,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Change state from ON_ALL_SITES to ON_CLICK.
   std::vector<developer::ExtensionSiteAccessUpdate> updates;
   updates.push_back(
-      CreateSiteAccessUpdate(extension->id(), developer::HOST_ACCESS_ON_CLICK));
+      CreateSiteAccessUpdate(extension->id(), developer::HostAccess::kOnClick));
   UpdateSiteAccess(profile(), "http://google.com/*", updates);
 
   // Check that all host permissions are withheld when the site access is
@@ -2681,8 +2680,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   // Change state from ON_CLICK to ON_ALL_SITES.
   updates.clear();
-  updates.push_back(CreateSiteAccessUpdate(
-      extension->id(), developer::HOST_ACCESS_ON_ALL_SITES));
+  updates.push_back(CreateSiteAccessUpdate(extension->id(),
+                                           developer::HostAccess::kOnAllSites));
   UpdateSiteAccess(profile(), "http://google.com/*", updates);
 
   EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
@@ -2690,7 +2689,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Change state from ON_ALL_SITES to ON_SPECIFIC_SITES.
   updates.clear();
   updates.push_back(CreateSiteAccessUpdate(
-      extension->id(), developer::HOST_ACCESS_ON_SPECIFIC_SITES));
+      extension->id(), developer::HostAccess::kOnSpecificSites));
   UpdateSiteAccess(profile(), "*://*.example.com/*", updates);
 
   // Check that the pattern is added as-is to the extension's runtime granted
@@ -2733,7 +2732,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Change state from ON_ALL_SITES to ON_SPECIFIC_SITES.
   std::vector<developer::ExtensionSiteAccessUpdate> updates;
   updates.push_back(CreateSiteAccessUpdate(
-      extension->id(), developer::HOST_ACCESS_ON_SPECIFIC_SITES));
+      extension->id(), developer::HostAccess::kOnSpecificSites));
   UpdateSiteAccess(profile(), "http://google.com/*", updates);
   UpdateSiteAccess(profile(), "*://mail.google.com/*", updates);
   UpdateSiteAccess(profile(), "https://maps.google.com/*", updates);
@@ -2760,7 +2759,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // that is being removed.
   updates.clear();
   updates.push_back(
-      CreateSiteAccessUpdate(extension->id(), developer::HOST_ACCESS_ON_CLICK));
+      CreateSiteAccessUpdate(extension->id(), developer::HostAccess::kOnClick));
   UpdateSiteAccess(profile(), "http://*.google.com/*", updates);
 
   // The sites `kGoogleCom` and `kMailGoogleCom` match previously granted
@@ -2778,7 +2777,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Change state from ON_CLICK to ON_SPECIFIC_SITES.
   updates.clear();
   updates.push_back(CreateSiteAccessUpdate(
-      extension->id(), developer::HOST_ACCESS_ON_SPECIFIC_SITES));
+      extension->id(), developer::HostAccess::kOnSpecificSites));
   UpdateSiteAccess(profile(), "*://mail.google.com/*", updates);
   // `kMailGoogleCom` matches the pattern "*://mail.google.com/*" that is being
   // added, so it should be granted again.
@@ -2811,9 +2810,9 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   std::vector<developer::ExtensionSiteAccessUpdate> updates;
   updates.push_back(CreateSiteAccessUpdate(
-      extension_1->id(), developer::HOST_ACCESS_ON_SPECIFIC_SITES));
+      extension_1->id(), developer::HostAccess::kOnSpecificSites));
   updates.push_back(CreateSiteAccessUpdate(extension_2->id(),
-                                           developer::HOST_ACCESS_ON_CLICK));
+                                           developer::HostAccess::kOnClick));
   UpdateSiteAccess(profile(), "http://google.com/*", updates);
 
   // Confirm that `extension_1` can still access `kGoogleCom` but `extension_2`
@@ -2991,7 +2990,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(WasItemChangedEventDispatched(
       test_observer, extension->id(),
-      api::developer_private::EVENT_TYPE_PINNED_ACTIONS_CHANGED));
+      api::developer_private::EventType::kPinnedActionsChanged));
 
   ToolbarActionsModel* toolbar_actions_model =
       ToolbarActionsModel::Get(profile());
@@ -3002,7 +3001,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(WasItemChangedEventDispatched(
       test_observer, extension->id(),
-      api::developer_private::EVENT_TYPE_PINNED_ACTIONS_CHANGED));
+      api::developer_private::EventType::kPinnedActionsChanged));
 }
 
 class DeveloperPrivateApiAllowlistUnitTest
@@ -3035,7 +3034,7 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
   TestEventRouterObserver test_observer(event_router);
   EXPECT_FALSE(WasItemChangedEventDispatched(
       test_observer, dummy_extension->id(),
-      api::developer_private::EVENT_TYPE_PREFS_CHANGED));
+      api::developer_private::EventType::kPrefsChanged));
 
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),
@@ -3046,7 +3045,7 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
   // set yet.
   EXPECT_FALSE(WasItemChangedEventDispatched(
       test_observer, dummy_extension->id(),
-      api::developer_private::EVENT_TYPE_PREFS_CHANGED));
+      api::developer_private::EventType::kPrefsChanged));
 
   service()->allowlist()->SetExtensionAllowlistState(dummy_extension->id(),
                                                      ALLOWLIST_NOT_ALLOWLISTED);
@@ -3054,7 +3053,7 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(WasItemChangedEventDispatched(
       test_observer, dummy_extension->id(),
-      api::developer_private::EVENT_TYPE_PREFS_CHANGED));
+      api::developer_private::EventType::kPrefsChanged));
 
   test_observer.ClearEvents();
 
@@ -3067,7 +3066,7 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
   // Protection.
   EXPECT_TRUE(WasItemChangedEventDispatched(
       test_observer, dummy_extension->id(),
-      api::developer_private::EVENT_TYPE_PREFS_CHANGED));
+      api::developer_private::EventType::kPrefsChanged));
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

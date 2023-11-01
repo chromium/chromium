@@ -362,7 +362,7 @@ void ProcessSitesForRuntimeHostPermissions(
     //    processed separately.
     if (!pattern.match_subdomains() || pattern.host() != etld_plus_one) {
       AddSiteToSiteGroups(site_groups, pattern.host(), etld_plus_one,
-                          developer::SITE_SET_EXTENSION_SPECIFIED);
+                          developer::SiteSet::kExtensionSpecified);
     }
   }
 }
@@ -383,8 +383,9 @@ void UpdateSiteGroupCountsForExtensionHosts(
       // user permitted sites can be accessed to any extensions that specify the
       // site in their host permissions, user restricted sites cannot be
       // accessed by any extensions.)
-      if (site_info.site_set != developer::SITE_SET_EXTENSION_SPECIFIED)
+      if (site_info.site_set != developer::SiteSet::kExtensionSpecified) {
         continue;
+      }
 
       if (granted_hosts.MatchesHost(ConvertHostToUrl(site_info.site),
                                     /*require_match_subdomains=*/false)) {
@@ -593,7 +594,7 @@ void DeveloperPrivateEventRouter::OnExtensionLoaded(
     const Extension* extension) {
   DCHECK(
       profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
-  BroadcastItemStateChanged(developer::EVENT_TYPE_LOADED, extension->id());
+  BroadcastItemStateChanged(developer::EventType::kLoaded, extension->id());
 }
 
 void DeveloperPrivateEventRouter::OnExtensionUnloaded(
@@ -602,7 +603,7 @@ void DeveloperPrivateEventRouter::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   DCHECK(
       profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
-  BroadcastItemStateChanged(developer::EVENT_TYPE_UNLOADED, extension->id());
+  BroadcastItemStateChanged(developer::EventType::kUnloaded, extension->id());
 }
 
 void DeveloperPrivateEventRouter::OnExtensionInstalled(
@@ -611,7 +612,7 @@ void DeveloperPrivateEventRouter::OnExtensionInstalled(
     bool is_update) {
   DCHECK(
       profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
-  BroadcastItemStateChanged(developer::EVENT_TYPE_INSTALLED, extension->id());
+  BroadcastItemStateChanged(developer::EventType::kInstalled, extension->id());
 }
 
 void DeveloperPrivateEventRouter::OnExtensionUninstalled(
@@ -620,7 +621,8 @@ void DeveloperPrivateEventRouter::OnExtensionUninstalled(
     extensions::UninstallReason reason) {
   DCHECK(
       profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
-  BroadcastItemStateChanged(developer::EVENT_TYPE_UNINSTALLED, extension->id());
+  BroadcastItemStateChanged(developer::EventType::kUninstalled,
+                            extension->id());
 }
 
 void DeveloperPrivateEventRouter::OnErrorAdded(const ExtensionError* error) {
@@ -630,13 +632,13 @@ void DeveloperPrivateEventRouter::OnErrorAdded(const ExtensionError* error) {
   if (extension_ids_.count(error->extension_id()))
     return;
 
-  BroadcastItemStateChanged(developer::EVENT_TYPE_ERROR_ADDED,
+  BroadcastItemStateChanged(developer::EventType::kErrorAdded,
                             error->extension_id());
 }
 
 void DeveloperPrivateEventRouter::OnExtensionConfigurationChanged(
     const std::string& extension_id) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_CONFIGURATION_CHANGED,
+  BroadcastItemStateChanged(developer::EventType::kConfigurationChanged,
                             extension_id);
 }
 
@@ -644,74 +646,74 @@ void DeveloperPrivateEventRouter::OnErrorsRemoved(
     const std::set<std::string>& removed_ids) {
   for (const std::string& id : removed_ids) {
     if (!extension_ids_.count(id))
-      BroadcastItemStateChanged(developer::EVENT_TYPE_ERRORS_REMOVED, id);
+      BroadcastItemStateChanged(developer::EventType::kErrorsRemoved, id);
   }
 }
 
 void DeveloperPrivateEventRouter::OnExtensionFrameRegistered(
     const std::string& extension_id,
     content::RenderFrameHost* render_frame_host) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_VIEW_REGISTERED,
+  BroadcastItemStateChanged(developer::EventType::kViewRegistered,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
     const std::string& extension_id,
     content::RenderFrameHost* render_frame_host) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_VIEW_UNREGISTERED,
+  BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnServiceWorkerRegistered(
     const WorkerId& worker_id) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_SERVICE_WORKER_STARTED,
+  BroadcastItemStateChanged(developer::EventType::kServiceWorkerStarted,
                             worker_id.extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnServiceWorkerUnregistered(
     const WorkerId& worker_id) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_SERVICE_WORKER_STOPPED,
+  BroadcastItemStateChanged(developer::EventType::kServiceWorkerStopped,
                             worker_id.extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnAppWindowAdded(AppWindow* window) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_VIEW_REGISTERED,
+  BroadcastItemStateChanged(developer::EventType::kViewRegistered,
                             window->extension_id());
 }
 
 void DeveloperPrivateEventRouter::OnAppWindowRemoved(AppWindow* window) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_VIEW_UNREGISTERED,
+  BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
                             window->extension_id());
 }
 
 void DeveloperPrivateEventRouter::OnExtensionCommandAdded(
     const std::string& extension_id,
     const Command& added_command) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_COMMAND_ADDED, extension_id);
+  BroadcastItemStateChanged(developer::EventType::kCommandAdded, extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
     const std::string& extension_id,
     const Command& removed_command) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_COMMAND_REMOVED,
+  BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionDisableReasonsChanged(
     const std::string& extension_id, int disable_reasons) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_PREFS_CHANGED, extension_id);
+  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionRuntimePermissionsChanged(
     const std::string& extension_id) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_PERMISSIONS_CHANGED,
+  BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
     const std::string& extension_id,
     bool show_warning) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_PREFS_CHANGED, extension_id);
+  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
@@ -727,7 +729,7 @@ void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
 void DeveloperPrivateEventRouter::ExtensionWarningsChanged(
     const ExtensionIdSet& affected_extensions) {
   for (const ExtensionId& id : affected_extensions)
-    BroadcastItemStateChanged(developer::EVENT_TYPE_WARNINGS_CHANGED, id);
+    BroadcastItemStateChanged(developer::EventType::kWarningsChanged, id);
 }
 
 void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
@@ -747,7 +749,7 @@ void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
     const Extension& extension,
     const PermissionSet& permissions,
     PermissionsManager::UpdateReason reason) {
-  BroadcastItemStateChanged(developer::EVENT_TYPE_PERMISSIONS_CHANGED,
+  BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
                             extension.id());
 }
 
@@ -760,7 +762,7 @@ void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {
       ExtensionRegistry::Get(profile_)->enabled_extensions();
   for (const auto& extension : extensions) {
     if (ui_util::ShouldDisplayInExtensionSettings(*extension)) {
-      BroadcastItemStateChanged(developer::EVENT_TYPE_PINNED_ACTIONS_CHANGED,
+      BroadcastItemStateChanged(developer::EventType::kPinnedActionsChanged,
                                 extension->id());
     }
   }
@@ -788,7 +790,7 @@ void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
   const ExtensionSet& extensions =
       ExtensionRegistry::Get(profile_)->enabled_extensions();
   for (const auto& extension : extensions)
-    BroadcastItemStateChanged(developer::EVENT_TYPE_PREFS_CHANGED,
+    BroadcastItemStateChanged(developer::EventType::kPrefsChanged,
                               extension->id());
 }
 
@@ -1142,26 +1144,26 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
     ErrorConsole::Get(browser_context())->SetReportingAllForExtension(
         extension->id(), *update.error_collection);
   }
-  if (update.host_access != developer::HOST_ACCESS_NONE) {
+  if (update.host_access != developer::HostAccess::kNone) {
     PermissionsManager* manager = PermissionsManager::Get(browser_context());
     if (!manager->CanAffectExtension(*extension))
       return RespondNow(Error(kCannotChangeHostPermissions));
 
     ScriptingPermissionsModifier modifier(browser_context(), extension);
     switch (update.host_access) {
-      case developer::HOST_ACCESS_ON_CLICK:
+      case developer::HostAccess::kOnClick:
         modifier.SetWithholdHostPermissions(true);
         modifier.RemoveAllGrantedHostPermissions();
         break;
-      case developer::HOST_ACCESS_ON_SPECIFIC_SITES:
+      case developer::HostAccess::kOnSpecificSites:
         if (manager->HasBroadGrantedHostPermissions(*extension))
           modifier.RemoveBroadGrantedHostPermissions();
         modifier.SetWithholdHostPermissions(true);
         break;
-      case developer::HOST_ACCESS_ON_ALL_SITES:
+      case developer::HostAccess::kOnAllSites:
         modifier.SetWithholdHostPermissions(false);
         break;
-      case developer::HOST_ACCESS_NONE:
+      case developer::HostAccess::kNone:
         NOTREACHED();
     }
   }
@@ -1539,7 +1541,7 @@ void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
   developer::PackDirectoryResponse response;
   response.message = base::UTF16ToUTF8(
       PackExtensionJob::StandardSuccessMessage(crx_file, pem_file));
-  response.status = developer::PACK_STATUS_SUCCESS;
+  response.status = developer::PackStatus::kSuccess;
   Respond(WithArguments(response.ToValue()));
   pack_job_.reset();
   Release();  // Balanced in Run().
@@ -1554,9 +1556,9 @@ void DeveloperPrivatePackDirectoryFunction::OnPackFailure(
     response.item_path = item_path_str_;
     response.pem_path = key_path_str_;
     response.override_flags = ExtensionCreator::kOverwriteCRX;
-    response.status = developer::PACK_STATUS_WARNING;
+    response.status = developer::PackStatus::kWarning;
   } else {
-    response.status = developer::PACK_STATUS_ERROR;
+    response.status = developer::PackStatus::kError;
   }
   Respond(WithArguments(response.ToValue()));
   pack_job_.reset();
@@ -1586,14 +1588,14 @@ ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
       response.message = l10n_util::GetStringUTF8(
           IDS_EXTENSION_PACK_DIALOG_ERROR_ROOT_INVALID);
 
-    response.status = developer::PACK_STATUS_ERROR;
+    response.status = developer::PackStatus::kError;
     return RespondNow(WithArguments(response.ToValue()));
   }
 
   if (!key_path_str_.empty() && key_file.empty()) {
     response.message = l10n_util::GetStringUTF8(
         IDS_EXTENSION_PACK_DIALOG_ERROR_KEY_INVALID);
-    response.status = developer::PACK_STATUS_ERROR;
+    response.status = developer::PackStatus::kError;
     return RespondNow(WithArguments(response.ToValue()));
   }
 
@@ -1853,14 +1855,15 @@ ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
   ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_FOLDER;
   ui::SelectFileDialog::FileTypeInfo info;
 
-  if (params->select_type == developer::SELECT_TYPE_FILE)
+  if (params->select_type == developer::SelectType::kFile) {
     type = ui::SelectFileDialog::SELECT_OPEN_FILE;
+  }
   std::u16string select_title;
 
   int file_type_index = 0;
-  if (params->file_type == developer::FILE_TYPE_LOAD) {
+  if (params->file_type == developer::FileType::kLoad) {
     select_title = l10n_util::GetStringUTF16(IDS_EXTENSION_LOAD_FROM_DIRECTORY);
-  } else if (params->file_type == developer::FILE_TYPE_PEM) {
+  } else if (params->file_type == developer::FileType::kPem) {
     select_title = l10n_util::GetStringUTF16(
         IDS_EXTENSION_PACK_DIALOG_SELECT_KEY);
     info.extensions.push_back(std::vector<base::FilePath::StringType>(
@@ -2094,9 +2097,10 @@ DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
 
   ErrorConsole* error_console = ErrorConsole::Get(browser_context());
   int type = -1;
-  if (properties.type != developer::ERROR_TYPE_NONE) {
-    type = properties.type == developer::ERROR_TYPE_MANIFEST ?
-        ExtensionError::MANIFEST_ERROR : ExtensionError::RUNTIME_ERROR;
+  if (properties.type != developer::ErrorType::kNone) {
+    type = properties.type == developer::ErrorType::kManifest
+               ? ExtensionError::MANIFEST_ERROR
+               : ExtensionError::RUNTIME_ERROR;
   }
   std::set<int> error_ids;
   if (properties.error_ids) {
@@ -2222,9 +2226,9 @@ DeveloperPrivateUpdateExtensionCommandFunction::Run() {
 
   CommandService* command_service = CommandService::Get(browser_context());
 
-  if (update.scope != developer::COMMAND_SCOPE_NONE) {
+  if (update.scope != developer::CommandScope::kNone) {
     command_service->SetScope(update.extension_id, update.command_name,
-                              update.scope == developer::COMMAND_SCOPE_GLOBAL);
+                              update.scope == developer::CommandScope::kGlobal);
   }
 
   if (update.keybinding) {
@@ -2362,18 +2366,18 @@ DeveloperPrivateAddUserSpecifiedSitesFunction::Run() {
 
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
   switch (params->options.site_set) {
-    case developer::SITE_SET_USER_PERMITTED:
+    case developer::SiteSet::kUserPermitted:
       for (const auto& origin : origins)
         manager->AddUserPermittedSite(origin);
       break;
-    case developer::SITE_SET_USER_RESTRICTED:
+    case developer::SiteSet::kUserRestricted:
       for (const auto& origin : origins)
         manager->AddUserRestrictedSite(origin);
       break;
-    case developer::SITE_SET_EXTENSION_SPECIFIED:
+    case developer::SiteSet::kExtensionSpecified:
       return RespondNow(
           Error("Site set must be USER_PERMITTED or USER_RESTRICTED"));
-    case developer::SITE_SET_NONE:
+    case developer::SiteSet::kNone:
       NOTREACHED();
   }
 
@@ -2401,18 +2405,18 @@ DeveloperPrivateRemoveUserSpecifiedSitesFunction::Run() {
 
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
   switch (params->options.site_set) {
-    case developer::SITE_SET_USER_PERMITTED:
+    case developer::SiteSet::kUserPermitted:
       for (const auto& origin : origins)
         manager->RemoveUserPermittedSite(origin);
       break;
-    case developer::SITE_SET_USER_RESTRICTED:
+    case developer::SiteSet::kUserRestricted:
       for (const auto& origin : origins)
         manager->RemoveUserRestrictedSite(origin);
       break;
-    case developer::SITE_SET_EXTENSION_SPECIFIED:
+    case developer::SiteSet::kExtensionSpecified:
       return RespondNow(
           Error("Site set must be USER_PERMITTED or USER_RESTRICTED"));
-    case developer::SITE_SET_NONE:
+    case developer::SiteSet::kNone:
       NOTREACHED();
   }
 
@@ -2432,13 +2436,13 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
   for (const url::Origin& site : settings.permitted_sites) {
     AddSiteToSiteGroups(&site_groups, site.host(),
                         GetETldPlusOne(site.GetURL()),
-                        developer::SITE_SET_USER_PERMITTED);
+                        developer::SiteSet::kUserPermitted);
   }
 
   for (const url::Origin& site : settings.restricted_sites) {
     AddSiteToSiteGroups(&site_groups, site.host(),
                         GetETldPlusOne(site.GetURL()),
-                        developer::SITE_SET_USER_RESTRICTED);
+                        developer::SiteSet::kUserRestricted);
   }
 
   std::vector<scoped_refptr<const Extension>> extensions_to_check;
@@ -2494,7 +2498,7 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
       // Append the all subdomains info to the end of the list.
       developer::SiteInfo all_subdomains_info = CreateSiteInfo(
           base::StrCat({"*.", entry.first}),
-          developer::SITE_SET_EXTENSION_SPECIFIED, subdomains_count_for_site);
+          developer::SiteSet::kExtensionSpecified, subdomains_count_for_site);
 
       entry.second.sites.push_back(std::move(all_subdomains_info));
     }
@@ -2548,7 +2552,7 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
 
     // By default, return ON_CLICK if the extension has requested but does not
     // have access to any sites that match `site_pattern`.
-    developer::HostAccess host_access = developer::HOST_ACCESS_ON_CLICK;
+    developer::HostAccess host_access = developer::HostAccess::kOnClick;
 
     // TODO(crbug.com/1472899): Add a version of CanUserSelectSiteAccess to
     // PermissionsManager which takes in a URLPattern.
@@ -2563,8 +2567,8 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
     // sites and has no withheld sites, or ON_SPECIFIC_SITES otherwise.
     if (!granted_intersection.is_empty()) {
       host_access = can_request_all_sites && extension_withheld_sites.is_empty()
-                        ? developer::HOST_ACCESS_ON_ALL_SITES
-                        : developer::HOST_ACCESS_ON_SPECIFIC_SITES;
+                        ? developer::HostAccess::kOnAllSites
+                        : developer::HostAccess::kOnSpecificSites;
     }
 
     developer::MatchingExtensionInfo matching_info;
@@ -2626,7 +2630,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
     bool has_withheld_permissions =
         permissions_manager->HasWithheldHostPermissions(extension);
     switch (update.second) {
-      case developer::HOST_ACCESS_ON_CLICK:
+      case developer::HostAccess::kOnClick:
         // If the extension has no withheld permissions and can run on all of
         // its requested hosts, withhold all of its host permissions as a
         // blocklist based model for runtime host permissions (i.e. run on all
@@ -2640,7 +2644,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
                                    done_callback);
         }
         break;
-      case developer::HOST_ACCESS_ON_SPECIFIC_SITES:
+      case developer::HostAccess::kOnSpecificSites:
         // If the extension has no withheld host permissions and can run on
         // all of its requested hosts, withhold all of its permissions
         // before granting `site`.
@@ -2651,11 +2655,11 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
         GrantPermissionsForSite(browser_context(), extension, parsed_site,
                                 done_callback);
         break;
-      case developer::HOST_ACCESS_ON_ALL_SITES:
+      case developer::HostAccess::kOnAllSites:
         modifier.SetWithholdHostPermissions(false);
         done_callback.Run();
         break;
-      case developer::HOST_ACCESS_NONE:
+      case developer::HostAccess::kNone:
         NOTREACHED();
     }
   }
