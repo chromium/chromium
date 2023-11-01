@@ -267,6 +267,12 @@ ui::ElementIdentifier ToolbarController::GetHiddenElementOfCommandId(
   return element_ids_.at(command_id);
 }
 
+bool ToolbarController::IsCommandIdEnabled(int command_id) const {
+  const auto* const element = FindToolbarElementWithId(
+      toolbar_container_view_, element_ids_.at(command_id));
+  return element->GetEnabled();
+}
+
 void ToolbarController::ExecuteCommand(int command_id, int event_flags) {
   ui::ElementIdentifier activate_identifier =
       element_info_map_.at(GetHiddenElementOfCommandId(command_id))
