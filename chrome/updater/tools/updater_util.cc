@@ -22,10 +22,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/ipc/ipc_support.h"
+#include "chrome/updater/policy/service.h"
+#include "chrome/updater/prefs.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 
@@ -35,6 +40,7 @@ constexpr char kProductSwitch[] = "product";
 constexpr char kBackgroundSwitch[] = "background";
 constexpr char kListAppsSwitch[] = "list-apps";
 constexpr char kListUpdateSwitch[] = "list-update";
+constexpr char kListPoliciesSwitch[] = "list-policies";
 constexpr char kUpdateSwitch[] = "update";
 
 UpdaterScope Scope() {
@@ -150,6 +156,7 @@ class UpdaterUtilApp : public App {
   void ListApps();
   void ListUpdate();
   void Update();
+  void ListPolicies();
 
   void FindApp(const std::string& app_id,
                base::OnceCallback<void(scoped_refptr<AppState>)> callback);
@@ -173,6 +180,7 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
         --update            Update app(s).
         --list-apps         List all registered apps.
         --list-update       List update for an app (skip update install).
+        --list-policies     List all currently effective enterprise policies.
     Action parameters:
         --background        Use background priority.
         --product           ProductID.
@@ -300,11 +308,27 @@ void UpdaterUtilApp::DoUpdateApp(scoped_refptr<AppState> app_state) {
           base::BindOnce(&UpdaterUtilApp::Shutdown, this)));
 }
 
+void UpdaterUtilApp::ListPolicies() {
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+      base::BindOnce([] {
+        std::cout << "Updater policies: "
+                  << base::MakeRefCounted<Configurator>(
+                         CreateGlobalPrefs(Scope()),
+                         CreateDefaultExternalConstants())
+                         ->GetPolicyService()
+                         ->GetAllPoliciesAsString()
+                  << std::endl;
+      }),
+      base::BindOnce(&UpdaterUtilApp::Shutdown, this, 0));
+}
+
 void UpdaterUtilApp::FirstTaskRun() {
   const std::map<std::string, void (UpdaterUtilApp::*)()> commands = {
       {kListAppsSwitch, &UpdaterUtilApp::ListApps},
       {kListUpdateSwitch, &UpdaterUtilApp::ListUpdate},
       {kUpdateSwitch, &UpdaterUtilApp::Update},
+      {kListPoliciesSwitch, &UpdaterUtilApp::ListPolicies},
   };
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
