@@ -93,8 +93,14 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_RequestInvalidPermissionType DISABLED_RequestInvalidPermissionType
+#else
+#define MAYBE_RequestInvalidPermissionType RequestInvalidPermissionType
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       RequestInvalidPermissionType) {
+                       MAYBE_RequestInvalidPermissionType) {
   content::WebContentsConsoleObserver console_observer(web_contents());
   ClickElementWithId(web_contents(), "invalid");
   ASSERT_TRUE(console_observer.Wait());
