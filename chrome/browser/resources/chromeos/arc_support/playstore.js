@@ -7,7 +7,7 @@
  * name.
  */
 function getPlayFooterElement() {
-  const elements = document.getElementsByClassName('play-footer');
+  const elements = document.getElementsByClassName('glue-footer');
   if (!elements || elements.length == 0) {
     console.error('Failed to find play-footer element in ToS.');
     return null;
