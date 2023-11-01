@@ -7,7 +7,7 @@ import("//build/config/gclient_args.gni")
 
 declare_args() {
   use_libgav1_parser =
-      (is_chromeos || is_linux || is_win) &&
+      (is_chromeos || is_linux || is_win || is_apple) &&
       (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm" ||
        target_cpu == "arm64" || target_cpu == "ppc64")
 }

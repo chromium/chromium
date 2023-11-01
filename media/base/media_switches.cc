@@ -875,6 +875,11 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_APPLE)
+// Use VideoToolbox for AV1 hardware decoding.
+BASE_FEATURE(kVideoToolboxAv1Decoding,
+             "VideoToolboxAv1Decoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use the new VideoToolboxVideoDecoder for hardware decoding.
 BASE_FEATURE(kVideoToolboxVideoDecoder,
              "VideoToolboxVideoDecoder",
