@@ -57,14 +57,21 @@ mojom::ScanFailureMode ProtobufResultToMojoResult(
 }
 
 // Wrapper around `data` that allows this to be a WeakPtr.
-struct ScanResult : public base::SupportsWeakPtr<ScanResult> {
+struct ScanResult {
  public:
   ScanResult() = default;
   ScanResult(const ScanResult&) = delete;
   ScanResult& operator=(const ScanResult&) = delete;
   ~ScanResult() = default;
 
+  base::WeakPtr<ScanResult> AsWeakPtr() {
+    return weak_ptr_factory.GetWeakPtr();
+  }
+
   absl::optional<std::string> data;
+
+ private:
+  base::WeakPtrFactory<ScanResult> weak_ptr_factory{this};
 };
 
 void OnPageReceived(base::WeakPtr<ScanResult> scan_result,
