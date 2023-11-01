@@ -1080,7 +1080,9 @@ bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
   return !info.is_bottom_layer || layer.GetType() != EFillLayerType::kMask;
 }
 
-bool NeedsMaskLuminanceLayer(const FillLayer& layer, StyleImage* image) {
+bool NeedsMaskLuminanceLayer(const ImageResourceObserver& observer,
+                             const FillLayer& layer,
+                             StyleImage* image) {
   if (layer.GetType() != EFillLayerType::kMask) {
     return false;
   }
@@ -1091,7 +1093,8 @@ bool NeedsMaskLuminanceLayer(const FillLayer& layer, StyleImage* image) {
     if (image->IsSVGMaskReference()) {
       const auto& svg_reference = To<StyleSVGMaskReferenceImage>(*image);
       EMaskType type = SVGMaskPainter::MaskType(
-          svg_reference.GetSVGResource(), svg_reference.GetSVGResourceClient());
+          svg_reference.GetSVGResource(),
+          svg_reference.GetSVGResourceClient(observer));
       return type == EMaskType::kLuminance;
     }
   }
@@ -1126,6 +1129,8 @@ scoped_refptr<Image> UpdateGeometryAndGetImageForLayer(
   // should have no effect.
   if (layer.GetType() == EFillLayerType::kMask && image->IsSVGMaskReference()) {
     const auto& svg_reference = To<StyleSVGMaskReferenceImage>(*image);
+    SVGResourceClient* client =
+        svg_reference.GetSVGResourceClient(geometry.ImageClient());
 
     const PhysicalRect positioning_area =
         geometry.ComputePositioningArea(paint_info, layer, paint_rect);
@@ -1133,13 +1138,11 @@ scoped_refptr<Image> UpdateGeometryAndGetImageForLayer(
     const float zoom = image_style.EffectiveZoom();
 
     const gfx::RectF mask_area = SVGMaskPainter::ResourceBounds(
-        svg_reference.GetSVGResource(), svg_reference.GetSVGResourceClient(),
-        reference_box, zoom);
+        svg_reference.GetSVGResource(), client, reference_box, zoom);
     geometry.SetGeometryForSVGMask(mask_area, positioning_area.offset);
 
     PaintRecord record = SVGMaskPainter::PaintResource(
-        svg_reference.GetSVGResource(), svg_reference.GetSVGResourceClient(),
-        reference_box, zoom);
+        svg_reference.GetSVGResource(), client, reference_box, zoom);
     return PaintGeneratedImage::Create(std::move(record), mask_area.size());
   }
   geometry.Calculate(paint_info, layer, paint_rect);
@@ -1204,7 +1207,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
                                                      bg_layer.GetBlendMode());
     }
 
-    if (NeedsMaskLuminanceLayer(bg_layer, fill_layer_info.image)) {
+    if (NeedsMaskLuminanceLayer(geometry.ImageClient(), bg_layer,
+                                fill_layer_info.image)) {
       mask_luminance_scope.emplace(context, composite_op);
       // The mask luminance layer will apply `composite_op`, so reset it to
       // avoid applying it twice.

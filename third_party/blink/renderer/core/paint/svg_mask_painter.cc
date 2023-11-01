@@ -43,9 +43,14 @@ AffineTransform MaskToContentTransform(const LayoutSVGResourceMasker& masker,
 }
 
 LayoutSVGResourceMasker* ResolveElementReference(SVGResource* mask_resource,
-                                                 SVGResourceClient& client) {
+                                                 SVGResourceClient* client) {
+  // The client should only be null if the resource is null.
+  if (!client) {
+    CHECK(!mask_resource);
+    return nullptr;
+  }
   auto* masker =
-      GetSVGResourceAsType<LayoutSVGResourceMasker>(client, mask_resource);
+      GetSVGResourceAsType<LayoutSVGResourceMasker>(*client, mask_resource);
   if (!masker) {
     return nullptr;
   }
@@ -299,7 +304,8 @@ void PaintMaskLayer(const FillLayer& layer,
   if (const auto* svg_reference =
           DynamicTo<StyleSVGMaskReferenceImage>(*style_image)) {
     LayoutSVGResourceMasker* masker = ResolveElementReference(
-        svg_reference->GetSVGResource(), svg_reference->GetSVGResourceClient());
+        svg_reference->GetSVGResource(),
+        svg_reference->GetSVGResourceClient(info.object));
     if (!masker) {
       return;
     }
@@ -435,7 +441,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
 }
 
 PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
-                                          SVGResourceClient& client,
+                                          SVGResourceClient* client,
                                           const gfx::RectF& reference_box,
                                           float zoom) {
   auto* masker = ResolveElementReference(mask_resource, client);
@@ -462,12 +468,12 @@ PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
 }
 
 bool SVGMaskPainter::MaskIsValid(SVGResource* mask_resource,
-                                 SVGResourceClient& client) {
+                                 SVGResourceClient* client) {
   return ResolveElementReference(mask_resource, client);
 }
 
 gfx::RectF SVGMaskPainter::ResourceBounds(SVGResource* mask_resource,
-                                          SVGResourceClient& client,
+                                          SVGResourceClient* client,
                                           const gfx::RectF& reference_box,
                                           float zoom) {
   auto* masker = ResolveElementReference(mask_resource, client);
@@ -495,7 +501,7 @@ gfx::RectF SVGMaskPainter::ResourceBoundsForSVGChild(
     }
     const gfx::RectF svg_mask_bounds =
         ResourceBounds(svg_mask_reference->GetSVGResource(),
-                       svg_mask_reference->GetSVGResourceClient(),
+                       svg_mask_reference->GetSVGResourceClient(object),
                        reference_box, reference_box_zoom);
     bounds.Union(svg_mask_bounds);
   }
@@ -503,7 +509,7 @@ gfx::RectF SVGMaskPainter::ResourceBoundsForSVGChild(
 }
 
 EMaskType SVGMaskPainter::MaskType(SVGResource* mask_resource,
-                                   SVGResourceClient& client) {
+                                   SVGResourceClient* client) {
   auto* masker = ResolveElementReference(mask_resource, client);
   if (!masker) {
     return EMaskType::kAlpha;

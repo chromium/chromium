@@ -34,7 +34,6 @@
 namespace blink {
 
 class Document;
-class ProxySVGResourceClient;
 class StyleImage;
 
 class CORE_EXPORT CSSImageValue : public CSSValue {
@@ -90,8 +89,6 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   void TraceAfterDispatch(blink::Visitor*) const;
   void RestoreCachedResourceIfNeeded(const Document&) const;
 
-  ProxySVGResourceClient* GetSVGResourceClient();
-
  private:
   CSSUrlData url_data_;
   Referrer referrer_;
@@ -99,7 +96,6 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   // Cached image data.
   mutable Member<StyleImage> cached_image_;
-  Member<ProxySVGResourceClient> proxy_svg_resource_client_;
 
   // Whether the stylesheet that requested this image is origin-clean:
   // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag

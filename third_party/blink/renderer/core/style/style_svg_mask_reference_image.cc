@@ -55,29 +55,25 @@ SVGResource* StyleSVGMaskReferenceImage::GetSVGResource() const {
   return resource_.Get();
 }
 
-ProxySVGResourceClient& StyleSVGMaskReferenceImage::GetSVGResourceClient()
-    const {
-  return *resource_css_value_->GetSVGResourceClient();
+SVGResourceClient* StyleSVGMaskReferenceImage::GetSVGResourceClient(
+    const ImageResourceObserver& observer) const {
+  return resource_ ? resource_->GetObserverResourceClient(
+                         const_cast<ImageResourceObserver&>(observer))
+                   : nullptr;
 }
 
 void StyleSVGMaskReferenceImage::AddClient(ImageResourceObserver* observer) {
   if (!resource_) {
     return;
   }
-  auto& resource_client_proxy = GetSVGResourceClient();
-  if (resource_client_proxy.AddClient(observer)) {
-    resource_->AddClient(resource_client_proxy);
-  }
+  resource_->AddObserver(*observer);
 }
 
 void StyleSVGMaskReferenceImage::RemoveClient(ImageResourceObserver* observer) {
   if (!resource_) {
     return;
   }
-  auto& resource_client_proxy = GetSVGResourceClient();
-  if (resource_client_proxy.RemoveClient(observer)) {
-    resource_->RemoveClient(resource_client_proxy);
-  }
+  resource_->RemoveObserver(*observer);
 }
 
 scoped_refptr<Image> StyleSVGMaskReferenceImage::GetImage(
@@ -89,7 +85,7 @@ scoped_refptr<Image> StyleSVGMaskReferenceImage::GetImage(
 }
 
 WrappedImagePtr StyleSVGMaskReferenceImage::Data() const {
-  return resource_css_value_.Get();
+  return resource_.Get();
 }
 
 bool StyleSVGMaskReferenceImage::KnownToBeOpaque(
@@ -105,8 +101,7 @@ bool StyleSVGMaskReferenceImage::IsEqual(const StyleImage& other) const {
     return base::ValuesEquivalent(CssValue(), other.CssValue());
   }
   const auto* other_mask_ref = DynamicTo<StyleSVGMaskReferenceImage>(other);
-  return other_mask_ref &&
-         resource_css_value_ == other_mask_ref->resource_css_value_;
+  return other_mask_ref && resource_ == other_mask_ref->resource_;
 }
 
 void StyleSVGMaskReferenceImage::Trace(Visitor* visitor) const {

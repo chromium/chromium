@@ -28,6 +28,7 @@ SVGResource::~SVGResource() = default;
 void SVGResource::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
   visitor->Trace(clients_);
+  visitor->Trace(observer_wrappers_);
 }
 
 void SVGResource::AddClient(SVGResourceClient& client) {
@@ -49,6 +50,59 @@ void SVGResource::RemoveClient(SVGResourceClient& client) {
   // resource's cache.
   if (LayoutSVGResourceContainer* container = ResourceContainerNoCycleCheck())
     container->RemoveClientFromCache(client);
+}
+
+class SVGResource::ImageResourceObserverWrapper
+    : public GarbageCollected<SVGResource::ImageResourceObserverWrapper>,
+      public SVGResourceClient {
+ public:
+  explicit ImageResourceObserverWrapper(ImageResourceObserver& observer)
+      : observer_(observer) {}
+
+  void IncRef() { count_++; }
+  bool DecRef() {
+    --count_;
+    return count_ == 0;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observer_);
+    SVGResourceClient::Trace(visitor);
+  }
+
+ private:
+  void ResourceContentChanged(SVGResource* resource) override {
+    observer_->ImageChanged(static_cast<WrappedImagePtr>(resource),
+                            ImageResourceObserver::CanDeferInvalidation::kNo);
+  }
+
+  Member<ImageResourceObserver> observer_;
+  int count_ = 0;
+};
+
+void SVGResource::AddObserver(ImageResourceObserver& observer) {
+  auto& wrapper =
+      observer_wrappers_.insert(&observer, nullptr).stored_value->value;
+  if (!wrapper) {
+    wrapper = MakeGarbageCollected<ImageResourceObserverWrapper>(observer);
+    AddClient(*wrapper);
+  }
+  wrapper->IncRef();
+}
+
+void SVGResource::RemoveObserver(ImageResourceObserver& observer) {
+  auto it = observer_wrappers_.find(&observer);
+  CHECK_NE(it, observer_wrappers_.end());
+  if (it->value->DecRef()) {
+    RemoveClient(*it->value);
+    observer_wrappers_.erase(it);
+  }
+}
+
+SVGResourceClient* SVGResource::GetObserverResourceClient(
+    ImageResourceObserver& observer) {
+  auto it = observer_wrappers_.find(&observer);
+  return it != observer_wrappers_.end() ? it->value : nullptr;
 }
 
 void SVGResource::InvalidateCycleCache() {

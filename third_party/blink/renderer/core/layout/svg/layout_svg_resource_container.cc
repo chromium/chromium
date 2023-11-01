@@ -248,8 +248,9 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
         continue;
       }
       const SVGResource* svg_resource = svg_mask_reference->GetSVGResource();
-      if (svg_resource &&
-          svg_resource->FindCycle(svg_mask_reference->GetSVGResourceClient())) {
+      SVGResourceClient* client =
+          svg_mask_reference->GetSVGResourceClient(layout_object);
+      if (svg_resource && svg_resource->FindCycle(*client)) {
         return true;
       }
     }

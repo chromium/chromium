@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/style/style_image.h"
 
-#include "third_party/blink/renderer/core/svg/proxy_svg_resource_client.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -15,6 +14,7 @@ namespace blink {
 
 class CSSImageValue;
 class SVGResource;
+class SVGResourceClient;
 
 class StyleSVGMaskReferenceImage : public StyleImage {
  public:
@@ -51,7 +51,7 @@ class StyleSVGMaskReferenceImage : public StyleImage {
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
 
   SVGResource* GetSVGResource() const;
-  ProxySVGResourceClient& GetSVGResourceClient() const;
+  SVGResourceClient* GetSVGResourceClient(const ImageResourceObserver&) const;
 
   void Trace(Visitor* visitor) const override;
 

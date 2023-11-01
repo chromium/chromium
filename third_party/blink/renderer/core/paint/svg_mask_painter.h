@@ -30,19 +30,19 @@ class SVGMaskPainter {
                     const LayoutObject& layout_object,
                     const DisplayItemClient& display_item_client);
   static PaintRecord PaintResource(SVGResource* mask_resource,
-                                   SVGResourceClient& client,
+                                   SVGResourceClient* client,
                                    const gfx::RectF& reference_box,
                                    float zoom);
   static gfx::RectF ResourceBounds(SVGResource* mask_resource,
-                                   SVGResourceClient& client,
+                                   SVGResourceClient* client,
                                    const gfx::RectF& reference_box,
                                    float zoom);
   static gfx::RectF ResourceBoundsForSVGChild(
       const LayoutObject& layout_object);
   static EMaskType MaskType(SVGResource* mask_resource,
-                            SVGResourceClient& client);
+                            SVGResourceClient* client);
   static bool MaskIsValid(SVGResource* mask_resource,
-                          SVGResourceClient& client);
+                          SVGResourceClient* client);
 };
 
 }  // namespace blink

@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
-#include "third_party/blink/renderer/core/svg/proxy_svg_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -150,7 +149,6 @@ String CSSImageValue::CustomCSSText() const {
 
 void CSSImageValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(cached_image_);
-  visitor->Trace(proxy_svg_resource_client_);
   CSSValue::TraceAfterDispatch(visitor);
 }
 
@@ -163,14 +161,6 @@ CSSImageValue* CSSImageValue::ComputedCSSValueMaybeLocal() const {
     return Clone();
   }
   return ComputedCSSValue();
-}
-
-ProxySVGResourceClient* CSSImageValue::GetSVGResourceClient() {
-  if (!proxy_svg_resource_client_) {
-    proxy_svg_resource_client_ =
-        MakeGarbageCollected<ProxySVGResourceClient>(*this);
-  }
-  return proxy_svg_resource_client_.Get();
 }
 
 AtomicString CSSImageValue::NormalizedFragmentIdentifier() const {
