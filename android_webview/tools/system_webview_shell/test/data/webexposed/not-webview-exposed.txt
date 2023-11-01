@@ -120,6 +120,7 @@ interface MediaStreamTrack : EventTarget
   setter oncapturehandlechange
   method getCaptureHandle
 interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
+  method cropTo
 interface CropTarget
 interface CaptureController : EventTarget
 

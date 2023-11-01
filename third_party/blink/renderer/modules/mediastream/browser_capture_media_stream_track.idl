@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1247761): Remove `RuntimeEnabled = RegionCapture`
-// from the interface.
-[Exposed = Window, RuntimeEnabled = RegionCapture]
+[Exposed = Window]
 interface BrowserCaptureMediaStreamTrack : MediaStreamTrack {
   // https://w3c.github.io/mediacapture-region/
   [CallWith = ScriptState, RaisesException,
