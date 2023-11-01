@@ -208,10 +208,7 @@ namespace {
 
 class MockFactoryClient : public IndexedDBFactoryClient {
  public:
-  MockFactoryClient()
-      : IndexedDBFactoryClient(
-            mojo::NullAssociatedRemote(),
-            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+  MockFactoryClient() : IndexedDBFactoryClient(mojo::NullAssociatedRemote()) {}
   ~MockFactoryClient() override = default;
 
   MockFactoryClient(const MockFactoryClient&) = delete;

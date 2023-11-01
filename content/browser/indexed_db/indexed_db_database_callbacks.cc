@@ -16,9 +16,7 @@ namespace content {
 
 IndexedDBDatabaseCallbacks::IndexedDBDatabaseCallbacks(
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
-        callbacks_remote,
-    base::SequencedTaskRunner* idb_runner) {
-  DCHECK(idb_runner->RunsTasksInCurrentSequence());
+        callbacks_remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!callbacks_remote.is_valid())
     return;

@@ -11,11 +11,7 @@
 namespace content {
 
 MockIndexedDBDatabaseCallbacks::MockIndexedDBDatabaseCallbacks()
-    : IndexedDBDatabaseCallbacks(
-          mojo::NullAssociatedRemote(),
-          base::SequencedTaskRunner::GetCurrentDefault().get()),
-      abort_called_(false),
-      forced_close_called_(false) {}
+    : IndexedDBDatabaseCallbacks(mojo::NullAssociatedRemote()) {}
 
 void MockIndexedDBDatabaseCallbacks::OnVersionChange(int64_t old_version,
                                                      int64_t new_version) {}

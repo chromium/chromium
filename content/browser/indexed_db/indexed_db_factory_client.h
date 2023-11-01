@@ -38,10 +38,9 @@ struct IndexedDBDataLossInfo;
 // or delete operations.
 class CONTENT_EXPORT IndexedDBFactoryClient {
  public:
-  IndexedDBFactoryClient(
+  explicit IndexedDBFactoryClient(
       mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
-          pending_client,
-      scoped_refptr<base::SequencedTaskRunner> idb_runner);
+          pending_client);
   virtual ~IndexedDBFactoryClient();
 
   IndexedDBFactoryClient(const IndexedDBFactoryClient&) = delete;

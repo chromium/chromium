@@ -33,8 +33,8 @@ class MockIndexedDBDatabaseCallbacks : public IndexedDBDatabaseCallbacks {
  private:
   ~MockIndexedDBDatabaseCallbacks() override {}
 
-  bool abort_called_;
-  bool forced_close_called_;
+  bool abort_called_ = false;
+  bool forced_close_called_ = false;
 };
 
 }  // namespace content

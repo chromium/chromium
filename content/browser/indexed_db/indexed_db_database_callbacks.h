@@ -23,10 +23,9 @@ class IndexedDBTransaction;
 class CONTENT_EXPORT IndexedDBDatabaseCallbacks
     : public base::RefCounted<IndexedDBDatabaseCallbacks> {
  public:
-  IndexedDBDatabaseCallbacks(
+  explicit IndexedDBDatabaseCallbacks(
       mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
-          callbacks_remote,
-      base::SequencedTaskRunner* idb_runner);
+          callbacks_remote);
 
   IndexedDBDatabaseCallbacks(const IndexedDBDatabaseCallbacks&) = delete;
   IndexedDBDatabaseCallbacks& operator=(const IndexedDBDatabaseCallbacks&) =

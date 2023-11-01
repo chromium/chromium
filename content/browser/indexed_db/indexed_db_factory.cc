@@ -276,8 +276,7 @@ void IndexedDBFactory::Open(
 
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!bucket) {
-    IndexedDBFactoryClient(std::move(pending_factory_client),
-                           context_->IDBTaskRunner())
+    IndexedDBFactoryClient(std::move(pending_factory_client))
         .OnError(IndexedDBDatabaseError(
             blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
@@ -287,9 +286,9 @@ void IndexedDBFactory::Open(
   // created) if this origin is already over quota.
 
   auto callbacks = std::make_unique<IndexedDBFactoryClient>(
-      std::move(pending_factory_client), context_->IDBTaskRunner());
+      std::move(pending_factory_client));
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
-      std::move(database_callbacks_remote), context_->IDBTaskRunner().get());
+      std::move(database_callbacks_remote));
 
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   const base::FilePath data_directory = context_->GetDataPath(bucket_locator);
@@ -345,15 +344,14 @@ void IndexedDBFactory::DeleteDatabase(
 
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!bucket) {
-    IndexedDBFactoryClient(std::move(pending_factory_client),
-                           context_->IDBTaskRunner())
+    IndexedDBFactoryClient(std::move(pending_factory_client))
         .OnError(IndexedDBDatabaseError(
             blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
   }
 
   auto factory_client = std::make_unique<IndexedDBFactoryClient>(
-      std::move(pending_factory_client), context_->IDBTaskRunner());
+      std::move(pending_factory_client));
 
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
