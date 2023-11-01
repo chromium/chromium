@@ -237,8 +237,8 @@ void LensRegionSearchController::OnCaptureCompleted(
         entry_point_ == lens::AmbientSearchEntryPoint::COMPANION_REGION_SEARCH
             ? lens::EntryPoint::COMPANION_REGION_SEARCH
             : lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
-    core_tab_helper->RegionSearchWithLens(
-        image, captured_image.Size(), std::move(log_data), lens_entry_point);
+    core_tab_helper->SearchWithLens(image, captured_image.Size(),
+                                    std::move(log_data), lens_entry_point);
   } else {
     core_tab_helper->SearchByImage(image, captured_image.Size());
   }

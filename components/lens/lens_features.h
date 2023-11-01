@@ -200,10 +200,6 @@ extern bool IsLensFullscreenSearchEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSidePanelEnabled();
 
-// Returns whether the Lens side panel is enabled for region search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensSidePanelEnabledForRegionSearch();
-
 // Returns whether the Search Image button in the Chrome Screenshot Sharing
 // feature is enabled
 COMPONENT_EXPORT(LENS_FEATURES)

@@ -187,10 +187,6 @@ bool IsLensSidePanelEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone);
 }
 
-bool IsLensSidePanelEnabledForRegionSearch() {
-  return IsLensSidePanelEnabled() && !IsLensFullscreenSearchEnabled();
-}
-
 bool IsLensRegionSearchStaticPageEnabled() {
   return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
 }

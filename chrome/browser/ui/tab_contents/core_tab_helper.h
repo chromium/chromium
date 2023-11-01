@@ -70,7 +70,7 @@ class CoreTabHelper : public content::WebContentsObserver,
       int thumbnail_max_height,
       DownscaleAndEncodeBitmapCallback callback);
 
-  // Open the Lens standalone experience for the image that triggered the
+  // Opens the Lens standalone experience for the image that triggered the
   // context menu. If the google lens supports opening requests in side panel,
   // then the request will open in the side panel instead of new tab.
   void SearchWithLens(content::RenderFrameHost* render_frame_host,
@@ -78,18 +78,17 @@ class CoreTabHelper : public content::WebContentsObserver,
                       lens::EntryPoint entry_point,
                       bool is_image_translate);
 
-  // Open the Lens experience for an image. Used for sending the bitmap selected
-  // via Lens Region Search. |image_original_size| is specified in case of
-  // resizing that happens prior to passing the image to |CoreTabHelper|. If
-  // the search engine supports opening requests in side panel, then the request
-  // will open in the side panel instead of a new tab.
-  void RegionSearchWithLens(gfx::Image image,
-                            const gfx::Size& image_original_size,
-                            std::vector<lens::mojom::LatencyLogPtr> log_data,
-                            lens::EntryPoint entry_point);
+  // Opens the Lens experience for an `image`. `image_original_size` is
+  // specified in case of resizing that happens prior to passing the image to
+  // `CoreTabHelper`. If the search engine supports opening requests in side
+  // panel, then the request will open in the side panel instead of a new tab.
+  void SearchWithLens(gfx::Image image,
+                      const gfx::Size& image_original_size,
+                      std::vector<lens::mojom::LatencyLogPtr> log_data,
+                      lens::EntryPoint entry_point);
 
-  // Perform an image search for the image that triggered the context menu.  The
-  // |src_url| is passed to the search request and is not used directly to fetch
+  // Performs an image search for the image that triggered the context menu. The
+  // `src_url` is passed to the search request and is not used directly to fetch
   // the image resources. If the search engine supports opening requests in side
   // panel, then the request will open in the side panel instead of a new tab.
   void SearchByImage(content::RenderFrameHost* render_frame_host,
