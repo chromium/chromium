@@ -28,11 +28,15 @@ declare_args() {
   # We use a different filename for arm64 macOS builds so that the arm64 and
   # x64 snapshots can live side-by-side in a universal macOS app.
   if (is_mac) {
-    if (v8_target_cpu == "x64") {
-      v8_context_snapshot_filename = "v8_context_snapshot.x86_64.bin"
-    } else if (v8_target_cpu == "arm64") {
-      v8_context_snapshot_filename = "v8_context_snapshot.arm64.bin"
-    }
+    v8_context_snapshot_filename = "v8_context_snapshot.bin"
+    # we aren't build a universal app currently, and the filenames being
+    # different causes headaches at replay-time.
+    #
+    #if (v8_target_cpu == "x64") {
+    #  v8_context_snapshot_filename = "v8_context_snapshot.x86_64.bin"
+    #} else if (v8_target_cpu == "arm64") {
+    #  v8_context_snapshot_filename = "v8_context_snapshot.arm64.bin"
+    #}
   } else if (target_os == "android") {
     if (v8_current_cpu == "arm" || v8_current_cpu == "x86" ||
         v8_current_cpu == "mipsel") {
