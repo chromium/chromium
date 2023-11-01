@@ -178,6 +178,8 @@ class LightweightQuarantineList {
   std::atomic_size_t quarantine_miss_count_ = 0;
 };
 
+using SchedulerLoopQuarantine =
+    LightweightQuarantineList<LightweightQuarantineEntry, 1024>;
 extern template class PA_EXPORT_TEMPLATE_DECLARE(
     PA_COMPONENT_EXPORT(PARTITION_ALLOC))
     LightweightQuarantineList<LightweightQuarantineEntry, 1024>;

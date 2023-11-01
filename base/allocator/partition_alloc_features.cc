@@ -110,6 +110,14 @@ MIRACLE_PARAMETER_FOR_INT(
 BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
              "PartitionAllocLargeEmptySlotSpanRing",
              FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
+             "PartitionAllocSchedulerLoopQuarantine",
+             FEATURE_DISABLED_BY_DEFAULT);
+// Scheduler Loop Quarantine's capacity in bytes.
+const base::FeatureParam<int> kPartitionAllocSchedulerLoopQuarantineCapacity{
+    &kPartitionAllocSchedulerLoopQuarantine,
+    "PartitionAllocSchedulerLoopQuarantineCapacity", 0};
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,

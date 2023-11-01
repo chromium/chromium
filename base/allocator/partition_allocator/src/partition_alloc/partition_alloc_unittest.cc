@@ -21,6 +21,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/chromecast_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/lightweight_quarantine.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
@@ -43,6 +44,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.h"
@@ -159,14 +161,16 @@ const size_t kTestSizes[] = {
 };
 constexpr size_t kTestSizesCount = std::size(kTestSizes);
 
-template <partition_alloc::AllocFlags flags>
+template <
+    partition_alloc::AllocFlags alloc_flags,
+    partition_alloc::FreeFlags free_flags = partition_alloc::FreeFlags::kNone>
 void AllocateRandomly(partition_alloc::PartitionRoot* root, size_t count) {
   std::vector<void*> allocations(count, nullptr);
   for (size_t i = 0; i < count; ++i) {
     const size_t size =
         kTestSizes[partition_alloc::internal::base::RandGenerator(
             kTestSizesCount)];
-    allocations[i] = root->Alloc<flags>(size);
+    allocations[i] = root->Alloc<alloc_flags>(size);
     EXPECT_NE(nullptr, allocations[i]) << " size: " << size << " i: " << i;
   }
 
@@ -3614,6 +3618,33 @@ TEST_P(PartitionAllocTest, ZeroFill) {
     SCOPED_TRACE(i);
     AllocateRandomly<AllocFlags::kZeroFill>(allocator.root(), 250);
   }
+}
+
+TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
+  SchedulerLoopQuarantine& list =
+      allocator.root()->GetSchedulerLoopQuarantineForTesting();
+
+  constexpr size_t kCapacityInBytes = std::numeric_limits<size_t>::max();
+  size_t original_capacity_in_bytes = list.GetCapacityInBytes();
+  list.SetCapacityInBytesForTesting(kCapacityInBytes);
+
+  for (size_t size : kTestSizes) {
+    SCOPED_TRACE(size);
+
+    void* object = allocator.root()->Alloc(size);
+    allocator.root()->Free<FreeFlags::kSchedulerLoopQuarantine>(object);
+
+    ASSERT_TRUE(list.IsQuarantinedForTesting(object));
+  }
+
+  for (int i = 0; i < 10; ++i) {
+    SCOPED_TRACE(i);
+    AllocateRandomly<AllocFlags::kNone, FreeFlags::kSchedulerLoopQuarantine>(
+        allocator.root(), 250);
+  }
+
+  list.Purge();
+  list.SetCapacityInBytesForTesting(original_capacity_in_bytes);
 }
 
 TEST_P(PartitionAllocTest, Bug_897585) {

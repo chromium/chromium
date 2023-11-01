@@ -207,7 +207,8 @@ void ConfigurePartitions(
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
-    BucketDistribution distribution);
+    BucketDistribution distribution,
+    size_t scheduler_loop_quarantine_capacity_in_bytes);
 
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The

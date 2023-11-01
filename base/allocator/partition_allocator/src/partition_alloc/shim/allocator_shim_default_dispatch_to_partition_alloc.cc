@@ -529,7 +529,8 @@ void ConfigurePartitions(
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
-    BucketDistribution distribution) {
+    BucketDistribution distribution,
+    size_t scheduler_loop_quarantine_capacity_in_bytes) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
   // out the aligned partition.
@@ -581,6 +582,8 @@ void ConfigurePartitions(
                                 ? partition_alloc::PartitionOptions::kEnabled
                                 : partition_alloc::PartitionOptions::kDisabled,
           .ref_count_size = ref_count_size,
+          .scheduler_loop_quarantine_capacity_in_bytes =
+              scheduler_loop_quarantine_capacity_in_bytes,
           .memory_tagging = {
               .enabled = enable_memory_tagging
                              ? partition_alloc::PartitionOptions::kEnabled
@@ -635,6 +638,8 @@ void ConfigurePartitions(
   PA_CHECK(!g_roots_finalized.exchange(true));  // Ensure configured once.
 }
 
+// TODO(crbug.com/1137393): Remove this functions once pdfium has switched to
+// the new version.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void ConfigurePartitions(
     EnableBrp enable_brp,
@@ -651,10 +656,13 @@ void ConfigurePartitions(
               ? partition_alloc::TagViolationReportingMode::kSynchronous
               : partition_alloc::TagViolationReportingMode::kDisabled;
 
-  ConfigurePartitions(enable_brp, enable_memory_tagging,
-                      memory_tagging_reporting_mode, split_main_partition,
-                      use_dedicated_aligned_partition, ref_count_size,
-                      distribution);
+  // We don't use this feature in PDFium.
+  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
+
+  ConfigurePartitions(
+      enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
+      split_main_partition, use_dedicated_aligned_partition, ref_count_size,
+      distribution, scheduler_loop_quarantine_capacity_in_bytes);
 }
 
 // No synchronization provided: `PartitionRoot.flags` is only written

@@ -1101,6 +1101,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       break;
   }
 
+  const size_t scheduler_loop_quarantine_capacity_in_bytes =
+      static_cast<size_t>(
+          base::features::kPartitionAllocSchedulerLoopQuarantineCapacity.Get());
+
   bool enable_memory_tagging = false;
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
       partition_alloc::TagViolationReportingMode::kUndefined;
@@ -1174,7 +1178,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                                          enable_memory_tagging),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
-      brp_config.ref_count_size, bucket_distribution);
+      brp_config.ref_count_size, bucket_distribution,
+      scheduler_loop_quarantine_capacity_in_bytes);
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to

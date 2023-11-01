@@ -13,31 +13,32 @@ using base::internal::MemorySafetyCheck;
 
 // Normal object: should be targeted by no additional |MemorySafetyCheck|.
 struct DefaultChecks {};
-static_assert(
-    !is_memory_safety_checked<DefaultChecks,
-                              MemorySafetyCheck::kForcePartitionAlloc>);
 
 // Annotated object: should have |base::internal::kAdvancedMemorySafetyChecks|.
 struct AdvancedChecks {
   ADVANCED_MEMORY_SAFETY_CHECKS();
 };
-static_assert(
-    is_memory_safety_checked<AdvancedChecks,
-                             MemorySafetyCheck::kForcePartitionAlloc>);
 
 // Annotated and aligned object for testing aligned allocations.
 constexpr int kLargeAlignment = 2 * __STDCPP_DEFAULT_NEW_ALIGNMENT__;
 struct alignas(kLargeAlignment) AlignedAdvancedChecks {
   ADVANCED_MEMORY_SAFETY_CHECKS();
 };
-static_assert(
-    is_memory_safety_checked<AlignedAdvancedChecks,
-                             MemorySafetyCheck::kForcePartitionAlloc>);
 
 // The macro may hook memory allocation/deallocation but should forward the
 // request to PA or any other allocator via
 // |HandleMemorySafetyCheckedOperator***|.
 TEST(MemorySafetyCheckTest, AllocatorFunctions) {
+  static_assert(
+      !is_memory_safety_checked<DefaultChecks,
+                                MemorySafetyCheck::kForcePartitionAlloc>);
+  static_assert(
+      is_memory_safety_checked<AdvancedChecks,
+                               MemorySafetyCheck::kForcePartitionAlloc>);
+  static_assert(
+      is_memory_safety_checked<AlignedAdvancedChecks,
+                               MemorySafetyCheck::kForcePartitionAlloc>);
+
   // void* operator new(std::size_t count);
   auto* ptr1 = new DefaultChecks();
   auto* ptr2 = new AdvancedChecks();
@@ -89,4 +90,40 @@ TEST(MemorySafetyCheckTest, AllocatorFunctions) {
   ptr2 = new (data) AdvancedChecks();
   ptr3 = new (data) AlignedAdvancedChecks();
 }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
+  static_assert(
+      !is_memory_safety_checked<DefaultChecks,
+                                MemorySafetyCheck::kSchedulerLoopQuarantine>);
+  static_assert(
+      is_memory_safety_checked<AdvancedChecks,
+                               MemorySafetyCheck::kSchedulerLoopQuarantine>);
+
+  constexpr size_t kCapacityInBytes = 1024;
+
+  auto* root =
+      base::internal::GetPartitionRootForMemorySafetyCheckedAllocation();
+  auto& list = root->GetSchedulerLoopQuarantineForTesting();
+
+  size_t original_capacity_in_bytes = list.GetCapacityInBytes();
+  list.SetCapacityInBytesForTesting(kCapacityInBytes);
+
+  auto* ptr1 = new DefaultChecks();
+  EXPECT_NE(ptr1, nullptr);
+  delete ptr1;
+  EXPECT_FALSE(list.IsQuarantinedForTesting(ptr1));
+
+  auto* ptr2 = new AdvancedChecks();
+  EXPECT_NE(ptr2, nullptr);
+  delete ptr2;
+  EXPECT_TRUE(list.IsQuarantinedForTesting(ptr2));
+
+  list.Purge();
+  list.SetCapacityInBytesForTesting(original_capacity_in_bytes);
+}
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 }  // namespace
