@@ -357,6 +357,27 @@ void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
                                 base::Unretained(frame_node), is_audible));
 }
 
+void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::FrameVisibility visibility) {
+  auto frame_it = frames_.find(render_frame_host);
+  // This can be invoked for a crashed RenderFrameHost, as its view still
+  // occupies space on the page. Just ignore it as clearly its content is not
+  // visible.
+  if (frame_it == frames_.end()) {
+    CHECK(!render_frame_host->IsRenderFrameLive());
+    return;
+  }
+  CHECK(render_frame_host->IsRenderFrameLive());
+
+  auto* frame_node = frame_it->second.get();
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE,
+      base::BindOnce(
+          &FrameNodeImpl::SetIntersectsViewport, base::Unretained(frame_node),
+          visibility == blink::mojom::FrameVisibility::kRenderedInViewport));
+}
+
 void PerformanceManagerTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted())
