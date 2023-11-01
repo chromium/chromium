@@ -2613,6 +2613,7 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
 struct PrivacySandbox3pcdTestCase {
   std::string disable_ads_apis_param = "false";
   bool m1_topics_enabled_pref_consent = true;
+  bool delegate_experiment_eligibility = true;
   bool output_keys = true;
   int expected_status;
 };
@@ -2635,6 +2636,12 @@ const PrivacySandbox3pcdTestCase kTestCases[] = {
         .m1_topics_enabled_pref_consent = false,
         .output_keys = false,
         .expected_status = /*static_cast<int>(Status::kApisDisabled)*/ 3,
+    },
+    {
+        .disable_ads_apis_param = "true",
+        .delegate_experiment_eligibility = false,
+        .expected_status =
+            /*static_cast<int>(Status::kAllowed)*/ 0,
     },
     {
         .expected_status = /*static_cast<int>(Status::kAllowed)*/ 0,
@@ -2662,6 +2669,8 @@ TEST_P(PrivacySandbox3pcdExperimentTest, ExperimentDisablesAdsAPIs) {
       features::kCookieDeprecationFacilitatedTesting,
       {{features::kCookieDeprecationTestingDisableAdsAPIsName,
         test_case.disable_ads_apis_param}});
+  mock_delegate()->SetUpIsCookieDeprecationExperimentEligibleResponse(
+      /*eligible=*/test_case.delegate_experiment_eligibility);
   RunTestCase(
       TestState{{kM1TopicsEnabledUserPrefValue,
                  test_case.m1_topics_enabled_pref_consent},

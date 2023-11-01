@@ -882,7 +882,8 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   DCHECK(pref_name == prefs::kPrivacySandboxM1TopicsEnabled ||
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
-  if (features::kCookieDeprecationTestingDisableAdsAPIs.Get()) {
+  if (delegate_->IsCookieDeprecationExperimentEligible() &&
+      features::kCookieDeprecationTestingDisableAdsAPIs.Get()) {
     return Status::kBlockedBy3pcdExperiment;
   }
 
