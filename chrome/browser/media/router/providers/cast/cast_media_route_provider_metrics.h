@@ -77,11 +77,12 @@ void RecordAppAvailabilityResult(cast_channel::GetAppAvailabilityResult result,
 void RecordLaunchSessionResponseAppType(const base::Value* app_type);
 
 // Records whether the sink supports Media Remoting.
-void RecordSinkRemotingCompatibility(bool is_supported_model,
-                                     bool is_supported_audio_codec,
-                                     media::AudioCodec audio_codec,
-                                     bool is_supported_video_codec,
-                                     media::VideoCodec video_codec);
+void RecordSinkRemotingCompatibility(
+    bool is_supported_model,
+    bool is_supported_audio_codec,
+    absl::optional<media::AudioCodec> audio_codec,
+    bool is_supported_video_codec,
+    media::VideoCodec video_codec);
 
 }  // namespace media_router
 

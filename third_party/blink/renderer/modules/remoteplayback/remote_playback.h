@@ -125,8 +125,9 @@ class MODULES_EXPORT RemotePlayback final
   bool RemotePlaybackAvailable() const override;
   void SourceChanged(const WebURL&, bool is_source_supported) override;
   WebString GetPresentationId() override;
-  void MediaMetadataChanged(media::VideoCodec video_codec,
-                            media::AudioCodec audio_codec) override;
+  void MediaMetadataChanged(
+      absl::optional<media::VideoCodec> video_codec,
+      absl::optional<media::AudioCodec> audio_codec) override;
 
   // RemotePlaybackController implementation.
   void AddObserver(RemotePlaybackObserver*) override;
@@ -187,8 +188,8 @@ class MODULES_EXPORT RemotePlayback final
   KURL presentation_url_;
   WebURL source_;
   bool is_source_supported_ = false;
-  media::VideoCodec video_codec_ = media::VideoCodec::kUnknown;
-  media::AudioCodec audio_codec_ = media::AudioCodec::kUnknown;
+  absl::optional<media::VideoCodec> video_codec_ = absl::nullopt;
+  absl::optional<media::AudioCodec> audio_codec_ = absl::nullopt;
 
   HeapMojoReceiver<mojom::blink::PresentationConnection, RemotePlayback>
       presentation_connection_receiver_;

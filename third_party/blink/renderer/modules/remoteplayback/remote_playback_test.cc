@@ -413,16 +413,14 @@ TEST_F(RemotePlaybackTest, GetAvailabilityUrl) {
   remote_playback.SourceChanged(WebURL(KURL("http://www.example.com")), true);
   EXPECT_EQ((size_t)1, remote_playback.Urls().size());
   EXPECT_EQ(
-      "remote-playback:media-element?source=aHR0cDovL3d3dy5leGFtcGxlLmNvbS8=&"
-      "video_codec=unknown&audio_codec=unknown",
+      "remote-playback:media-element?source=aHR0cDovL3d3dy5leGFtcGxlLmNvbS8=",
       remote_playback.Urls()[0]);
 
   remote_playback.MediaMetadataChanged(media::VideoCodec::kVP9,
                                        media::AudioCodec::kMP3);
   EXPECT_EQ(
       "remote-playback:media-element?source=aHR0cDovL3d3dy5leGFtcGxlLmNvbS8=&"
-      "video_codec=vp9&audio_"
-      "codec=mp3",
+      "video_codec=vp9&audio_codec=mp3",
       remote_playback.Urls()[0]);
 }
 

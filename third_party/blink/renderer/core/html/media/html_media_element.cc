@@ -4718,12 +4718,9 @@ void HTMLMediaElement::DidMediaMetadataChange(
     observer->OnMediaMetadataChanged(has_audio, has_video, media_content_type);
   }
 
-  if (video_codec == media::VideoCodec::kUnknown &&
-      audio_codec == media::AudioCodec::kUnknown) {
-    return;
-  }
-  video_codec_ = video_codec;
-  audio_codec_ = audio_codec;
+  video_codec_ = has_video ? absl::make_optional(video_codec) : absl::nullopt;
+  audio_codec_ = has_audio ? absl::make_optional(audio_codec) : absl::nullopt;
+
   is_encrypted_media_ = is_encrypted_media;
   OnRemotePlaybackMetadataChange();
 }
@@ -4887,8 +4884,12 @@ void HTMLMediaElement::OnRemotePlaybackMetadataChange() {
   for (auto& observer : media_player_observer_remote_set_->Value()) {
     observer->OnRemotePlaybackMetadataChange(
         media_session::mojom::blink::RemotePlaybackMetadata::New(
-            WTF::String(media::GetCodecName(video_codec_)),
-            WTF::String(media::GetCodecName(audio_codec_)),
+            WTF::String(media::GetCodecName(video_codec_
+                                                ? video_codec_.value()
+                                                : media::VideoCodec::kUnknown)),
+            WTF::String(media::GetCodecName(audio_codec_
+                                                ? audio_codec_.value()
+                                                : media::AudioCodec::kUnknown)),
             is_remote_playback_disabled_, is_remote_rendering_,
             WTF::String(remote_device_friendly_name_), is_encrypted_media_));
   }
