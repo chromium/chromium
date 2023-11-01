@@ -37,8 +37,6 @@ source_set("storage") {
     "indexed_db/scopes/leveldb_scopes.h",
     "indexed_db/scopes/leveldb_scopes_coding.cc",
     "indexed_db/scopes/leveldb_scopes_coding.h",
-    "indexed_db/scopes/leveldb_scopes_factory.cc",
-    "indexed_db/scopes/leveldb_scopes_factory.h",
     "indexed_db/scopes/leveldb_scopes_tasks.cc",
     "indexed_db/scopes/leveldb_scopes_tasks.h",
     "indexed_db/scopes/varint_coding.cc",

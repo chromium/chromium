@@ -22,7 +22,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -205,8 +204,7 @@ class CONTENT_EXPORT IndexedDBFactory
       base::FilePath data_directory,
       base::FilePath database_path,
       base::FilePath blob_path,
-      LevelDBScopesOptions scopes_options,
-      LevelDBScopesFactory* scopes_factory,
+      PartitionedLockManager* lock_manager,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       bool is_first_attempt,
       bool create_if_missing);

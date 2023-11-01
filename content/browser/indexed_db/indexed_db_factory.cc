@@ -36,7 +36,6 @@
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
@@ -677,9 +676,6 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
     }
   }
 
-  // TODO(dmurph) Have these factories be given in the constructor, or as
-  // arguments to this method.
-  DefaultLevelDBScopesFactory scopes_factory;
   auto lock_manager = std::make_unique<PartitionedLockManager>();
   IndexedDBDataLossInfo data_loss_info;
   std::unique_ptr<IndexedDBBackingStore> backing_store;
@@ -687,18 +683,6 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
   base::ElapsedTimer open_timer;
   leveldb::Status first_try_status;
   for (int i = 0; i < kNumOpenTries; ++i) {
-    LevelDBScopesOptions scopes_options;
-    scopes_options.lock_manager = lock_manager.get();
-    scopes_options.metadata_key_prefix = ScopesPrefix::Encode();
-    scopes_options.failure_callback = base::BindRepeating(
-        [](const storage::BucketLocator& bucket_locator,
-           base::WeakPtr<IndexedDBFactory> factory, leveldb::Status s) {
-          if (!factory) {
-            return;
-          }
-          factory->OnDatabaseError(bucket_locator, s, nullptr);
-        },
-        bucket_locator, weak_factory_.GetWeakPtr());
     const bool is_first_attempt = i == 0;
     auto filesystem_proxy = !is_incognito_and_in_memory
                                 ? storage::CreateFilesystemProxy()
@@ -706,8 +690,8 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
     std::tie(backing_store, s, data_loss_info, disk_full) =
         OpenAndVerifyIndexedDBBackingStore(
             bucket_locator, data_directory, database_path, blob_path,
-            std::move(scopes_options), &scopes_factory,
-            std::move(filesystem_proxy), is_first_attempt, create_if_missing);
+            lock_manager.get(), std::move(filesystem_proxy), is_first_attempt,
+            create_if_missing);
     if (LIKELY(is_first_attempt)) {
       first_try_status = s;
     }
@@ -856,8 +840,7 @@ IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
     base::FilePath data_directory,
     base::FilePath database_path,
     base::FilePath blob_path,
-    LevelDBScopesOptions scopes_options,
-    LevelDBScopesFactory* scopes_factory,
+    PartitionedLockManager* lock_manager,
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     bool is_first_attempt,
     bool create_if_missing) {
@@ -928,9 +911,21 @@ IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
   std::unique_ptr<LevelDBScopes> scopes;
   {
     TRACE_EVENT0("IndexedDB", "IndexedDBFactory::OpenLevelDBScopes");
-    DCHECK(scopes_factory);
-    std::tie(scopes, status) = scopes_factory->CreateAndInitializeLevelDBScopes(
-        std::move(scopes_options), database_state);
+    scopes = std::make_unique<LevelDBScopes>(
+        ScopesPrefix::Encode(),
+        /*max_write_batch_size_bytes=*/1024 * 1024, database_state,
+        lock_manager,
+        base::BindRepeating(
+            [](const storage::BucketLocator& bucket_locator,
+               base::WeakPtr<IndexedDBFactory> factory, leveldb::Status s) {
+              if (!factory) {
+                return;
+              }
+              factory->OnDatabaseError(bucket_locator, s, nullptr);
+            },
+            bucket_locator, weak_factory_.GetWeakPtr()));
+    status = scopes->Initialize();
+
     if (UNLIKELY(!status.ok())) {
       return {nullptr, status, std::move(data_loss_info),
               /*is_disk_full=*/false};

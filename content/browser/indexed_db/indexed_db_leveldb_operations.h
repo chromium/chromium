@@ -13,7 +13,6 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
