@@ -21278,6 +21278,16 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="all device identifiers are missing"/>
 </enum>
 
+<enum name="DeviceLockDialogAction">
+  <int value="0" label="Create device lock dialog shown"/>
+  <int value="1" label="Existing device lock dialog shown"/>
+  <int value="2" label="Create device lock clicked"/>
+  <int value="3" label="User understands clicked"/>
+  <int value="4" label="Go to OS settings clicked"/>
+  <int value="5" label="Use without an account clicked"/>
+  <int value="6" label="Dismiss clicked"/>
+</enum>
+
 <enum name="DeviceMode">
   <int value="1" label="ClamshellMode"/>
   <int value="2" label="TabletMode"/>
