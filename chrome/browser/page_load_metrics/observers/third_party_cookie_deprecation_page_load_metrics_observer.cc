@@ -62,15 +62,19 @@ ThirdPartyCookieDeprecationMetricsObserver::OnFencedFramesStart(
 void ThirdPartyCookieDeprecationMetricsObserver::OnCookiesRead(
     const GURL& url,
     const GURL& first_party_url,
-    bool blocked_by_policy) {
+    bool blocked_by_policy,
+    bool is_ad_tagged) {
   RecordCookieUseCounters(url, first_party_url, blocked_by_policy);
+  RecordCookieReadUseCounters(url, first_party_url, blocked_by_policy,
+                              is_ad_tagged);
 }
 
 void ThirdPartyCookieDeprecationMetricsObserver::OnCookieChange(
     const GURL& url,
     const GURL& first_party_url,
     const net::CanonicalCookie& cookie,
-    bool blocked_by_policy) {
+    bool blocked_by_policy,
+    bool is_ad_tagged) {
   RecordCookieUseCounters(url, first_party_url, blocked_by_policy);
 }
 
@@ -95,6 +99,37 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
         std::vector<blink::mojom::WebFeature>{
             blink::mojom::WebFeature::
                 kThirdPartyCookieAccessBlockByExperiment});
+  }
+}
+
+void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieReadUseCounters(
+    const GURL& url,
+    const GURL& first_party_url,
+    bool blocked_by_policy,
+    bool is_ad_tagged) {
+  if (blocked_by_policy || !IsThirdParty(url, first_party_url)) {
+    return;
+  }
+
+  bool is_blocked_by_experiment = IsBlockedByThirdPartyDeprecationExperiment();
+  if (is_ad_tagged) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment",
+        is_blocked_by_experiment);
+  }
+  if (!is_blocked_by_experiment) {
+    return;
+  }
+  UMA_HISTOGRAM_BOOLEAN(
+      "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd",
+      is_ad_tagged);
+
+  if (is_ad_tagged) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
+        std::vector<blink::mojom::WebFeature>{
+            blink::mojom::WebFeature::
+                kThirdPartyCookieAdAccessBlockByExperiment});
   }
 }
 

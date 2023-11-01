@@ -596,6 +596,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const int keepalive_request_size_;
   const bool keepalive_;
   const bool do_not_prompt_for_login_;
+  const bool is_ad_tagged_;
   std::unique_ptr<net::URLRequest> url_request_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Receiver<mojom::AuthChallengeResponder>

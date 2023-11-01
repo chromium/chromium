@@ -356,24 +356,26 @@ void PageLoadMetricsForwardObserver::OnRenderFrameDeleted(
 void PageLoadMetricsForwardObserver::OnSubFrameDeleted(int frame_tree_node_id) {
 }
 
-void PageLoadMetricsForwardObserver::OnCookiesRead(
-    const GURL& url,
-    const GURL& first_party_url,
-    bool blocked_by_policy) {
+void PageLoadMetricsForwardObserver::OnCookiesRead(const GURL& url,
+                                                   const GURL& first_party_url,
+                                                   bool blocked_by_policy,
+                                                   bool is_ad_tagged) {
   if (!parent_observer_)
     return;
-  parent_observer_->OnCookiesRead(url, first_party_url, blocked_by_policy);
+  parent_observer_->OnCookiesRead(url, first_party_url, blocked_by_policy,
+                                  is_ad_tagged);
 }
 
 void PageLoadMetricsForwardObserver::OnCookieChange(
     const GURL& url,
     const GURL& first_party_url,
     const net::CanonicalCookie& cookie,
-    bool blocked_by_policy) {
+    bool blocked_by_policy,
+    bool is_ad_tagged) {
   if (!parent_observer_)
     return;
   parent_observer_->OnCookieChange(url, first_party_url, cookie,
-                                   blocked_by_policy);
+                                   blocked_by_policy, is_ad_tagged);
 }
 
 void PageLoadMetricsForwardObserver::OnStorageAccessed(

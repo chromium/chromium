@@ -352,12 +352,14 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   void OnCookiesRead(const GURL& url,
                      const GURL& first_party_url,
-                     bool blocked_by_policy);
+                     bool blocked_by_policy,
+                     bool is_ad_tagged);
 
   void OnCookieChange(const GURL& url,
                       const GURL& first_party_url,
                       const net::CanonicalCookie& cookie,
-                      bool blocked_by_policy);
+                      bool blocked_by_policy,
+                      bool is_ad_tagged);
 
   void OnStorageAccessed(const GURL& url,
                          const GURL& first_party_url,

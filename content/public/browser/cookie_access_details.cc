@@ -14,13 +14,15 @@ CookieAccessDetails::CookieAccessDetails(Type type,
                                          const GURL& first_party_url,
                                          const net::CookieList& cookie_list,
                                          size_t count,
-                                         bool blocked_by_policy)
+                                         bool blocked_by_policy,
+                                         bool is_ad_tagged)
     : type(type),
       url(url),
       first_party_url(first_party_url),
       cookie_list(cookie_list),
       count(count),
-      blocked_by_policy(blocked_by_policy) {}
+      blocked_by_policy(blocked_by_policy),
+      is_ad_tagged(is_ad_tagged) {}
 
 CookieAccessDetails::CookieAccessDetails(const CookieAccessDetails& details) =
     default;

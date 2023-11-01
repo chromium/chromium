@@ -537,6 +537,10 @@ struct URLRequest {
   // eligible navigation request to which the current request is associated.
   mojo_base.mojom.UnguessableToken? attribution_reporting_src_token;
 
+  // Indicates whether this request has been determined to be used for
+  // advertising purposes.
+  bool is_ad_tagged = false;
+
   // Indicate the state of CompressionDictionaryTransport feature. When it is
   // true, `use-as-dictionary` response HTTP header may be processed.
   // TODO(crbug.com/1413922): Remove this flag when we launch

@@ -482,6 +482,7 @@ URLLoader::URLLoader(
       keepalive_request_size_(keepalive_request_size),
       keepalive_(request.keepalive),
       do_not_prompt_for_login_(request.do_not_prompt_for_login),
+      is_ad_tagged_(request.is_ad_tagged),
       receiver_(this, std::move(url_loader_receiver)),
       url_loader_client_(std::move(url_loader_client),
                          std::move(sync_url_loader_client)),
@@ -2327,7 +2328,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
       cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
           url_request_->site_for_cookies(), std::move(reported_cookies),
-          devtools_request_id(), 1));
+          devtools_request_id(), /*count=*/1, is_ad_tagged_));
     }
   }
 }
@@ -2680,7 +2681,7 @@ void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
     cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
         mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
         url_request_->site_for_cookies(), std::move(reported_cookies),
-        devtools_request_id(), 1));
+        devtools_request_id(), /*count=*/1, is_ad_tagged_));
     if (call_cookie_observer) {
       cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
     }

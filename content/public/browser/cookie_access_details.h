@@ -21,7 +21,8 @@ struct CONTENT_EXPORT CookieAccessDetails {
                       const GURL& first_party_url,
                       const net::CookieList& list,
                       size_t count,
-                      bool blocked_by_policy = false);
+                      bool blocked_by_policy = false,
+                      bool is_ad_tagged = false);
   ~CookieAccessDetails();
 
   CookieAccessDetails(const CookieAccessDetails&);
@@ -36,6 +37,7 @@ struct CONTENT_EXPORT CookieAccessDetails {
   // that would have been sent (including |this|).
   size_t count = 1u;
   bool blocked_by_policy;
+  bool is_ad_tagged = false;
 };
 
 }  // namespace content

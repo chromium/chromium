@@ -38,6 +38,10 @@ struct CookieAccessDetails {
   // |count| refers to the number of instances that are duplicates of |this|
   // that would have been sent (including |this|).
   uint32 count = 1;
+
+  // If the cookies are accessed by a network transfer, `is_ad_tagged` records
+  // whether the request was determined to be for advertising purposes.
+  bool is_ad_tagged;
 };
 
 // Cloneable interface to observe the cookie reads or writes.
