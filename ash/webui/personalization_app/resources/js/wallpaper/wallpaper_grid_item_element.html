@@ -11,6 +11,10 @@
     width: var(--wallpaper-grid-item-width, calc(100% / 3 - 0.34px));
   }
 
+  :host([data-is-promoted-tile]) {
+    padding: 0 calc(var(--personalization-app-grid-item-spacing) / 2);
+  }
+
   @media(min-width: 720px) {
     :host {
       /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
@@ -121,6 +125,11 @@
     z-index: 1;
   }
 
+  :host([data-is-promoted-tile]) #text {
+    position: relative;
+    top: 8px;
+  }
+
   #text {
     bottom: 0;
     box-sizing: border-box;
@@ -148,12 +157,12 @@
 
   .primary-text,
   ::slotted(.primary-text) {
-    font: var(--cros-headline-1-font);
+    font: var(--cros-title-2-font));
   }
 
-  :host-context(body.jelly-enabled) .primary-text,
-  :host-context(body.jelly-enabled) ::slotted(.primary-text) {
-    font: var(--cros-title-2-font);
+  :host([data-is-promoted-tile]) .primary-text,
+  :host([data-is-promoted-tile]) ::slotted(.primary-text) {
+    font: var(--cros-display-6_regular-font);
   }
 
   p.primary-text:last-of-type,

@@ -70,6 +70,10 @@
     width: calc(100% / 3 - 0.34px);
   }
 
+  #promoted .outer-container {
+    width: calc(100% / 2 - .5px);
+  }
+
   @media(min-width: 720px) {
     .outer-container {
       width: calc(100% / 4 - 0.25px);
@@ -102,6 +106,7 @@
     display: none;
   }
 
+  #promoted wallpaper-grid-item,
   wallpaper-grid-item[data-is-time-of-day-collection] {
     --personalization-app-grid-item-border-radius: 80px;
   }
@@ -110,11 +115,78 @@
     right: 20px;
     top: 20px;
   }
+
+  h2 {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-button-2-font);
+    height: 20px;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding: 16px 8px 16px;
+  }
 </style>
 <template is="dom-if" if="[[hasError_]]">
   <wallpaper-error></wallpaper-error>
 </template>
 <main aria-label="$i18n{wallpaperCollections}" hidden$="[[hasError_]]">
+  <template is="dom-if" if="[[isSeaPenEnabled_]]" restamp>
+    <!-- TODO(b/308200616): Add real text -->
+    <h2 class="heading">TBD Heading</h2>
+    <iron-list aria-setsize$="[[promotedTiles_.length]]"
+        id="promoted"
+        grid
+        items="[[promotedTiles_]]"
+        role="listbox">
+      <template>
+        <div class="outer-container">
+          <template is="dom-if" if="[[isLoadingTile_(item)]]" restamp>
+            <wallpaper-grid-item
+                aria-label="$i18n{ariaLabelLoading}"
+                aria-posinset$="[[getAriaIndex_(index)]]"
+                data-is-promoted-tile
+                disabled
+                index="[[index]]"
+                role="option"
+                tabindex$="[[tabIndex]]">
+            </wallpaper-grid-item>
+          </template>
+          <template is="dom-if" if="[[isSeaPenTile_(item)]]">
+            <wallpaper-grid-item
+                data-sea-pen
+                data-is-promoted-tile
+                aria-posinset$="[[getAriaIndex_(index)]]"
+                disabled="[[!isSelectableTile_(item)]]"
+                index="[[index]]"
+                on-wallpaper-grid-item-selected="onCollectionSelected_"
+                primary-text="Sea Pen"
+                primary-text="[[item.name]]"
+                role="option"
+                src="[[item.preview]]"
+                tabindex$="[[tabIndex]]">
+            </wallpaper-grid-item>
+          </template>
+          <template is="dom-if" if="[[isOnlineTile_(item)]]">
+            <wallpaper-grid-item aria-posinset$="[[getAriaIndex_(index)]]"
+                data-online
+                data-is-promoted-tile
+                data-is-time-of-day-collection$="[[isTimeOfDayCollection_(item)]]"
+                disabled="[[!isSelectableTile_(item)]]"
+                index="[[index]]"
+                info-text="[[item.info]]"
+                on-wallpaper-grid-item-selected="onCollectionSelected_"
+                primary-text="[[item.name]]"
+                role="option"
+                secondary-text="[[getOnlineTileSecondaryText_(item)]]"
+                src="[[item.preview]]"
+                tabindex$="[[tabIndex]]">
+            </wallpaper-grid-item>
+          </template>
+        </div>
+      </template>
+    </iron-list>
+    <!-- TODO(b/308200616): Add real text -->
+    <h2>TBD Heading</h2>
+  </template>
   <iron-list aria-setsize$="[[tiles_.length]]"
       id="grid"
       grid
@@ -129,20 +201,6 @@
               disabled
               index="[[index]]"
               role="option"
-              tabindex$="[[tabIndex]]">
-          </wallpaper-grid-item>
-        </template>
-        <template is="dom-if" if="[[isSeaPenTile_(item)]]">
-          <wallpaper-grid-item
-              data-sea-pen
-              aria-posinset$="[[getAriaIndex_(index)]]"
-              disabled="[[!isSelectableTile_(item)]]"
-              index="[[index]]"
-              on-wallpaper-grid-item-selected="onCollectionSelected_"
-              primary-text="Sea Pen"
-              primary-text="[[item.name]]"
-              role="option"
-              src="[[item.preview]]"
               tabindex$="[[tabIndex]]">
           </wallpaper-grid-item>
         </template>
