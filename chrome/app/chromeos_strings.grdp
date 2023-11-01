@@ -3849,6 +3849,12 @@
   <message name="IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD" desc="Message in the opt-in dialog for users to enable Backup and Restore for Android apps, and a child account is in use.">
     Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password. <ph name="BEGIN_LINK1">&lt;a href="#" id="learn-more-link-backup-restore"&gt;</ph>Learn More<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
+  <message name="IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_LABEL" desc="This string is spoken when ChromeVox focuses the checkbox to enable Backup and Restore for Android apps in the opt-in dialog." is_accessibility_with_no_ui="true">
+    Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.
+  </message>
+  <message name="IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD_LABEL" desc="This string is spoken when ChromeVox focuses the checkbox to enable Backup and Restore for Android apps in the opt-in dialog, and a child account is in use." is_accessibility_with_no_ui="true">
+    Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password.
+  </message>
   <message name="IDS_ARC_OOBE_BACKUP_RESTORE" desc="Message in the opt-in dialog for users to enable Backup and Restore for Android apps.">
     Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.
   </message>

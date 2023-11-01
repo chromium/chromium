@@ -538,6 +538,11 @@ bool ArcSupportHost::Initialize() {
       l10n_util::GetStringUTF16(
           is_child ? IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_DISABLED_CHILD
                    : IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_DISABLED));
+  loadtime_data.Set(
+      "textBackupRestoreLabel",
+      l10n_util::GetStringUTF16(
+          is_child ? IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD_LABEL
+                   : IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_LABEL));
   loadtime_data.Set("textBackupRestore",
                     l10n_util::GetStringUTF16(
                         is_child ? IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD
