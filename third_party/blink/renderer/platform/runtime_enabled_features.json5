@@ -1143,7 +1143,6 @@
       // https://drafts.csswg.org/css-text-decor-4/#valdef-text-decoration-line-grammar-error
       name: "CSSSpellingGrammarErrors",
       status: "experimental",
-      base_feature: "none",
     },
     {
       // https://drafts.csswg.org/css-transitions-2/#defining-before-change-style-the-starting-style-rule
@@ -2070,17 +2069,14 @@
     {
       name: "HighlightAPI",
       status: "stable",
-      base_feature: "none",
     },
     {
       name: "HighlightInheritance",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "HighlightOverlayPainting",
       status: "stable",
-      base_feature: "none",
     },
     {
       name: "HighlightPointerEvents",
