@@ -263,7 +263,7 @@ export class List extends HTMLUListElement {
     if (dataModel) {
       const index = this.selectionModel!.selectedIndex;
       if (index !== -1) {
-        return dataModel.item(index);
+        return dataModel.item(index) ?? null;
       }
     }
     return null;
@@ -284,7 +284,10 @@ export class List extends HTMLUListElement {
     const indexes = this.selectionModel!.selectedIndexes;
     const dataModel = this.dataModel;
     if (dataModel) {
-      return indexes.map(i => dataModel.item(i));
+      return indexes
+          .map(i => dataModel.item(i))
+          // b/307500990 somehow this was getting invalid indexes.
+          .filter(item => item !== undefined);
     }
     return [];
   }
