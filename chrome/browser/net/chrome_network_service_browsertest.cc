@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -107,10 +108,18 @@ class ChromeNetworkServiceBrowserTest
         network::mojom::NetworkContextParams::New();
     context_params->enable_encrypted_cookies = enable_encrypted_cookies;
     context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+
+    // Network files for the test context need to differ from the ones created
+    // for the current profile.
+    base::FilePath data_path =
+        g_browser_process->profile_manager()->user_data_dir().AppendASCII(
+            "Test Context");
+    context_params->file_paths->unsandboxed_data_path = data_path;
     context_params->file_paths->data_directory =
-        browser()->profile()->GetPath();
+        data_path.Append(chrome::kNetworkDataDirname);
+    context_params->file_paths->trigger_migration = true;
     context_params->file_paths->cookie_database_name =
-        base::FilePath(FILE_PATH_LITERAL("test-cookies"));
+        base::FilePath(chrome::kCookieFilename);
     context_params->cert_verifier_params = content::GetCertVerifierParams(
         cert_verifier::mojom::CertVerifierCreationParams::New());
     content::CreateNetworkContextInNetworkService(
