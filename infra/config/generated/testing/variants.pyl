@@ -467,7 +467,7 @@
     'identifier': 'BRYA_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'brya',
-      'cros_img': 'brya-release/R118-15604.45.0',
+      'cros_img': 'brya-release/R118-15604.57.0',
       'dut_pool': 'chrome',
     },
   },
@@ -498,7 +498,7 @@
     'identifier': 'DEDEDE_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R118-15604.45.0',
+      'cros_img': 'dedede-release/R118-15604.57.0',
     },
   },
   'CROS_FIZZ_RELEASE_LKGM': {
@@ -531,7 +531,7 @@
     'identifier': 'FIZZ_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R118-15604.45.0',
+      'cros_img': 'fizz-release/R118-15604.56.0',
       'dut_pool': 'chrome',
     },
   },
@@ -565,7 +565,7 @@
     'identifier': 'GUYBRUSH_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R118-15604.45.0',
+      'cros_img': 'guybrush-release/R118-15604.57.0',
       'dut_pool': 'chrome',
     },
   },
@@ -599,7 +599,7 @@
     'identifier': 'PUFF_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R118-15604.45.0',
+      'cros_img': 'puff-release/R118-15604.57.0',
       'dut_pool': 'chrome',
     },
   },
@@ -640,7 +640,7 @@
     'identifier': 'HANA_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'hana',
-      'cros_img': 'hana-release/R118-15604.45.0',
+      'cros_img': 'hana-release/R118-15604.57.0',
     },
   },
   'CROS_JACUZZI_RELEASE_LKGM': {
@@ -678,7 +678,7 @@
     'identifier': 'JACUZZI_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_img': 'jacuzzi-release/R118-15604.45.0',
+      'cros_img': 'jacuzzi-release/R118-15604.57.0',
     },
   },
   'CROS_JACUZZI_PUBLIC_LKGM': {
@@ -749,7 +749,7 @@
     'identifier': 'OCTOPUS_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R118-15604.45.0',
+      'cros_img': 'octopus-release/R118-15604.57.0',
     },
   },
   'CROS_STRONGBAD_RELEASE_LKGM': {
@@ -779,7 +779,7 @@
     'identifier': 'STRONGBAD_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R118-15604.45.0',
+      'cros_img': 'strongbad-release/R118-15604.57.0',
     },
   },
   'CROS_TROGDOR_RELEASE_ASH_LKGM': {
