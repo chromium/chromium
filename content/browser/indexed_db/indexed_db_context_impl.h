@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
-class Clock;
 class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
@@ -67,7 +66,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   IndexedDBContextImpl(
       const base::FilePath& base_data_path,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      base::Clock* clock,
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
@@ -351,7 +349,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // The set of sites whose storage should be cleared on shutdown. These are
   // matched against the origin and top level site in each bucket's StorageKey.
   std::set<url::Origin> origins_to_purge_on_shutdown_;
-  const raw_ptr<base::Clock> clock_;
 
   const std::unique_ptr<IndexedDBQuotaClient> quota_client_;
   const std::unique_ptr<storage::QuotaClientCallbackWrapper>

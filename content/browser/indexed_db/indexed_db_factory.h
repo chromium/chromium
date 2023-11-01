@@ -20,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
@@ -57,8 +56,7 @@ class CONTENT_EXPORT IndexedDBFactory
     : public blink::mojom::IDBFactory,
       public base::trace_event::MemoryDumpProvider {
  public:
-  IndexedDBFactory(IndexedDBContextImpl* context,
-                   base::Clock* clock);
+  explicit IndexedDBFactory(IndexedDBContextImpl* context);
 
   IndexedDBFactory(const IndexedDBFactory&) = delete;
   IndexedDBFactory& operator=(const IndexedDBFactory&) = delete;
@@ -230,7 +228,6 @@ class CONTENT_EXPORT IndexedDBFactory
   SEQUENCE_CHECKER(sequence_checker_);
   // This will be set to null after `ContextDestroyed` is called.
   raw_ptr<IndexedDBContextImpl> context_;
-  const raw_ptr<base::Clock> clock_;
 
   IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
 

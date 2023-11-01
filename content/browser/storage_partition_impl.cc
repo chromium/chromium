@@ -34,7 +34,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
-#include "base/time/default_clock.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1427,7 +1426,6 @@ void StoragePartitionImpl::Initialize(
   base::FilePath path = is_in_memory() ? base::FilePath() : partition_path_;
   indexed_db_control_wrapper_ = std::make_unique<IndexedDBControlWrapper>(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
-      base::DefaultClock::GetInstance(),
       ChromeBlobStorageContext::GetRemoteFor(browser_context_),
       std::move(file_system_access_context), GetIOThreadTaskRunner({}),
       /*task_runner=*/nullptr);

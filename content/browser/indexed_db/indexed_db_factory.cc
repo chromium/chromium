@@ -173,13 +173,9 @@ std::tuple<bool, leveldb::Status> AreSchemasKnown(
 
 }  // namespace
 
-IndexedDBFactory::IndexedDBFactory(
-    IndexedDBContextImpl* context,
-    base::Clock* clock)
-    : context_(context),
-      clock_(clock) {
+IndexedDBFactory::IndexedDBFactory(IndexedDBContextImpl* context)
+    : context_(context) {
   DCHECK(context);
-  DCHECK(clock);
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "IndexedDBFactory",
@@ -825,7 +821,7 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
 
   auto bucket_context = std::make_unique<IndexedDBBucketContext>(
       bucket,
-      /*persist_for_incognito=*/is_incognito_and_in_memory, clock_,
+      /*persist_for_incognito=*/is_incognito_and_in_memory,
       std::move(lock_manager), std::move(bucket_delegate),
       std::move(backing_store), context_->quota_manager_proxy(),
       context_->IOTaskRunner(), std::move(blob_storage_context),

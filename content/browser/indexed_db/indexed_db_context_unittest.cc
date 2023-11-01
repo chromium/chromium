@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
-#include "base/time/default_clock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -71,7 +70,6 @@ class IndexedDBContextTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault());
     indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_,
-        base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),

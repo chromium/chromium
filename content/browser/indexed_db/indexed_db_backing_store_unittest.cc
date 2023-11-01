@@ -31,7 +31,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/time/default_clock.h"
 #include "base/uuid.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -120,8 +119,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
 class TestIDBFactory : public IndexedDBFactory {
  public:
   explicit TestIDBFactory(IndexedDBContextImpl* idb_context)
-      : IndexedDBFactory(idb_context,
-                         base::DefaultClock::GetInstance()) {}
+      : IndexedDBFactory(idb_context) {}
 
   TestIDBFactory(const TestIDBFactory&) = delete;
   TestIDBFactory& operator=(const TestIDBFactory&) = delete;
@@ -314,8 +312,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
 
     idb_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_,
-        base::DefaultClock::GetInstance(), std::move(blob_storage_context),
-        std::move(fsa_context), base::SequencedTaskRunner::GetCurrentDefault(),
+        std::move(blob_storage_context), std::move(fsa_context),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
 
     // Needed to get the QuotaClient bound.

@@ -26,7 +26,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -192,7 +191,6 @@ class IndexedDBDispatcherHostTest : public testing::Test {
         context_impl_(base::MakeRefCounted<IndexedDBContextImpl>(
             temp_dir_.GetPath(),
             quota_manager_->proxy(),
-            base::DefaultClock::GetInstance(),
             mojo::NullRemote(),
             mojo::NullRemote(),
             task_environment_.GetMainThreadTaskRunner(),

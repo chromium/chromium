@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-forward.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -70,7 +69,6 @@ class IndexedDBDatabaseTest : public ::testing::Test {
 
     indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_,
-        base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -82,7 +80,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
                             weak_factory_.GetWeakPtr(), true);
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
+        storage::BucketInfo(), false,
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
         std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
@@ -481,7 +479,6 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
 
     indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_,
-        base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -493,7 +490,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         base::Unretained(this), true);
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
+        storage::BucketInfo(), false,
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
         std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),

@@ -270,7 +270,6 @@ IndexedDBBucketContext::Delegate::~Delegate() = default;
 IndexedDBBucketContext::IndexedDBBucketContext(
     storage::BucketInfo bucket_info,
     bool persist_for_incognito,
-    base::Clock* clock,
     std::unique_ptr<PartitionedLockManager> lock_manager,
     Delegate&& delegate,
     std::unique_ptr<IndexedDBBackingStore> backing_store,
@@ -283,7 +282,6 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     InstanceClosure initialize_closure)
     : bucket_info_(std::move(bucket_info)),
       persist_for_incognito_(persist_for_incognito),
-      clock_(clock),
       lock_manager_(std::move(lock_manager)),
       backing_store_(std::move(backing_store)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
@@ -293,12 +291,11 @@ IndexedDBBucketContext::IndexedDBBucketContext(
       blob_storage_context_(std::move(blob_storage_context)),
       file_system_access_context_(std::move(file_system_access_context)),
       delegate_(std::move(delegate)) {
-  DCHECK(clock_);
 
   backing_store_->set_bucket_context(this);
 
   if (!initialize_closure) {
-    base::Time now = clock_->Now();
+    base::Time now = base::Time::Now();
     initialize_closure =
         base::BindRepeating(&IndexedDBBucketContext::SetInternalState,
                             GenerateNextGlobalSweepTime(now),
@@ -659,7 +656,7 @@ void IndexedDBBucketContext::CloseNow() {
 
 bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Time now = clock_->Now();
+  base::Time now = base::Time::Now();
   // Check that the last sweep hasn't run too recently.
   if (earliest_global_sweep_time_ > now) {
     return false;
@@ -704,7 +701,7 @@ bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {
 bool IndexedDBBucketContext::ShouldRunCompaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Time now = clock_->Now();
+  base::Time now = base::Time::Now();
   // Check that the last compaction hasn't run too recently.
   if (earliest_global_compaction_time_ > now) {
     return false;

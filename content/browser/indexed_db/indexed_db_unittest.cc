@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
@@ -136,7 +135,6 @@ class IndexedDBTest
         context_(base::MakeRefCounted<IndexedDBContextImpl>(
             temp_dir_.GetPath(),
             quota_manager_proxy_.get(),
-            base::DefaultClock::GetInstance(),
             /*blob_storage_context=*/mojo::NullRemote(),
             /*file_system_access_context=*/mojo::NullRemote(),
             base::SequencedTaskRunner::GetCurrentDefault(),

@@ -16,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -165,7 +164,6 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   IndexedDBBucketContext(
       storage::BucketInfo bucket_info,
       bool persist_for_incognito,
-      base::Clock* clock,
       std::unique_ptr<PartitionedLockManager> lock_manager,
       Delegate&& delegate,
       std::unique_ptr<IndexedDBBackingStore> backing_store,
@@ -277,12 +275,10 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   friend IndexedDBBucketContextHandle;
 
   // Test needs access to ShouldRunTombstoneSweeper.
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithMockTime,
-                           TombstoneSweeperTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, TombstoneSweeperTiming);
 
   // Test needs access to ShouldRunCompaction.
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithMockTime,
-                           CompactionTaskTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionTaskTiming);
 
   // Test needs access to CompactionKillSwitchWorks.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionKillSwitchWorks);
@@ -349,7 +345,6 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // CanClose.
   bool has_blobs_outstanding_ = false;
   bool skip_closing_sequence_ = false;
-  const raw_ptr<base::Clock> clock_;
 
   bool running_tasks_ = false;
   bool task_run_scheduled_ = false;

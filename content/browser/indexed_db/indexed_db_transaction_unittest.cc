@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -72,7 +71,6 @@ class IndexedDBTransactionTest : public testing::Test {
         /*special_storage_policy=*/nullptr);
     indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_->proxy(),
-        base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -82,7 +80,7 @@ class IndexedDBTransactionTest : public testing::Test {
     delegate.on_tasks_available = CreateRunTasksCallback();
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
+        storage::BucketInfo(), false,
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
         std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_->proxy(),
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),

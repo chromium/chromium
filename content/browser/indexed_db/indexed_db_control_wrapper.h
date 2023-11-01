@@ -31,7 +31,6 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
       const base::FilePath& data_path,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      base::Clock* clock,
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>

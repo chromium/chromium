@@ -19,11 +19,9 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/time/default_clock.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -79,12 +77,7 @@ storage::BucketInfo ToBucketInfo(const storage::BucketLocator& bucket_locator) {
 
 class IndexedDBFactoryTest : public testing::Test {
  public:
-  IndexedDBFactoryTest()
-      : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {}
-
-  explicit IndexedDBFactoryTest(
-      std::unique_ptr<base::test::TaskEnvironment> task_environment)
-      : task_environment_(std::move(task_environment)) {}
+  IndexedDBFactoryTest() = default;
 
   IndexedDBFactoryTest(const IndexedDBFactoryTest&) = delete;
   IndexedDBFactoryTest& operator=(const IndexedDBFactoryTest&) = delete;
@@ -126,13 +119,12 @@ class IndexedDBFactoryTest : public testing::Test {
     IndexedDBClassFactory::Get()->SetLevelDBFactoryForTesting(nullptr);
     quota_manager_.reset();
     // Wait for mojo pipes to flush or there may be leaks.
-    task_environment_->RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void SetUpContext() {
     context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_.get(),
-        base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -142,16 +134,15 @@ class IndexedDBFactoryTest : public testing::Test {
   void SetUpInMemoryContext() {
     context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         base::FilePath(), quota_manager_proxy_.get(),
-        base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 
-  void SetUpContextWithFactories(LevelDBFactory* factory, base::Clock* clock) {
+  void SetUpContextWithFactories(LevelDBFactory* factory) {
     context_ = base::MakeRefCounted<IndexedDBContextImpl>(
-        temp_dir_.GetPath(), quota_manager_proxy_.get(), clock,
+        temp_dir_.GetPath(), quota_manager_proxy_.get(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -190,10 +181,6 @@ class IndexedDBFactoryTest : public testing::Test {
 
   IndexedDBFactory* factory() const { return context_->GetIDBFactory(); }
 
-  base::test::TaskEnvironment* task_environment() const {
-    return task_environment_.get();
-  }
-
   IndexedDBBucketContext* StorageBucketFromHandle(
       IndexedDBBucketContextHandle& handle) {
     return handle.bucket_context();
@@ -201,7 +188,8 @@ class IndexedDBFactoryTest : public testing::Test {
 
   storage::MockQuotaManager* quota_manager() { return quota_manager_.get(); }
 
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::MockSpecialStoragePolicy> quota_policy_;
@@ -209,18 +197,6 @@ class IndexedDBFactoryTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> context_;
   std::unique_ptr<MockIndexedDBFactoryClient> mock_factory_client_;
-};
-
-class IndexedDBFactoryTestWithMockTime : public IndexedDBFactoryTest {
- public:
-  IndexedDBFactoryTestWithMockTime()
-      : IndexedDBFactoryTest(std::make_unique<base::test::TaskEnvironment>(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
-
-  IndexedDBFactoryTestWithMockTime(const IndexedDBFactoryTestWithMockTime&) =
-      delete;
-  IndexedDBFactoryTestWithMockTime& operator=(
-      const IndexedDBFactoryTestWithMockTime&) = delete;
 };
 
 class IndexedDBFactoryTestWithStoragePartitioning
@@ -443,10 +419,8 @@ TEST_F(IndexedDBFactoryTest, ImmediateClose) {
   EXPECT_EQ(0ul, factory()->GetOpenBuckets().size());
 }
 
-TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
-  base::SimpleTestClock clock;
-  clock.SetNow(base::Time::Now());
-  SetUpContextWithFactories(nullptr, &clock);
+TEST_F(IndexedDBFactoryTest, PreCloseTasksStart) {
+  SetUpContextWithFactories(nullptr);
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
@@ -470,7 +444,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_EQ(IndexedDBBucketContext::ClosingState::kPreCloseGracePeriod,
             factory()->GetBucketContext(bucket_locator.id)->closing_stage());
 
-  task_environment()->FastForwardBy(base::Seconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
 
   // The factory should be closed, as the pre close tasks are delayed.
   EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
@@ -478,7 +452,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   // Move the clock to run the tasks in the next close sequence.
   // NOTE: The constants rate-limiting sweeps and compaction are currently the
   // same. This test may need to be restructured if these values diverge.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start again.
@@ -512,11 +487,11 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_TRUE(bucket_context_handle.IsHeld()) << s.ToString();
   EXPECT_FALSE(
       StorageBucketFromHandle(bucket_context_handle)->pre_close_task_queue());
-  bucket_context_handle.Release();
 
   // Move clock forward to trigger next sweep, but storage key has longer
   // sweep minimum, so no tasks should execute.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   bucket_context_handle.Release();
   EXPECT_TRUE(factory()->GetBucketContext(bucket_locator.id));
@@ -531,7 +506,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_FALSE(factory()->GetBucketContext(bucket_locator.id));
 
   //  Finally, move the clock forward so the storage key should allow a sweep.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestBucketSweepFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestBucketSweepFromNow);
   std::tie(bucket_context_handle, s, std::ignore, std::ignore, std::ignore) =
       factory()->GetOrCreateBucketContext(
           ToBucketInfo(bucket_locator), context()->GetDataPath(bucket_locator),
@@ -550,10 +526,8 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
                   ->started());
 }
 
-TEST_F(IndexedDBFactoryTestWithMockTime, TombstoneSweeperTiming) {
-  base::SimpleTestClock clock;
-  clock.SetNow(base::Time::Now());
-  SetUpContextWithFactories(nullptr, &clock);
+TEST_F(IndexedDBFactoryTest, TombstoneSweeperTiming) {
+  SetUpContextWithFactories(nullptr);
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
@@ -574,26 +548,27 @@ TEST_F(IndexedDBFactoryTestWithMockTime, TombstoneSweeperTiming) {
   EXPECT_FALSE(bucket_context_handle->ShouldRunTombstoneSweeper());
 
   // Move the clock to run the tasks in the next close sequence.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   EXPECT_TRUE(bucket_context_handle->ShouldRunTombstoneSweeper());
 
   // Move clock forward to trigger next sweep, but storage key has longer
   // sweep minimum, so no tasks should execute.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   EXPECT_FALSE(bucket_context_handle->ShouldRunTombstoneSweeper());
 
   //  Finally, move the clock forward so the storage key should allow a sweep.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestBucketSweepFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestBucketSweepFromNow);
 
   EXPECT_TRUE(bucket_context_handle->ShouldRunTombstoneSweeper());
 }
 
-TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
-  base::SimpleTestClock clock;
-  clock.SetNow(base::Time::Now());
-  SetUpContextWithFactories(nullptr, &clock);
+TEST_F(IndexedDBFactoryTest, CompactionTaskTiming) {
+  SetUpContextWithFactories(nullptr);
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
@@ -614,19 +589,22 @@ TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
   EXPECT_FALSE(bucket_context_handle->ShouldRunCompaction());
 
   // Move the clock to run the tasks in the next close sequence.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalCompactionFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestGlobalCompactionFromNow);
 
   EXPECT_TRUE(bucket_context_handle->ShouldRunCompaction());
 
   // Move clock forward to trigger next compaction, but storage key has longer
   // compaction minimum, so no tasks should execute.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalCompactionFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestGlobalCompactionFromNow);
 
   EXPECT_FALSE(bucket_context_handle->ShouldRunCompaction());
 
   //  Finally, move the clock forward so the storage key should allow a
   //  compaction.
-  clock.Advance(IndexedDBBucketContext::kMaxEarliestBucketCompactionFromNow);
+  task_environment_.FastForwardBy(
+      IndexedDBBucketContext::kMaxEarliestBucketCompactionFromNow);
 
   EXPECT_TRUE(bucket_context_handle->ShouldRunCompaction());
 }
@@ -850,8 +828,7 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
   FakeLevelDBFactory fake_ldb_factory({}, "indexed-db");
   fake_ldb_factory.EnqueueNextOpenLevelDBStateResult(
       nullptr, leveldb::Status::IOError("Disk is full."), true);
-  SetUpContextWithFactories(&fake_ldb_factory,
-                            base::DefaultClock::GetInstance());
+  SetUpContextWithFactories(&fake_ldb_factory);
 
   // Bind the IDBFactory.
   const blink::StorageKey storage_key =
