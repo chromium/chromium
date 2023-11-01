@@ -68,7 +68,7 @@ class ScopedCommitCompletionEvent {
   ScopedCommitCompletionEvent(const ScopedCommitCompletionEvent&) = delete;
   ~ScopedCommitCompletionEvent() {
 
-    recordreplay::CommandDiagnostic(
+    recordreplay::CommandDiagnosticTrace(
       "[RUN-2110-2761] ~ScopedCommitCompletionEvent");
 
     event_.ExtractAsDangling()->Signal();
@@ -812,7 +812,7 @@ void ProxyImpl::ScheduledActionCommit() {
     data_for_commit_->commit_timestamps->finish = finish_time;
   data_for_commit_->commit_completion_event->SetFinishTime(finish_time);
 
-  recordreplay::CommandDiagnostic(
+  recordreplay::CommandDiagnosticTrace(
     "[RUN-2110-2761] ProxyImpl::ScheduledActionCommit %d",
     commit_state->commit_waits_for_activation);
 

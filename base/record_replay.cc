@@ -72,9 +72,6 @@ namespace recordreplay {
   Macro(V8RecordReplayTrace,                                            \
         (const char* format, va_list args),                             \
         (format, args))                                                 \
-  Macro(V8RecordReplayCrash,                                            \
-        (const char* format, va_list args),                             \
-        (format, args))                                                 \
   Macro(V8RecordReplayBytes,                                            \
         (const char* why, void* buf, size_t size),                      \
         (why, buf, size))                                               \
@@ -530,15 +527,6 @@ int NewIdAnyThread(const char* name) {
     return 0;
   }
   return (int)RecordReplayValue("NewId", (uintptr_t)gNextAnyThreadId++);
-}
-
-void Crash(const char* format, ...) {
-  if (IsRecordingOrReplaying()) {
-    va_list args;
-    va_start(args, format);
-    V8RecordReplayCrash(format, args);
-    va_end(args);
-  }
 }
 
 bool IsInReplayCode(const char* why) {

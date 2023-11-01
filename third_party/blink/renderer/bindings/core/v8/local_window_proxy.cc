@@ -161,6 +161,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
 // Record/replay state is initialized along with the first LocalWindowProxy.
 static bool gRecordReplayStateInitialized;
 
+extern "C" void V8RecordReplaySetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context> cx);
+
 void LocalWindowProxy::Initialize() {
   // https://linear.app/replay/issue/RUN-749
   recordreplay::Assert("LocalWindowProxy::Initialize Start");
@@ -215,32 +217,32 @@ void LocalWindowProxy::Initialize() {
     SetSecurityToken(origin.get());
   }
 
-  if (recordreplay::IsRecordingOrReplaying("commands") &&
-      origin &&
+  if (origin &&
       !origin->Host().empty()) {
 
-    // Initialize Replay globals.
+    // Initialize Replay basics.
     OnNewWindow1(GetIsolate(), GetFrame());
 
-    if (!gRecordReplayStateInitialized) {
+    if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
+        !gRecordReplayStateInitialized) {
       // After creating the first context that is associated with a non-empty
       // origin, we are ready to set up the state used to process driver
       // commands when recording/replaying, and to create checkpoints. Create
       // the first checkpoint at which execution can pause.
       gRecordReplayStateInitialized = true;
-      SetupRecordReplayCommands(GetIsolate(), GetFrame(), context);
+      SetupRecordReplayCommands(GetIsolate(), GetFrame());
+      V8RecordReplaySetDefaultContext(GetIsolate(), context);
       recordreplay::NewCheckpoint();
     }
 
     if (GetFrame()->IsOutermostMainFrame()) {
       // Root-level navigation event.
-      // Note: This must happen after our first checkpoint, or we'll crash with "Progress counter updated before first checkpoint".
-      OnNewRootFrame(GetIsolate(), GetFrame(), context);
+      OnNewRootFrame(GetIsolate(), GetFrame());
     }
 
     // Initialize Replay things that depend on previous Replay initialization 
     // steps.
-    OnNewWindow2(GetIsolate(), GetFrame(), context);
+    OnNewWindow2(GetIsolate(), GetFrame());
   }
 
   {
@@ -636,7 +638,7 @@ LocalWindowProxy::LocalWindowProxy(v8::Isolate* isolate,
 }
 
 bool RecordReplayStateEnsureInitialized() {
-  if (recordreplay::IsRecordingOrReplaying("commands") &&
+  if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
       !gRecordReplayStateInitialized &&
       gLatestLocalWindowProxy) {
     gLatestLocalWindowProxy->InitializeIfNeeded();
