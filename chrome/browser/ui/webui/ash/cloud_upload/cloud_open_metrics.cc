@@ -15,17 +15,17 @@ namespace ash::cloud_upload {
 std::ostream& operator<<(std::ostream& os, MetricState metric_state) {
   switch (metric_state) {
     case MetricState::kCorrectlyNotLogged:
-      return os << "Correctly not logged";
+      return os << "NL";
     case MetricState::kCorrectlyLogged:
-      return os << "Correctly logged";
+      return os << "L";
     case MetricState::kIncorrectlyNotLogged:
-      return os << "Incorrectly not logged";
+      return os << "INL";
     case MetricState::kIncorrectlyLogged:
-      return os << "Incorrectly logged";
+      return os << "IL";
     case MetricState::kIncorrectlyLoggedMultipleTimes:
-      return os << "Incorrectly logged multiple times";
+      return os << "ILM";
     case MetricState::kWrongValueLogged:
-      return os << "Wrong value logged";
+      return os << "WVL";
   }
 }
 
@@ -576,24 +576,17 @@ void CloudOpenMetrics::OnInconsistencyFound(Metric<MetricType>& metric,
     // TODO(b/242685536): Define CloudOpenMetrics for multiple files.
     return;
   }
-  LOG(ERROR) << "Inconsistent metric found: " << metric;
-  LOG(ERROR) << "Cloud provider: " << cloud_provider_;
-  LOG(ERROR) << "Drive metrics: " << std::endl
-             << drive_copy_error_ << std::endl
-             << drive_move_error_ << std::endl
-             << drive_open_error_ << std::endl
-             << drive_source_volume_ << std::endl
-             << drive_task_result_ << std::endl
-             << drive_transfer_required_ << std::endl
-             << drive_upload_result_;
-  LOG(ERROR) << "OneDrive metrics: " << std::endl
-             << one_drive_copy_error_ << std::endl
-             << one_drive_move_error_ << std::endl
-             << one_drive_open_error_ << std::endl
-             << one_drive_source_volume_ << std::endl
-             << one_drive_task_result_ << std::endl
-             << one_drive_transfer_required_ << std::endl
-             << one_drive_upload_result_;
+  LOG(ERROR) << "Inconsistent metric found: " << metric
+             << ". ----- Cloud provider: " << cloud_provider_
+             << ". ----- Drive metrics: " << drive_copy_error_ << ". "
+             << drive_move_error_ << ". " << drive_open_error_ << ". "
+             << drive_source_volume_ << ". " << drive_task_result_ << ". "
+             << drive_transfer_required_ << ". " << drive_upload_result_
+             << ". -----  OneDrive metrics: " << one_drive_copy_error_ << ". "
+             << one_drive_move_error_ << ". " << one_drive_open_error_ << ". "
+             << one_drive_source_volume_ << ". " << one_drive_task_result_
+             << ". " << one_drive_transfer_required_ << ". "
+             << one_drive_upload_result_ << ".";
   if (immediately_dump) {
     base::debug::DumpWithoutCrashing();
   } else {
