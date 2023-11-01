@@ -8,6 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressCreationViewBridge_jni.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
@@ -32,9 +34,16 @@ void PlusAddressCreationViewAndroid::Show(
     const std::string& primary_email_address,
     const std::string& plus_address) {
   JNIEnv* env = base::android::AttachCurrentThread();
+  TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents_);
+  if (!tab_model) {
+    // TODO(crbug.com/1467623): Verify expected behavior in this case.
+    return;
+  }
+
   java_object_.Reset(Java_PlusAddressCreationViewBridge_create(
       env, reinterpret_cast<intptr_t>(this),
-      web_contents_->GetTopLevelNativeWindow()->GetJavaObject()));
+      web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
+      tab_model->GetJavaObject()));
 
   // TODO(b/303054310): Once project exigencies allow for it, convert all of
   // these back to the android view XML.

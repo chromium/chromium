@@ -8,15 +8,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,9 +27,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
+import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.TestActivity;
@@ -50,30 +50,53 @@ public class PlusAddressCreationViewBridgeTest {
     private static final String MODAL_CANCEL = "cancel";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-
-    @Mock private PlusAddressCreationViewBridge.Natives mPromptDelegateJni;
-
+    @Mock private Profile mProfile;
+    @Mock private PlusAddressCreationViewBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private ManagedLayoutManager mLayoutManager;
+    @Mock private PlusAddressCreationCoordinator mCoordinator;
+    @Mock private PlusAddressCreationViewBridge.CoordinatorFactory mCoordinatorFactory;
 
+    private Activity mActivity;
+    private MockTabModel mTabModel;
     private WindowAndroid mWindow;
     private PlusAddressCreationViewBridge mPlusAddressCreationViewBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Activity activity = Robolectric.setupActivity(TestActivity.class);
-        mWindow = new WindowAndroid(activity);
+        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mWindow = new WindowAndroid(mActivity);
+        mTabModel = new MockTabModel(mProfile, null);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
+        LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         mPlusAddressCreationViewBridge =
-                PlusAddressCreationViewBridge.create(NATIVE_PLUS_ADDRESS_CREATION_VIEW, mWindow);
-        mPlusAddressCreationViewBridge.setActivityForTesting(activity);
-        mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mPromptDelegateJni);
+                new PlusAddressCreationViewBridge(
+                        NATIVE_PLUS_ADDRESS_CREATION_VIEW, mWindow, mTabModel, mCoordinatorFactory);
+        mPlusAddressCreationViewBridge.setActivityForTesting(mActivity);
+        mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mBridgeNatives);
     }
 
     @After
     public void tearDown() {
         BottomSheetControllerFactory.detach(mBottomSheetController);
+        LayoutManagerAppUtils.detach(mLayoutManager);
         mWindow.destroy();
+    }
+
+    private void setupCoordinatorFactory() {
+        when(mCoordinatorFactory.create(
+                        mActivity,
+                        mBottomSheetController,
+                        mLayoutManager,
+                        mTabModel,
+                        mPlusAddressCreationViewBridge,
+                        MODAL_TITLE,
+                        MODAL_PLUS_ADDRESS_DESCRIPTION,
+                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
+                        MODAL_OK,
+                        MODAL_CANCEL))
+                .thenReturn(mCoordinator);
     }
 
     private void showBottomSheet() {
@@ -87,87 +110,83 @@ public class PlusAddressCreationViewBridgeTest {
 
     @Test
     @SmallTest
-    public void bottomSheetShown() {
+    public void testRequestShowContent_requestsShowOnCoordinator() {
+        setupCoordinatorFactory();
         showBottomSheet();
-        PlusAddressCreationBottomSheetContent bottomSheetContent =
-                mPlusAddressCreationViewBridge.getBottomSheetContent();
-        TextView modalTitleView =
-                bottomSheetContent.getContentView().findViewById(R.id.plus_address_notice_title);
-        TextView modalDescriptionView =
-                bottomSheetContent
-                        .getContentView()
-                        .findViewById(R.id.plus_address_modal_explanation);
-        TextView modalPlusAddressPlaceholderView =
-                bottomSheetContent.getContentView().findViewById(R.id.proposed_plus_address);
-        Button modalOkButton =
-                bottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
-        Button modalCancelButton =
-                bottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
-
-        Assert.assertEquals(modalTitleView.getText().toString(), MODAL_TITLE);
-        Assert.assertEquals(
-                modalDescriptionView.getText().toString(),
-                MODAL_FORMATTED_PLUS_ADDRESS_DESCRIPTION);
-        Assert.assertEquals(
-                modalPlusAddressPlaceholderView.getText().toString(),
-                MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER);
-        Assert.assertEquals(modalOkButton.getText().toString(), MODAL_OK);
-        Assert.assertEquals(modalCancelButton.getText().toString(), MODAL_CANCEL);
+        verify(mCoordinator, times(1)).requestShowContent();
     }
 
     @Test
     @SmallTest
-    public void okButtonPressed() {
+    public void testDestroy_callsCoordinatorDestroy() {
+        setupCoordinatorFactory();
         showBottomSheet();
-        PlusAddressCreationBottomSheetContent bottomSheetContent =
-                mPlusAddressCreationViewBridge.getBottomSheetContent();
-        Button modalOkButton =
-                bottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
-        modalOkButton.callOnClick();
-
-        verify(mBottomSheetController, times(1))
-                .hideContent(any(), eq(true), eq(StateChangeReason.INTERACTION_COMPLETE));
-        verify(mPromptDelegateJni, times(1))
-                .onConfirmed(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+        mPlusAddressCreationViewBridge.destroy();
+        verify(mCoordinator, times(1)).destroy();
     }
 
     @Test
     @SmallTest
-    public void cancelButtonPressed() {
-        showBottomSheet();
-        PlusAddressCreationBottomSheetContent bottomSheetContent =
-                mPlusAddressCreationViewBridge.getBottomSheetContent();
-        Button modalCancelButton =
-                bottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
-        modalCancelButton.callOnClick();
-
-        verify(mBottomSheetController, times(1))
-                .hideContent(any(), eq(true), eq(StateChangeReason.INTERACTION_COMPLETE));
-        verify(mPromptDelegateJni, times(1))
-                .onCanceled(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+    public void testDestroy_whenCoordinatorHasNotBeenCreated() {
+        mPlusAddressCreationViewBridge.destroy();
+        verifyNoInteractions(mCoordinator);
     }
 
     @Test
     @SmallTest
-    public void bottomSheetDismissed() {
+    public void testDestroyTwice_destroysCoordinatorOnce() {
+        setupCoordinatorFactory();
         showBottomSheet();
-        mPlusAddressCreationViewBridge.onSheetClosed(StateChangeReason.SWIPE);
 
-        verify(mPromptDelegateJni, times(1))
+        mPlusAddressCreationViewBridge.destroy();
+        mPlusAddressCreationViewBridge.destroy();
+
+        verify(mCoordinator, times(1)).destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnConfirmed_callsNativeOnConfirmed() {
+        mPlusAddressCreationViewBridge.onConfirmed();
+        verify(mBridgeNatives, times(1)).onConfirmed(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnConfirmed_doesNotCallNative_afterDestroy() {
+        mPlusAddressCreationViewBridge.destroy();
+        mPlusAddressCreationViewBridge.onConfirmed();
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnCanceled_callsNativeOnCanceled() {
+        mPlusAddressCreationViewBridge.onCanceled();
+        verify(mBridgeNatives, times(1)).onCanceled(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnUiCanceled_doesNotCallNative_afterDestroy() {
+        mPlusAddressCreationViewBridge.destroy();
+        mPlusAddressCreationViewBridge.onCanceled();
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnPromptDismissed_callsNativePromptDismissed() {
+        mPlusAddressCreationViewBridge.onPromptDismissed();
+        verify(mBridgeNatives, times(1))
                 .promptDismissed(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
     }
 
     @Test
     @SmallTest
-    public void bottomSheetAttributes() {
-        showBottomSheet();
-        PlusAddressCreationBottomSheetContent bottomSheetContent =
-                mPlusAddressCreationViewBridge.getBottomSheetContent();
-        Assert.assertEquals(bottomSheetContent.getToolbarView(), null);
-        Assert.assertEquals(bottomSheetContent.getPriority(), ContentPriority.HIGH);
-        Assert.assertEquals(bottomSheetContent.swipeToDismissEnabled(), true);
-        Assert.assertEquals(bottomSheetContent.getPeekHeight(), HeightMode.DISABLED);
-        Assert.assertEquals(bottomSheetContent.getHalfHeightRatio(), HeightMode.DISABLED, 0.1);
-        Assert.assertEquals(bottomSheetContent.getFullHeightRatio(), HeightMode.WRAP_CONTENT, 0.1);
+    public void testOnUiIgnored_doesNotCallNative_afterDestroy() {
+        mPlusAddressCreationViewBridge.destroy();
+        mPlusAddressCreationViewBridge.onPromptDismissed();
+        verifyNoInteractions(mBridgeNatives);
     }
 }

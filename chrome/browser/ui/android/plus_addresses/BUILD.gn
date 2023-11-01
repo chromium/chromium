@@ -9,12 +9,17 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -36,12 +41,24 @@ generate_jni("jni_headers") {
 }
 
 robolectric_library("junit") {
-  sources = [ "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridgeTest.java" ]
+  sources = [
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContentTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridgeTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/glue:java",
+    "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
