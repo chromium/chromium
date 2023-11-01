@@ -120,10 +120,10 @@ def ArgumentParser(standalone=False):
   device_group.add_argument(
       '--fetch-data-path-local',
       dest='local_data_path',
-      default=os.environ.get('ISOLATED_OUTDIR'),
+      default=os.environ.get('ISOLATED_OUTDIR', os.getcwd()),
       help=('Use this to override the local copy path. Defaults to '
-            'ISOLATED_OUTDIR environment variable. To be used in conjuction '
-            'with --fetch-device-data.'))
+            'ISOLATED_OUTDIR environment variable or cwd if ISOLATED_OUTDIR is '
+            'not set. To be used in conjuction with --fetch-device-data.'))
   return parser
 
 
