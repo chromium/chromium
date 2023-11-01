@@ -1146,134 +1146,20 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_junit_tests_no_swarming",
-    tests = {
-        "android_webview_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "base_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "build_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "chrome_java_test_pagecontroller_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "chrome_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "components_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "content_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "device_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "junit_unit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "keyboard_accessory_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "media_base_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "module_installer_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "net_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "paint_preview_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "password_check_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "password_manager_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "services_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "touch_to_fill_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "ui_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "webapk_client_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "webapk_shell_apk_h2o_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-        "webapk_shell_apk_junit_tests": targets.legacy_test_config(
-            remove_mixins = [
-                "nougat-x86-emulator",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chromium_junit_tests_scripts",
     tests = {
         "android_webview_junit_tests": targets.legacy_test_config(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1281,12 +1167,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1294,12 +1182,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1307,12 +1197,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1320,12 +1212,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1333,12 +1227,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1346,12 +1242,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1359,12 +1257,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1372,12 +1272,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1385,12 +1287,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1398,12 +1302,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1411,12 +1317,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1424,12 +1332,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1437,12 +1347,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1450,12 +1362,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1463,12 +1377,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1476,12 +1392,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1489,12 +1407,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1502,12 +1422,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1515,12 +1437,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1528,12 +1452,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -1541,12 +1467,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "x86-64",
                 "linux-jammy",
-                "junit-swarming",
+                "junit-swarming-emulator",
             ],
             remove_mixins = [
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
+                "walleye",
+                "pie_fleet",
             ],
             use_isolated_scripts_api = True,
         ),

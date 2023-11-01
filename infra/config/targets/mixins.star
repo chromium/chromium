@@ -683,7 +683,7 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "junit-swarming",
+    name = "junit-swarming-emulator",
     swarming = targets.swarming(
         dimensions = {
             "cores": "8",

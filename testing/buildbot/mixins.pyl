@@ -541,7 +541,7 @@
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
-  'junit-swarming': {
+  'junit-swarming-emulator': {
     'swarming': {
       'dimensions': {
         'cores': '8',

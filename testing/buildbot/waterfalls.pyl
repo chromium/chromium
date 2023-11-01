@@ -586,7 +586,7 @@
           'all',
         ],
         'test_suites': {
-          'junit_tests': 'chromium_junit_tests_no_swarming',
+          'isolated_scripts': 'chromium_junit_tests_scripts',
         },
       },
       'Android arm64 Builder (dbg)': {
@@ -717,7 +717,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'android_marshmallow_gtests',
-          'junit_tests': 'chromium_junit_tests_no_swarming',
+          'isolated_scripts': 'chromium_junit_tests_scripts',
         },
         'os_type': 'android',
       },
@@ -2282,7 +2282,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'android_pie_coverage_instrumentation_tests',
-          'junit_tests': 'chromium_junit_tests_no_swarming',
+          'isolated_scripts': 'chromium_junit_tests_scripts',
         },
         'os_type': 'android',
       },
