@@ -138,6 +138,8 @@ bool IsWhatsNewM116Enabled() {
   return base::FeatureList::IsEnabled(kWhatsNewIOSM116);
 }
 
+// Please do not modify this method. The content is updated by script. For more
+// info, please see `tools/whats_new`.
 const char* WhatsNewTypeToString(WhatsNewType type) {
   switch (type) {
     case WhatsNewType::kSearchTabs:

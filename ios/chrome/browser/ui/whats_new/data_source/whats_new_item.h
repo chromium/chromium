@@ -8,7 +8,8 @@
 #import <UIKit/UIKit.h>
 
 // An enum representing the different Features and Chrome tips added to What's
-// New.
+// New. Please do not modify this enum. The content is updated by script. For
+// more info, please see `tools/whats_new`.
 enum class WhatsNewType {
   kError = -1,
   kMinValue = 0,
