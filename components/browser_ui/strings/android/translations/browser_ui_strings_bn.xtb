@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">স্ক্রীনের প্রায় নীচের দিকে বিকল্পগুলি উপলব্ধ</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ও <ph name="PERMISSION_2" /> ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
+<translation id="7284451015630589124">ব্রাউজ করার সময় সাইট আপনাকে ট্র্যাক করার জন্য যে থার্ড-পার্টি কুকি ব্যবহার করে তা আপনি ব্লক করেছেন। <ph name="BEGIN_LINK" />'ট্র্যাকিং প্রোটেকশন' ফিচার ম্যানেজ<ph name="END_LINK" /> করতে সেটিংসে যান।</translation>
 <translation id="7302486331832100261">আপনি সাধারণত বিজ্ঞপ্তি ব্লক করেন। অনুমতি দিতে, 'বিবরণ' বিকল্পে ক্লিক করুন।</translation>
 <translation id="7366415735885268578">একটি সাইট যোগ করুন</translation>
 <translation id="7368695150573390554">যেকোনও অফলাইন ডেটা মুছে যাবে</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}}</translation>
 <translation id="857943718398505171">অনুমোদিত (প্রস্তাবিত)</translation>
 <translation id="8609465669617005112">উপরে যান</translation>
+<translation id="8649036394979866943">ব্রাউজ করার সময় আপনাকে ট্র্যাক করতে বেশিরভাগ সাইটের থার্ড-পার্টি কুকি ব্যবহারের বিষয়টি Chrome সীমিত করে। <ph name="BEGIN_LINK" />'ট্র্যাকিং প্রোটেকশন' ফিচার ম্যানেজ<ph name="END_LINK" /> করতে সেটিংসে যান</translation>
 <translation id="8676374126336081632">ইনপুট সাফ করুন</translation>
 <translation id="8681886425883659911">কিন্তু ব্যাঘাতকারী অথবা বিভ্রান্তিকর বিজ্ঞাপন দেখায় এমন সাইটে বিজ্ঞাপন ব্লক আছে</translation>
 <translation id="868929229000858085">আপনার পরিচিতি সার্চ করুন</translation>

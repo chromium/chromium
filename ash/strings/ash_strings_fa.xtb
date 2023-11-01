@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">روشن</translation>
 <translation id="1407069428457324124">زمینه تیره</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. برای پیمایش بین تاریخ‌ها، از کلیدهای جهت‌نما استفاده کنید.</translation>
+<translation id="141170878022560212">دکمه میانی</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />، برنامه نصب‌شده</translation>
 <translation id="1414919006379339073">بستن پنجره کنونی</translation>
 <translation id="1415846719612499304">نمایش فهرست شبکه. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">باز کردن «انتخاب‌گر اموجی»</translation>
 <translation id="2088116547584365419">بازی‌ها</translation>
 <translation id="209965399369889474">به شبکه متصل نیست</translation>
+<translation id="2107581415810719320">دکمه <ph name="BUTTON_NUMBER" /> دیگر</translation>
 <translation id="2107914222138020205">‏کابل USB-C شما از Thunderbolt پشتیبانی نمی‌کند. ممکن است عملکرد دستگاه محدود شود.</translation>
 <translation id="2108303511227308752">میان‌بر صفحه‌کلید «دگرساز + پس‌بَر» تغییر کرده است. برای استفاده از کلید «حذف»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + پس‌بَر» را فشار دهید.</translation>
 <translation id="2126242104232412123">فضای کار جدید</translation>

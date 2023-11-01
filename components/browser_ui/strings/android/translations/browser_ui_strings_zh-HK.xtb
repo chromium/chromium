@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">您可在畫面底部附近找到選項</translation>
 <translation id="7250468141469952378">揀咗 <ph name="ITEM_COUNT" /> 個</translation>
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
+<translation id="7284451015630589124">你已禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。請前往設定頁面<ph name="BEGIN_LINK" />管理追蹤保護功能<ph name="END_LINK" />。</translation>
 <translation id="7302486331832100261">您通常會封鎖通知。如要允許，請輕按 [詳情]。</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7368695150573390554">系統將刪除所有離線資料</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="857943718398505171">允許 (建議)</translation>
 <translation id="8609465669617005112">向上移</translation>
+<translation id="8649036394979866943">Chrome 會限制大部份網站使用第三方 Cookie 追蹤瀏覽網站的使用者。請前往設定頁面<ph name="BEGIN_LINK" />管理追蹤保護功能<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的滋擾性或誤導廣告。</translation>
 <translation id="868929229000858085">搜尋您的聯絡人</translation>

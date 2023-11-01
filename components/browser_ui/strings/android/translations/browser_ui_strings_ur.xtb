@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> منتخب ہو گئے</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> اور <ph name="PERMISSION_2" /> کی اجازت دی گئی</translation>
+<translation id="7284451015630589124">آپ نے سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے مسدود کر دیا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔ <ph name="BEGIN_LINK" />اپنے ٹریکنگ کے تحفظات کا نظم<ph name="END_LINK" /> کرنے کے لیے ترتیبات پر جائیں۔</translation>
 <translation id="7302486331832100261">آپ عام طور پر اطلاعات کو مسدود کرتے ہیں۔ اجازت دینے کے لیے، تفصیلات پر تھپتھپائیں۔</translation>
 <translation id="7366415735885268578">ایک سائٹ شامل کریں</translation>
 <translation id="7368695150573390554">کوئی بھی آف لائن ڈیٹا حذف کر دیا جائے گا</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> سائٹ کے لیے کوکیز کی اجازت ہے}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> سائٹس کے لیے کوکیز کی اجازت ہے}}</translation>
 <translation id="857943718398505171">اجازت یافتہ (تجویز کردہ)</translation>
 <translation id="8609465669617005112">اوپر منتقل کریں</translation>
+<translation id="8649036394979866943">‏Chrome بیشتر سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے روکتا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔ <ph name="BEGIN_LINK" />اپنے ٹریکنگ کے تحفظات کا نظم<ph name="END_LINK" /> کرنے کے لیے ترتیبات پر جائیں</translation>
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>
 <translation id="8681886425883659911">اشتہارات دخل انداز یا گمراہ کن اشتہارات دکھانے کے لیے جانی جانے والی سائٹس پر مسدود ہیں</translation>
 <translation id="868929229000858085">اپنے رابطوں کو تلاش کریں</translation>

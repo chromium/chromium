@@ -311,6 +311,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1574714699824202614">Overuje sa spôsob platby</translation>
 <translation id="1576277203042721907">Štatistiky Nákupov</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Neobmedzená platnosť</translation>
 <translation id="1583429793053364125">Pri zobrazovaní webovej stránky sa niečo pokazilo.</translation>
 <translation id="1584492003828271317">Zobrazenie prispôsobenej reklamy pri prehliadaní závisí od reklám navrhovaných webmi, vašich nastavení súborov cookie a od toho, či prehliadaný web prispôsobuje reklamy</translation>
 <translation id="1586541204584340881">Ktoré rozšírenia ste nainštalovali</translation>
@@ -973,6 +974,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2985306909656435243">Ak túto možnosť povolíte, Chromium uloží na tomto zariadení kópiu karty, aby ste mohli rýchlejšie vypĺňať formuláre.</translation>
 <translation id="2985398929374701810">Zadajte platnú adresu</translation>
 <translation id="2987034854559945715">Žiadne zodpovedajúce funkcie</translation>
+<translation id="2988216301273604645">Chrome obmedzuje objem informácií, pomocou ktorých vás môžu weby pri prehliadaní sledovať. Ak chcete vybrať vlastnú úroveň ochrany, môžete nastavenia zmeniť.</translation>
 <translation id="2989742184762224133">Dve spinky hore</translation>
 <translation id="2991174974383378012">Zdieľanie s webmi</translation>
 <translation id="299122504639061328">Spravujte svoj predvolený vyhľadávač a vyhľadávanie na webe</translation>
@@ -1380,6 +1382,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3793574014653384240">Počty a príčiny nedávnych zrútení</translation>
 <translation id="3795344968043407227">Nezávislá a alternatívna hudba</translation>
 <translation id="3799805948399000906">Písmo bolo vyžiadané</translation>
+<translation id="3801265110651850478">Posielať pri prehliadaní webov požiadavku Do Not Track</translation>
 <translation id="380329542618494757">Meno</translation>
 <translation id="3806932344025766608">Útočníci na webe, na ktorý skúšate prejsť, sa vás môžu pokúsiť podvodom presvedčiť, aby ste si nainštalovali škodlivý softvér alebo prezradili informácie, akú sú vaše heslo, a číslo telefónu či kreditnej karty. Chrome dôrazne odporúča, aby ste sa vrátili späť. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Poskytovatelia telekomunikačných služieb</translation>
@@ -1650,6 +1653,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4331708818696583467">Nezabezpečené</translation>
 <translation id="4333295216031073611">Nákupný zoznam</translation>
 <translation id="4333561522337981382">Správa okien na všetkých obrazovkách</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
 <translation id="4340575312453649552">Táto reklama využívala príliš veľa zdrojov vášho zariadenia, takže ju Chrome odstránil.</translation>
 <translation id="4340810192899866471">Importovať z formátu JSON</translation>
 <translation id="4340982228985273705">Tento počítač nebol rozpoznaný ako spravovaný podnikom, takže pravidlá môžu automaticky inštalovať iba rozšírenia hostené v Internetovom obchode Chrome. Webová adresa aktualizácie z Internetového obchodu Chrome je <ph name="CWS_UPDATE_URL" />.</translation>
@@ -2208,6 +2212,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5512812358367123529">Kancelársky nábytok</translation>
 <translation id="5513528801833998679">Použiť prihlásenie pomocou zariadenia</translation>
 <translation id="5515388687005870733">55 × 85 mm</translation>
+<translation id="5518352028556756716">Väčšina webov vás počas prehliadania nemôže sledovať pomocou súborov cookie tretích strán. Weby nemôžu používať súbory cookie tretích strán v režime inkognito.</translation>
 <translation id="5518670652865028077">Umenie a zábava</translation>
 <translation id="5519516356611866228">So zmenami</translation>
 <translation id="5519696598216267194">Papier (preddierkovaný)</translation>
@@ -3109,6 +3114,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Obslužné nástroje platieb</translation>
 <translation id="7367985555340314048">Témy záujmu sú založené na vašej nedávnej histórii prehliadania a weby vám na základe nich zobrazujú prispôsobené reklamy</translation>
+<translation id="7368169244533796604">Odstránenie webu</translation>
 <translation id="7372526636730851647">Fotka (lesklá)</translation>
 <translation id="7372973238305370288">výsledok vyhľadávania</translation>
 <translation id="7374461526650987610">Obslužné nástroje protokolov</translation>
@@ -3424,6 +3430,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7951415247503192394">(32-bitová verzia)</translation>
 <translation id="7952192831285741665">Európsky formát EDP</translation>
 <translation id="7952327717479677595">Tlačidlo Spravovať vyhľadávače, ktorého aktivovaním môžete spravovať svoj predvolený vyhľadávač a vyhľadávanie na webe</translation>
+<translation id="7953236668995583915">Znova načítajte túto stránku, aby sa použili aktualizované nastavenie na tomto webe</translation>
 <translation id="7953569069500808819">Zošiť hrebeňovou väzbou hore</translation>
 <translation id="7955105108888461311">Požiadať osobne</translation>
 <translation id="7956713633345437162">Mobilné záložky</translation>
@@ -3750,7 +3757,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8576310925653847813">Systémy domáceho kina</translation>
 <translation id="8577192028579836704">Všetky možnosti majú zvyčajne cenu <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuálna karta nie je k dispozícii</translation>
-<translation id="8585615573162100611">Zrušiť povolenie <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Vybavenie na squash a raketbal</translation>
 <translation id="858637041960032120">Pridať telefón
 </translation>

@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Valikud on saadaval ekraani allosas</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> on valitud</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on lubatud</translation>
+<translation id="7284451015630589124">Blokeerisite saitide jaoks kolmanda osapoole küpsisefailide kasutamise sirvimisel teie jälgimiseks. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata oma jälgimiskaitset<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Tavaliselt blokeerite märguanded. Lubamiseks puudutage valikut Üksikasjad.</translation>
 <translation id="7366415735885268578">Saidi lisamine</translation>
 <translation id="7368695150573390554">Kõik võrguvälised andmed kustutatakse</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Küpsisefailid on lubatud domeeni <ph name="FPS_OWNER" /> <ph name="FPS_MEMBERS_COUNT" /> saidi puhul}other{Küpsisefailid on lubatud domeeni <ph name="FPS_OWNER" /> <ph name="FPS_MEMBERS_COUNT" /> saidi puhul}}</translation>
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>
 <translation id="8609465669617005112">Liiguta üles</translation>
+<translation id="8649036394979866943">Chrome piirab enamiku saitide jaoks kolmanda osapoole küpsisefailide kasutamist sirvimisel teie jälgimiseks. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata oma jälgimiskaitset<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="8681886425883659911">Reklaamid on blokeeritud saitidel, mis teadaolevalt kuvavad sekkuvaid või eksitavaid reklaame</translation>
 <translation id="868929229000858085">Otsige kontaktide hulgast</translation>

@@ -900,6 +900,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5753139477036638699">Pots utilitzar la veu per fer cerques a Chrome</translation>
 <translation id="5754350196967618083">Discover no est pot actualitzar</translation>
 <translation id="5755162682436943950">Has tancat la sessió. Obre el quadre de diàleg per iniciar la sessió i activar la sincronització.</translation>
+<translation id="5759897675466110265">El lloc web no funciona? Prova de permetre temporalment les galetes de tercers</translation>
 <translation id="5763382633136178763">Pestanyes d'incògnit</translation>
 <translation id="5763514718066511291">Toca per copiar l'URL d'aquesta aplicació</translation>
 <translation id="5765517223145864268">Explica'ns la teva experiència. També pots <ph name="BEGIN_LINK" />canviar la configuració<ph name="END_LINK" />.</translation>
@@ -1214,6 +1215,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="729975465115245577">El dispositiu no té cap aplicació per emmagatzemar el fitxer de contrasenyes.</translation>
 <translation id="7304072650267745798">És possible que el teu dispositiu Android inclogui una opció de configuració similar. Si aquesta opció està activada a Chrome i al teu dispositiu Android, les empreses podrien mesurar l'efectivitat d'un anunci als llocs web que visites i a les aplicacions que fas servir.</translation>
 <translation id="7304873321153398381">No tens connexió. Chrome no pot comprovar les teves contrasenyes.</translation>
+<translation id="7313094438430838513">Protecció contra el seguiment</translation>
 <translation id="7313188324932846546">Toca per configurar la sincronització</translation>
 <translation id="7324354302972299151">Envia una sol·licitud Do Not Track</translation>
 <translation id="7332075081379534664">Has iniciat la sessió correctament</translation>
@@ -1343,6 +1345,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7887174313503389866">Fes una visita guiada pels controls principals de privadesa i seguretat. Per veure més possibilitats, ves a cada opció de configuració.</translation>
 <translation id="7896724475402191389">Contingut per a les ments més joves: desactivat</translation>
 <translation id="7903184275147100332">Aquest procés pot tardar una estona</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">S'ha instal·lat l'aplicació</translation>
 <translation id="7919123827536834358">Tradueix automàticament aquests idiomes</translation>
 <translation id="7926975587469166629">Àlies de la targeta</translation>

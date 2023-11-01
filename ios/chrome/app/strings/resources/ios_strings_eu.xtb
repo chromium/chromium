@@ -251,6 +251,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="2299218006564889602">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • zk.: <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Aldatu pasahitza webgunean</translation>
+<translation id="230956208401264723">Ikusi jarraipena egiten diezun pakete guztiak zerrenda horizontal honetan</translation>
 <translation id="2310154074101836012">Editatu zerrenda horizontala</translation>
 <translation id="2316709634732130529">Erabili iradokitako pasahitza</translation>
 <translation id="2320166752086256636">Ezkutatu teklatua</translation>
@@ -1301,6 +1302,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="785938070103630874">Ireki pasahitzak, ordainketa-metodoak, helbideak eta beste gauza asko</translation>
 <translation id="7859704718976024901">Arakatze-historia</translation>
 <translation id="7866501058614003444">Utzi zaio paketearen jarraipena egiteari.</translation>
+<translation id="7866993391592926595">Txartela ezkutatzen baduzu, Paketeen jarraipena desaktibatuko da, eta zure datu guztiak ezabatuko</translation>
 <translation id="7870750252270996949">Lens-en kopiatu duzun irudia</translation>
 <translation id="7879275349003161544">Erakutsi deskargak</translation>
 <translation id="7883882164760409935">Beste nonbait erabilitako pasahitzak dauzkazu.</translation>

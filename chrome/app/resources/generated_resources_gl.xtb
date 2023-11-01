@@ -1882,6 +1882,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
 <translation id="2436385001956947090">Copiar &amp;ligazón</translation>
 <translation id="2438853563451647815">Non hai ningunha impresora conectada</translation>
+<translation id="2439152382014731627">Restablecer o contrasinal do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Ver f&amp;onte</translation>
 <translation id="2440823041667407902">Acceso á localización</translation>
@@ -2032,6 +2033,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2541423446708352368">Mostrar todas as descargas</translation>
 <translation id="2541706104884128042">Novo límite de hora de durmir</translation>
 <translation id="2542050502251273923">Establece o nivel de depuración do xestor de conexións de rede e outros servizos utilizando ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se concederán a esta aplicación. <ph name="MANAGE_LINK" />}other{Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se concederán a estas aplicacións. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Esta pestana</translation>
 <translation id="2546302722632337735">Non permitir que os sitios usen identificadores para reproducir contido protexido</translation>
 <translation id="2546991196809436099">Achega a imaxe a fin de que os elementos da pantalla sexan meirandes. Para activar e desactivar a lupa, preme Buscar + Control + M.</translation>
@@ -2474,6 +2476,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> reiniciarase e restablecerase momentaneamente</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Comproba a batería, a CPU, a memoria ou a conectividade, entre outras opcións</translation>
+<translation id="2885129935310217435">Hai un botón co mesmo nome. Escolle outro nome.</translation>
 <translation id="2885378588091291677">Xestor de tarefas</translation>
 <translation id="2885729872133513017">Produciuse un problema ao descodificar a resposta do servidor.</translation>
 <translation id="2886119409731773154">Este proceso pode tardar ata 30 minutos</translation>
@@ -4559,7 +4562,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4565917129334815774">Almacenar rexistros do sistema</translation>
 <translation id="4566170377336116390">Se, despois de inscribir o dispositivo, queres cambiar, deberás restablecer a súa configuración de fábrica (función Powerwash).</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
-<translation id="4566762846886188693">Para protexer os teus datos, quitáronse os permisos dos sitios que levas un tempo sen visitar. Aínda así, non deixarás de recibir as notificacións.</translation>
 <translation id="456717285308019641">Idioma da páxina que se quere traducir</translation>
 <translation id="4567512141633030272">A opción de inicio de sesión é incorrecta?</translation>
 <translation id="4567533462991917415">Poderás engadir máis persoas despois da configuración. Cada unha delas pode personalizar a súa conta e protexer a privacidade dos seus datos.</translation>
@@ -4780,7 +4782,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4742334355511750246">Sitios que non poden mostrar imaxes</translation>
 <translation id="4742970037960872810">Deixar de salientar texto</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Máis información sobre como actualizar as aplicacións<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">O que escribas na barra de enderezos ou na caixa de busca enviarase ao teu buscador predeterminado</translation>
 <translation id="4744268813103118742">Ir ao sitio</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activar o son do sitio}other{Activar o son dos sitios}}</translation>
@@ -8774,6 +8775,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7952708427581814389">Os sitios poden pedirche permiso para acceder ao texto e ás imaxes do portapapeis</translation>
 <translation id="795282463722894016">Completouse a restauración</translation>
 <translation id="7952904276017482715">Esperábase o ID "<ph name="EXPECTED_ID" />", pero o recibido foi "<ph name="NEW_ID" />"</translation>
+<translation id="7953236668995583915">Volve cargar esta páxina para aplicar a configuración actualizada neste sitio</translation>
 <translation id="7953669802889559161">Métodos de introdución de texto</translation>
 <translation id="7953955868932471628">Xestionar atallos</translation>
 <translation id="7955105108888461311">Preguntar en persoa</translation>

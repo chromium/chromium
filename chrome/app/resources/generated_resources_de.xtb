@@ -970,6 +970,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="175772926354468439">Design aktivieren</translation>
 <translation id="1757786065507923842">Berechtigungsanfrage an Eltern fehlgeschlagen.</translation>
 <translation id="17584710573359123">Im Chrome Web Store ansehen</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> neu zugeordnet zu <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Konten von <ph name="NAME" /></translation>
 <translation id="176272781006230109">Shopping-Vorschläge</translation>
 <translation id="1763046204212875858">App-Verknüpfungen erstellen</translation>
@@ -1348,6 +1349,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2037486735086318591"><ph name="FEATURE_NAME" /> einrichten, um Dateien mit Personen in der Nähe auszutauschen</translation>
 <translation id="2039464276165755892">Benachrichtigungen ausblenden, wenn eine andere Person erkannt wird</translation>
 <translation id="2040460856718599782">Hoppla! Bei der Authentifizierung ist ein Fehler aufgetreten. Bitte überprüfe deine Anmeldedaten und versuche es erneut.</translation>
+<translation id="2040822390690632244">Updates, Hilfe, Entwickleroptionen</translation>
 <translation id="2040894699575719559">Standort blockiert</translation>
 <translation id="2041246176170574368">Dieses Chromebook erhält bald keine Sicherheitsupdates mehr. Sichere dir einen Rabatt von 50 $ oder mehr beim Kauf eines neuen Chromebook.</translation>
 <translation id="2042279886444479655">Aktive Profile</translation>
@@ -2712,6 +2714,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3076977359333237641">Deine Anmeldedaten wurden gelöscht</translation>
 <translation id="3080933187214341848">Dieses Netzwerk ist nicht mit deinem Konto synchronisiert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">Erweiterungen</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Vorübergehend blockiert, um deine Privatsphäre zu schützen</translation>
 <translation id="3083899879156272923">Maus beim Bewegen des Bildschirms in der Mitte halten</translation>
@@ -2871,6 +2874,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3229412050601871341">Gerätepasswort</translation>
 <translation id="3230539834943294477">Hilfeartikel ansehen oder Gerätesupport erhalten</translation>
 <translation id="3232168089952388105">Informationen zu deinem Gerät teilen?</translation>
+<translation id="3232368113895801406">Deine Sicherheitseinstellungen lassen die Installation isolierter Apps nicht zu. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Rechtsbündig</translation>
 <translation id="3232754137068452469">Web-App</translation>
 <translation id="3233271424239923319">Linux-Apps und -Dateien sichern</translation>
@@ -4544,7 +4548,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4565917129334815774">Systemprotokolle speichern</translation>
 <translation id="4566170377336116390">Wenn du nach der Registrierung wechseln möchtest, musst du dein Gerät auf die Werkseinstellungen zurücksetzen (Powerwash).</translation>
 <translation id="4566417217121906555">Mikrofon stummschalten</translation>
-<translation id="4566762846886188693">Entferne Berechtigungen für Websites, die du in letzter Zeit nicht besucht hast, um deine Daten zu schützen. Benachrichtigungen werden weiterhin gesendet.</translation>
 <translation id="456717285308019641">Sprache der Seite, die übersetzt wird</translation>
 <translation id="4567512141633030272">Falsche Anmeldeoption?</translation>
 <translation id="4567533462991917415">Nach dem Einrichten lassen sich jederzeit mehr Personen hinzufügen. Jede Person kann ihr Konto personalisieren und ihre Daten schützen.</translation>
@@ -4577,6 +4580,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="459204634473266369">Keine Geräte in <ph name="PRIMARY_EMAIL" /> gespeichert</translation>
 <translation id="4592891116925567110">Zeichen-App für Eingabestift</translation>
 <translation id="4593021220803146968">Zu <ph name="URL" /> &amp;wechseln</translation>
+<translation id="4593962599442730215">Einstellungen ändern</translation>
 <translation id="4594218792629569101">Wähle „Als gelesen markieren“ aus, um die Seite ans Ende der Liste zu verschieben</translation>
 <translation id="4594577641390224176">Suchst du die Seite „Über das System“? Gehe zu</translation>
 <translation id="4595560905247879544">Apps und Erweiterungen können nur vom Administrator, <ph name="CUSTODIAN_NAME" />, geändert werden.</translation>
@@ -4591,6 +4595,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="460190672235687855">Passwörter ansehen</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> immer Zugriff auf Kamera und Mikrofon gestatten</translation>
 <translation id="4602776638371779614">Auf diesem Tab wird aktiv nach Bluetooth-Geräten gesucht</translation>
+<translation id="4605026046465576953">Diese App kann nicht geöffnet werden, weil du nicht berechtigt bist, isolierte Web-Apps auszuführen</translation>
 <translation id="4606551464649945562">Websites nicht erlauben, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen</translation>
 <translation id="4608500690299898628">&amp;Suchen...</translation>
 <translation id="4610162781778310380">Bei <ph name="PLUGIN_NAME" /> ist ein Fehler aufgetreten</translation>
@@ -4714,6 +4719,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694024090038830733">Um die Druckerkonfiguration kümmert sich der Administrator.</translation>
 <translation id="4694604912444486114">Affe</translation>
+<translation id="4694820450536519583">Berechtigungen</translation>
 <translation id="4695318956047767909">Dunkles Design, Bildschirmschoner</translation>
 <translation id="4697071790493980729">Keine Ergebnisse gefunden</translation>
 <translation id="4697551882387947560">Beim Beenden der Browsersitzung</translation>
@@ -4762,7 +4768,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4742334355511750246">Dürfen keine Bilder anzeigen</translation>
 <translation id="4742970037960872810">Markierung entfernen</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Hier findest du Informationen zum Aktualisieren von Anwendungen<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Deine Eingaben in der Adressleiste oder im Suchfeld werden an deine Standardsuchmaschine gesendet</translation>
 <translation id="4744268813103118742">Zur Website</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Stummschaltung für Website aufheben}other{Stummschaltung für Websites aufheben}}</translation>
@@ -6623,6 +6628,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6264060420924719834">Diese App enthält Webinhalte von anderen Websites</translation>
 <translation id="6264365405983206840">&amp;Alles auswählen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
+<translation id="6264520534872750757">Gerät weiterhin verwenden</translation>
 <translation id="6265159465845424232">Vor dem Kopieren oder Verschieben von Microsoft-Dateien in bzw. nach Microsoft OneDrive fragen</translation>
 <translation id="6265687851677020761">Port entfernen</translation>
 <translation id="6266532094411434237">Verbindung zu <ph name="DEVICE" /> wird hergestellt</translation>
@@ -7385,6 +7391,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6876469544038980967">Nicht hilfreich</translation>
 <translation id="6878422606530379992">Sensorennutzung erlaubt</translation>
 <translation id="6880587130513028875">Bilder wurden auf dieser Seite blockiert.</translation>
+<translation id="6881845890692344060">Dein Administrator hat sich abgemeldet. Du hast jetzt wieder die Kontrolle.</translation>
 <translation id="6882210908253838664">Wenn eine Website nicht funktioniert, kannst du ihr eine temporäre Berechtigung zur Verwendung von Drittanbieter-Cookies erteilen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Hoppla! Das System konnte die Gerätekonfiguration nicht speichern.</translation>
 <translation id="6884474387073389421">Möchtest du die ausgewählten Anmeldedaten wirklich löschen?</translation>
@@ -8281,6 +8288,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7616214729753637086">Gerät wird registriert…</translation>
 <translation id="7617263010641145920">Play Store aktivieren</translation>
 <translation id="7617648809369507487">Unaufdringlichere Benachrichtigungen verwenden</translation>
+<translation id="7619937211696316184">Wartung ist abgeschlossen</translation>
 <translation id="7621382409404463535">Das System konnte die Gerätekonfiguration nicht speichern.</translation>
 <translation id="7621480263311228380">Dürfen keine Informationen verwenden, die sie über dich gespeichert haben</translation>
 <translation id="7621595347123595643">Wenn du dein Passwort oder deine PIN vergisst, kannst du keine lokalen Daten wiederherstellen.</translation>
@@ -9626,6 +9634,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8662795692588422978">Personen</translation>
 <translation id="8662911384982557515">Startseite zu <ph name="HOME_PAGE" /> ändern</translation>
 <translation id="8662978096466608964">Chrome kann dieses Hintergrundbild nicht festlegen.</translation>
+<translation id="8663051876219324457">Apps, Websites und Systemdiensten erlauben, deinen Standort zu verwenden. Dazu kann der Standortdienst Quellen wie WLANs, Mobilfunknetze und Sensoren nutzen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Mehrere automatische Downloads auf <ph name="HOST" /> immer blockieren</translation>
 <translation id="8664389313780386848">Seitenquelltext &amp;anzeigen</translation>
 <translation id="8665110742939124773">Du hast einen falschen Zugriffscode eingegeben. Versuche es noch einmal.</translation>
@@ -9718,6 +9727,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="87254326763805752">Passkey bestätigen</translation>
 <translation id="8726206820263995930">Fehler beim Übertragen von Richtlinieneinstellungen vom Server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Chrome optimal nutzen</translation>
+<translation id="8727333994464775697">Anpassen, was auf dieser Seite angezeigt wird</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />Autofill-Metadaten<ph name="END_LINK1" /> senden
           <ph name="LINE_BREAK" />
           (Deine Autofill-Daten werden nicht freigegeben)</translation>

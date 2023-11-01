@@ -311,6 +311,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1574714699824202614">S'està verificant la forma de pagament</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">No caduca</translation>
 <translation id="1583429793053364125">S'ha produït un error en mostrar aquesta pàgina web.</translation>
 <translation id="1584492003828271317">El fet que els anuncis que veus mentre navegues es personalitzin o no dependrà d'aquesta opció de configuració, dels anuncis suggerits per llocs web, de la configuració de galetes i de si el lloc web que estàs visitant personalitza els anuncis</translation>
 <translation id="1586541204584340881">Quines extensions has instal·lat</translation>
@@ -973,6 +974,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2985306909656435243">Si s'activa aquesta opció, Chromium desa una còpia de la vostra targeta en aquest dispositiu per agilitzar l'emplenament de formularis.</translation>
 <translation id="2985398929374701810">Introdueix una adreça vàlida</translation>
 <translation id="2987034854559945715">No hi ha cap funció que coincideixi</translation>
+<translation id="2988216301273604645">Chrome limita la quantitat d'informació que els llocs web poden utilitzar per fer un seguiment de la teva activitat mentre navegues. Pots canviar la configuració per triar el teu propi nivell de protecció.</translation>
 <translation id="2989742184762224133">Grapat doble a la part superior</translation>
 <translation id="2991174974383378012">Comparteix informació amb llocs web</translation>
 <translation id="299122504639061328">Gestiona el motor de cerca predeterminat i la cerca de llocs web</translation>
@@ -1110,6 +1112,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3266793032086590337">Valor (en conflicte)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{No s'ha bloquejat cap lloc web, ni cap lloc web relacionat}=1{S'ha bloquejat 1 lloc web, inclosos els llocs web relacionats}other{S'han bloquejat # llocs web, inclosos els llocs web relacionats}}</translation>
 <translation id="3268451620468152448">Pestanyes obertes</translation>
+<translation id="3270041629388773465">Desa els CVC per tramitar les compres més ràpidament</translation>
 <translation id="3270156322180235608">Viatges aeris</translation>
 <translation id="3270847123878663523">&amp;Desfés el canvi d'ordre</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> es vol connectar</translation>
@@ -1383,6 +1386,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3793574014653384240">Nombre i motius dels errors que s'han produït recentment</translation>
 <translation id="3795344968043407227">Música independent i alternativa</translation>
 <translation id="3799805948399000906">Tipus de lletra sol·licitat</translation>
+<translation id="3801265110651850478">Envia una sol·licitud Do Not Track amb el trànsit de navegació</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3806932344025766608">Els atacants del lloc web que proves de visitar poden enganyar-te perquè instal·lis programari o perquè revelis dades com ara la contrasenya, el telèfon o el número de la targeta de crèdit. Chrome et recomana que tornis a un lloc web segur. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Proveïdors de servei telefònic</translation>
@@ -1653,6 +1657,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4331708818696583467">No segur</translation>
 <translation id="4333295216031073611">Llista de la compra</translation>
 <translation id="4333561522337981382">Gestionar finestres en totes les pantalles</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Caduca demà}other{Caduca d'aquí a # dies}}</translation>
 <translation id="4340575312453649552">Com que aquest anunci feia servir massa recursos per al dispositiu, Chrome l'ha suprimit.</translation>
 <translation id="4340810192899866471">Importa des de JSON</translation>
 <translation id="4340982228985273705">No ens consta que aquest ordinador estigui gestionat per una empresa. Per tant, la política només pot instal·lar automàticament extensions allotjades a Chrome Web Store. L'URL d'actualització de Chrome Web Store és <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1849,6 +1854,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4761104368405085019">Utilitzar el micròfon</translation>
 <translation id="4761326898079498987">Revisa per obtenir més informació</translation>
 <translation id="4761869838909035636">Executa la comprovació de seguretat de Chrome</translation>
+<translation id="4763196677855776703">Termes i condicions proporcionats per <ph name="URL" /></translation>
 <translation id="4764680219299728632">Plaques, fogons i forns</translation>
 <translation id="4764776831041365478">És possible que la pàgina web <ph name="URL" /> estigui temporalment fora de servei o s'hagi traslladat permanentment a una adreça web nova.</translation>
 <translation id="4766713847338118463">Grapat doble a la part inferior</translation>
@@ -2210,6 +2216,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5512812358367123529">Mobiliari d’oficina</translation>
 <translation id="5513528801833998679">Utilitza l'inici de sessió del dispositiu</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">La majoria de llocs web no poden utilitzar galetes de tercers per fer un seguiment de la teva activitat mentre navegues. A més, els llocs web no poden fer servir galetes de tercers en mode d'incògnit.</translation>
 <translation id="5518670652865028077">Art i entreteniment</translation>
 <translation id="5519516356611866228">Amb els meus canvis</translation>
 <translation id="5519696598216267194">Paper (perforat)</translation>
@@ -2277,6 +2284,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5633259641094592098">Pel·lícules de culte i independents</translation>
 <translation id="563371367637259496">Mòbil</translation>
 <translation id="5635237618724097525">Telèfons intel·ligents</translation>
+<translation id="5635478143789726479">Termes i condicions del venedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" />.</translation>
 <translation id="5642411781689336699">Sistemes i components estèreo</translation>
 <translation id="5644090287519800334">Desplaçament a l'eix X del costat 1 de la imatge</translation>
@@ -2396,6 +2404,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5911110632211230665">Opció d'obrir bloquejada</translation>
 <translation id="59174027418879706">Activat</translation>
 <translation id="5918373444239520146">Gadgets i dispositius electrònics portàtils</translation>
+<translation id="5918847752193018339">Desa els CVC per tramitar les compres més ràpidament. <ph name="LINK_BEGIN" />Suprimeix els codis de seguretat desats<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en ús}other{# en ús}}</translation>
 <translation id="592031860219554105">Patinatge sobre gel</translation>
@@ -3110,6 +3119,7 @@ Detalls addicionals:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Gestors de pagaments</translation>
 <translation id="7367985555340314048">Els temes d'interès es basen en el teu historial de navegació recent i els utilitzen els llocs web per mostrar-te anuncis personalitzats</translation>
+<translation id="7368169244533796604">Suprimeix el lloc web</translation>
 <translation id="7372526636730851647">Foto (brillant)</translation>
 <translation id="7372973238305370288">resultat de la cerca</translation>
 <translation id="7374461526650987610">Gestors de protocol</translation>
@@ -3425,6 +3435,7 @@ Detalls addicionals:
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7952192831285741665">EDP europeu</translation>
 <translation id="7952327717479677595">Botó Gestiona els motors de cerca: activa'l per gestionar el motor de cerca predeterminat i la cerca de llocs web</translation>
+<translation id="7953236668995583915">Torna a carregar aquesta pàgina per aplicar la configuració actualitzada en aquest lloc web</translation>
 <translation id="7953569069500808819">Cosit de la vora a la part superior</translation>
 <translation id="7955105108888461311">Pregunta en persona</translation>
 <translation id="7956713633345437162">Adreces d'interès per a mòbils</translation>
@@ -3473,6 +3484,7 @@ Detalls addicionals:
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="8041940743680923270">Utilitza l'opció predeterminada global (Pregunta)</translation>
 <translation id="8042577181291637092">Vols utilitzar els dispositius MIDI?</translation>
+<translation id="8043255123207491407">Consulta els termes i condicions del venedor</translation>
 <translation id="8046360364391076336">Material i equipament industrial</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8055534648776115597">Formació professional i continuada</translation>
@@ -3750,7 +3762,6 @@ Detalls addicionals:
 <translation id="8576310925653847813">Sistemes de cinema domèstic</translation>
 <translation id="8577192028579836704">Preu habitual de totes les opcions: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">La targeta virtual no està disponible</translation>
-<translation id="8585615573162100611">Deixa de permetre <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Equipament de raquetbol i esquaix</translation>
 <translation id="858637041960032120">Afegeix un número de telèfon</translation>
 <translation id="8589998999637048520">Qualitat òptima</translation>

@@ -900,7 +900,7 @@
 <translation id="5753139477036638699">您可使用語音在 Chrome 中搜尋</translation>
 <translation id="5754350196967618083">無法重新整理「探索」</translation>
 <translation id="5755162682436943950">已登出。開啟對話框即可登入並開啟同步功能。</translation>
-<translation id="5759897675466110265">網站無法正常運作嗎？你可以試試暫時允許第三方 Cookie</translation>
+<translation id="5759897675466110265">網站無法正常運作嗎？你可嘗試暫時允許第三方 Cookie</translation>
 <translation id="5763382633136178763">無痕式分頁</translation>
 <translation id="5763514718066511291">輕按即可複製此應用程式的網址</translation>
 <translation id="5765517223145864268">請分享您的使用體驗。您亦可<ph name="BEGIN_LINK" />變更設定<ph name="END_LINK" />。</translation>
@@ -1215,6 +1215,7 @@
 <translation id="729975465115245577">裝置沒有可儲存密碼檔案的應用程式。</translation>
 <translation id="7304072650267745798">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟此設定，廣告商或者就能在您瀏覽的網站和使用的應用程式上評估廣告成效。</translation>
 <translation id="7304873321153398381">離線。Chrome 無法檢查密碼。</translation>
+<translation id="7313094438430838513">追蹤保護功能</translation>
 <translation id="7313188324932846546">輕按即可設定同步</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7332075081379534664">登入成功</translation>
@@ -1344,6 +1345,7 @@
 <translation id="7887174313503389866">導覽重要的私隱和安全控制項。如要查看更多選項，請前往個別設定。</translation>
 <translation id="7896724475402191389">為兒童提供的內容 - 已關閉</translation>
 <translation id="7903184275147100332">請稍候片刻</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">已安裝應用程式</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
 <translation id="7926975587469166629">信用卡暱稱</translation>

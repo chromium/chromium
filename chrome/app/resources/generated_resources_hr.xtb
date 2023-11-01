@@ -1886,6 +1886,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2435457462613246316">Pokaži zaporku</translation>
 <translation id="2436385001956947090">Kopiraj &amp;vezu</translation>
 <translation id="2438853563451647815">Niste povezani s pisačem</translation>
+<translation id="2439152382014731627">Poništi zaporku za uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Učitava se stranica <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Pogledaj i&amp;zvor</translation>
 <translation id="2440823041667407902">Pristup lokaciji</translation>
@@ -2036,6 +2037,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2541423446708352368">Prikaži sva preuzimanja</translation>
 <translation id="2541706104884128042">Postavljeno novo vrijeme spavanja</translation>
 <translation id="2542050502251273923">Postavlja razinu otklanjanja pogrešaka upravitelja mrežnih veza i drugih usluga pomoću stavke ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Dopuštenja koja odobrite za aplikaciju <ph name="APP_NAME" /> odobrit će se i za ovu aplikaciju. <ph name="MANAGE_LINK" />}one{Dopuštenja koja odobrite za aplikaciju <ph name="APP_NAME" /> odobrit će se i za ove aplikacije. <ph name="MANAGE_LINK" />}few{Dopuštenja koja odobrite za aplikaciju <ph name="APP_NAME" /> odobrit će se i za ove aplikacije. <ph name="MANAGE_LINK" />}other{Dopuštenja koja odobrite za aplikaciju <ph name="APP_NAME" /> odobrit će se i za ove aplikacije. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Ova kartica</translation>
 <translation id="2546302722632337735">Ne dopuštaj web-lokacijama da koriste identifikatore za reprodukciju zaštićenog sadržaja</translation>
 <translation id="2546991196809436099">Zumirajte kako biste povećali stavke na zaslonu. Upotrijebite Pretraživanje + Ctrl + M da biste uključili i isključili povećalo.</translation>
@@ -2478,6 +2480,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> će se odmah ponovo pokrenuti i vratiti na zadano</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Testirajte bateriju, procesor, memoriju, povezivost i drugo</translation>
+<translation id="2885129935310217435">Postoji gumb s istim nazivom. Odaberite drugi gumb.</translation>
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2885729872133513017">Pojavio se problem prilikom dekodiranja odgovora poslužitelja.</translation>
 <translation id="2886119409731773154">To može potrajati 30 minuta</translation>
@@ -4560,7 +4563,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4565917129334815774">Pohrani zapisnike sustava</translation>
 <translation id="4566170377336116390">Ako se nakon prijave želite vratiti, trebate vratiti uređaj na tvorničke postavke (Powerwash).</translation>
 <translation id="4566417217121906555">Isključi mikrofon</translation>
-<translation id="4566762846886188693">Da biste zaštitili svoje podatke, uklonite dopuštenja za web-lokacije koje niste posjetili u posljednje vrijeme. Obavijesti se ne zaustavljaju.</translation>
 <translation id="456717285308019641">Jezik stranice za prijevod</translation>
 <translation id="4567512141633030272">Pogrešna opcija za prijavu?</translation>
 <translation id="4567533462991917415">Nakon postavljanja uvijek možete dodati više osoba. Svaka osoba može prilagoditi svoj račun i zadržati privatnost svojih podataka.</translation>
@@ -4781,7 +4783,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4742334355511750246">Nije dopušteno prikazivanje slika</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saznajte kako ažurirati aplikacije<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Ono što upišete u adresnu traku ili okvir za pretraživanje šalje se zadanoj tražilici</translation>
 <translation id="4744268813103118742">Idi na web-lokaciju</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Uključi zvuk na web-lokaciji}one{Uključi zvuk na web-lokacijama}few{Uključi zvuk na web-lokacijama}other{Uključi zvuk na web-lokacijama}}</translation>
@@ -8780,6 +8781,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7952708427581814389">Web-lokacije mogu tražiti dopuštenje da vide tekst i slike u vašem međuspremniku</translation>
 <translation id="795282463722894016">Vraćanje dovršeno</translation>
 <translation id="7952904276017482715">Očekivan je ID "<ph name="EXPECTED_ID" />", no ID je bio "<ph name="NEW_ID" />".</translation>
+<translation id="7953236668995583915">Ponovno učitajte ovu stranicu da biste primijenili ažurirane postavke na ovoj web-lokaciji</translation>
 <translation id="7953669802889559161">Unosi</translation>
 <translation id="7953955868932471628">Upravljanje prečacima</translation>
 <translation id="7955105108888461311">Zamoli osobno</translation>

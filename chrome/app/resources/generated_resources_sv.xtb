@@ -1898,6 +1898,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2436385001956947090">Kopiera &amp;länk</translation>
 <translation id="2438853563451647815">Inte ansluten till skrivaren</translation>
+<translation id="2439152382014731627">Återställ <ph name="DEVICE_TYPE" />-lösenordet</translation>
 <translation id="2439626940657133600">Läser in <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Visa &amp;källa</translation>
 <translation id="2440823041667407902">Platsåtkomst</translation>
@@ -2048,6 +2049,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2541423446708352368">Visa alla hämtade filer</translation>
 <translation id="2541706104884128042">Ny stopptid har ställts in</translation>
 <translation id="2542050502251273923">Ställer in felsökningsnivån för nätverksanslutningshanteraren och andra tjänster som använder ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för den här appen. <ph name="MANAGE_LINK" />}other{Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för dessa appar. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Den här fliken</translation>
 <translation id="2546302722632337735">Tillåt inte att webbplatser använder identifierare för att spela upp skyddat innehåll</translation>
 <translation id="2546991196809436099">Zooma in för att göra objekt på skärmen större. Aktivera och inaktivera skärmförstoring med Sök + Ctrl + M.</translation>
@@ -2490,6 +2492,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> startar om och återställs tillfälligt</translation>
 <translation id="2883470649061584386">Flöde</translation>
 <translation id="2884070497102362193">Testa batteri, CPU, minne, anslutning och mycket annat</translation>
+<translation id="2885129935310217435">Det finns en knapp med samma namn. Välj en annan.</translation>
 <translation id="2885378588091291677">Aktivitetshanteraren</translation>
 <translation id="2885729872133513017">Ett problem uppstod när serversvaret skulle avkodas.</translation>
 <translation id="2886119409731773154">Det kan ta upp till 30 minuter</translation>
@@ -4573,7 +4576,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4565917129334815774">Spara systemloggar</translation>
 <translation id="4566170377336116390">Om du vill byta efter registreringen måste du återställa enhetens standardinställningar (Powerwash).</translation>
 <translation id="4566417217121906555">Stäng av mikrofonen</translation>
-<translation id="4566762846886188693">Skydda din data genom att ta bort behörigheter från webbplatser som du inte har besökt nyligen. Detta stoppar inte aviseringar.</translation>
 <translation id="456717285308019641">Språk på sidan som ska översättas</translation>
 <translation id="4567512141633030272">Fel inloggningsalternativ?</translation>
 <translation id="4567533462991917415">Du kan alltid lägga till fler personer när konfigureringen är klar. Var och en kan anpassa sitt konto och hålla sin data privat.</translation>
@@ -4794,7 +4796,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4742334355511750246">Får inte visa bilder</translation>
 <translation id="4742970037960872810">Ta bort markering</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Läs mer om hur du uppdaterar appar<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Det du skriver i adressfältet eller sökrutan skickas till din standardsökmotor</translation>
 <translation id="4744268813103118742">Besök webbplatsen</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Sätt på webbplatsens ljud}other{Sätt på webbplatsernas ljud}}</translation>
@@ -8792,6 +8793,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7952708427581814389">Webbplatser får begära tillstånd att läsa text och bilder i Urklipp</translation>
 <translation id="795282463722894016">Återställningen är klar</translation>
 <translation id="7952904276017482715">Id <ph name="EXPECTED_ID" /> förväntades men id:t är <ph name="NEW_ID" /></translation>
+<translation id="7953236668995583915">Läs in sidan igen så att de uppdaterade inställningarna tillämpas på webbplatsen</translation>
 <translation id="7953669802889559161">Inmatningar</translation>
 <translation id="7953955868932471628">Hantera genvägar</translation>
 <translation id="7955105108888461311">Fråga själv</translation>

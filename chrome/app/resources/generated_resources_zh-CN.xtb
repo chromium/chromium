@@ -970,6 +970,7 @@
 <translation id="175772926354468439">启用主题背景</translation>
 <translation id="1757786065507923842">向家长请求权限失败</translation>
 <translation id="17584710573359123">在 Chrome 应用商店中查看详情</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> 已重新映射为 <ph name="REMAPPING_OPTION" />。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的账号</translation>
 <translation id="176272781006230109">购物建议</translation>
 <translation id="1763046204212875858">创建应用快捷方式</translation>
@@ -1346,6 +1347,7 @@
 <translation id="2037486735086318591">设置“<ph name="FEATURE_NAME" />”功能即可与附近的人互发文件</translation>
 <translation id="2039464276165755892">当系统检测到有人在窥视时隐藏通知内容</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
+<translation id="2040822390690632244">更新、帮助、开发者选项</translation>
 <translation id="2040894699575719559">已阻止获取位置信息</translation>
 <translation id="2041246176170574368">安全更新即将终止。升级为新款 Chromebook 至少可节省 50 美元。</translation>
 <translation id="2042279886444479655">使用中的配置文件</translation>
@@ -1874,6 +1876,7 @@
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2436385001956947090">复制链接(&amp;L)</translation>
 <translation id="2438853563451647815">未连接到打印机</translation>
+<translation id="2439152382014731627">重置 <ph name="DEVICE_TYPE" /> 密码</translation>
 <translation id="2439626940657133600">正在加载“<ph name="WINDOW_TITLE" />”</translation>
 <translation id="2440604414813129000">查看源代码(&amp;O)</translation>
 <translation id="2440823041667407902">位置信息使用权</translation>
@@ -2023,6 +2026,7 @@
 <translation id="2541423446708352368">显示所有下载内容</translation>
 <translation id="2541706104884128042">已设定新的就寝时间</translation>
 <translation id="2542050502251273923">使用 ff_debug 设定网络连接管理器和其他服务的调试级别。</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{您授予“<ph name="APP_NAME" />”的权限也会授予此应用。<ph name="MANAGE_LINK" />}other{您授予“<ph name="APP_NAME" />”的权限也会授予这些应用。<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">此标签页</translation>
 <translation id="2546302722632337735">不允许网站使用标识符来播放受保护内容</translation>
 <translation id="2546991196809436099">放大屏幕上的各项内容。使用搜索键 + Ctrl + M 可开启和关闭放大镜。</translation>
@@ -2465,6 +2469,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 将立即重新启动并重置</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">测试电池、CPU、内存、连接性等方面</translation>
+<translation id="2885129935310217435">已存在具有相同名称的按钮。请选择其他名称。</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2885729872133513017">对服务器响应进行解码时出问题了。</translation>
 <translation id="2886119409731773154">此过程最多可能需要 30 分钟</translation>
@@ -2709,6 +2714,7 @@
 <translation id="3076977359333237641">您的登录数据已删除</translation>
 <translation id="3080933187214341848">此网络未同步到您的账号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">扩展程序</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">已暂时屏蔽相应权限以保护您的安全</translation>
 <translation id="3083899879156272923">移动屏幕时鼠标指针始终位于屏幕中央</translation>
@@ -2868,6 +2874,7 @@
 <translation id="3229412050601871341">设备密码</translation>
 <translation id="3230539834943294477">查看帮助文章或查找设备支持</translation>
 <translation id="3232168089952388105">要分享设备相关信息吗？</translation>
+<translation id="3232368113895801406">您的安全偏好设置不允许安装独立式应用。<ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">右对齐</translation>
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3233271424239923319">备份 Linux 应用和文件</translation>
@@ -4544,7 +4551,6 @@
 <translation id="4565917129334815774">存储系统日志</translation>
 <translation id="4566170377336116390">若想在注册后切换，您需为相应设备恢复出厂设置（对设备执行 Powerwash 操作）。</translation>
 <translation id="4566417217121906555">将麦克风静音</translation>
-<translation id="4566762846886188693">为保护您的数据，凡是您近期未访问过的网站，系统都会撤消其权限。不会停用通知功能。</translation>
 <translation id="456717285308019641">要翻译的网页语言</translation>
 <translation id="4567512141633030272">没选对登录选项?</translation>
 <translation id="4567533462991917415">待设置完毕后，您可以随时添加更多人员。每个人都可对自己的账号进行个性化设置并确保数据的私密性。</translation>
@@ -4577,6 +4583,7 @@
 <translation id="459204634473266369">尚未将任何设备保存到“<ph name="PRIMARY_EMAIL" />”</translation>
 <translation id="4592891116925567110">触控笔绘图应用</translation>
 <translation id="4593021220803146968">转到 <ph name="URL" />(&amp;G)</translation>
+<translation id="4593962599442730215">更改您的偏好设置</translation>
 <translation id="4594218792629569101">选择“标记为已读”即可将相应页面移至清单底部</translation>
 <translation id="4594577641390224176">想要查看系统简介页面？请访问</translation>
 <translation id="4595560905247879544">只有管理员（<ph name="CUSTODIAN_NAME" />）可以修改应用和扩展程序。</translation>
@@ -4591,6 +4598,7 @@
 <translation id="460190672235687855">查看密码</translation>
 <translation id="4602466770786743961">始终允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
 <translation id="4602776638371779614">此标签页正在主动搜寻蓝牙设备</translation>
+<translation id="4605026046465576953">无法打开此应用，因为您没有运行独立式 Web 应用 (IWA) 的权限</translation>
 <translation id="4606551464649945562">不允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="4608500690299898628">查找(&amp;F)...</translation>
 <translation id="4610162781778310380">“<ph name="PLUGIN_NAME" />”遇到了错误</translation>
@@ -4714,6 +4722,7 @@
 <translation id="4693155481716051732">寿司</translation>
 <translation id="4694024090038830733">打印机配置由管理员处理。</translation>
 <translation id="4694604912444486114">猴子</translation>
+<translation id="4694820450536519583">权限</translation>
 <translation id="4695318956047767909">深色主题，屏保</translation>
 <translation id="4697071790493980729">找不到任何结果</translation>
 <translation id="4697551882387947560">浏览会话结束时</translation>
@@ -4762,7 +4771,6 @@
 <translation id="4742334355511750246">不允许显示图片</translation>
 <translation id="4742970037960872810">撤消突出显示</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />了解如何更新应用<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">系统会将您在地址栏或搜索框中输入的内容发送至默认搜索引擎</translation>
 <translation id="4744268813103118742">前往网站</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{将这个网站取消静音}other{将这些网站取消静音}}</translation>
@@ -6629,6 +6637,7 @@
 <translation id="6264060420924719834">此应用包含来自其他网站的 Web 内容</translation>
 <translation id="6264365405983206840">全选(&amp;A)</translation>
 <translation id="6264376385120300461">仍然下载</translation>
+<translation id="6264520534872750757">继续使用设备</translation>
 <translation id="6265159465845424232">将 Microsoft 文件复制到或移到 Microsoft OneDrive 前询问我</translation>
 <translation id="6265687851677020761">移除此端口</translation>
 <translation id="6266532094411434237">正在连接到<ph name="DEVICE" /></translation>
@@ -7392,6 +7401,7 @@
 <translation id="6876469544038980967">没用</translation>
 <translation id="6878422606530379992">已获准使用传感器</translation>
 <translation id="6880587130513028875">已拦截此网页上的图片。</translation>
+<translation id="6881845890692344060">您的管理员已退出账号。现在一切由您掌控。</translation>
 <translation id="6882210908253838664">如果某个网站无法正常运行，您可尝试向其授予对第三方 Cookie 的临时使用权限。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">糟糕！系统未能保存设备配置。</translation>
 <translation id="6884474387073389421">确定要删除所选登录数据吗？</translation>
@@ -8290,6 +8300,7 @@
 <translation id="7616214729753637086">正在注册设备…</translation>
 <translation id="7617263010641145920">开启 Play 商店</translation>
 <translation id="7617648809369507487">使用干扰性更低的提示方式</translation>
+<translation id="7619937211696316184">维护已完成</translation>
 <translation id="7621382409404463535">系统未能保存设备配置。</translation>
 <translation id="7621480263311228380">不允许使用其保存的与您相关的信息</translation>
 <translation id="7621595347123595643">如果忘记了密码或 PIN 码，您将无法恢复本地数据。</translation>
@@ -8754,6 +8765,7 @@
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="795282463722894016">恢复完成</translation>
 <translation id="7952904276017482715">预期 ID 是“<ph name="EXPECTED_ID" />”，但实际 ID 是“<ph name="NEW_ID" />”</translation>
+<translation id="7953236668995583915">请重新加载此页面，以便在该网站上应用更新后的设置</translation>
 <translation id="7953669802889559161">输入法</translation>
 <translation id="7953955868932471628">管理快捷方式</translation>
 <translation id="7955105108888461311">当面申请</translation>
@@ -9637,6 +9649,7 @@
 <translation id="8662795692588422978">用户</translation>
 <translation id="8662911384982557515">将您的主页更改为：<ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome 无法设置壁纸。</translation>
+<translation id="8663051876219324457">允许应用、网站和系统服务使用您的位置信息。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">始终禁止在 <ph name="HOST" /> 上自动下载多个文件</translation>
 <translation id="8664389313780386848">查看网页源代码(&amp;V)</translation>
 <translation id="8665110742939124773">您输入的访问代码不正确。请重试。</translation>
@@ -9729,6 +9742,7 @@
 <translation id="87254326763805752">确认通行密钥</translation>
 <translation id="8726206820263995930">从服务器抓取策略设置时出错：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="8727043961453758442">充分利用 Chrome</translation>
+<translation id="8727333994464775697">自定义此页面显示的内容</translation>
 <translation id="8727751378406387165">发送<ph name="BEGIN_LINK1" />自动填充元数据<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           （系统不会分享您的这类数据）</translation>

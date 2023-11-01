@@ -311,6 +311,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1574714699824202614">Verificando método de pago</translation>
 <translation id="1576277203042721907">Estatísticas de compras</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Non caduca</translation>
 <translation id="1583429793053364125">Produciuse un erro ao mostrar esta páxina web.</translation>
 <translation id="1584492003828271317">A medida que navegues pola Web, os anuncios que vexas personalizaranse en función desta opción de configuración, da opción Anuncios suxeridos do sitio, da configuración de cookies e de se o sitio que esteas visitando personaliza os anuncios</translation>
 <translation id="1586541204584340881">As extensións que teñas instaladas</translation>
@@ -973,6 +974,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2985306909656435243">Se se activa esta opción, Chromium almacenará unha copia da túa tarxeta neste dispositivo para completar os formularios máis rápido.</translation>
 <translation id="2985398929374701810">Introduce un enderezo válido</translation>
 <translation id="2987034854559945715">Non se atopou ningunha función que coincida coa busca</translation>
+<translation id="2988216301273604645">Chrome limita a cantidade de información que poden usar os sitios para facer un seguimento da túa actividade mentres navegas. Podes cambiar a configuración e definir o teu propio nivel de protección.</translation>
 <translation id="2989742184762224133">Dúas grampas na parte superior</translation>
 <translation id="2991174974383378012">Compartindo con sitios web</translation>
 <translation id="299122504639061328">Xestionar o teu motor de busca predeterminado e a busca de sitios</translation>
@@ -1384,6 +1386,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3793574014653384240">Número de fallos ocorridos recentemente e as súas causas</translation>
 <translation id="3795344968043407227">Música indie e alternativa</translation>
 <translation id="3799805948399000906">Solicitouse a fonte</translation>
+<translation id="3801265110651850478">Enviar unha solicitude Do Not Track co teu tráfico de navegación</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3806932344025766608">Os atacantes do sitio que tentas visitar poderían enganarte para que instales software ou reveles datos como o teu contrasinal, teléfono ou número de tarxeta de crédito. Chrome recoméndache encarecidamente volver a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Fornecedores de servizos telefónicos</translation>
@@ -1654,6 +1657,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4331708818696583467">Non seguro</translation>
 <translation id="4333295216031073611">Lista da compra</translation>
 <translation id="4333561522337981382">Xestionar ventás en todas as pantallas</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Caduca mañá}other{Caduca dentro de # días}}</translation>
 <translation id="4340575312453649552">Dado que este anuncio utilizaba demasiados recursos para o teu dispositivo, Chrome quitouno.</translation>
 <translation id="4340810192899866471">Importar desde JSON</translation>
 <translation id="4340982228985273705">Non se detectou que unha empresa xestione este ordenador, polo que a política só pode instalar automaticamente extensións aloxadas en Chrome Webstore. O URL de actualización de Chrome Webstore é <ph name="CWS_UPDATE_URL" />.</translation>
@@ -2212,6 +2216,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5512812358367123529">Mobiliario de oficina</translation>
 <translation id="5513528801833998679">Usar inicio de sesión do dispositivo</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">A maioría dos sitios non pode usar cookies de terceiros para facer un seguimento da túa actividade mentres navegas e ningún pode usalas no modo de incógnito.</translation>
 <translation id="5518670652865028077">Arte e entretemento</translation>
 <translation id="5519516356611866228">Cos teus cambios</translation>
 <translation id="5519696598216267194">Papel (perforado previamente)</translation>
@@ -3114,6 +3119,7 @@ Detalles adicionais:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Controladores de pago</translation>
 <translation id="7367985555340314048">Os temas de interese baséanse no teu historial de navegación recente e os sitios utilízanos para mostrarche anuncios personalizados</translation>
+<translation id="7368169244533796604">Eliminar o sitio</translation>
 <translation id="7372526636730851647">Foto (brillo)</translation>
 <translation id="7372973238305370288">resultado da busca</translation>
 <translation id="7374461526650987610">Controladores de protocolo</translation>
@@ -3429,6 +3435,7 @@ Detalles adicionais:
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7952192831285741665">EDP europeo</translation>
 <translation id="7952327717479677595">Botón para xestionar os buscadores. Actívao para xestionar o teu buscador predeterminado e a busca en sitios</translation>
+<translation id="7953236668995583915">Volve cargar esta páxina para aplicar a configuración actualizada neste sitio</translation>
 <translation id="7953569069500808819">Grampa no bordo superior</translation>
 <translation id="7955105108888461311">Preguntar en persoa</translation>
 <translation id="7956713633345437162">Marcadores do móbil</translation>
@@ -3755,7 +3762,6 @@ Detalles adicionais:
 <translation id="8576310925653847813">Sistemas de cine domésticos</translation>
 <translation id="8577192028579836704">Prezo habitual de todas as opcións: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">A tarxeta virtual non está dispoñible</translation>
-<translation id="8585615573162100611">Deixar de permitir o acceso a <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Equipamento de squash e ráquetbol</translation>
 <translation id="858637041960032120">Engadir número de teléfono</translation>
 <translation id="8589998999637048520">Calidade máxima</translation>

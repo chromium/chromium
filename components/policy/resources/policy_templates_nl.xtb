@@ -37,6 +37,19 @@
 <translation id="1021462144002396313"><ph name="PRIVACY_SANDBOX_NAME" />-beleid</translation>
 <translation id="1022361784792428773">Id's van extensies die de gebruiker niet mag installeren (of '*' voor alle extensies)</translation>
 <translation id="102492767056134033">De standaardstatus van het schermtoetsenbord op het inlogscherm instellen</translation>
+<translation id="1026335125982730097">Hiermee kun je een lijst met URL-patronen invoeren van sites die cookies mogen instellen.
+
+          URL-patronen kunnen één URL zijn die aangeeft dat de site cookies mag gebruiken op alle sites op het hoogste niveau.
+
+          Patronen kunnen ook bestaan uit twee URL's die worden gescheiden door een komma. De eerste geeft de site aan die cookies mag gebruiken. De tweede geeft de site op het hoogste niveau aan waarop de eerste waarde moet worden toegepast.
+
+          Als je twee URL's gebruikt, ondersteunt de eerste waarde in het paar * maar de tweede waarde niet. Als je * voor de eerste waarde gebruikt, geef je aan dat alle sites cookies kunnen gebruiken als de tweede URL de site op het hoogste niveau is.
+
+          Als je dit beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites op basis van het beleid <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> of <ph name="BLOCK_THIRD_PARTY_COOKIES_POLICY_NAME" /> als dit is ingesteld. Als dit niet het geval is, wordt de persoonlijke configuratie van de gebruiker gebruikt.
+
+          Bekijk ook het beleid <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Houd er rekening mee dat er geen conflicterende URL-patronen tussen deze drie beleidsregels mogen bestaan. Er is niet aangeven welk beleid voorrang krijgt.
+
+          Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="102658870205613876">Instellingen voor pop-ups</translation>
 <translation id="1027000705181149370">Hiermee wordt gespecificeerd of verificatiecookies die tijdens het inloggen door een SAML IdP zijn ingesteld, moeten worden overgedragen naar het profiel van de gebruiker.
 
@@ -142,6 +155,7 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
           Als je dit beleid instelt op False, staat de functie voor stemmen voor verbeterde tekst-naar-spraak via netwerk altijd uit in Selecteer om voor te lezen.
 
           Als je dit beleid instelt op True of niet instelt, kunnen gebruikers de functie voor stemmen voor verbeterde tekst-naar-spraak via netwerk aan- of uitzetten in Selecteer om voor te lezen.</translation>
+<translation id="1137479817584930805">Toestaan dat afbeeldingen rechtstreeks worden opgeslagen in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /></translation>
 <translation id="1138294736309071213">Dit beleid wordt alleen toegepast in de winkelmodus.
 
       Bepaalt de periode waarna de schermbeveiliging zichtbaar is in het inlogvenster voor apparaten in de winkelmodus.
@@ -195,6 +209,7 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
 
       Als dit beleid is ingesteld op False, wordt het selectievakje 'Altijd toestaan' niet getoond en krijgt de gebruiker elke keer als er een extern protocol wordt aangeroepen een prompt.</translation>
 <translation id="1181598794547737681">Ballon-UI voor downloaden aanzetten</translation>
+<translation id="1184531093651606913">Voorkomen dat extensies worden geladen via de opdrachtregel</translation>
 <translation id="1184562656144537588">Manifest v2 staat alleen aan voor afgedwongen extensies</translation>
 <translation id="11903325225202653">Als het beleid is ingesteld op True, blijft de modus voor hoog contrast aan. Als het beleid is ingesteld op False, blijft de modus voor hoog contrast uit.
 
@@ -2097,6 +2112,9 @@ Als je dit beleid niet toepast, mogen gebruikers geen Kerberos-accounts toevoege
 
 Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="2773288106548584039">Ondersteuning voor oudere browsers</translation>
+<translation id="2774906947252258544">De blokkeerlijst bepaalt welke typen extensies niet zijn toegestaan.
+
+Als je 'command_line' instelt, kan de extensie niet worden geladen via de opdrachtregel.</translation>
 <translation id="2780840673734667062">Inloggen met extra Google-accounts uitzetten</translation>
 <translation id="2784880732336446591">Browsegegevens wissen bij afsluiten</translation>
 <translation id="2787173078141616821">Informatie over de status van Android rapporteren</translation>
@@ -2296,6 +2314,7 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
       URL's moeten een HTTPS-schema hebben, zoals 'https://example.com'.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
+<translation id="2971096666394658693">Het contextmenu bevat een menu-item waarmee je afbeeldingen kunt delen met <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2976429807269247880">Instellingen voor gedrag van verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Oude implementatie afdwingen</translation>
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
@@ -2391,19 +2410,6 @@ De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit b
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="305106159605171619">Inkorting van user-agent uitgezet en kan niet worden aangezet door field trials of origin trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Met dit beleid bepaal je of gebruikers bestaande browsegegevens mogen overzetten naar een beheerd profiel dat is gemaakt nadat een beheerd account is ingelogd in het contentgedeelte.
-
-Als je dit beleid niet instelt of instelt op UserOptInData, kan de gebruiker kiezen of bestaande browsegegevens moeten worden overgezet naar het beheerde profiel. Het selectievakje in het dialoogvenster voor profielen maken is standaard zichtbaar en uitgevinkt.
-
-Als je dit beleid instelt op UserOptOutData, kan de gebruiker kiezen of bestaande browsegegevens worden overgezet naar het beheerde profiel. Het selectievakje in het dialoogvenster voor profielen maken is zichtbaar en standaard aangevinkt. Deze optie is alleen toegestaan op beheerde apparaten.
-
-Als je dit beleid instelt op AlwaysSeparateData, kan de gebruiker geen bestaande browsegegevens overzetten naar het beheerde profiel. Het selectievakje in het dialoogvenster voor profielen maken is niet zichtbaar.
-
-Als de gebruiker bestaande browsegegevens toevoegt aan het beheerde profiel, wordt het huidige profiel een beheerd profiel. Er wordt geen nieuw profiel gemaakt.
-
-Als de gebruiker bestaande browsegegevens niet overzet naar het beheerde profiel, wordt er een helemaal nieuw profiel gemaakt. De bestaande browsegegevens blijven in een onbeheerd profiel staan dat via de profielkiezer nog steeds toegankelijk is voor de gebruiker.
-
-Dit beleid vereist dat het beleid <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> van kracht is.</translation>
 <translation id="3063302084011279315">Screencast uitzetten</translation>
 <translation id="3063307261083019730">Niet toestaan dat pagina's met de koptekst <ph name="CACHE_CONTROL_NO_STORE_NAME" /> worden opgeslagen in Back-Forward Cache.</translation>
 <translation id="3064530882228745118">CNAME-lookup tijdens Kerberos-verificatie gebruiken</translation>
@@ -6207,6 +6213,7 @@ Als je dit beleid instelt op <ph name="DISALLOW" />, werken de opties <ph name="
 <translation id="6371561334154580937">Dialoogvenster voor uitloggen tonen als het laatste venster wordt gesloten.</translation>
 <translation id="6372105930898423193">Hiermee sta je toe dat de AppCache-functie opnieuw wordt aangezet, ook als deze standaard is uitgezet.</translation>
 <translation id="6373299801585455337">Rapportage van CPU-informatie van apparaat aanzetten</translation>
+<translation id="6374945506685352202">Blokkeerlijst voor installatietypen van extensies</translation>
 <translation id="6376540107659524656">SSH uitzetten in Terminal System App</translation>
 <translation id="6376659517206731212">Kan verplicht zijn</translation>
 <translation id="6377031865393559909">Toestaan dat gebruikers bureautemplates gebruiken</translation>
@@ -6620,6 +6627,7 @@ Als je het beleid niet toepast of niet instelt, wordt het KDC-beleid genegeerd o
 Op <ph name="MS_WIN_NAME" /> wordt het KDC-beleid altijd gerespecteerd.</translation>
 <translation id="6658245400435704251">Bepaalt het maximaal aantal seconden dat een apparaat willekeurig de download van een update mag uitstellen vanaf het moment dat de update voor het eerst naar de server werd gepusht. Het apparaat kan een deel van deze tijd wachten in termen van kloktijd en het resterende deel in termen van het aantal updatecontroles. De maximale spreiding is in elk geval begrensd door een constante periode zodat een apparaat nooit vastloopt tijdens het wachten tot een update kan worden gedownload.</translation>
 <translation id="6659537776197644458">Geen verificatieprocessen voor wachtwoordsynchronisatie activeren</translation>
+<translation id="6659877981632400997">Het contextmenu bevat geen menu-item waarmee je afbeeldingen kunt delen met <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Cloudrapportage voor beheerde profielen aanzetten</translation>
 <translation id="6665670272107384733">Instellen hoe vaak een gebruiker het wachtwoord moet opgeven om de functie voor snel ontgrendelen te kunnen gebruiken</translation>
 <translation id="6667586534922258705">Knop 'Wachtwoord tonen' tonen op het inlog- en vergrendelscherm.</translation>
@@ -6788,6 +6796,9 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6819838337315703072">Als app-support voor <ph name="LINUX_OS_NAME" /> aanstaat en je dit beleid toepast, wordt de informatie over het gebruik van <ph name="LINUX_OS_NAME" />-apps teruggestuurd naar de server.
 
       Als je het beleid niet toepast of niet instelt, wordt er geen gebruiksinformatie gerapporteerd.</translation>
+<translation id="6820251681466503297">Met dit beleid bepaal je of de gebruiker afbeeldingen rechtstreeks vanuit het contextmenu kan opslaan in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.
+Als je het beleid toepast of niet instelt, kan de gebruiker afbeeldingen vanuit het contextmenu opslaan in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />. Als je het beleid niet toepast, zien gebruikers de optie niet in het contextmenu.
+Dit beleid voorkomt niet dat gebruikers afbeeldingen opslaan in <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> op andere manieren dan het contextmenu.</translation>
 <translation id="6821870597514407499"><ph name="WEBVIEW_TAG_NAME" /> voor Chrome-apps maakt gedrag mogelijk dat op dit moment wordt verwijderd uit <ph name="PRODUCT_NAME" />.
 
 Bij het vorige gedrag is ook de gebeurtenis <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) toegestaan. Hiermee wordt het nieuwe venster in een ander app-venster dan de oorspronkelijke <ph name="WEBVIEW_TAG_NAME" /> gekoppeld aan een <ph name="WEBVIEW_TAG_NAME" />-element. Met het nieuwe gedrag is deze koppeling nog steeds toegestaan, maar wordt de vensterverwijzing die van de <ph name="WINDOW_OPEN_NAME" />-aanroep wordt geretourneerd in de oorspronkelijke <ph name="WEBVIEW_TAG_NAME" /> ongeldig gemaakt.
@@ -8260,6 +8271,11 @@ Gebruikers kunnen items voor Zoekopdrachten op site die zijn ingesteld via het b
 
 Als er een conflict is met een snelkoppeling die de gebruiker eerder heeft gemaakt, wordt de gebruikersinstelling gerespecteerd. Gebruikers kunnen de optie die door het beleid is gemaakt nog wel activeren door '@' in de zoekbalk te typen. Als de gebruiker bijvoorbeeld 'werk' al heeft gedefinieerd als snelkoppeling naar URL1 en het beleid de optie 'werk' definieert als snelkoppeling naar URL2, wordt er een zoekopdracht naar URL1 gestart als de gebruiker 'werk' in de zoekbalk typt, maar wordt er naar URL2 gezocht als de gebruiker '@werk' in de zoekbalk typt.</translation>
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
+<translation id="8036284429246268475">Als je het beleid toepast, kunnen gebruikers <ph name="PRODUCT_NAME" /> laten checken of ingevoerde gebruikersnamen en wachtwoorden deel uitmaken van een gegevenslek.
+
+      Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, is checken op gegevenslekken toegestaan, maar kan de gebruiker deze functie uitzetten.
+
+Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid of door de gebruiker). Gebruik het beleid <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> of <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> om Safe Browsing gedwongen aan te zetten.</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> uitzetten op alle webpagina's</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
@@ -9094,7 +9110,6 @@ Als je het beleid niet instelt, worden er geen opgeslagen wachtwoorden geïmport
       Als je het beleid niet instelt, wordt het beleid toegepast en kunnen gebruikers dit niet veranderen.</translation>
 <translation id="8789053142986648624">Een beheerd account moet een primair account zijn en de gebruiker kan bestaande gegevens importeren bij het maken van een profiel</translation>
 <translation id="8789338675663014675">Stelt aan extensies gerelateerd beleid in. De gebruiker mag geen geblokkeerde extensies installeren, tenzij ze op de toelatingslijst worden gezet. Je kunt <ph name="PRODUCT_NAME" /> ook dwingen extensies automatisch te installeren door ze in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> op te geven. Afgedwongen geïnstalleerde extensies worden geïnstalleerd, ongeacht of ze op de blokkeringslijst zijn gezet.</translation>
-<translation id="878964451356911302">Gebruikers een suggestie geven om hun bestaande gegevens in het beheerde profiel te gebruiken en gebruikers de keuze geven om dit niet te doen</translation>
 <translation id="879697755145469671">Bedekt venster niet detecteren</translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8799492680917278474">Als je dit beleid aanzet, worden verbindingen voor externe toegang automatisch verbroken nadat het aantal minuten dat in het beleid wordt gedefinieerd, is verstreken. Hierdoor wordt niet voorkomen dat de client opnieuw verbinding maakt nadat de maximale sessieduur is bereikt. Als je het beleid instelt op een waarde die niet binnen het minimale/maximale bereik ligt, kan de host misschien niet worden gestart. Dit beleid heeft geen effect op scenario's voor support op afstand.

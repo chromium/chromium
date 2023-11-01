@@ -116,12 +116,14 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1391102559483454063">Ativado</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use as teclas de seta para navegar entre as datas.</translation>
+<translation id="141170878022560212">Botão do meio</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, app instalado</translation>
 <translation id="1414919006379339073">Fechar a janela atual</translation>
 <translation id="1415846719612499304">Mostrar lista de redes. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para executar a ação de notificação</translation>
 <translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sim</translation>
+<translation id="1435537621343861112">Não foi possível iniciar o ditado. Seu microfone está desativado.</translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
 <translation id="1460620680449458626">O som está desativado.</translation>
 <translation id="14648076227129703">Dá acesso à câmera para os apps <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e a todos os apps e sites com essa permissão</translation>
@@ -281,6 +283,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2086334242442703436">Abrir seletor de emojis</translation>
 <translation id="2088116547584365419">jogos</translation>
 <translation id="209965399369889474">Sem conexão com a rede</translation>
+<translation id="2107581415810719320">Outro botão <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">O cabo USB-C não oferece suporte a Thunderbolt. O desempenho do dispositivo pode ser limitado.</translation>
 <translation id="2108303511227308752">O atalho de teclado Alt + Backspace mudou. Para usar a tecla Delete, pressione <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Novo espaço</translation>

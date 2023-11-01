@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1001716830750249114">ไปที่การตั้งค่าเวอร์ชัน Chromium</translation>
 <translation id="1026101648481255140">ดำเนินการติดตั้งต่อ</translation>
 <translation id="1029669172902658969">เปิดอีกครั้งเพื่ออัปเดต &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium ขอแนะนำให้คุณตรวจสอบส่วนขยายนี้</translation>
@@ -31,6 +32,7 @@
 สิทธิ์ที่คุณให้กับเว็บไซต์และแอปต่างๆ ไว้แล้วอาจมีผลกับบัญชีนี้ คุณจัดการบัญชี Google ใน<ph name="SETTINGS_LINK_BEGIN" />การตั้งค่า<ph name="SETTINGS_LINK_END" />ได้</translation>
 <translation id="1640672724030957280">กำลังดาวน์โหลด...</translation>
 <translation id="1708666629004767631">Chromium รุ่นใหม่ที่ปลอดภัยกว่าเดิมพร้อมให้ใช้งานแล้ว</translation>
+<translation id="1715127912119967311">Chromium จะส่งข้อมูลการโต้ตอบของคุณให้กับ Google เพื่อช่วยปรับปรุงฟีเจอร์เหล่านี้ เจ้าหน้าที่ตรวจสอบอาจอ่าน ประมวลผล และใส่คำอธิบายประกอบข้อมูลดังกล่าว</translation>
 <translation id="17264556997921157">คุณสามารถดูและลบหัวข้อที่สนใจซึ่งเว็บไซต์ใช้เพื่อแสดงโฆษณาแก่คุณ Chromium คาดคะเนความสนใจของคุณโดยอิงจากประวัติการท่องเว็บล่าสุด</translation>
 <translation id="1733725117201708356">Chromium จะลบข้อมูลการท่องเว็บเร็วๆ นี้</translation>
 <translation id="1745121272106313518">Chromium จะรีสตาร์ทใน <ph name="REMAINING_TIME" /></translation>

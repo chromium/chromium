@@ -1897,6 +1897,7 @@
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
 <translation id="2436385001956947090">&amp;लिंक कॉपी करें</translation>
 <translation id="2438853563451647815">प्रिंटर से कनेक्ट नहीं है</translation>
+<translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> का पासवर्ड रीसेट करें</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड हो रहा है</translation>
 <translation id="2440604414813129000">स्रोत देखें</translation>
 <translation id="2440823041667407902">जगह की जानकारी का एक्‍सेस दें</translation>
@@ -2047,6 +2048,7 @@
 <translation id="2541423446708352368">सभी डाउनलोड दिखाएं</translation>
 <translation id="2541706104884128042">सोने का नया समय सेट किया गया</translation>
 <translation id="2542050502251273923">ff_debug का इस्तेमाल करके, इंटरनेट कनेक्शन मैनेजर और दूसरी सेवाओं के डीबग करने के लेवल को सेट करता है.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{आपने "<ph name="APP_NAME" />" को जो अनुमतियां दी हैं वे इस ऐप्लिकेशन के लिए भी लागू होंगी. <ph name="MANAGE_LINK" />}one{आपने "<ph name="APP_NAME" />" को जो अनुमतियां दी हैं वे इस ऐप्लिकेशन के लिए भी लागू होंगी. <ph name="MANAGE_LINK" />}other{आपने "<ph name="APP_NAME" />" को जो अनुमतियां दी हैं वे इन ऐप्लिकेशन के लिए भी लागू होंगी. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">यह टैब</translation>
 <translation id="2546302722632337735">सुरक्षित कॉन्टेंट दिखाने के लिए, साइटों को पहचानकर्ताओं का इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="2546991196809436099">स्क्रीन पर मौजूद आइटम बड़े करने के लिए, ज़ूम इन करें. स्क्रीन पर मौजूद कॉन्टेंट को बड़ा करके दिखाने की सुविधा को चालू या बंद करने के लिए, Search + Ctrl + M का इस्तेमाल करें.</translation>
@@ -2488,6 +2490,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> फिर से प्रारंभ होगा और जल्‍दी ही रीेसेट हो जाएगा</translation>
 <translation id="2883470649061584386">फ़ीड</translation>
 <translation id="2884070497102362193">बैटरी, सीपीयू, मेमोरी, कनेक्टिविटी वगैरह की जांच करें</translation>
+<translation id="2885129935310217435">इस नाम का एक बटन पहले से है. कृपया कोई और नाम चुनें.</translation>
 <translation id="2885378588091291677">काम का मैनेजर</translation>
 <translation id="2885729872133513017">सर्वर के जवाब को डिकोड करते समय कोई परेशानी हुई.</translation>
 <translation id="2886119409731773154">इसमें 30 मिनट लग सकते हैं</translation>
@@ -4565,7 +4568,6 @@
 <translation id="4565917129334815774">सिस्टम लॉग सेव करें</translation>
 <translation id="4566170377336116390">अगर डिवाइस का नाम दर्ज करने के बाद इसे बदलना है, तो आपको अपने डिवाइस को फ़ैक्ट्री रीसेट (पावरवॉश) करना होगा.</translation>
 <translation id="4566417217121906555">माइक्रोफ़ोन को म्यूट करें</translation>
-<translation id="4566762846886188693">आपके डेटा की सुरक्षा के लिए, उन साइटों को दी गई अनुमतियां हटाएं जिनका आपने हाल ही में इस्तेमाल नहीं किया है. इससे सूचनाएं पाने की सुविधा बंद नहीं होती.</translation>
 <translation id="456717285308019641">उस पेज की भाषा जिसका अनुवाद करना है</translation>
 <translation id="4567512141633030272">साइन इन करने का तरीका गलत है?</translation>
 <translation id="4567533462991917415">सेट अप करने के बाद आप जब चाहें, ज़्यादा लोगों को जोड़ सकते हैं. हर व्यक्ति अपने खाते को मनमुताबिक बना सकता है और डेटा को निजी रख सकता है.</translation>
@@ -4784,7 +4786,6 @@
 <translation id="4742334355511750246">इमेज दिखाने की अनुमति नहीं है</translation>
 <translation id="4742970037960872810">हाइलाइट हटाएं</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ऐप्लिकेशन अपडेट करने का तरीका जानें<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">पता बार या खोज बॉक्स में टाइप किए गए टेक्स्ट को, आपके डिफ़ॉल्ट सर्च इंजन को भेज दिया जाता है</translation>
 <translation id="4744268813103118742">साइट पर जाएं</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करें}one{साइटें अनम्यूट करें}other{साइटें अनम्यूट करें}}</translation>
@@ -8484,7 +8485,7 @@
 <translation id="7737846262459425222">आप जब चाहें, सेटिंग &gt; Google Assistant &gt; स्क्रीन पर दिखने वाली सामग्री इस्तेमाल करें, में जाकर बदलाव कर सकते हैं.</translation>
 <translation id="7737948071472253612">कैमरा इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="77381465218432215">उच्चारण के चिह्न और विशेष वर्ण दिखाएं</translation>
-<translation id="7740996059027112821">मानक</translation>
+<translation id="7740996059027112821">स्टैंडर्ड</translation>
 <translation id="7742706086992565332">आप तय कर सकते हैं कि कुछ वेबसाइटों पर आप कितना ज़ूम इन या ज़ूम आउट करेंगे</translation>
 <translation id="7742879569460013116">लिंक शेयर करें</translation>
 <translation id="774377079771918250">सेव करने की जगह चुनें</translation>
@@ -8774,6 +8775,7 @@
 <translation id="7952708427581814389">साइटें आपके क्लिपबोर्ड पर टेक्स्ट पढ़ने और इमेज देखने के लिए कह सकती हैं</translation>
 <translation id="795282463722894016">इंपोर्ट कर लिया गया है</translation>
 <translation id="7952904276017482715">अपेक्षित आईडी "<ph name="EXPECTED_ID" />" है, लेकिन आईडी "<ph name="NEW_ID" />" था</translation>
+<translation id="7953236668995583915">अपनी अपडेट की गई सेटिंग इस साइट पर लागू करने के लिए, इस पेज को फिर से लोड करें</translation>
 <translation id="7953669802889559161">इनपुट</translation>
 <translation id="7953955868932471628">शॉर्टकट प्रबंधित करें</translation>
 <translation id="7955105108888461311">व्यक्तिगत तौर पर ऐक्सेस मांगें</translation>

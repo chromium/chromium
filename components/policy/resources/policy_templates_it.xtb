@@ -37,6 +37,19 @@
 <translation id="1021462144002396313">Criteri di <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">ID delle estensioni (oppure * per tutte le estensioni) per cui non è consentita l'installazione</translation>
 <translation id="102492767056134033">Impostazione stato predefinito della tastiera sullo schermo nella schermata di accesso</translation>
+<translation id="1026335125982730097">Consente di impostare un elenco di pattern URL che specificano i siti nei quali è consentito impostare i cookie.
+
+          I pattern URL possono essere un singolo URL che indica che il sito può utilizzare i cookie in tutti i siti di primo livello.
+
+          I pattern possono anche essere due URL separati da una virgola. Il primo specifica il sito a cui deve essere consentito utilizzare i cookie. Il secondo specifica il sito di primo livello a cui deve essere applicato il primo valore.
+
+          Se utilizzi una coppia di URL, il primo valore della coppia supporta *, mentre il secondo no. L'uso di * per il primo valore indica che tutti i siti possono utilizzare i cookie quando il secondo URL è il sito di primo livello.
+
+          Se questo criterio non viene configurato, per tutti i siti viene usato il valore predefinito globale del criterio <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> o <ph name="BLOCK_THIRD_PARTY_COOKIES_POLICY_NAME" />, se configurato, o della configurazione personale dell'utente.
+
+          Vedi anche i criteri <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Tieni presente che non ci deve essere conflitto di pattern URL tra questi tre criteri. Non viene specificato quale criterio debba avere la precedenza.
+
+          Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="102658870205613876">Impostazioni popup</translation>
 <translation id="1027000705181149370">Consente di specificare se trasferire o meno al profilo dell'utente i cookie di autenticazione impostati da un IdP SAML durante l'accesso.
 
@@ -143,6 +156,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
           Se questo criterio è impostato su false, la funzionalità di sintesi vocale di rete migliorata in Seleziona per ascoltare sarà sempre disattivata.
 
           Se il criterio viene impostato su true o se non viene configurato, la funzionalità di sintesi vocale di rete migliorata in Seleziona per ascoltare può essere attivata o disattivata dall'utente.</translation>
+<translation id="1137479817584930805">Consenti il salvataggio delle immagini direttamente su <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /></translation>
 <translation id="1138294736309071213">Questa norma è attiva soltanto in modalità retail.
 
       Consente di stabilire il periodo di tempo che deve trascorrere prima della visualizzazione del salvaschermo nella schermata di accesso dei dispositivi in modalità retail.
@@ -196,6 +210,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
 
       Se questo criterio viene impostato su False, la casella di controllo "Consenti sempre" non viene visualizzata e l'utente riceverà un messaggio ogni volta che viene richiamato un protocollo esterno.</translation>
 <translation id="1181598794547737681">Attiva l'UI del fumetto dei download</translation>
+<translation id="1184531093651606913">Impedisci il caricamento delle estensioni dalla riga di comando</translation>
 <translation id="1184562656144537588">Il file manifest v2 è abilitato solo per le estensioni forzate</translation>
 <translation id="11903325225202653">Se il criterio è impostato su True, la modalità ad alto contrasto rimane attivata. Se il criterio è impostato su False, la modalità ad alto contrasto rimane disattivata.
 
@@ -2094,6 +2109,9 @@ Se questo criterio viene disattivato, gli utenti non possono aggiungere account 
 
       Se non viene configurato, la variazione dei picchi energetici è inizialmente disattivata. Gli utenti non possono modificare questa impostazione.</translation>
 <translation id="2773288106548584039">Supporto dei browser precedenti</translation>
+<translation id="2774906947252258544">La lista bloccata consente di stabilire i tipi di installazione delle estensioni vietati.
+
+L'impostazione del valore "command_line" impedirà il caricamento delle estensioni dalla riga di comando.</translation>
 <translation id="2780840673734667062">Disattiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="2784880732336446591">Cancella dati di navigazione all'uscita</translation>
 <translation id="2787173078141616821">Segnala informazioni sullo stato di Android</translation>
@@ -2299,6 +2317,7 @@ comportamento dei tasti funzione e questa impostazione non sarà modificabile da
       Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
 
       Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="2971096666394658693">Il menu contestuale includerà una voce di menu per condividere le immagini con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
 <translation id="2979696534869541158">Forza implementazione precedente</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
@@ -2394,19 +2413,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="305106159605171619">Riduzione dello user agent disattivata e non attivata da Field-Trials o Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
-<translation id="3053695107741362368">Questo criterio consente di stabilire se gli utenti possono importare i dati di navigazione esistenti in un profilo gestito creato dopo che un account gestito ha eseguito l'accesso all'area dei contenuti.
-
-Se questo criterio non viene impostato o se viene impostato su User OptInData, l'utente può scegliere se importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo sarà visibile e deselezionata per impostazione predefinita.
-
-Se questo criterio viene impostato su UseroptOutData, l'utente può scegliere se importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo sarà visibile e selezionata per impostazione predefinita. Questa opzione è consentita solo sui dispositivi gestiti.
-
-Se questo criterio viene impostato su AlwaysSeparateData, l'utente non può importare i dati di navigazione esistenti nel profilo gestito. La casella di controllo nella finestra di dialogo di creazione del profilo non sarà visibile.
-
-Se aggiungi i dati di navigazione esistenti nel profilo gestito, il profilo corrente diventerà gestito. Non verrà creato un nuovo profilo.
-
-Il mancato trasferimento dei dati di navigazione esistenti nel profilo gestito comporta la creazione di un nuovo profilo pulito. I dati di navigazione esistenti rimarranno in un profilo non gestito, che sarà comunque accessibile all'utente tramite il selettore del profilo.
-
-Questo criterio richiede l'impostazione del criterio <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" /> per essere applicato.</translation>
 <translation id="3063302084011279315">Disattiva Registra schermo</translation>
 <translation id="3063307261083019730">Non consentire la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" />.</translation>
 <translation id="3064530882228745118">Utilizza ricerca CNAME durante l'autenticazione Kerberos</translation>
@@ -6264,6 +6270,7 @@ verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" /
 <translation id="6371561334154580937">Mostra finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
 <translation id="6372105930898423193">Consente di riattivare la funzionalità AppCache anche se è disattivata per impostazione predefinita.</translation>
 <translation id="6373299801585455337">Attiva i report sulle informazioni relative alla CPU del dispositivo</translation>
+<translation id="6374945506685352202">Lista bloccata per i tipi di installazione delle estensioni</translation>
 <translation id="6376540107659524656">Disattiva SSH in Terminal System App</translation>
 <translation id="6376659517206731212">Può essere obbligatorio</translation>
 <translation id="6377031865393559909">Gli utenti possono usare i modelli di scrivanie</translation>
@@ -6679,6 +6686,7 @@ Se il criterio viene impostato su Disattivato o se non viene configurato, il cri
 Su <ph name="MS_WIN_NAME" />, il criterio KDC viene sempre rispettato.</translation>
 <translation id="6658245400435704251">Consente di specificare il numero di secondi massimo per cui un dispositivo può ritardare in modo casuale il download di un suo aggiornamento dal momento della pubblicazione dell'aggiornamento sul server. Il dispositivo può attendere una parte di questo tempo in termini di tempo reale e la parte rimanente in termini di numero di controlli della disponibilità di aggiornamenti. In ogni caso, la dispersione ha un limite massimo pari a un periodo di tempo costante in modo che un dispositivo non si blocchi mai in attesa di scaricare un aggiornamento.</translation>
 <translation id="6659537776197644458">Non vengono attivati i flussi di autenticazione per la sincronizzazione delle password</translation>
+<translation id="6659877981632400997">Il menu contestuale non includerà una voce di menu per condividere le immagini con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Attiva reporting su cloud tramite profilo gestito</translation>
 <translation id="6665670272107384733">Imposta la frequenza di inserimento della password per poter usare lo sblocco rapido</translation>
 <translation id="6667586534922258705">Mostra il pulsante di visualizzazione della password nella schermata di accesso e di blocco</translation>
@@ -6848,6 +6856,9 @@ Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</tran
 <translation id="6819838337315703072">Se le app <ph name="LINUX_OS_NAME" /> sono supportate, l'impostazione del criterio su Attivato consente di inviare al server le informazioni relative all'utilizzo delle app <ph name="LINUX_OS_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene inviata alcuna informazione relativa all'utilizzo.</translation>
+<translation id="6820251681466503297">Questo criterio consente di stabilire se all'utente è consentito salvare immagini su <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> direttamente dal menu contestuale.
+Se il criterio viene attivato o se non viene configurato, all'utente è consentito salvare immagini su <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> dal menu contestuale. Se il criterio viene disattivato, gli utenti non vedono l'opzione nel menu contestuale.
+Questo criterio non impedisce agli utenti di salvare immagini su <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /> utilizzando altri metodi diversi dal menu contestuale.</translation>
 <translation id="6821870597514407499">L'elemento <ph name="WEBVIEW_TAG_NAME" /> delle app di Chrome consente un comportamento che verrà rimosso da <ph name="PRODUCT_NAME" />.
 
 Il comportamento precedente consente all'evento <ph name="NEWWINDOW_EVENT_NAME" /> dell'elemento <ph name="WEBVIEW_TAG_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) di aggiungere la nuova finestra a un elemento <ph name="WEBVIEW_TAG_NAME" /> in una finestra dell'app separata da quella dell'elemento <ph name="WEBVIEW_TAG_NAME" /> originario. Con il nuovo comportamento, questa aggiunta è ancora consentita, ma il riferimento alla finestra restituito dalla chiamata a <ph name="WINDOW_OPEN_NAME" /> nell'elemento <ph name="WEBVIEW_TAG_NAME" /> originario non è più valido.
@@ -8315,6 +8326,11 @@ Gli utenti non possono modificare o disattivare le voci di ricerca sui siti impo
 
 In caso di conflitto con una scorciatoia creata in precedenza dall'utente, viene rispettata l'impostazione dell'utente. Tuttavia, gli utenti possono comunque attivare l'opzione creata tramite il criterio digitando "@" nella barra di ricerca. Ad esempio, se l'utente ha già definito "lavoro" come scorciatoia per URL1 e il criterio definisce "lavoro" come scorciatoia per URL2, poi l'utente digita "lavoro" nella barra di ricerca, verrà attivata una ricerca su URL1, ma se digita "@lavoro" nella barra di ricerca verrà attivata una ricerca su URL2.</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
+<translation id="8036284429246268475">Se il criterio viene attivato, gli utenti possono impostare <ph name="PRODUCT_NAME" /> in modo che controlli se nomi utente e password inseriti sono stati resi noti nell'ambito di una fuga di dati.
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, è consentito il controllo di fughe di credenziali, ma l'utente può disattivarlo.
+
+      Questo comportamento non viene attivato se la Navigazione sicura viene disattivata (tramite il criterio o dall'utente). Per forzare l'attivazione della Navigazione sicura, utilizza il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Disattiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="80453040817068401">Rendi disponibile il browser <ph name="LACROS_NAME" /></translation>
@@ -9152,7 +9168,6 @@ lo schema HTTPS.</translation>
       Se il criterio non viene configurato viene considerato attivo e gli utenti non possono disattivarlo.</translation>
 <translation id="8789053142986648624">Un account gestito deve essere un account principale e l'utente può importare i dati esistenti al momento della sua creazione</translation>
 <translation id="8789338675663014675">Consente di configurare i criteri relativi alle estensioni. L'utente non può installare estensioni bloccate, a meno che non vengano autorizzate. Puoi anche forzare <ph name="PRODUCT_NAME" /> a installare automaticamente le estensioni, specificandole nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Le estensioni con installazione forzata vengono installate indipendentemente dalla loro presenza nella lista bloccata.</translation>
-<translation id="878964451356911302">Suggerisci agli utenti di inserire i loro dati esistenti nel profilo gestito e dai a loro la possibilità di scegliere di non farlo.</translation>
 <translation id="879697755145469671">La finestra coperta non viene rilevata</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8799492680917278474">Se questo criterio viene configurato, le connessioni di accesso remoto si disconnettono automaticamente una volta trascorsi i minuti specificati nel criterio stesso. Questo non impedisce al client di riconnettersi una volta raggiunta la durata massima della sessione. Se il criterio viene impostato su un valore che non rientra nell'intervallo minimo/massimo, l'host potrebbe non essere avviato. Questo criterio non influisce sugli scenari di assistenza remota

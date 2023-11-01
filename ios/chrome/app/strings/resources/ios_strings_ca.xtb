@@ -251,6 +251,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="2299218006564889602">Les contrasenyes s'encripten al dispositiu abans de desar-les al gestor de contrasenyes de Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Núm. <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Canvia la contrasenya al lloc web</translation>
+<translation id="230956208401264723">Consulta aquí els paquets que segueixes en aquest carrusel</translation>
 <translation id="2310154074101836012">Edita el carrusel</translation>
 <translation id="2316709634732130529">Utilitza la contrasenya suggerida</translation>
 <translation id="2320166752086256636">Amaga el teclat</translation>
@@ -1301,6 +1302,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="785938070103630874">Obre les contrasenyes, les formes de pagament o l'adreça i altres dades</translation>
 <translation id="7859704718976024901">Historial de navegació</translation>
 <translation id="7866501058614003444">S'ha deixat de fer el seguiment d'aquest paquet correctament.</translation>
+<translation id="7866993391592926595">Si amagues aquesta targeta, es desactivarà el seguiment de l'enviament i se suprimiran totes les teves dades</translation>
 <translation id="7870750252270996949">Imatge de Lens copiada</translation>
 <translation id="7879275349003161544">Mostra les baixades</translation>
 <translation id="7883882164760409935">Tens contrasenyes reutilitzades.</translation>

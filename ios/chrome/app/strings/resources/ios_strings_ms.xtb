@@ -48,6 +48,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="1219674500290482172">Tidak dapat menyambung ke Internet.</translation>
 <translation id="1226238226094914652">Kata Laluan pada Semua Peranti Anda</translation>
 <translation id="122699739164161391">Tutup Semua Tab</translation>
+<translation id="1227866575467023566">{count,plural, =1{Halaman ditambahkan pada senarai bacaan dalam akaun anda, {email}}other{{count} Halaman ditambahkan pada senarai bacaan dalam akaun anda, {email}}}</translation>
 <translation id="1229222343402087523">Cari ${searchPhrase} dalam Chrome</translation>
 <translation id="1242044645101871359">Log Masuk Semula</translation>
 <translation id="1248276223555153952">Urus Akaun pada Peranti Ini...</translation>
@@ -123,6 +124,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="1580715474678097352">Kekal dilindungi daripada laman web berbahaya</translation>
 <translation id="1580783302095112590">Mel dihantar.</translation>
 <translation id="1582732959743469162">Ini akan menghentikan semua kemajuan bagi muat turun semasa anda.</translation>
+<translation id="158591023028013564">{count,plural, =1{Halaman ditambahkan pada senarai membaca anda}other{{count} Halaman ditambahkan pada senarai membaca anda}}</translation>
 <translation id="1594034544529347967">Bermula</translation>
 <translation id="160275202205869636">Apabila dihidupkan, gunakan dan simpan data dalam Google Account anda. Apabila dimatikan, data disimpan pada peranti ini sahaja.</translation>
 <translation id="1605405588277479165">Dimatikan - Tidak disyorkan</translation>
@@ -422,6 +424,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3157387275655328056">Tambahkan pada Senarai Bacaan</translation>
 <translation id="3157684681743766797">Tandakan Semua...</translation>
 <translation id="315778507796115851">Sejarah</translation>
+<translation id="31652791196570636">Ketepikan</translation>
 <translation id="3169472444629675720">Temui</translation>
 <translation id="3174662312949010067">Anda juga boleh menggunakan kata laluan yang disimpan pada peranti anda yang lain.</translation>
 <translation id="3175081911749765310">Prkhdmtn Web</translation>
@@ -585,6 +588,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4112644173421521737">Cari</translation>
 <translation id="4113030288477039509">Diurus oleh pentadbir anda</translation>
 <translation id="4113957097611235433">Tukar Kata Laluan Anda</translation>
+<translation id="4120936477286528673">Laman ini berulang kali mencuba membuka aplikasi lain.</translation>
 <translation id="4121993058175073134">Tetapkn akaun e-mel anda dahulu dlm apl Tetapan utk mhantar data net-eksport.</translation>
 <translation id="4124987746317609294">Julat Masa</translation>
 <translation id="4133265950310064865">Perlindungan Dipertingkat</translation>
@@ -779,6 +783,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} Kata Laluan Lemah}other{{COUNT} Kata Laluan Lemah}}</translation>
 <translation id="5149188072385105201">Tambah Kata Laluan...</translation>
 <translation id="5150492518600715772">Hantar Ke Peranti Anda</translation>
+<translation id="5157638238828697074">Ada masalah. Aplikasi tidak dapat dibuka.</translation>
 <translation id="5168414296986405587">Dibina untuk iPadOS</translation>
 <translation id="5173088371991956744">Penyegerakan Perlu Mengesahkan Itu Anda</translation>
 <translation id="5173493422621051500">Gunakan Papan Kekunci</translation>
@@ -805,6 +810,8 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5235389474593199952">Sembunyikan Sejarah</translation>
 <translation id="5238301240406177137">Simpan dalam Akaun</translation>
 <translation id="5245322853195994030">Batalkan Penyegerakan</translation>
+<translation id="5248640482715684545">Laman ini sedang mencuba membuka aplikasi lain.</translation>
+<translation id="5256661381001734217">Laman ini sedang mencuba membuka aplikasi.  Tindakan ini akan membawa anda keluar daripada Inkognito.</translation>
 <translation id="5256908199795498284">Chrome akan mengesan nombor penjejakan pakej pada laman yang anda lawati dan menunjukkan kepada anda kemaskinian pakej pada halaman Tab Baharu. Data anda akan dikongsi dengan Google untuk memberikan ciri ini dan meningkatkan Shopping untuk semua orang.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Medan yang diperlukan adalah kosong. Isi medan sebelum menyimpan perubahan.}other{Beberapa medan yang diperlukan adalah kosong. Isi medan sebelum menyimpan perubahan.}}</translation>
 <translation id="5271549068863921519">Simpan kata laluan</translation>
@@ -904,6 +911,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5834415013958049700">Imej Lensa yang Anda Salin</translation>
 <translation id="5844284118433003733">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="5846482154967366008">Enjin Carian</translation>
+<translation id="5850913622988109693">Pilihan untuk Menjejaki Pakej</translation>
 <translation id="5854790677617711513">Lebih lama daripada 30 hari</translation>
 <translation id="5857090052475505287">Folder Baharu</translation>
 <translation id="5857770089550859117">Ungkapan laluan diperlukan untuk memulakan penyegerakan.</translation>

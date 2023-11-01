@@ -311,6 +311,7 @@
 <translation id="1574714699824202614">결제 수단 확인 중</translation>
 <translation id="1576277203042721907">쇼핑 통계</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">만료되지 않음</translation>
 <translation id="1583429793053364125">이 웹페이지를 표시하는 도중 문제가 발생했습니다.</translation>
 <translation id="1584492003828271317">해당 설정, 사이트 추천 광고, 나의 쿠키 설정, 그리고 표시되는 사이트에서 개인 맞춤 광고를 제공하는지에 따라 인터넷을 탐색할 때 개인 맞춤 광고가 표시되는지 여부가 달라집니다.</translation>
 <translation id="1586541204584340881">내가 설치한 확장 프로그램</translation>
@@ -973,6 +974,7 @@
 <translation id="2985306909656435243">선택하면 이 기기에 카드 사본이 저장되어 Chromium에서 양식을 더 빠르게 작성할 수 있습니다.</translation>
 <translation id="2985398929374701810">올바른 주소를 입력하세요.</translation>
 <translation id="2987034854559945715">일치하는 기능 없음</translation>
+<translation id="2988216301273604645">Chrome에서는 탐색 중인 사용자를 사이트에서 추적하는 데 사용할 수 있는 정보의 양을 제한합니다. 설정을 변경하여 원하는 보호 수준을 선택할 수 있습니다.</translation>
 <translation id="2989742184762224133">상단 듀얼 스테이플</translation>
 <translation id="2991174974383378012">웹사이트와 공유</translation>
 <translation id="299122504639061328">기본 검색엔진 및 사이트 검색 관리</translation>
@@ -1384,6 +1386,7 @@
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
 <translation id="3795344968043407227">인디 및 얼터너티브 음악</translation>
 <translation id="3799805948399000906">글꼴 요청됨</translation>
+<translation id="3801265110651850478">탐색 트래픽과 함께 ‘추적 안함’ 요청 전송</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3806932344025766608">방문하려는 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">전화 서비스 제공업체</translation>
@@ -1654,6 +1657,7 @@
 <translation id="4331708818696583467">주의 요함</translation>
 <translation id="4333295216031073611">쇼핑 목록</translation>
 <translation id="4333561522337981382">모든 디스플레이의 창 관리</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{내일 만료됨}other{#일 후에 만료됨}}</translation>
 <translation id="4340575312453649552">이 광고는 기기에서 너무 많은 리소스를 사용했기 때문에 Chrome에서 삭제했습니다.</translation>
 <translation id="4340810192899866471">JSON에서 가져오기</translation>
 <translation id="4340982228985273705">이 컴퓨터는 기업에서 관리하는 기기가 아닌 것으로 파악되므로, Chrome 웹 스토어에 호스팅된 확장 프로그램만 정책을 통해 자동으로 설치할 수 있습니다. Chrome 웹 스토어의 업데이트 URL은 '<ph name="CWS_UPDATE_URL" />'입니다.</translation>
@@ -2212,6 +2216,7 @@
 <translation id="5512812358367123529">사무용 가구</translation>
 <translation id="5513528801833998679">기기 로그인 사용</translation>
 <translation id="5515388687005870733">55x85mm</translation>
+<translation id="5518352028556756716">대부분의 사이트는 탐색 중인 사용자를 추적하려는 목적으로 서드 파티 쿠키를 사용할 수 없으며 시크릿 모드에서는 사이트가 서드 파티 쿠키를 사용할 수 없습니다.</translation>
 <translation id="5518670652865028077">예술 및 엔터테인먼트</translation>
 <translation id="5519516356611866228">변경사항 포함</translation>
 <translation id="5519696598216267194">용지(천공)</translation>
@@ -3114,6 +3119,7 @@
 <translation id="7366117520888504990">198x275mm</translation>
 <translation id="7366362069757178916">결제 핸들러</translation>
 <translation id="7367985555340314048">관심 주제는 사용자의 최근 방문 기록을 기반으로 하며 사이트에서 개인 맞춤 광고를 표시하는 데 사용됩니다.</translation>
+<translation id="7368169244533796604">사이트 삭제</translation>
 <translation id="7372526636730851647">사진(유광)</translation>
 <translation id="7372973238305370288">검색결과</translation>
 <translation id="7374461526650987610">프로토콜 핸들러</translation>
@@ -3428,6 +3434,7 @@
 <translation id="7951415247503192394">(32비트)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">검색엔진 관리 버튼, 기본 검색엔진 및 사이트 검색을 관리하려면 활성화하세요.</translation>
+<translation id="7953236668995583915">이 페이지를 새로고침하여 이 사이트에 업데이트된 설정 적용</translation>
 <translation id="7953569069500808819">상단 에지 스티치</translation>
 <translation id="7955105108888461311">직접 요청</translation>
 <translation id="7956713633345437162">모바일 북마크</translation>
@@ -3754,7 +3761,6 @@
 <translation id="8576310925653847813">홈시어터 시스템</translation>
 <translation id="8577192028579836704">모든 옵션은 일반적으로 <ph name="TYPICAL_PRICE" />입니다</translation>
 <translation id="8577348305244205642">가상 카드 사용할 수 없음</translation>
-<translation id="8585615573162100611"><ph name="PERMISSION" /> 권한 허용 중지</translation>
 <translation id="8586082901536468629">스쿼시 및 라켓볼 장비</translation>
 <translation id="858637041960032120">번호 추가</translation>
 <translation id="8589998999637048520">고품질 순</translation>

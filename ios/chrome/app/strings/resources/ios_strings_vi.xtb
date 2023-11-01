@@ -251,6 +251,7 @@
 <translation id="2299218006564889602">Mật khẩu của bạn được mã hoá trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Đổi mật khẩu trên trang web</translation>
+<translation id="230956208401264723">Bạn có thể xem tất cả các gói hàng mình đã theo dõi trong băng chuyền này</translation>
 <translation id="2310154074101836012">Chỉnh sửa băng chuyền</translation>
 <translation id="2316709634732130529">Sử dụng mật khẩu đề xuất</translation>
 <translation id="2320166752086256636">Ẩn bàn phím</translation>
@@ -670,7 +671,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="461440297010471931">Tìm kiếm bằng Google</translation>
 <translation id="4616391354457235490">Huỷ</translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
-<translation id="4619615317237390068">Thẻ từ các thiết bị khác</translation>
+<translation id="4619615317237390068">Thẻ trên các thiết bị khác</translation>
 <translation id="4620246317052452550">Các trang bạn đã đọc</translation>
 <translation id="4620888520263267479">Hiện bản xem trước đường liên kết</translation>
 <translation id="4622477750832577849">Bật tính năng theo dõi</translation>
@@ -1301,6 +1302,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="785938070103630874">Mở phần Mật khẩu, Phương thức thanh toán hoặc Địa chỉ và các thông tin khác</translation>
 <translation id="7859704718976024901">Lịch sử duyệt web</translation>
 <translation id="7866501058614003444">Đã bỏ theo dõi thành công gói hàng này.</translation>
+<translation id="7866993391592926595">Thao tác ẩn thẻ này sẽ tắt tính năng theo dõi gói hàng và xoá tất cả dữ liệu của bạn</translation>
 <translation id="7870750252270996949">Dùng Ống kính để tìm hình ảnh đã sao chép</translation>
 <translation id="7879275349003161544">Hiện nội dung tải xuống</translation>
 <translation id="7883882164760409935">Bạn có mật khẩu trùng lặp.</translation>

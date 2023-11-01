@@ -116,6 +116,7 @@
 <translation id="1391102559483454063">Be</translation>
 <translation id="1407069428457324124">Sötét téma</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. A dátumok között a nyílbillentyűkkel navigálhat.</translation>
+<translation id="141170878022560212">Középső gomb</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, telepített alkalmazás</translation>
 <translation id="1414919006379339073">Jelenlegi ablak bezárása</translation>
 <translation id="1415846719612499304">A hálózatok listájának megjelenítése. <ph name="STATE_TEXT" />.</translation>
@@ -282,6 +283,7 @@
 <translation id="2086334242442703436">Emojiválasztó megnyitása</translation>
 <translation id="2088116547584365419">játékok</translation>
 <translation id="209965399369889474">Nincs hálózati kapcsolat</translation>
+<translation id="2107581415810719320">Egyéb gomb: <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Az USB-C kábel nem támogatja a Thunderbolt-eszközöket. Ez korlátozhatja az eszköz teljesítményét.</translation>
 <translation id="2108303511227308752">Az Alt + Backspace billentyűparancs módosult. A Delete billentyű használatához nyomja le a(z) <ph name="LAUNCHER_KEY_NAME" /> + Backspace billentyűparancsot.</translation>
 <translation id="2126242104232412123">Új asztal</translation>

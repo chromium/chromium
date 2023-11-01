@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Опції можна знайти внизу екрана</translation>
 <translation id="7250468141469952378">Вибрано <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Дозволено: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />"</translation>
+<translation id="7284451015630589124">Ви заборонили сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії під час перегляду веб-сторінок. Перейдіть у налаштування, щоб <ph name="BEGIN_LINK" />керувати захистом від відстеження<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Зазвичай ви блокуєте сповіщення. Щоб дозволити, натисніть "Деталі".</translation>
 <translation id="7366415735885268578">Додати сайт</translation>
 <translation id="7368695150573390554">Усі офлайн-дані буде видалено</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="FPS_OWNER" />}one{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="FPS_OWNER" />}few{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="FPS_OWNER" />}many{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="FPS_OWNER" />}other{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дозволено (рекомендується)</translation>
 <translation id="8609465669617005112">Угору</translation>
+<translation id="8649036394979866943">Chrome забороняє більшості сайтів використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті. Перейдіть у налаштування, щоб <ph name="BEGIN_LINK" />керувати захистом від відстеження<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Видалити введений текст</translation>
 <translation id="8681886425883659911">Реклама блокується на сайтах, які показують нав’язливі або оманливі оголошення</translation>
 <translation id="868929229000858085">Пошук у контактах</translation>

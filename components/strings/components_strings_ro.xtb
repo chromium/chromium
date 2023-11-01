@@ -311,6 +311,7 @@
 <translation id="1574714699824202614">Se confirmă metoda de plată</translation>
 <translation id="1576277203042721907">Statistici despre cumpărături</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Nu expiră</translation>
 <translation id="1583429793053364125">A apărut o eroare la afișarea paginii web.</translation>
 <translation id="1584492003828271317">În timp ce navighezi, personalizarea anunțurilor se bazează pe această setare, pe Anunțurile sugerate de site-uri, pe setările pentru cookie-uri și pe capacitatea site-ului pe care îl accesezi de a personaliza anunțurile</translation>
 <translation id="1586541204584340881">extensiile instalate;</translation>
@@ -973,6 +974,7 @@
 <translation id="2985306909656435243">Dacă opțiunea este activată, Chromium va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="2985398929374701810">Introdu o adresă validă</translation>
 <translation id="2987034854559945715">Nu există funcții care corespund</translation>
+<translation id="2988216301273604645">Chrome limitează tipul de informații pe care site-urile le pot folosi pentru a te urmări în timp ce navighezi. Poți să modifici setările pentru a alege nivelul de protecție dorit.</translation>
 <translation id="2989742184762224133">Capsare dublă în partea de sus</translation>
 <translation id="2991174974383378012">Permiterea accesului pentru site-uri</translation>
 <translation id="299122504639061328">Gestionează opțiunile prestabilite pentru motoarele de căutare și căutarea pe site</translation>
@@ -1384,6 +1386,7 @@
 <translation id="3793574014653384240">Numărul și cauzele blocărilor apărute recent</translation>
 <translation id="3795344968043407227">Muzică independentă și alternativă</translation>
 <translation id="3799805948399000906">Font solicitat</translation>
+<translation id="3801265110651850478">Trimite o solicitare Nu urmări odată cu traficul de navigare</translation>
 <translation id="380329542618494757">Nume</translation>
 <translation id="3806932344025766608">Atacatorii de pe site-ul pe care încerci să-l accesezi te pot păcăli să instalezi software sau să dezvălui informații cum ar fi parola, numărul de telefon sau numărul cardului de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Furnizori de servicii telefonice</translation>
@@ -1654,6 +1657,7 @@
 <translation id="4331708818696583467">Nesecurizat</translation>
 <translation id="4333295216031073611">Listă de cumpărături</translation>
 <translation id="4333561522337981382">Gestionează ferestre de pe toate ecranele</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>
 <translation id="4340575312453649552">Anunțul folosea prea multe resurse pentru dispozitivul tău, așa că Chrome l-a eliminat.</translation>
 <translation id="4340810192899866471">Importă din JSON</translation>
 <translation id="4340982228985273705">Acest computer nu este detectat ca fiind gestionat de companie, deci politica poate instala automat doar extensiile găzduite în Magazinul web Chrome. Adresa URL pentru actualizare din Magazinul web Chrome este „<ph name="CWS_UPDATE_URL" />”.</translation>
@@ -2212,6 +2216,7 @@
 <translation id="5512812358367123529">Mobilă de birou</translation>
 <translation id="5513528801833998679">Folosește conectarea la dispozitiv</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">Majoritatea site-urilor nu pot folosi cookie-uri terță parte pentru a te urmări în timp ce navighezi și site-urile nu pot folosi cookie-uri terță parte în modul incognito.</translation>
 <translation id="5518670652865028077">Artă și divertisment</translation>
 <translation id="5519516356611866228">Cu modificări</translation>
 <translation id="5519696598216267194">Hârtie (preperforată)</translation>
@@ -3114,6 +3119,7 @@ Detalii suplimentare:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Handlere pentru plăți</translation>
 <translation id="7367985555340314048">Subiectele de interes se bazează pe istoricul tău de navigare recent și sunt folosite de site-uri pentru a-ți afișa anunțuri personalizate</translation>
+<translation id="7368169244533796604">Șterge site-ul</translation>
 <translation id="7372526636730851647">Foto (lucios)</translation>
 <translation id="7372973238305370288">rezultat al căutării</translation>
 <translation id="7374461526650987610">Handlere pentru protocoale</translation>
@@ -3429,6 +3435,7 @@ Detalii suplimentare:
 <translation id="7951415247503192394">(32 de biți)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">Butonul Gestionează motoarele de căutare, activează pentru a gestiona motorul de căutare prestabilit și căutarea pe site</translation>
+<translation id="7953236668995583915">Reîncarcă pagina pentru a aplica setările actualizate pe acest site</translation>
 <translation id="7953569069500808819">Broșare pe marginea de sus</translation>
 <translation id="7955105108888461311">Întreabă în persoană</translation>
 <translation id="7956713633345437162">Marcaje mobile</translation>
@@ -3755,7 +3762,6 @@ Detalii suplimentare:
 <translation id="8576310925653847813">Sisteme Home Theater</translation>
 <translation id="8577192028579836704">Toate opțiunile sunt, de obicei, <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Cardul virtual nu este disponibil</translation>
-<translation id="8585615573162100611">Anulează permisiunea pentru <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Echipament pentru squash și racquetball</translation>
 <translation id="858637041960032120">Adăugați telefon
 </translation>

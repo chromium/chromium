@@ -311,6 +311,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1574714699824202614">Betalingsmetoden verificeres</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Udløber ikke</translation>
 <translation id="1583429793053364125">Noget gik galt ved visningen af denne webside.</translation>
 <translation id="1584492003828271317">Om de annoncer, du ser på nettet, er personligt tilpasset, afhænger af denne indstilling, dvs. Foreslåede annoncer fra websites, dine cookieindstillinger, og om det website, du besøger, tilpasser annoncer</translation>
 <translation id="1586541204584340881">Hvilke udvidelser, du har installeret</translation>
@@ -973,6 +974,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2985306909656435243">Hvis denne indstilling er slået til, gemmer Chromium en kopi af dit kort på denne enhed for at gøre det hurtigere at udfylde formularer.</translation>
 <translation id="2985398929374701810">Angiv en gyldig adresse</translation>
 <translation id="2987034854559945715">Der er ingen matchende funktioner</translation>
+<translation id="2988216301273604645">Chrome begrænser den mængde af oplysninger, som websites kan bruge til at spore din aktivitet, mens du browser. Du kan ændre dine indstillinger for at vælge dit eget beskyttelsesniveau.</translation>
 <translation id="2989742184762224133">Dobbelthæftning øverst</translation>
 <translation id="2991174974383378012">Deling med websites</translation>
 <translation id="299122504639061328">Administrer din standardsøgemaskine og websitesøgning</translation>
@@ -1384,6 +1386,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3793574014653384240">Antallene af og årsagerne til de nedbrud, der opstod for nylig</translation>
 <translation id="3795344968043407227">Indie og alternativ musik</translation>
 <translation id="3799805948399000906">Der blev anmodet om skrifttype</translation>
+<translation id="3801265110651850478">Send en "Do Not Track"-anmodning sammen med din browsertrafik</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3806932344025766608">Hackere på det website, du forsøger at besøge, kan forsøge at narre dig til at installere software eller afsløre ting som f.eks. din adgangskode, dit telefonnummer eller dit kreditkortnummer. Chrome anbefaler på det kraftigste, at du går tilbage i sikkerhed. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Telefonserviceudbydere</translation>
@@ -1654,6 +1657,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4331708818696583467">Ikke sikker</translation>
 <translation id="4333295216031073611">Indkøbsliste</translation>
 <translation id="4333561522337981382">Administrere vinduer på alle dine skærme</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Udløber i morgen}one{Udløber om # dag}other{Udløber om # dage}}</translation>
 <translation id="4340575312453649552">Denne annonce anvendte for mange ressourcer på din enhed, så Chrome har fjernet den.</translation>
 <translation id="4340810192899866471">Importér fra JSON</translation>
 <translation id="4340982228985273705">Denne computer registreres ikke som virksomhedsadministreret, så politikken kan kun automatisk installere udvidelser, der hostes i Chrome Webshop. Opdateringswebadressen til Chrome Webshop er "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2212,6 +2216,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5512812358367123529">Kontormøbler</translation>
 <translation id="5513528801833998679">Brug login på enheden</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">De fleste websites kan ikke bruge tredjepartscookies til at spore din aktivitet, mens du browser, og websites kan ikke bruge tredjepartscookies i inkognitotilstand.</translation>
 <translation id="5518670652865028077">Kunst og underholdning</translation>
 <translation id="5519516356611866228">Med dine ændringer</translation>
 <translation id="5519696598216267194">Papir (hullet)</translation>
@@ -3114,6 +3119,7 @@ Yderligere oplysninger:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Betalingshandlers</translation>
 <translation id="7367985555340314048">De emner, som det estimeres, at du kan være interesseret i, er baseret på din seneste browserhistorik og anvendes af websites til at vise dig personligt tilpassede annoncer</translation>
+<translation id="7368169244533796604">Slet website</translation>
 <translation id="7372526636730851647">Foto (blankt)</translation>
 <translation id="7372973238305370288">søgeresultat</translation>
 <translation id="7374461526650987610">Protokolhåndtering</translation>
@@ -3429,6 +3435,7 @@ Yderligere oplysninger:
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">Europea EDP</translation>
 <translation id="7952327717479677595">Knappen Administrer søgemaskiner, aktivér for at administrere din standardsøgemaskine og websitesøgning</translation>
+<translation id="7953236668995583915">Genindlæs denne side for at anvende dine opdaterede indstillinger på dette website</translation>
 <translation id="7953569069500808819">Kanthæftning øverst</translation>
 <translation id="7955105108888461311">Spørg ansigt til ansigt</translation>
 <translation id="7956713633345437162">Bogmærker på mobil</translation>
@@ -3755,7 +3762,6 @@ Yderligere oplysninger:
 <translation id="8576310925653847813">Hjemmebiografsystemer</translation>
 <translation id="8577192028579836704">Alle købsmuligheder koster normalt <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelt kort er ikke tilgængeligt</translation>
-<translation id="8585615573162100611">Tillad ikke længere <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Udstyr til squash og racquetball</translation>
 <translation id="858637041960032120">Tilføj tlf.nr.
 </translation>

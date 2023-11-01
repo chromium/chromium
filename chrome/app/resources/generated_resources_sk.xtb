@@ -1885,6 +1885,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2435457462613246316">Zobraziť heslo</translation>
 <translation id="2436385001956947090">Kopírovať odkaz</translation>
 <translation id="2438853563451647815">Nepripojené k tlačiarni</translation>
+<translation id="2439152382014731627">Obnova hesla typu zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Načíta sa <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">&amp;Zobraziť zdrojový kód</translation>
 <translation id="2440823041667407902">Prístup k polohe</translation>
@@ -2035,6 +2036,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2541423446708352368">Zobraziť všetky stiahnuté súbory</translation>
 <translation id="2541706104884128042">Bola nastavená nová večierka</translation>
 <translation id="2542050502251273923">Nastaví úroveň ladenia správcu pripojenia k sieti a ďalších služieb príkazom ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Povolenia, ktoré udelíte aplikácii <ph name="APP_NAME" />, budú udelené aj tejto aplikácii. <ph name="MANAGE_LINK" />}few{Povolenia, ktoré udelíte aplikácii <ph name="APP_NAME" />, budú udelené aj týmto aplikáciám. <ph name="MANAGE_LINK" />}many{Povolenia, ktoré udelíte aplikácii <ph name="APP_NAME" />, budú udelené aj týmto aplikáciám. <ph name="MANAGE_LINK" />}other{Povolenia, ktoré udelíte aplikácii <ph name="APP_NAME" />, budú udelené aj týmto aplikáciám. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Táto karta</translation>
 <translation id="2546302722632337735">Nepovoliť webom prehrávať chránený obsah pomocou identifikátorov</translation>
 <translation id="2546991196809436099">Priblížením položky na obrazovke zväčšíte. Lupu zapínajte a vypínajte klávesovou skratkou Hľadať + Ctrl + M.</translation>
@@ -2477,6 +2479,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> sa o chvíľu reštartuje a obnoví</translation>
 <translation id="2883470649061584386">Informačný kanál</translation>
 <translation id="2884070497102362193">Otestujte svoju batériu, procesor, pamäť, pripojenie a viac</translation>
+<translation id="2885129935310217435">Existuje tlačidlo s rovnakým názvom. Vyberte iné.</translation>
 <translation id="2885378588091291677">Správca úloh</translation>
 <translation id="2885729872133513017">Pri dešifrovaní odpovede servera sa vyskytol problém.</translation>
 <translation id="2886119409731773154">Môže to trvať až 30 minút</translation>
@@ -4559,7 +4562,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4565917129334815774">Ukladať denníky systému</translation>
 <translation id="4566170377336116390">Ak budete chcieť po registrácii prejsť na iný spôsob, musíte obnoviť výrobné nastavenia zariadenia (funkcia Powerwash).</translation>
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
-<translation id="4566762846886188693">Ak chcete ochrániť svoje údaje, odstráňte povolenia z webov, ktoré ste v poslednom čase nenavštívili. Upozornenia sa tým nedeaktivujú.</translation>
 <translation id="456717285308019641">Jazyk stránok, ktorý chcete prekladať</translation>
 <translation id="4567512141633030272">Nesprávna možnosť prihlásenia?</translation>
 <translation id="4567533462991917415">Po nastavení môžete kedykoľvek pridať ďalších ľudí. Každá osoba si môže prispôsobiť účet a uchovať údaje v súkromí.</translation>
@@ -4780,7 +4782,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4742334355511750246">Nemôže zobrazovať obrázky</translation>
 <translation id="4742970037960872810">Odstrániť zvýraznenie</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ako aktualizovať aplikácie<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Text, ktorý zadáte v paneli s adresou alebo vyhľadávacom poli, sa odosiela vášmu predvolenému vyhľadávaču</translation>
 <translation id="4744268813103118742">Prejsť na web</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Zapnúť zvuk webu}few{Zapnúť zvuk webov}many{Zapnúť zvuk webov}other{Zapnúť zvuk webov}}</translation>
@@ -8781,6 +8782,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7952708427581814389">Weby môžu žiadať o zobrazenie textu a obrázkov vo vašej schránke</translation>
 <translation id="795282463722894016">Obnovenie bolo dokončené</translation>
 <translation id="7952904276017482715">Očakávané ID bolo „<ph name="EXPECTED_ID" />“. Skutočné ID bolo „<ph name="NEW_ID" />“.</translation>
+<translation id="7953236668995583915">Znova načítajte túto stránku, aby sa použili aktualizované nastavenie na tomto webe</translation>
 <translation id="7953669802889559161">Vstupy</translation>
 <translation id="7953955868932471628">Spravovať skratky</translation>
 <translation id="7955105108888461311">Požiadať osobne</translation>

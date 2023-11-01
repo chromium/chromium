@@ -48,6 +48,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1219674500290482172">Não foi possível se conectar à Internet.</translation>
 <translation id="1226238226094914652">Senhas em todos os seus dispositivos</translation>
 <translation id="122699739164161391">Fechar todas as guias</translation>
+<translation id="1227866575467023566">{count,plural, =1{Página adicionada à Lista de leitura na sua conta ({email})}one{{count} página adicionada à Lista de leitura na sua conta ({email})}other{{count} páginas adicionadas à Lista de leitura na sua conta ({email})}}</translation>
 <translation id="1229222343402087523">Pesquisar "${searchPhrase}" no Chrome</translation>
 <translation id="1242044645101871359">Fazer login novamente</translation>
 <translation id="1248276223555153952">Gerenciar contas neste dispositivo…</translation>
@@ -123,6 +124,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1580715474678097352">Proteção contra sites perigosos</translation>
 <translation id="1580783302095112590">Mensagem enviada.</translation>
 <translation id="1582732959743469162">Isso interromperá todo o progresso do download atual.</translation>
+<translation id="158591023028013564">{count,plural, =1{Página adicionada à Lista de leitura}one{{count} página adicionada à Lista de leitura}other{{count} páginas adicionadas à Lista de leitura}}</translation>
 <translation id="1594034544529347967">Início</translation>
 <translation id="160275202205869636">Quando ativado, use e salve dados na sua Conta do Google. Quando essa opção está desativada, os dados são salvos apenas neste dispositivo.</translation>
 <translation id="1605405588277479165">Desativado (não recomendado)</translation>
@@ -422,6 +424,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo...</translation>
 <translation id="315778507796115851">Histórico</translation>
+<translation id="31652791196570636">Dispensar</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Você também pode usar as senhas salvas em outros dispositivos.</translation>
 <translation id="3175081911749765310">Serviços da Web</translation>
@@ -585,6 +588,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4112644173421521737">Pesquisar</translation>
 <translation id="4113030288477039509">Gerenciado pelo seu administrador</translation>
 <translation id="4113957097611235433">Mudar suas senhas</translation>
+<translation id="4120936477286528673">O site está tentando repetidamente abrir outro aplicativo.</translation>
 <translation id="4121993058175073134">Para enviar dados de exportação líquida, configure sua conta de e-mail no aplicativo "Configurações".</translation>
 <translation id="4124987746317609294">Período</translation>
 <translation id="4133265950310064865">Proteção reforçada</translation>
@@ -779,6 +783,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} senha fraca}one{{COUNT} senha fraca}other{{COUNT} senhas fracas}}</translation>
 <translation id="5149188072385105201">Adicionar senha…</translation>
 <translation id="5150492518600715772">Enviar para seu dispositivo</translation>
+<translation id="5157638238828697074">Ocorreu um erro. Não foi possível abrir o aplicativo.</translation>
 <translation id="5168414296986405587">Desenvolvido para iPadOS</translation>
 <translation id="5173088371991956744">A sincronização precisa confirmar sua identidade</translation>
 <translation id="5173493422621051500">Usar o teclado</translation>
@@ -805,6 +810,8 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5235389474593199952">Ocultar histórico</translation>
 <translation id="5238301240406177137">Salvar na conta</translation>
 <translation id="5245322853195994030">Cancelar sincronização</translation>
+<translation id="5248640482715684545">O site está tentando abrir outro aplicativo.</translation>
+<translation id="5256661381001734217">O site está tentando abrir um aplicativo.  Com essa ação, você sai da navegação anônima.</translation>
 <translation id="5256908199795498284">O Chrome vai detectar números de rastreamento de pacotes nos sites que você visitar e mostrará atualizações de pacotes na página "Nova guia". Seus dados serão compartilhados com o Google para fornecer este recurso e melhorar o Shopping para todos.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está em branco. Preencha antes de salvar.}one{Um campo obrigatório está em branco. Preencha antes de salvar.}other{Alguns campos obrigatórios estão em branco. Preencha antes de salvar.}}</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
@@ -904,6 +911,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5834415013958049700">Imagem do Lens que você copiou</translation>
 <translation id="5844284118433003733">Quando sua Conta do Google está conectada, esses dados são vinculados a ela para proteger você nos Serviços do Google, por exemplo, aumentando a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="5846482154967366008">Mecanismo de pesquisa</translation>
+<translation id="5850913622988109693">Opções para rastrear encomendas</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857090052475505287">Nova pasta</translation>
 <translation id="5857770089550859117">É necessário ter uma senha longa para iniciar a sincronização.</translation>
@@ -1302,6 +1310,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="785938070103630874">Abrir senhas, formas de pagamento, endereço e mais</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>
 <translation id="7866501058614003444">O rastreamento do pacote foi cancelado.</translation>
+<translation id="7866993391592926595">Ocultar este card desativa o rastreamento de pacote e remove todos os seus dados</translation>
 <translation id="7870750252270996949">Imagem copiada no Lens</translation>
 <translation id="7879275349003161544">Mostrar downloads</translation>
 <translation id="7883882164760409935">Você tem senhas reutilizadas.</translation>

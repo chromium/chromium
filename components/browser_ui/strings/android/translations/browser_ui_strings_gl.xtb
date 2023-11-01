@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Opcións dispoñibles na parte inferior da pantalla</translation>
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (permitidos)</translation>
+<translation id="7284451015630589124">Non permites que os sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar as proteccións contra o seguimento<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Adoitas bloquear as notificacións. Para permitilas, toca Detalles.</translation>
 <translation id="7366415735885268578">Engade un sitio</translation>
 <translation id="7368695150573390554">Eliminaranse todos os datos sen conexión</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies permitidas para <ph name="FPS_MEMBERS_COUNT" /> sitio de <ph name="FPS_OWNER" />}other{Cookies permitidas para <ph name="FPS_MEMBERS_COUNT" /> sitios de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover cara arriba</translation>
+<translation id="8649036394979866943">Chrome evita que a maioría dos sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar as proteccións contra o seguimento<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
 <translation id="8681886425883659911">Bloquéanse anuncios nos sitios que conteñen anuncios enganosos ou intrusivos</translation>
 <translation id="868929229000858085">Busca nos teus contactos</translation>

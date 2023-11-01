@@ -311,6 +311,7 @@
 <translation id="1574714699824202614">正在驗證付款方法</translation>
 <translation id="1576277203042721907">購物分析資料</translation>
 <translation id="1581080074034554886">信用卡驗證碼 (CVC)</translation>
+<translation id="1581172376168798878">沒有期限</translation>
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
 <translation id="1584492003828271317">瀏覽時是否看到個人化廣告，取決於此設定、網站建議的廣告、Cookie 設定，以及網站是否顯示個人化廣告。</translation>
 <translation id="1586541204584340881">您已安裝的擴充程式</translation>
@@ -973,6 +974,7 @@
 <translation id="2985306909656435243">啟用後，Chromium 會在此裝置上儲存信用卡資料副本，以加快填表速度。</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
 <translation id="2987034854559945715">沒有相符的功能</translation>
+<translation id="2988216301273604645">Chrome 會限制網站可利用多少資訊量來追蹤你瀏覽時的活動。你可按需要在設定中調整保護等級。</translation>
 <translation id="2989742184762224133">雙釘 (頂端)</translation>
 <translation id="2991174974383378012">與其他網站分享</translation>
 <translation id="299122504639061328">管理預設搜尋引擎和站內搜尋</translation>
@@ -1110,7 +1112,7 @@
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{未封鎖任何網站 (包括相關網站)}=1{已封鎖 1 個網站 (包括相關網站)}other{已封鎖 # 個網站 (包括相關網站)}}</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
-<translation id="3270041629388773465">儲存信用卡驗證碼可加快結帳速度</translation>
+<translation id="3270041629388773465">儲存 CVC，加快結帳速度</translation>
 <translation id="3270156322180235608">航空旅遊</translation>
 <translation id="3270847123878663523">復原重新排序(&amp;U)</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> 要求連接至</translation>
@@ -1383,6 +1385,7 @@
 <translation id="3793574014653384240">最近發生的當機次數和原因</translation>
 <translation id="3795344968043407227">獨立音樂和另類音樂</translation>
 <translation id="3799805948399000906">要求的字型</translation>
+<translation id="3801265110651850478">將「不追蹤」要求與瀏覽流量一併傳送</translation>
 <translation id="380329542618494757">名稱</translation>
 <translation id="3806932344025766608">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">電話服務供應商</translation>
@@ -1653,6 +1656,7 @@
 <translation id="4331708818696583467">不安全</translation>
 <translation id="4333295216031073611">購物清單</translation>
 <translation id="4333561522337981382">在您所有的顯示屏上管理視窗</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
 <translation id="4340575312453649552">此廣告使用了太多裝置資源，因此已被 Chrome 移除。</translation>
 <translation id="4340810192899866471">從 JSON 匯入</translation>
 <translation id="4340982228985273705">系統偵測到此電腦並非由企業管理，因此政策只容許自動安裝來自「Chrome 網上應用程式商店」的擴充程式。「Chrome 網上應用程式商店」的更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
@@ -2211,6 +2215,7 @@
 <translation id="5512812358367123529">辦公室傢私</translation>
 <translation id="5513528801833998679">使用裝置登入</translation>
 <translation id="5515388687005870733">55 x 85 毫米</translation>
+<translation id="5518352028556756716">大部份網站都無法使用第三方 Cookie 追蹤你的瀏覽活動，網站亦無法在無痕模式下使用第三方 Cookie。</translation>
 <translation id="5518670652865028077">藝術和娛樂</translation>
 <translation id="5519516356611866228">包括您所作的變更</translation>
 <translation id="5519696598216267194">紙 (打孔紙)</translation>
@@ -2398,7 +2403,7 @@
 <translation id="5911110632211230665">已禁止開啟</translation>
 <translation id="59174027418879706">已啟用</translation>
 <translation id="5918373444239520146">小工具和便攜式電子產品</translation>
-<translation id="5918847752193018339">儲存信用卡驗證碼可加快結帳速度。<ph name="LINK_BEGIN" />刪除已儲存的安全碼<ph name="LINK_END" /></translation>
+<translation id="5918847752193018339">儲存 CVC，加快結帳速度。<ph name="LINK_BEGIN" />刪除已儲存的安全碼<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{正在使用 1 個 cookie}other{正在使用 # 個 cookie}}</translation>
 <translation id="592031860219554105">溜冰</translation>
@@ -3113,6 +3118,7 @@
 <translation id="7366117520888504990">198 x 275 毫米</translation>
 <translation id="7366362069757178916">付款處理常式</translation>
 <translation id="7367985555340314048">系統會根據您最近的瀏覽記錄來推測感興趣的主題，作為網站放送個人化廣告的依據</translation>
+<translation id="7368169244533796604">刪除網站</translation>
 <translation id="7372526636730851647">相紙 (光面)</translation>
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374461526650987610">通訊協定處理常式</translation>
@@ -3428,6 +3434,7 @@
 <translation id="7951415247503192394">(32 位元)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">管理搜尋引擎按鈕，啟動之後就可以管理預設搜尋引擎同埋站內搜尋</translation>
+<translation id="7953236668995583915">重新載入此頁面，即可將已更新的設定套用至此網站</translation>
 <translation id="7953569069500808819">邊緣釘裝 (右側)</translation>
 <translation id="7955105108888461311">要求存取權</translation>
 <translation id="7956713633345437162">流動版書籤</translation>
@@ -3754,7 +3761,6 @@
 <translation id="8576310925653847813">家庭影院系統</translation>
 <translation id="8577192028579836704">所有選項一般為 <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">虛擬卡無法使用</translation>
-<translation id="8585615573162100611">不再允許存取<ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">壁球和壁球用品</translation>
 <translation id="858637041960032120">新增電話號碼</translation>
 <translation id="8589998999637048520">最佳品質</translation>

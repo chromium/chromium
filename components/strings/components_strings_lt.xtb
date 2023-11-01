@@ -311,6 +311,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1574714699824202614">Patvirtinamas mokėjimo metodas</translation>
 <translation id="1576277203042721907">Apsipirkimo įžvalgos</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Galioja neterminuotai</translation>
 <translation id="1583429793053364125">Rodant šį tinklalapį įvyko nenumatyta klaida.</translation>
 <translation id="1584492003828271317">Ar naršant rodomi suasmeninti skelbimai, priklauso nuo šio nustatymo, svetainėje siūlomų skelbimų, slapukų nustatymų ir nuo to, ar peržiūrimoje svetainėje teikiami suasmeninti skelbimai</translation>
 <translation id="1586541204584340881">Kuriuos plėtinius įdiegėte</translation>
@@ -973,6 +974,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2985306909656435243">Jei šis nustatymas įgalintas, „Chromium“ išsaugos kortelės kopiją įrenginyje, kad galėtumėte greičiau užpildyti formas.</translation>
 <translation id="2985398929374701810">Įveskite tinkamą adresą</translation>
 <translation id="2987034854559945715">Nėra jokių atitinkančių funkcijų</translation>
+<translation id="2988216301273604645">„Chrome“ riboja informacijos, kurią svetainės gali naudoti jums stebėti, kai naršote, kiekį. Galite pakeisti nustatymus ir pasirinkti savo apsaugos lygį.</translation>
 <translation id="2989742184762224133">Dvi sankabėlės viršuje</translation>
 <translation id="2991174974383378012">Bendrinimas su svetainėmis</translation>
 <translation id="299122504639061328">Valdykite numatytąjį paieškos variklį ir svetainių paiešką</translation>
@@ -1385,6 +1387,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3793574014653384240">Neseniai įvykusių strigčių skaičiai ir priežastys</translation>
 <translation id="3795344968043407227">Nepriklausomų kūrėjų ir alternatyvioji muzika</translation>
 <translation id="3799805948399000906">Užklausa dėl šrifto</translation>
+<translation id="3801265110651850478">Su naršymo srautu siųsti užklausą „Do Not Track“ (nestebėti)</translation>
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3806932344025766608">Svetainės, kurioje ketinate apsilankyti, atakos vykdytojai gali apgaule priversti jus įdiegti programinę įrangą ar atskleisti informaciją, pvz., slaptažodį, telefono ar kredito kortelės numerį. „Chrome“ primygtinai rekomenduoja vėl naudoti saugos režimą. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Telefono paslaugų teikėjai</translation>
@@ -1655,6 +1658,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4331708818696583467">Nesaugi</translation>
 <translation id="4333295216031073611">Pirkinių sąrašas</translation>
 <translation id="4333561522337981382">Tvarkyti langus visuose ekranuose</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Galiojimo laikas baigsis rytoj}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
 <translation id="4340575312453649552">Šis skelbimas naudojo per daug įrenginio išteklių, tad „Chrome“ jį pašalino.</translation>
 <translation id="4340810192899866471">Importuoti iš JSON</translation>
 <translation id="4340982228985273705">Šis kompiuteris neaptinkamas kaip valdomas įmonės, todėl taikant politiką galima automatiškai įdiegti tik „Chrome“ internetinėje parduotuvėje priglobiamus plėtinius. „Chrome“ internetinės parduotuvės atnaujinimo URL yra „<ph name="CWS_UPDATE_URL" />“.</translation>
@@ -2213,6 +2217,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5512812358367123529">Biuro baldai</translation>
 <translation id="5513528801833998679">Naudoti įrenginio prisijungimą</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">Dauguma svetainių negali naudoti trečiųjų šalių slapukų, kad stebėtų jus, kai naršote, ir svetainėse negalima naudoti trečiųjų šalių slapukų inkognito režimu.</translation>
 <translation id="5518670652865028077">Menas ir pramogos</translation>
 <translation id="5519516356611866228">Su jūsų pakeitimais</translation>
 <translation id="5519696598216267194">Popierius (perforuotas)</translation>
@@ -3115,6 +3120,7 @@ Papildoma išsami informacija:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Mokėjimų doroklės</translation>
 <translation id="7367985555340314048">Dominančios temos nustatomos pagal jūsų naujausią naršymo istoriją ir svetainėse naudojamos suasmenintiems skelbimams rodyti</translation>
+<translation id="7368169244533796604">Ištrinti svetainę</translation>
 <translation id="7372526636730851647">Fotopopierius (blizgus)</translation>
 <translation id="7372973238305370288">paieškos rezultatas</translation>
 <translation id="7374461526650987610">Protokolų doroklės</translation>
@@ -3430,6 +3436,7 @@ Papildoma išsami informacija:
 <translation id="7951415247503192394">(32 bitų)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">Mygtukas „Valdyti paieškos variklius“; suaktyvinkite, jei norite valdyti numatytąjį paieškos variklį ir svetainių paiešką</translation>
+<translation id="7953236668995583915">Įkelkite šį puslapį iš naujo, kad pritaikytumėte atnaujintus nustatymus šioje svetainėje</translation>
 <translation id="7953569069500808819">Kraštų sukabinimas viršuje</translation>
 <translation id="7955105108888461311">Paklausti asmeniškai</translation>
 <translation id="7956713633345437162">Žymės mobiliesiems</translation>
@@ -3756,7 +3763,6 @@ Papildoma išsami informacija:
 <translation id="8576310925653847813">Namų kino sistemos</translation>
 <translation id="8577192028579836704">Visos parinktys paprastai <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuali kortelė nepasiekiama</translation>
-<translation id="8585615573162100611">Nebeleisti naudoti „<ph name="PERMISSION" />“</translation>
 <translation id="8586082901536468629">Skvošo ir raketbolo įranga</translation>
 <translation id="858637041960032120">Pridėti tel. nr.
 </translation>

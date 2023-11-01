@@ -116,12 +116,14 @@
 <translation id="1391102559483454063">ಆನ್</translation>
 <translation id="1407069428457324124">ಡಾರ್ಕ್ ಥೀಮ್</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. ದಿನಾಂಕಗಳ ನಡುವೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಬಾಣದ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
+<translation id="141170878022560212">ಮಧ್ಯದ ಬಟನ್</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್</translation>
 <translation id="1414919006379339073">ಪ್ರಸ್ತುತ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1415846719612499304">ನೆಟ್‌ವರ್ಕ್ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">ನೋಟಿಫಿಕೇಶನ್ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="1420408895951708260">ನೈಟ್ ಲೈಟ್ ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">ಹೌದು</translation>
+<translation id="1435537621343861112">ಉಕ್ತಲೇಖನವನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಮೈಕ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="1455242230282523554">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1460620680449458626">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="14648076227129703">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
@@ -281,6 +283,7 @@
 <translation id="2086334242442703436">ಎಮೋಜಿ ಪಿಕರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2088116547584365419">ಗೇಮ್‌ಗಳು</translation>
 <translation id="209965399369889474">ನೆಟ್‌ವರ್ಕ್‌‍ಗೆ ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ</translation>
+<translation id="2107581415810719320">ಇತರ ಬಟನ್ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">ನಿಮ್ಮ USB-C, Thunderbolt ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆ ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="2108303511227308752">Alt + Backspace ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ. Delete ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಬ್ಯಾಕ್‍‍ಸ್ಪೇಸ್ ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="2126242104232412123">ಹೊಸ ಡೆಸ್ಕ್</translation>

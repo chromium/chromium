@@ -311,6 +311,7 @@
 <translation id="1574714699824202614">Ödəniş metodunun doğrulanması</translation>
 <translation id="1576277203042721907">Şoppinq üzrə statistik məlumat</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Vaxtı bitmir</translation>
 <translation id="1583429793053364125">Bu veb səhifəni göstərərkən xəta baş verdi.</translation>
 <translation id="1584492003828271317">Baxış keçirdiyiniz zaman gördüyünüz reklamın fərdiləşdirilmiş olub-olmaması bu ayardan, Saytın təklif etdiyi reklamlardan, kuki ayarlarınızdan və baxdığınız saytın reklamları fərdiləşdirib-fərdiləşdirməməsindən asılıdır</translation>
 <translation id="1586541204584340881">Quraşdırdığınız artırmalar</translation>
@@ -973,6 +974,7 @@
 <translation id="2985306909656435243">Aktiv edildiyi halda Chromium kartınızın kopyasını bu cihazda saxlayacaq ki, forma doldurmaq daha sürətli olsun.</translation>
 <translation id="2985398929374701810">Düzgün ünvan daxil edin</translation>
 <translation id="2987034854559945715">Uyğun funksiya yoxdur</translation>
+<translation id="2988216301273604645">Chrome siz baxdıqca saytların sizi izləmək üçün istifadə edəcəyi məlumat miqdarını məhdudlaşdırır. Qoruma səviyyəsini seçmək üçün ayarları dəyişə bilərsiniz.</translation>
 <translation id="2989742184762224133">Yuxarıdan qoşa ştapel vurun</translation>
 <translation id="2991174974383378012">Veb saytlar ilə paylaşılır</translation>
 <translation id="299122504639061328">Defolt axtarış sisteminizi və sayt axtarışınızı idarə edin</translation>
@@ -1108,6 +1110,7 @@
 <translation id="3266793032086590337">Dəyər (zidd)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Əlaqəli saytlar daxil olmaqla heç bir sayt bloklanmayıb}=1{Əlaqəli saytlar daxil olmaqla 1 sayt bloklanıb}other{Əlaqəli saytlar daxil olmaqla # sayt bloklanıb}}</translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
+<translation id="3270041629388773465">CVC-ni yadda saxlayaraq cəld ödəniş edin</translation>
 <translation id="3270156322180235608">Hava yolu ilə səyahət</translation>
 <translation id="3270847123878663523">Təkrar sıralamanı geri qaytarın</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> qoşulmaq istəyir</translation>
@@ -1379,6 +1382,7 @@
 <translation id="3793574014653384240">Son vaxtlarda baş verən xətaların sayı və səbəbləri</translation>
 <translation id="3795344968043407227">Müstəqil və alternativ musiqi</translation>
 <translation id="3799805948399000906">Şrift üzrə sorğu göndərildi</translation>
+<translation id="3801265110651850478">Baxış trafiki ilə birgə "İzlənilməsin" sorğusu göndərin</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3806932344025766608">Daxil olduğunuz saytda hücumçular sizi proqram təminatı quraşdırmağa, yaxud parol, telefon və ya kredit kartı nömrəsi kimi məlumatları açıqlamağa təşviq edə bilər. Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Telefon xidmət provayderləri</translation>
@@ -1649,6 +1653,7 @@
 <translation id="4331708818696583467">Təhlükəsiz deyil</translation>
 <translation id="4333295216031073611">Alış-veriş siyahısı</translation>
 <translation id="4333561522337981382">Bütün displeylərinizdə pəncərələri idarə edin</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
 <translation id="4340575312453649552">Bu reklam cihazınız üçün həddindən çox mənbədən istifadə etdiyinə görə Chrome onu sildi.</translation>
 <translation id="4340810192899866471">JSON-dan import edin</translation>
 <translation id="4340982228985273705">Bu kompüter korporativ idarə edilmir, ona görə də siyasət yalnız Chrome Veb Mağazasında saxlanılan artırmaları quraşdıra bilər. Chrome Veb Mağaza güncəlləmə linki: "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1845,6 +1850,7 @@
 <translation id="4761104368405085019">Mikrofon işlədin</translation>
 <translation id="4761326898079498987">Əlavə detallar üçün nəzərdən keçirin</translation>
 <translation id="4761869838909035636">Chrome Təhlükəsizlik Yoxlanışı icra edin</translation>
+<translation id="4763196677855776703">Şərt və qaydaları <ph name="URL" /> təqdim edir</translation>
 <translation id="4764680219299728632">Mətbəx sobası, ocaq və peçlər</translation>
 <translation id="4764776831041365478"><ph name="URL" /> ünvanındakı səhifə müvəqqəti olaraq deaktiv ola və ya həmişəlik olaraq yeni ünvana köçə bilər.</translation>
 <translation id="4766713847338118463">Aşağıdan qoşa ştapel vurun</translation>
@@ -2206,6 +2212,7 @@
 <translation id="5512812358367123529">Ofis mebelləri</translation>
 <translation id="5513528801833998679">Cihaz girişindən istifadə edin</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">Əksər saytlar siz baxdıqca sizi izləmək üçün üçüncü tərəf kukilərindən istifadə edə bilməz. Saytlar Anonim rejimdə üçüncü tərəf kukilərindən istifadə edə bilməz.</translation>
 <translation id="5518670652865028077">İncəsənət və əyləncə</translation>
 <translation id="5519516356611866228">Dəyişikliklərlə</translation>
 <translation id="5519696598216267194">Kağız (ön dəlikli)</translation>
@@ -2273,6 +2280,7 @@
 <translation id="5633259641094592098">Kult və müstəqil filmlər</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5635237618724097525">Smartfonlar</translation>
+<translation id="5635478143789726479">Satıcının şərt və qaydaları</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereo sistem və hissələri</translation>
 <translation id="5644090287519800334">Şəklin 1-ci tərəfinin X oxu üzrə yerdəyişməsi</translation>
@@ -2392,6 +2400,7 @@
 <translation id="5911110632211230665">Açma bloklanıb</translation>
 <translation id="59174027418879706">Aktiv edilib</translation>
 <translation id="5918373444239520146">Qadcet və daşınabilən elektronika</translation>
+<translation id="5918847752193018339">CVC-ni yadda saxlayaraq cəld ödəniş edin. <ph name="LINK_BEGIN" />Yadda saxlanmış güvənlik kodlarını silin<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 istifadə edilir}other{# istifadə edilir}}</translation>
 <translation id="592031860219554105">Buz skeytinqi</translation>
@@ -3106,6 +3115,7 @@
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Ödəniş nizamlayıcıları</translation>
 <translation id="7367985555340314048">Maraqlandığınız mövzular son baxış tarixçənizə əsaslanır və saytlar tərəfindən sizə fərdiləşdirilmiş reklamlar göstərmək üçün istifadə olunur</translation>
+<translation id="7368169244533796604">Saytı silin</translation>
 <translation id="7372526636730851647">Foto (parlaq)</translation>
 <translation id="7372973238305370288">axtarış nəticəsi</translation>
 <translation id="7374461526650987610">Protokol nizamlayıcıları</translation>
@@ -3421,6 +3431,7 @@
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">Avropa EDP</translation>
 <translation id="7952327717479677595">"Axtarış mexanizmlərini idarə edin" düyməsi, aktivləşdirərək defolt axtarış mexanizmi və sayt axtarışını idarə edin</translation>
+<translation id="7953236668995583915">Bu saytda yenilənmiş ayarların tətbiqi üçün bu səhifəni yenidən yükləyin</translation>
 <translation id="7953569069500808819">Yuxarıdan kənarını tikin</translation>
 <translation id="7955105108888461311">Şəxsən soruşun</translation>
 <translation id="7956713633345437162">Mobil əlfəcinlər</translation>
@@ -3469,6 +3480,7 @@
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8041940743680923270">Qlobal defoltdan istifadə edin (Soruşun)</translation>
 <translation id="8042577181291637092">MIDI cihazları istifadə edilsin?</translation>
+<translation id="8043255123207491407">Satıcının şərt və qaydalarına baxın</translation>
 <translation id="8046360364391076336">Sənaye material və avadanlığı</translation>
 <translation id="8052898407431791827">Mübadilə buferinə kopyalandı</translation>
 <translation id="8055534648776115597">Peşə təhsili və davamlı təhsil</translation>
@@ -3746,7 +3758,6 @@
 <translation id="8576310925653847813">Ev kinoteatrı sistemləri</translation>
 <translation id="8577192028579836704">Bütün seçimlər üzrə tipik qiymət: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtual kart əlçatan deyil</translation>
-<translation id="8585615573162100611"><ph name="PERMISSION" /> icazəsini dayandırın</translation>
 <translation id="8586082901536468629">Skvoş və raketbol avadanlığı</translation>
 <translation id="858637041960032120">Telefon nömrəsi əlavə edin</translation>
 <translation id="8589998999637048520">Ən yüksək keyfiyyət</translation>

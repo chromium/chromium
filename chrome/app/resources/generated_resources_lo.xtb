@@ -1897,6 +1897,7 @@
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="2436385001956947090">ສຳເນົາລິ້ງ</translation>
 <translation id="2438853563451647815">ບໍ່ໄດ້ເຊື່ອມຕໍ່ກັບເຄື່ອງພິມ</translation>
+<translation id="2439152382014731627">ຣີເຊັດລະຫັດຜ່ານ<ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">ກຳລັງໂຫຼດ <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">ເບິ່ງແຫຼ່ງທີ່ມາ</translation>
 <translation id="2440823041667407902">ການ​ເຂົ້າ​ເຖິງ​ຂໍ້ມູນ​ສະຖານທີ່</translation>
@@ -2047,6 +2048,7 @@
 <translation id="2541423446708352368">ສະແດງທຸກການດາວໂຫຼດ</translation>
 <translation id="2541706104884128042">ຕັ້ງເວລານອນໃໝ່ແລ້ວ</translation>
 <translation id="2542050502251273923">ຕັ້ງຄ່າລະດັບການດີບັກຂອງຕົວຈັດການເຊື່ອມຕໍ່ເຄືອຂ່າຍ ແລະ ການບໍລິການອື່ນໂດຍໃຊ້ ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{ການອະນຸຍາດທີ່ທ່ານມອບໃຫ້ກັບ "<ph name="APP_NAME" />" ຈະອະນຸຍາດແອັບນີ້ນຳ. <ph name="MANAGE_LINK" />}other{ການອະນຸຍາດທີ່ທ່ານມອບໃຫ້ກັບ "<ph name="APP_NAME" />" ຈະອະນຸຍາດແອັບເຫຼົ່ານີ້ນຳ. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">ແຖບນີ້</translation>
 <translation id="2546302722632337735">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຕົວລະບຸເພື່ອຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງ</translation>
 <translation id="2546991196809436099">ຊູມເຂົ້າເພື່ອເຮັດໃຫ້ລາຍການຕ່າງໆຢູ່ໜ້າຈໍໃຫຍ່ຂຶ້ນ. ໃຊ້ຊອກຫາ + Ctrl + M ເພື່ອເປີດ ແລະ ປິດແວ່ນຂະຫຍາຍ.</translation>
@@ -2489,6 +2491,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ຈະ​ປິດ​ເປີດ​ໃໝ່ ແລະ​ຕັ້ງ​ຄ່າ​ຄືນ​ໃໝ່​ໄວໆ​ນີ້</translation>
 <translation id="2883470649061584386">ຟີດ</translation>
 <translation id="2884070497102362193">ທົດສອບແບັດເຕີຣີຂອງທ່ານ, CPU, ໜ່ວຍຄວາມຈຳ, ການເຊື່ອມຕໍ່ ແລະ ອື່ນໆ</translation>
+<translation id="2885129935310217435">ມີປຸ່ມທີ່ໃຊ້ຊື່ດຽວກັນຢູ່. ກະລຸນາເລືອກອັນອື່ນ.</translation>
 <translation id="2885378588091291677">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="2885729872133513017">ເກີດບັນຫາຂຶ້ນໃນເວລາຖອດລະຫັດຄຳຕອບຂອງເຊີບເວີ.</translation>
 <translation id="2886119409731773154">ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາຮອດ 30 ນາທີ</translation>
@@ -4572,7 +4575,6 @@
 <translation id="4565917129334815774">ເກັບຮັກສາບັນທຶກລະບົບໄວ້</translation>
 <translation id="4566170377336116390">ຫາກທ່ານຕ້ອງການສະຫຼັບຫຼັງຈາກການລົງທະບຽນ, ທ່ານຈະຕ້ອງຣີເຊັດອຸປະກອນຂອງທ່ານເປັນຄ່າຈາກໂຮງງານ (powerwash) ກ່ອນ.</translation>
 <translation id="4566417217121906555">ປິດສຽງໄມໂຄຣໂຟນ</translation>
-<translation id="4566762846886188693">ເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານ, ໃຫ້ລຶບສິດການອະນຸຍາດຈາກເວັບໄຊທີ່ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອໄວໆນີ້ອອກ. ແຕ່ບໍ່ຢຸດການແຈ້ງເຕືອນ.</translation>
 <translation id="456717285308019641">ພາສາຂອງໜ້າທີ່ຈະແປ</translation>
 <translation id="4567512141633030272">ຕົວເລືອການເຂົ້າສູ່ລະບົບຜິດບໍ?</translation>
 <translation id="4567533462991917415">ທ່ານສາມາດເພີ່ມຄົນໄດ້ຕື່ມອີກຫຼັງຈາກການຕັ້ງຄ່າ. ແຕ່ລະຄົນສາມາດປັບແຕ່ງບັນຊີຂອງເຂົາເຈົ້າ ແລະ ຮັກສາຂໍ້ມູນໄວ້ເປັນສ່ວນຕົວໄດ້.</translation>
@@ -4793,7 +4795,6 @@
 <translation id="4742334355511750246">ບໍ່ໄດ້ຮັບອະນຸຍາດສະແດງຮູບພາບ</translation>
 <translation id="4742970037960872810">ລຶບໄຮໄລ້ອອກ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ສຶກສາວິທີອັບເດດແອັບພລິເຄຊັນ<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">ສິ່ງທີ່ທ່ານພິມຢູ່ໃນແຖບທີ່ຢູ່ ຫຼື ກ່ອງຊອກຫາແມ່ນຖືກສົ່ງໄປຫາໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="4744268813103118742">ເຂົ້າໄປເວັບໄຊ</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ເປີດສຽງເວັບໄຊ}other{ເປີດສຽງເວັບໄຊ}}</translation>
@@ -8787,6 +8788,7 @@
 <translation id="7952708427581814389">ເວັບໄຊສາມາດຂໍເບິ່ງຂໍ້ຄວາມ ແລະ ຮູບພາບໃນຄລິບບອດຂອງທ່ານໄດ້</translation>
 <translation id="795282463722894016">ການກູ້ຄືນສຳເລັດແລ້ວ</translation>
 <translation id="7952904276017482715">ID ທີ່ຄາດໄວ້ "<ph name="EXPECTED_ID" />", ແຕ່ ID ແມ່ນ "<ph name="NEW_ID" />"</translation>
+<translation id="7953236668995583915">ກະລຸນາໂຫຼດໜ້ານີ້ໃໝ່ເພື່ອນຳໃຊ້ການຕັ້ງຄ່າທີ່ອັບເດດແລ້ວຂອງທ່ານຢູ່ເວັບໄຊນີ້</translation>
 <translation id="7953669802889559161">ການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7953955868932471628">ຈັດການທາງລັດ</translation>
 <translation id="7955105108888461311">ຖາມດ້ວຍຕົນເອງ</translation>

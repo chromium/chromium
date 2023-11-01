@@ -1899,6 +1899,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="2436385001956947090">Kopiér &amp;link</translation>
 <translation id="2438853563451647815">Ingen forbindelse til printeren</translation>
+<translation id="2439152382014731627">Nulstil adgangskoden til <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> indlæses</translation>
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="2440823041667407902">Lokationsadgang</translation>
@@ -2049,6 +2050,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2541423446708352368">Vis alle downloads</translation>
 <translation id="2541706104884128042">Ny sengetid er angivet</translation>
 <translation id="2542050502251273923">Angiver fejlretningsniveauet for netværksforbindelsens administrator og andre tjenester ved brug af ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Tilladelser, du giver "<ph name="APP_NAME" />", gives også til denne app. <ph name="MANAGE_LINK" />}one{Tilladelser, du giver "<ph name="APP_NAME" />", gives også til denne app. <ph name="MANAGE_LINK" />}other{Tilladelser, du giver "<ph name="APP_NAME" />", gives også til disse apps. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Denne fane</translation>
 <translation id="2546302722632337735">Tillad ikke, at websites bruger id'er til at afspille beskyttet indhold</translation>
 <translation id="2546991196809436099">Zoom ind for at forstørre elementer på skærmen. Brug søgetasten+Ctrl+M til at aktivere eller deaktivere luppen.</translation>
@@ -2491,6 +2493,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> Genstart og nulstilling påbegyndes om et øjeblik</translation>
 <translation id="2883470649061584386">Feed</translation>
 <translation id="2884070497102362193">Test batteriet, CPU'en, hukommelsen, forbindelsen og meget mere</translation>
+<translation id="2885129935310217435">Der er en knap med samme navn. Vælg en anden.</translation>
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2885729872133513017">Der opstod et problem under afkodningen af serversvaret.</translation>
 <translation id="2886119409731773154">Dette kan tage op til 30 minutter</translation>
@@ -4574,7 +4577,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4565917129334815774">Gem systemlogs</translation>
 <translation id="4566170377336116390">Hvis du vil skifte efter tilmelding, skal du gendanne fabriksindstillingerne (foretage en powerwash) på din enhed.</translation>
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
-<translation id="4566762846886188693">Fjern tilladelser fra websites, du ikke har besøgt for nylig, for at beskytte dine data. Forhindrer ikke notifikationer.</translation>
 <translation id="456717285308019641">Sidens sprog, som skal oversættes</translation>
 <translation id="4567512141633030272">Er valgmuligheden til login forkert?</translation>
 <translation id="4567533462991917415">Du kan til enhver tid tilføje flere personer efter konfigurationen. Hver person kan tilpasse sin konto og holde sine data private.</translation>
@@ -4795,7 +4797,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4742334355511750246">Har ikke tilladelse til at vise billeder</translation>
 <translation id="4742970037960872810">Fjern fremhævning</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Se, hvordan du opdaterer apps<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Det, du indtaster i adresselinjen eller søgefeltet, sendes til din standardsøgemaskine</translation>
 <translation id="4744268813103118742">Gå til website</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Slå lyden til på dette website}one{Slå lyden til på dette website}other{Slå lyden til på disse websites}}</translation>
@@ -8794,6 +8795,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7952708427581814389">Websites kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
 <translation id="795282463722894016">Gendannelsen blev fuldført</translation>
 <translation id="7952904276017482715">Det forventede id var "<ph name="EXPECTED_ID" />", men id'et viste sig at være "<ph name="NEW_ID" />"</translation>
+<translation id="7953236668995583915">Genindlæs denne side for at anvende dine opdaterede indstillinger på dette website</translation>
 <translation id="7953669802889559161">Indtastningsmetoder</translation>
 <translation id="7953955868932471628">Administrer genveje</translation>
 <translation id="7955105108888461311">Spørg ansigt til ansigt</translation>

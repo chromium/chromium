@@ -1885,6 +1885,7 @@
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2436385001956947090">لنک کاپی کریں</translation>
 <translation id="2438853563451647815">پرنٹر سے منسلک نہیں ہے</translation>
+<translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> پاس ورڈ ری سیٹ کریں</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> لوڈ ہو رہی ہے</translation>
 <translation id="2440604414813129000">ما&amp;خذ دیکھیں</translation>
 <translation id="2440823041667407902">مقام تک رسائی</translation>
@@ -2035,6 +2036,7 @@
 <translation id="2541423446708352368">سبھی ڈاؤن لوڈز دکھائیں</translation>
 <translation id="2541706104884128042">سونے کا نیا وقت سیٹ کیا گیا ہے</translation>
 <translation id="2542050502251273923">‏نیٹ ورک کنکشن مینیجراور ff_debug. استعمال کرنے والی دیگر سروسز کے ڈیبگنگ لیول کا تعین کرتا ہے۔</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" کے لیے آپ کی دی گئی اجازتیں اس ایپ کے لیے بھی قابل اطلاق ہوں گی۔ <ph name="MANAGE_LINK" />}other{"<ph name="APP_NAME" />" کے لیے آپ کی دی گئی اجازتیں ان ایپس کے لیے بھی قابل اطلاق ہوں گی۔ <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">یہ ٹیب</translation>
 <translation id="2546302722632337735">سائٹس کو تحفظ یافتہ مواد کو چلانے کیلئے شناخت کنندگان کا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="2546991196809436099">‏اسکرین پر موجود آئٹمز کو بڑا کرنے کے لیے زوم ان کریں۔ میگنیفائر کو آن اور آف کرنے کے لیے Search + Ctrl + M استعمال کریں۔</translation>
@@ -2477,6 +2479,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> تھوڑی دیر کیلئے دوبارہ شروع ہو جائے گا اور دوبارہ ترتیب دیا جائے گا</translation>
 <translation id="2883470649061584386">فیڈ</translation>
 <translation id="2884070497102362193">‏اپنی بیٹری، CPU، میموری، کنیکٹیویٹی اور مزید کی جانچ کریں</translation>
+<translation id="2885129935310217435">اسی نام کا ایک بٹن موجود ہے۔ براہ کرم کوئی دوسرا منتخب کریں۔</translation>
 <translation id="2885378588091291677">ٹاسک مینیجر</translation>
 <translation id="2885729872133513017">سرور کے جواب کو ڈیکوڈ کرنے میں ایک مسئلہ پیش آگیا۔</translation>
 <translation id="2886119409731773154">اس میں 30 منٹ تک کا وقت لگ سکتا ہے</translation>
@@ -4559,7 +4562,6 @@
 <translation id="4565917129334815774">سسٹم لاگز اسٹور کریں</translation>
 <translation id="4566170377336116390">‏اگر آپ اندراج کے بعد سوئچ کرنا چاہتے ہیں تو آپ کو اپنے آلے کو فیکٹری ری سیٹ (Powerwash) کرنے کی ضرورت ہوگی۔</translation>
 <translation id="4566417217121906555">مائیکروفون کو خاموش کریں</translation>
-<translation id="4566762846886188693">اپنے ڈیٹا کے تحفظ کے لیے، ان سائٹس سے اجازتیں ہٹائیں جن پر آپ حال ہی میں نہیں گئے ہیں۔ اس سے اطلاعات بند نہیں ہوتی ہیں۔</translation>
 <translation id="456717285308019641">ترجمہ کرنے کیلئے صفحے کی زبان</translation>
 <translation id="4567512141633030272">سائن ان کا اختیار غلط ہے؟</translation>
 <translation id="4567533462991917415">آپ سیٹ اپ کے بعد کبھی بھی مزید لوگوں کو شامل کر سکتے ہیں۔ ہر شخص اپنے اکاؤنٹ کو ذاتی نوعیت کا بنا اور ڈیٹا کو نجی رکھ سکتا ہے۔</translation>
@@ -4780,7 +4782,6 @@
 <translation id="4742334355511750246">تصاویر دکھانے کی اجازت نہیں ہے</translation>
 <translation id="4742970037960872810">ہائی لائٹ کو ہٹائیں</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ایپلیکیشنز کو اپ ڈیٹ کرنے کا طریقہ جانیں<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">آپ جو ایڈریس بار یا سرچ باکس میں ٹائپ کرتے ہیں وہ آپ کے ڈیفالٹ سرچ انجن کو بھیج دیا جاتا ہے</translation>
 <translation id="4744268813103118742">سائٹ پر جائیں</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{سائٹ کی آواز چلائیں}other{سائٹس کی آواز چلائیں}}</translation>
@@ -8776,6 +8777,7 @@
 <translation id="7952708427581814389">سائٹس آپ کے کلپ بورڈ پر ٹیکسٹ اور تصاویر دیکھنے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="795282463722894016">بحال کرنا مکمل ہو گیا</translation>
 <translation id="7952904276017482715">‏متوقع ID "<ph name="EXPECTED_ID" />"، لیکن ID تھی ‎‎"<ph name="NEW_ID" />"</translation>
+<translation id="7953236668995583915">اس سائٹ پر اپنی اپ ڈیٹ کردہ ترتیبات کو لاگو کرنے کے لیے اس صفحہ کو دوبارہ لوڈ کریں</translation>
 <translation id="7953669802889559161">ان پٹس</translation>
 <translation id="7953955868932471628">شارٹ کٹس کا نظم کریں</translation>
 <translation id="7955105108888461311">ذاتی طور پر پوچھیں</translation>

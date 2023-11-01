@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1001716830750249114">Akses tetapan versi Chromium</translation>
 <translation id="1026101648481255140">Sambung Semula Pemasangan</translation>
 <translation id="1029669172902658969">Lancarkan semula untuk mengemas kini &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium mengesyorkan anda agar menyemak sambungan ini</translation>
@@ -31,6 +32,7 @@
 Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pada akaun ini. Anda boleh mengurus Google Account anda dalam <ph name="SETTINGS_LINK_BEGIN" />Tetapan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Memuat turun...</translation>
 <translation id="1708666629004767631">Terdapat versi Chromium baharu yang lebih selamat tersedia.</translation>
+<translation id="1715127912119967311">Untuk membantu meningkatkan ciri ini, Chromium menghantar interaksi anda dengan ciri tersebut kepada Google. Data ini boleh dibaca, diproses dan dianotasikan oleh jurusemak.</translation>
 <translation id="17264556997921157">Anda boleh melihat dan mengalih keluar topik minat yang digunakan oleh laman untuk memaparkan iklan kepada anda. Chromium menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
 <translation id="1733725117201708356">Chromium akan memadamkan data semakan imbas sebentar lagi</translation>
 <translation id="1745121272106313518">Chromium akan dimulakan semula dalam masa <ph name="REMAINING_TIME" /></translation>

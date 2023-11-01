@@ -311,6 +311,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1574714699824202614">Bekrefter betalingsmåten</translation>
 <translation id="1576277203042721907">Shopping-statistikk</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Utløper ikke</translation>
 <translation id="1583429793053364125">Noe gikk galt da denne nettsiden skulle åpnes.</translation>
 <translation id="1584492003828271317">Om du ser en personlig tilpasset annonse eller ikke, avhenger av denne innstillingen, foreslåtte annonser for nettsted, innstillingene for informasjonskapsler og om nettstedet du ser på, viser personlig tilpassede annonser</translation>
 <translation id="1586541204584340881">hvilke utvidelser du har installert</translation>
@@ -973,6 +974,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2985306909656435243">Hvis du slår på dette alternativet, lagrer Chromium en kopi av kortet ditt på denne enheten, slik at det går raskere å fylle ut skjemaer.</translation>
 <translation id="2985398929374701810">Angi en gyldig adresse</translation>
 <translation id="2987034854559945715">Ingen samsvarende funksjoner</translation>
+<translation id="2988216301273604645">Chrome begrenser mengden informasjon nettsteder kan bruke til å spore deg mens du surfer. Du kan endre innstillingene for å velge ditt eget beskyttelsesnivå.</translation>
 <translation id="2989742184762224133">To stifter topp</translation>
 <translation id="2991174974383378012">Deling med nettsteder</translation>
 <translation id="299122504639061328">Administrer standard søkemotor og nettstedsøk</translation>
@@ -1384,6 +1386,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3793574014653384240">Tall for og årsaker til krasjene som har forekommet nylig</translation>
 <translation id="3795344968043407227">Indie og alternativ musikk</translation>
 <translation id="3799805948399000906">Forespurt skrifttype</translation>
+<translation id="3801265110651850478">Send en «Ikke spor»-forespørsel med nettlesertrafikken din</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3806932344025766608">Angripere på nettstedet du prøver å besøke, kan lure deg til å installere programvare eller oppgi ting som passordet, telefonnummeret eller kredittkortnummeret ditt. Chrome anbefaler på det sterkeste at du går tilbake til trygg grunn. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Telefontjenesteleverandører</translation>
@@ -1654,6 +1657,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4331708818696583467">Ikke sikker</translation>
 <translation id="4333295216031073611">Handleliste</translation>
 <translation id="4333561522337981382">administrere vinduer på alle skjermene dine</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Utløper i morgen}other{Utløper om # dager}}</translation>
 <translation id="4340575312453649552">Denne annonsen brukte for mange ressurser for enheten din, så Chrome har fjernet den.</translation>
 <translation id="4340810192899866471">Importer fra JSON</translation>
 <translation id="4340982228985273705">Denne datamaskinen er ikke registrert som administrert av en bedrift, så regelen kan bare automatisk installere utvidelser som finnes på Chrome Nettmarked. Nettadressen for Chrome Nettmarked-oppdateringen er «<ph name="CWS_UPDATE_URL" />».</translation>
@@ -2212,6 +2216,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5512812358367123529">Kontormøbler</translation>
 <translation id="5513528801833998679">Bruk enhetspålogging</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
+<translation id="5518352028556756716">De fleste nettsteder kan ikke bruke informasjonskapsler fra tredjeparter til å spore deg mens du surfer, og nettsteder kan ikke bruke informasjonskapsler fra tredjeparter i inkognitomodus.</translation>
 <translation id="5518670652865028077">Kunst og underholdning</translation>
 <translation id="5519516356611866228">Med endringene dine</translation>
 <translation id="5519696598216267194">Papir (hullpapir)</translation>
@@ -3113,6 +3118,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Betalingsbehandlere</translation>
 <translation id="7367985555340314048">Emner av interesse er basert på den nylige nettleserloggen din og brukes av nettsteder for å vise deg personlig tilpassede annonser</translation>
+<translation id="7368169244533796604">Slett nettstedet</translation>
 <translation id="7372526636730851647">Foto (glans)</translation>
 <translation id="7372973238305370288">søkeresultat</translation>
 <translation id="7374461526650987610">Protokollbehandlere</translation>
@@ -3428,6 +3434,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">Knappen «Administrer søkemotorer» – aktiver for å administrere standard søkemotor og nettstedsøk</translation>
+<translation id="7953236668995583915">Last inn denne siden på nytt for å ta i bruk de oppdaterte innstillingene dine på dette nettstedet</translation>
 <translation id="7953569069500808819">Kantstifting topp</translation>
 <translation id="7955105108888461311">Spør fysisk</translation>
 <translation id="7956713633345437162">Bokmerker for mobil</translation>
@@ -3754,7 +3761,6 @@ Mer informasjon:
 <translation id="8576310925653847813">Hjemmekinosystemer</translation>
 <translation id="8577192028579836704">Alle alternativer koster vanligvis <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelt kort er ikke tilgjengelig</translation>
-<translation id="8585615573162100611">Slutt å tillate <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Utstyr for squash og racketball</translation>
 <translation id="858637041960032120">Legg til telefonnummer</translation>
 <translation id="8589998999637048520">Beste kvalitet</translation>

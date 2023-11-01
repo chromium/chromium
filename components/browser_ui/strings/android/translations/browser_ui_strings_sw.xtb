@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Chaguo zinapatikana karibu na sehemu ya chini ya skrini</translation>
 <translation id="7250468141469952378">Umechagua <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Umeruhusu <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Umezuia tovuti zisitumie vidakuzi vya washirika wengine ili kukufuatilia unapovinjari. Nenda kwenye mipangilio ili <ph name="BEGIN_LINK" />udhibiti ulinzi wako dhidi ya ufuatiliaji<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Huwa unazuia arifa. Ili uziruhusu, gusa Maelezo.</translation>
 <translation id="7366415735885268578">Ongeza tovuti</translation>
 <translation id="7368695150573390554">Data yoyote ya nje ya mtandao itafutwa</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Umeruhusu vidakuzi katika tovuti <ph name="FPS_MEMBERS_COUNT" /> ya <ph name="FPS_OWNER" />}other{Umeruhusu vidakuzi katika tovuti <ph name="FPS_MEMBERS_COUNT" /> za <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Imeruhusiwa (inapendekezwa)</translation>
 <translation id="8609465669617005112">Songa juu</translation>
+<translation id="8649036394979866943">Chrome huzuia tovuti nyingi zisitumie vidakuzi vya washirika wengine ili kukufuatilia unapovinjari. Nenda kwenye mipangilio ili <ph name="BEGIN_LINK" />udhibiti ulinzi wako dhidi ya ufuatiliaji<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Futa uingizaji wa maandishi</translation>
 <translation id="8681886425883659911">Matangazo yamezuiwa kwenye tovuti ambazo huonyesha matangazo yanayopotosha au yanayokatiza matumizi</translation>
 <translation id="868929229000858085">Tafuta kwenye anwani zako</translation>

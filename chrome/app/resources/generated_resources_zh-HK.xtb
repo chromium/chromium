@@ -985,7 +985,7 @@
 <translation id="175772926354468439">啟用主題</translation>
 <translation id="1757786065507923842">家長權限要求失敗。</translation>
 <translation id="17584710573359123">在「Chrome 網上應用程式商店」上查看</translation>
-<translation id="1761402971842586829"><ph name="BUTTON_NAME" />已重新對應到「<ph name="REMAPPING_OPTION" />」。</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" />已經重新對應去「<ph name="REMAPPING_OPTION" />」。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
 <translation id="176272781006230109">購物建議</translation>
 <translation id="1763046204212875858">建立應用程式捷徑</translation>
@@ -1898,6 +1898,7 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2436385001956947090">複製連結(&amp;L)</translation>
 <translation id="2438853563451647815">未連線至打印機</translation>
+<translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="2439626940657133600">載入緊 <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="2440823041667407902">位置資料存取權</translation>
@@ -2048,6 +2049,7 @@
 <translation id="2541423446708352368">顯示所有下載項目</translation>
 <translation id="2541706104884128042">已設定新的就寢時間</translation>
 <translation id="2542050502251273923">使用 ff_debug 設定網絡連線管理員及其他服務的偵錯等級。</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{如果你將權限授予「<ph name="APP_NAME" />」，此應用程式亦會取得同樣的權限。<ph name="MANAGE_LINK" />}other{如果你將權限授予「<ph name="APP_NAME" />」，這些應用程式亦會取得同樣的權限。<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">這個分頁</translation>
 <translation id="2546302722632337735">不允許網站使用識別碼來播放受保護的內容</translation>
 <translation id="2546991196809436099">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。</translation>
@@ -2490,6 +2492,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 即將重新啟動並重新設定。</translation>
 <translation id="2883470649061584386">動態</translation>
 <translation id="2884070497102362193">測試電池、CPU、記憶體、連接性等等</translation>
+<translation id="2885129935310217435">已有相同名稱的按鈕，請選擇其他名稱。</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2885729872133513017">解碼伺服器回應時發生問題。</translation>
 <translation id="2886119409731773154">此操作大概需時 30 分鐘</translation>
@@ -2734,7 +2737,7 @@
 <translation id="3076977359333237641">已刪除您的登入資料。</translation>
 <translation id="3080933187214341848">此網絡沒有同步至您的帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
-<translation id="3082493846131340396">擴充功能</translation>
+<translation id="3082493846131340396">擴充程式</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">已暫時封鎖相關權限以保障您的安全</translation>
 <translation id="3083899879156272923">以滑鼠游標為中心移動畫面</translation>
@@ -2894,7 +2897,7 @@
 <translation id="3229412050601871341">裝置密碼</translation>
 <translation id="3230539834943294477">查看說明文章或尋找裝置支援</translation>
 <translation id="3232168089952388105">要分享裝置相關資料嗎？</translation>
-<translation id="3232368113895801406">根據安全性偏好設定，你無法安裝隔離的應用程式。<ph name="CHANGE_PREFERENCE" /></translation>
+<translation id="3232368113895801406">你的安全偏好設定不允許安裝隔離的應用程式。<ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">靠右對齊</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
 <translation id="3233271424239923319">備份 Linux 應用程式和檔案</translation>
@@ -4569,7 +4572,6 @@
 <translation id="4565917129334815774">儲存系統記錄</translation>
 <translation id="4566170377336116390">如果要在完成註冊後切換裝置，您需要將裝置回復原廠設定 (Powerwash)。</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
-<translation id="4566762846886188693">為保護你的資料，系統會將權限從你最近沒有瀏覽的網站中移除。這不會停止通知。</translation>
 <translation id="456717285308019641">要翻譯的網頁語言</translation>
 <translation id="4567512141633030272">登入選項有錯嗎？</translation>
 <translation id="4567533462991917415">您可在設定後隨時新增更多使用者。每位使用者都可將帳戶個人化，以確保資料私隱。</translation>
@@ -4617,7 +4619,7 @@
 <translation id="460190672235687855">查看密碼</translation>
 <translation id="4602466770786743961">永遠允許 <ph name="HOST" /> 存取您的相機和麥克風</translation>
 <translation id="4602776638371779614">此分頁正在主動掃瞄藍牙裝置</translation>
-<translation id="4605026046465576953">你的權限不足，無法執行隔離網頁應用程式，因此這個應用程式無法開啟</translation>
+<translation id="4605026046465576953">你的權限不足，無法執行隔離的網絡應用程式，因此無法開啟此應用程式</translation>
 <translation id="4606551464649945562">不允許網站建立您身處環境的 3D 地圖或追蹤攝錄機位置</translation>
 <translation id="4608500690299898628">尋找(&amp;F)…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> 發生錯誤</translation>
@@ -4790,7 +4792,6 @@
 <translation id="4742334355511750246">不允許顯示圖片</translation>
 <translation id="4742970037960872810">移除焦點內容</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">你在網址列或搜尋框中輸入的內容，會傳送至預設的搜尋引擎</translation>
 <translation id="4744268813103118742">前往網站</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{將單一網站取消靜音}other{將多個網站取消靜音}}</translation>
@@ -6658,7 +6659,7 @@
 <translation id="6264060420924719834">此應用程式包含來自其他網站的網絡內容</translation>
 <translation id="6264365405983206840">全部選取(&amp;A)</translation>
 <translation id="6264376385120300461">仍要下載</translation>
-<translation id="6264520534872750757">繼續使用這部裝置</translation>
+<translation id="6264520534872750757">繼續使用此裝置</translation>
 <translation id="6265159465845424232">在複製或移動 Microsoft 檔案至 Microsoft OneDrive 前先詢問</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
 <translation id="6266532094411434237">正在連接 <ph name="DEVICE" /></translation>
@@ -7422,7 +7423,7 @@
 <translation id="6876469544038980967">沒有幫助</translation>
 <translation id="6878422606530379992">已允許使用感應器</translation>
 <translation id="6880587130513028875">系統已封鎖此網頁的圖片。</translation>
-<translation id="6881845890692344060">系統管理員已登出帳戶，現在一切由你掌控。</translation>
+<translation id="6881845890692344060">管理員已登出帳戶，現在一切由你掌控。</translation>
 <translation id="6882210908253838664">如果網站無法運作，你可暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">抱歉！系統無法儲存裝置設定。</translation>
 <translation id="6884474387073389421">確定要刪除已選取的登入資料嗎？</translation>
@@ -8320,7 +8321,7 @@
 <translation id="7616214729753637086">正在註冊裝置…</translation>
 <translation id="7617263010641145920">開啟「Play 商店」</translation>
 <translation id="7617648809369507487">使用低擾式通知</translation>
-<translation id="7619937211696316184">維護作業已完成</translation>
+<translation id="7619937211696316184">維護已完成</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>
 <translation id="7621480263311228380">此網站不可使用與你相關的既有資料</translation>
 <translation id="7621595347123595643">如果忘記密碼或 PIN，就無法復原本機資料。</translation>
@@ -8785,6 +8786,7 @@
 <translation id="7952708427581814389">網站可要求查看剪貼簿上的文字和圖片</translation>
 <translation id="795282463722894016">還原完成</translation>
 <translation id="7952904276017482715">預期 ID 為「<ph name="EXPECTED_ID" />」，但實際為「<ph name="NEW_ID" />」</translation>
+<translation id="7953236668995583915">重新載入此頁面，即可將已更新的設定套用至此網站</translation>
 <translation id="7953669802889559161">輸入方法</translation>
 <translation id="7953955868932471628">管理快速鍵</translation>
 <translation id="7955105108888461311">要求存取權</translation>
@@ -9668,7 +9670,7 @@
 <translation id="8662795692588422978">使用者</translation>
 <translation id="8662911384982557515">將您的首頁變更為：<ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome 無法設定桌布。</translation>
-<translation id="8663051876219324457">允許應用程式、網站和系統服務使用你的位置資訊。定位功能可能會使用 Wi-Fi、行動網路和感應器等來源的資訊，推測裝置所在位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="8663051876219324457">允許應用程式、網站和系統服務使用你的位置。定位服務可能會使用 Wi-Fi、流動網絡和感應器等來源去偵測裝置的所在位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">永遠禁止在 <ph name="HOST" /> 自動下載多個檔案</translation>
 <translation id="8664389313780386848">檢視網頁原始碼(&amp;V)</translation>
 <translation id="8665110742939124773">您輸入不正確的存取碼。請再試一次。</translation>
@@ -9761,7 +9763,7 @@
 <translation id="87254326763805752">確認密鑰</translation>
 <translation id="8726206820263995930">從伺服器擷取政策設定時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="8727043961453758442">充分運用 Chrome 的功能</translation>
-<translation id="8727333994464775697">自訂這個頁面顯示的內容</translation>
+<translation id="8727333994464775697">自訂此頁面顯示的內容</translation>
 <translation id="8727751378406387165">傳送<ph name="BEGIN_LINK1" />自動填入元數據<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (系統不會共用自動填入資料)</translation>

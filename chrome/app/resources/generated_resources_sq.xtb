@@ -1881,6 +1881,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2436385001956947090">Kopjo &amp;lidhjen</translation>
 <translation id="2438853563451647815">Nuk është lidhur me printerin</translation>
+<translation id="2439152382014731627">Rivendos fjalëkalimin e pajisjes <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> po ngarkohet</translation>
 <translation id="2440604414813129000">Shiko b&amp;urimin</translation>
 <translation id="2440823041667407902">Qasja e vendndodhjes</translation>
@@ -2031,6 +2032,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2541423446708352368">Shfaqi të gjitha shkarkimet</translation>
 <translation id="2541706104884128042">U vendos orari i ri i gjumit</translation>
 <translation id="2542050502251273923">Cakton nivelin e korrigjimit për menaxherin e lidhjes së rrjetit dhe shërbimet e tjera duke përdorur ff_debug.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{Lejet që lejon për <ph name="APP_NAME" /> do të lejohen edhe për këtë aplikacion. <ph name="MANAGE_LINK" />}other{Lejet që lejon për <ph name="APP_NAME" /> do të lejohen edhe për këto aplikacione. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Kjo skedë</translation>
 <translation id="2546302722632337735">Mos lejo që sajtet të përdorin identifikuesit për të luajtur përmbajtjet e mbrojtura</translation>
 <translation id="2546991196809436099">Zmadhoje për t'i bërë më të mëdhenj artikujt në ekran. Përdor "Kërko" + Ctrl + M për të aktivizuar dhe çaktivizuar zmadhuesin.</translation>
@@ -2473,6 +2475,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> do të rifillojë dhe rivendoset pas pak</translation>
 <translation id="2883470649061584386">Furnizimi</translation>
 <translation id="2884070497102362193">Testo baterinë, CPU-në, memorien, lidhshmërinë etj.</translation>
+<translation id="2885129935310217435">Ka një buton me të njëjtin emër. Zgjidh një tjetër.</translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
 <translation id="2885729872133513017">Ndodhi një problem gjatë deshifrimit të përgjigjes së serverit.</translation>
 <translation id="2886119409731773154">Kjo mund të zgjasë deri në 30 minuta</translation>
@@ -4555,7 +4558,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4565917129334815774">Ruaj evidencat e sistemit</translation>
 <translation id="4566170377336116390">Nëse dëshiron ta ndryshosh pas regjistrimit, do të të duhet ta rivendosësh pajisjen tënde në gjendje fabrike (Powerwash).</translation>
 <translation id="4566417217121906555">Çaktivizo mikrofonin</translation>
-<translation id="4566762846886188693">Për të mbrojtur të dhënat e tua, hiq lejet nga sajtet që nuk i ke vizituar së fundi. Kjo nuk i ndalon njoftimet.</translation>
 <translation id="456717285308019641">Faqja "Gjuha në të cilën do të përkthehet"</translation>
 <translation id="4567512141633030272">Opsioni i gabuar i identifikimit?</translation>
 <translation id="4567533462991917415">Mund të shtosh gjithmonë persona të tjerë pas konfigurimit. Çdo person mund ta personalizojë llogarinë e vet dhe t'i mbajë të dhënat private.</translation>
@@ -4776,7 +4778,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4742334355511750246">Nuk lejohen të shfaqin imazhe</translation>
 <translation id="4742970037960872810">Hiq theksimin</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Mëso se si të përditësosh aplikacionet<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">Ato që shkruan në shiritin e adresës ose në kutinë e kërkimit dërgohen te motori i parazgjedhur i kërkimit</translation>
 <translation id="4744268813103118742">Shko tek sajti</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Aktivizo zërin e sajtit}other{Aktivizo zërin e sajteve}}</translation>
@@ -8772,6 +8773,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7952708427581814389">Sajtet mund të kërkojnë të shikojnë tekstin dhe imazhet në kujtesën e fragmenteve</translation>
 <translation id="795282463722894016">Restaurimi u krye</translation>
 <translation id="7952904276017482715">ID-ja e pritshme ishte "<ph name="EXPECTED_ID" />", por rezultoi "<ph name="NEW_ID" />"</translation>
+<translation id="7953236668995583915">Ringarko këtë faqe për të zbatuar cilësimet e përditësuara në këtë sajt</translation>
 <translation id="7953669802889559161">Hyrjet</translation>
 <translation id="7953955868932471628">Menaxho shkurtoret</translation>
 <translation id="7955105108888461311">Kërkoja personalisht</translation>

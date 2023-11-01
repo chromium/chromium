@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1001716830750249114">‏رفتن به تنظیمات نسخه Chromium</translation>
 <translation id="1026101648481255140">ازسر گرفتن نصب</translation>
 <translation id="1029669172902658969">‏راه‌اندازی مجدد برای به‌روزرسانی ChromiumOS</translation>
 <translation id="1040916596585577953">‏Chromium توصیه می‌کند این افزونه را بررسی کنید</translation>
@@ -31,6 +32,7 @@
 اجازه‌هایی که قبلاً به وب‌سایت‌ها و برنامه‌ها داده‌اید ممکن است در این حساب اعمال شود. می‌توانید «حساب‌های Google» خود را در بخش <ph name="SETTINGS_LINK_BEGIN" />تنظیمات<ph name="SETTINGS_LINK_END" /> مدیریت کنید.</translation>
 <translation id="1640672724030957280">در حال بارگیری…</translation>
 <translation id="1708666629004767631">‏نسخه جدید و امن‌تری از Chromium موجود است.</translation>
+<translation id="1715127912119967311">‏برای کمک به بهبود این ویژگی‌ها، Chromium تعاملات شما با این ویژگی‌ها را به Google ارسال می‌کند. ممکن است افراد بازبین این داده‌ها را بخوانند، و پردازش و حاشیه‌نویسی کنند.</translation>
 <translation id="17264556997921157">‏می‌توانید موضوعات موردعلاقه را که سایت‌ها برای ارائه آگهی به شما استفاده می‌کنند ببینید یا حذف کنید. Chromium علایق شما را براساس سابقه مرور اخیرتان تخمین می‌زند.</translation>
 <translation id="1733725117201708356">‏Chromium به‌زودی داده‌های مرور را حذف می‌کند</translation>
 <translation id="1745121272106313518">‏Chromium تا <ph name="REMAINING_TIME" /> دیگر بازراه‌اندازی خواهد شد</translation>

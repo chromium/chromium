@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Opsionet janë të disponueshme pranë fundit të ekranit</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> të zgjedhura</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> janë lejuar</translation>
+<translation id="7284451015630589124">I ke bllokuar sajtet që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet për të <ph name="BEGIN_LINK" />menaxhuar mbrojtjet nga gjurmimi<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Ti i bllokon zakonisht njoftimet. Për t'i lejuar, trokit te "Detajet".</translation>
 <translation id="7366415735885268578">Shto një sajt</translation>
 <translation id="7368695150573390554">Çdo e dhënë offline do të fshihet</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Kukit lejohen për <ph name="FPS_MEMBERS_COUNT" /> sajt të <ph name="FPS_OWNER" />}other{Kukit lejohen për <ph name="FPS_MEMBERS_COUNT" /> sajte të <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Lejuar (rekomandohet)</translation>
 <translation id="8609465669617005112">Lëviz lart</translation>
+<translation id="8649036394979866943">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet për të <ph name="BEGIN_LINK" />menaxhuar mbrojtjet nga gjurmimi<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8681886425883659911">Reklama që janë bllokuar në sajte që dihet se shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="868929229000858085">Kërko te kontaktet e tua</translation>

@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Opsies is naby die onderkant van die skerm beskikbaar</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> gekies</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> word toegelaat</translation>
+<translation id="7284451015630589124">Jy het werwe geblokkeer om derdepartywebkoekies te gebruik om jou blaai-aktiwiteit na te spoor. Besoek instellings om <ph name="BEGIN_LINK" />jou nasporingbeskerming te bestuur<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Jy blokkeer gewoonlik kennisgewings. Tik op Besonderhede om toe te laat.</translation>
 <translation id="7366415735885268578">Voeg 'n werf by</translation>
 <translation id="7368695150573390554">Enige vanlyn data sal uitgevee word</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werf}other{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werwe}}</translation>
 <translation id="857943718398505171">Toegelaat (aanbeveel)</translation>
 <translation id="8609465669617005112">Skuif op</translation>
+<translation id="8649036394979866943">Chrome beperk die meeste werwe om derdepartywebkoekies te gebruik om jou blaai-aktiwiteit na te spoor. Besoek instellings om <ph name="BEGIN_LINK" />jou nasporingbeskerming te bestuur<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Vee invoer uit</translation>
 <translation id="8681886425883659911">Advertensies word geblokkeer op werwe wat bekend is daarvoor dat hulle indringerige of misleidende advertensies wys</translation>
 <translation id="868929229000858085">Deursoek jou kontakte</translation>

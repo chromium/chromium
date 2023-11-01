@@ -38,7 +38,7 @@
 <translation id="2354531887393764880">aldia</translation>
 <translation id="2382644247745281995">Ezin da erabili teklatuak daukan diseinuarekin</translation>
 <translation id="2397416548179033562">Erakutsi Chrome-ko menua</translation>
-<translation id="2424073332829844142">Aktibatu eta desaktibatu maiuskula-blokeoa</translation>
+<translation id="2424073332829844142">Aktibatu eta desaktibatu maiuskulen blokeoa</translation>
 <translation id="2441202986792279177">Joan azkar leiho batetik bestera</translation>
 <translation id="2454251766545114447">Bistaratzea txikitzea</translation>
 <translation id="2478303094958140141">Aktibatu eta desaktibatu ChromeVox (ahozko argibideak)</translation>
@@ -57,7 +57,7 @@
 <translation id="2830827904629746450">Ainguratu leiho bat eskuineko aldean</translation>
 <translation id="2840766858109427815">Joan hurrengo orrira</translation>
 <translation id="2872353916818027657">Trukatu monitore nagusia</translation>
-<translation id="2914313326123580426">Erakutsi edo ezkutatu garatzaileen tresnen panela</translation>
+<translation id="2914313326123580426">Erakutsi edo ezkutatu garatzaileentzako tresnen panela</translation>
 <translation id="292495055542441795">Aktibatu/Desaktibatu pantaila osoko modua</translation>
 <translation id="3020183492814296499">Lasterbideak</translation>
 <translation id="3084301071537457911">Nabarmendu apaleko hurrengo elementua</translation>
@@ -130,7 +130,7 @@
 <translation id="5757111373163288447">Ireki esteka fitxan</translation>
 <translation id="5757474750054631686">Txikitu teklatuaren distira (hondoko argia duten teklatuetan bakarrik)</translation>
 <translation id="587531134027443617">Ezabatu aurreko hitza</translation>
-<translation id="5899919361772749550">Erakutsi edo ezkutatu garatzaileen tresnen kontsola</translation>
+<translation id="5899919361772749550">Erakutsi edo ezkutatu garatzaileentzako tresnen kontsola</translation>
 <translation id="5919628958418675842">Aktibatu edo desaktibatu pribatutasun-pantaila</translation>
 <translation id="5921745308587794300">Biratu leihoa</translation>
 <translation id="5926306472221400972">Atera pantaila osoaren argazkia</translation>
@@ -189,7 +189,7 @@
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> edo <ph name="E" /></translation>
 <translation id="8234414138295101081">Biratu pantaila 90 gradu</translation>
 <translation id="8241665785394195545">eskuineko kako zuzena</translation>
-<translation id="8264941229485248811">Erakutsi edo ezkutatu garatzaileen tresnen inspektorea</translation>
+<translation id="8264941229485248811">Erakutsi edo ezkutatu garatzaileentzako tresnen inspektorea</translation>
 <translation id="836869401750819675">Ireki Deskargak orria</translation>
 <translation id="8388247778047144397">Arrastatu esteka fitxen zintako zuriune batera</translation>
 <translation id="8389638407792712197">Ireki beste leiho bat</translation>

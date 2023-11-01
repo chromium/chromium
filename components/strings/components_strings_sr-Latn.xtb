@@ -311,6 +311,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1574714699824202614">Verifikuje se način plaćanja</translation>
 <translation id="1576277203042721907">Uvid u kupovinu</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">Ne ističe</translation>
 <translation id="1583429793053364125">Došlo je do greške pri prikazivanju ove veb-stranice.</translation>
 <translation id="1584492003828271317">Da li ćete videti personalizovani oglas tokom pregledanja zavisi od ovog podešavanja, oglasa koje predlaže sajt, podešavanja kolačića i toga da li sajt koji pregledate personalizuje oglase.</translation>
 <translation id="1586541204584340881">dodatke koje ste instalirali</translation>
@@ -973,6 +974,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2985306909656435243">Ako omogućite ovu opciju, Chromium će skladištiti kopiju kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
 <translation id="2985398929374701810">Unesite važeću adresu</translation>
 <translation id="2987034854559945715">Nema funkcija koje se podudaraju</translation>
+<translation id="2988216301273604645">Chrome ograničava količinu informacija koje sajtovi mogu da koriste da bi vas pratili dok pregledate. Možete da promenite podešavanja da biste odabrali sopstveni nivo zaštite.</translation>
 <translation id="2989742184762224133">Dvostruko spajanje na vrhu</translation>
 <translation id="2991174974383378012">Deljenje sa veb-sajtovima</translation>
 <translation id="299122504639061328">Upravljajte podrazumevanim pretraživačem i pretragom sajta</translation>
@@ -1384,6 +1386,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3793574014653384240">Broj nedavnih otkazivanja i razlozi</translation>
 <translation id="3795344968043407227">Nezavisna i alternativna muzika</translation>
 <translation id="3799805948399000906">Font je zatražen</translation>
+<translation id="3801265110651850478">Šalji zahtev „Ne prati“ uz saobraćaj pregledanja</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3806932344025766608">Napadači na sajtu koji pokušavate da posetite mogu da vas prevare da instalirate softver ili otkrijete stvari poput lozinke, telefona ili broja kreditne kartice. Chrome iskreno preporučuje da se vratite na bezbedno mesto. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Dobavljači telefonskih usluga</translation>
@@ -1654,6 +1657,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4331708818696583467">Nije bezbedan</translation>
 <translation id="4333295216031073611">Lista za kupovinu</translation>
 <translation id="4333561522337981382">Upravljajte prozorima na svim ekranima</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="4340575312453649552">Ovaj oglas je koristio previše resursa za uređaj, pa ga je Chrome uklonio.</translation>
 <translation id="4340810192899866471">Uvezi iz JSON-a</translation>
 <translation id="4340982228985273705">Otkriveno je da ovim računarom ne upravlja preduzeće, pa smernice mogu automatski da instaliraju samo dodatke koji se hostuju u Chrome veb-prodavnici. URL ažuriranja u Chrome veb-prodavnici je „<ph name="CWS_UPDATE_URL" />“.</translation>
@@ -2212,6 +2216,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5512812358367123529">Kancelarijski nameštaj</translation>
 <translation id="5513528801833998679">Koristite prijavljivanje na uređaju</translation>
 <translation id="5515388687005870733">55×85 mm</translation>
+<translation id="5518352028556756716">Većina sajtova ne može da koristi kolačiće treće strane da bi vas pratila dok pregledate i sajtovi ne mogu da koriste kolačiće treće strane u režimu bez arhiviranja.</translation>
 <translation id="5518670652865028077">Umetnost i zabava</translation>
 <translation id="5519516356611866228">Sa promenama</translation>
 <translation id="5519696598216267194">Papir (pripremljen)</translation>
@@ -3113,6 +3118,7 @@ Dodatni detalji:
 <translation id="7366117520888504990">198×275 mm</translation>
 <translation id="7366362069757178916">Obrađivači plaćanja</translation>
 <translation id="7367985555340314048">Teme koje vas interesuju se zasnivaju na nedavnoj istoriji pregledanja i sajtovi ih koriste za prikazivanje personalizovanih oglasa</translation>
+<translation id="7368169244533796604">Izbrišite sajt</translation>
 <translation id="7372526636730851647">Slika (sjajna)</translation>
 <translation id="7372973238305370288">rezultat pretrage</translation>
 <translation id="7374461526650987610">Obrađivači protokola</translation>
@@ -3428,6 +3434,7 @@ Dodatni detalji:
 <translation id="7951415247503192394">(32-bitni)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952327717479677595">Dugme Upravljaj pretraživačima, aktivirajte ga da biste upravljali podrazumevanim pretraživačem i pretragom sajta</translation>
+<translation id="7953236668995583915">Ponovo učitajte ovu stranicu da biste primenili ažurirana podešavanja na ovaj sajt</translation>
 <translation id="7953569069500808819">Spajanje ivica na vrhu</translation>
 <translation id="7955105108888461311">Zatraži lično</translation>
 <translation id="7956713633345437162">Mobilni obeleživači</translation>
@@ -3754,7 +3761,6 @@ Dodatni detalji:
 <translation id="8576310925653847813">Kućni bioskopi</translation>
 <translation id="8577192028579836704">Sve opcije su obično <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuelna kartica nije dostupna</translation>
-<translation id="8585615573162100611">Opozovi dozvolu za stavku <ph name="PERMISSION" /></translation>
 <translation id="8586082901536468629">Oprema za skvoš i reketbol</translation>
 <translation id="858637041960032120">Dodaj tel. broj
 </translation>

@@ -1896,6 +1896,7 @@
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
 <translation id="2436385001956947090">লিংক প্ৰতিলিপি কৰক</translation>
 <translation id="2438853563451647815">প্ৰিণ্টাৰৰ সৈতে সংযুক্ত হৈ থকা নাই</translation>
+<translation id="2439152382014731627"><ph name="DEVICE_TYPE" />ৰ পাছৱৰ্ড ৰিছেট কৰক</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ল’ড কৰি থকা হৈছে</translation>
 <translation id="2440604414813129000">উ&amp;ৎস চাওক</translation>
 <translation id="2440823041667407902">অৱস্থানৰ এক্সেছ</translation>
@@ -2046,6 +2047,7 @@
 <translation id="2541423446708352368">আটাইবোৰ ডাউনল'ড দেখুৱাওক</translation>
 <translation id="2541706104884128042">শোৱাৰ নতুন সময় ছেট কৰা হ’ল</translation>
 <translation id="2542050502251273923">ff_debug ব্যৱহাৰ কৰি নেটৱৰ্ক সংযোগ পৰিচালক আৰু অন্য সেৱাসমূহৰ ডিবাগিঙৰ স্তৰ ছেট কৰে।</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{আপুনি "<ph name="APP_NAME" />"ক দিয়া অনুমতিসমূহ এই এপ্‌টোও লাভ কৰিব। <ph name="MANAGE_LINK" />}one{আপুনি "<ph name="APP_NAME" />"ক দিয়া অনুমতিসমূহ এই এপ্‌সমূহও লাভ কৰিব। <ph name="MANAGE_LINK" />}other{আপুনি "<ph name="APP_NAME" />"ক দিয়া অনুমতিসমূহ এই এপ্‌সমূহও লাভ কৰিব। <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">এই টেবটো</translation>
 <translation id="2546302722632337735">ছাইটক সুৰক্ষিত সমল প্লে’ কৰিবলৈ চিনাক্তকাৰী ব্যৱহাৰ কৰিবৰ বাবে অনুমতি নিদিব</translation>
 <translation id="2546991196809436099">স্ক্ৰীনখনত থকা বস্তুবোৰ ডাঙৰ কৰিবলৈ জুম ইন কৰক। বিৱৰ্ধক অন আৰু অফ কৰিবলৈ Search + Ctrl + M ব্যৱহাৰ কৰক।</translation>
@@ -2487,6 +2489,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> অলপ পিছতে ৰিষ্টাৰ্ট আৰু ৰিছেট হ’ব</translation>
 <translation id="2883470649061584386">ফীড</translation>
 <translation id="2884070497102362193">আপোনাৰ বেটাৰী, CPU, মেম'ৰী, সংযোগ আৰু অধিক পৰীক্ষা কৰক</translation>
+<translation id="2885129935310217435">একেটা নামৰে এটা বুটাম আছে। অনুগ্ৰহ কৰি অন্য এটা নাম বাছনি কৰক।</translation>
 <translation id="2885378588091291677">কাৰ্য পৰিচালক</translation>
 <translation id="2885729872133513017">ছার্ভাৰৰ সঁহাৰি ডিক'ড কৰোঁতে সমস্যাৰ সৃষ্টি হৈছিল।</translation>
 <translation id="2886119409731773154">এইটোৱে ৩০ মিনিট পৰ্যন্ত সময় লগাব পাৰে</translation>
@@ -4569,7 +4572,6 @@
 <translation id="4565917129334815774">ছিষ্টেম লগসমূহ ষ্ট’ৰ কৰক</translation>
 <translation id="4566170377336116390">আপুনি যদি পঞ্জীয়নৰ পাছত সলনি কৰিবলৈ বিচাৰে, আপুনি আপোনাৰ ডিভাইচটো ফেক্টৰী ৰিছেট (পাৱাৰৱাশ্ব) কৰিব লাগিব।</translation>
 <translation id="4566417217121906555">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
-<translation id="4566762846886188693">আপোনাৰ ডাটা সুৰক্ষিত কৰিবলৈ, আপুনি শেহতীয়াকৈ এক্সেছ নকৰা ছাইটসমূহৰ পৰা অনুমতিসমূহ আঁতৰাওক। জাননীসমূহ বন্ধ নকৰিব।</translation>
 <translation id="456717285308019641">অনুবাদ কৰিব লগা পৃষ্ঠাৰ ভাষা</translation>
 <translation id="4567512141633030272">ছাইন ইন কৰাৰ বিকল্প ভুল নেকি?</translation>
 <translation id="4567533462991917415">ছেটআপৰ পাছত আপুনি যিকোনো সময়তে অধিক লোকক যোগ দিব পাৰে। প্ৰতিগৰাকী লোকে তেওঁৰ একাউণ্ট ব্যক্তিগতকৃত কৰিব পাৰে আৰু ডেটাখিনি ব্যক্তিগত কৰি ৰাখিব পাৰে।</translation>
@@ -4790,7 +4792,6 @@
 <translation id="4742334355511750246">প্ৰতিচ্ছবি দেখুওৱাৰ অনুমতি নাই</translation>
 <translation id="4742970037960872810">হাইলাইট আঁতৰাওক</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />এপ্লিকেশ্বনসমূহ কেনেদৰে আপডে’ট কৰে সেয়া জানক<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">আপুনি ঠিকনা বাৰ বা সন্ধান বাকচত যি টাইপ কৰে সেয়া আপোনাৰ ডিফ'ল্ট সন্ধান ইঞ্জিনলৈ প্ৰেৰণ কৰা হয়</translation>
 <translation id="4744268813103118742">ছাইটটোলৈ যাওক</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ছাইট আনমিউট কৰক}one{ছাইটসমূহ আনমিউট কৰক}other{ছাইটসমূহ আনমিউট কৰক}}</translation>
@@ -8789,6 +8790,7 @@
 <translation id="7952708427581814389">ছাইটসমূহে আপোনাৰ ক্লিপব'ৰ্ড থকা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাবলৈ বিচাৰিব পাৰে</translation>
 <translation id="795282463722894016">পুনঃস্থাপন সম্পূর্ণ হ’ল</translation>
 <translation id="7952904276017482715">প্ৰত্যাশিত আইডি "<ph name="EXPECTED_ID" />", কিন্তু আইডিটো "<ph name="NEW_ID" />" আছিল</translation>
+<translation id="7953236668995583915">এই ছাইটটোত আপোনাৰ আপডে’ট কৰা ছেটিং প্ৰয়োগ কৰিবলৈ এই পৃষ্ঠাখন পুনৰ ল’ড কৰক</translation>
 <translation id="7953669802889559161">ইনপুট</translation>
 <translation id="7953955868932471628">শ্বৰ্টকাট পৰিচালনা কৰক</translation>
 <translation id="7955105108888461311">ব্যক্তিগতভাৱে সোধক</translation>

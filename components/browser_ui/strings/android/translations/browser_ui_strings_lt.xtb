@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Parinktys pasiekiamos netoli ekrano apačios</translation>
 <translation id="7250468141469952378">Pasirinkta: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Leidžiama: <ph name="PERMISSION_1" /> ir <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Užblokavote svetaines, kad nebūtų naudojami trečiųjų šalių slapukai, siekiant jus stebėti, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Įprastai blokuojate pranešimus. Norėdami leisti, palieskite „Išsami informacija“.</translation>
 <translation id="7366415735885268578">Svetainės pridėjimas</translation>
 <translation id="7368695150573390554">Visi duomenys ne iš interneto bus ištrinti</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėje}one{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėje}few{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėse}many{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainės}other{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainių}}</translation>
 <translation id="857943718398505171">Leidžiama (rekomenduojama)</translation>
 <translation id="8609465669617005112">Perkelti į viršų</translation>
+<translation id="8649036394979866943">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą, siekiant stebėti jus, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="8681886425883659911">Skelbimai blokuojami svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="868929229000858085">Ieškokite savo kontaktuose</translation>

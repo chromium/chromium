@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Opcije su dostupne pri dnu ekrana</translation>
 <translation id="7250468141469952378">Odabrano <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dozvoljeno: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Blokirali ste da web lokacije koriste kolačiće trećih strana kako bi vas pratile dok pregledate. Idite u postavke da <ph name="BEGIN_LINK" />upravljate zaštitama od praćenja<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Obično blokirate obavještenja. Da dozvolite, dodirnite Detalji.</translation>
 <translation id="7366415735885268578">Dodajte web lokaciju</translation>
 <translation id="7368695150573390554">Svi offline podaci će se izbrisati</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokaciju čiji je vlasnik <ph name="FPS_OWNER" />}one{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokaciju čiji je vlasnik <ph name="FPS_OWNER" />}few{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokacije čiji je vlasnik <ph name="FPS_OWNER" />}other{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokacija čiji je vlasnik <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Pomjeri nagore</translation>
+<translation id="8649036394979866943">Chrome ograničava većini web lokacija da koriste kolačiće trećih strana kako bi vas pratile dok pregledate. Idite u postavke da <ph name="BEGIN_LINK" />upravljate zaštitama od praćenja<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="8681886425883659911">Oglasi se blokiraju na web lokacijama za koje je poznato da prikazuju ometajuće ili obmanjujuće oglase</translation>
 <translation id="868929229000858085">Pretražite kontakte</translation>

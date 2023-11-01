@@ -900,6 +900,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5753139477036638699">Vous pouvez utiliser des commandes vocales pour rechercher dans Chrome</translation>
 <translation id="5754350196967618083">Impossible d'actualiser Découvertes</translation>
 <translation id="5755162682436943950">Déconnecté. Ouvre une boîte de dialogue pour se connecter et activer la synchronisation.</translation>
+<translation id="5759897675466110265">Le site ne fonctionne pas? Essayez d'autoriser temporairement les témoins tiers</translation>
 <translation id="5763382633136178763">Onglets de navigation privée</translation>
 <translation id="5763514718066511291">Touchez pour copier l'URL pour cette application</translation>
 <translation id="5765517223145864268">Parlez-nous de votre expérience. Ou <ph name="BEGIN_LINK" />modifiez vos paramètres<ph name="END_LINK" />.</translation>
@@ -1214,6 +1215,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="729975465115245577">Votre appareil ne dispose pas d'une application pour stocker le fichier de mots de passe.</translation>
 <translation id="7304072650267745798">Il est possible que votre appareil Android ait un paramètre similaire. Si ce paramètre est activé dans Chrome et sur votre appareil Android, une entreprise peut être capable de mesurer l'efficacité d'une annonce sur les sites Web que vous visitez et les applications que vous utilisez.</translation>
 <translation id="7304873321153398381">Hors ligne. Chrome ne peut pas vérifier vos mots de passe.</translation>
+<translation id="7313094438430838513">Protection contre le suivi</translation>
 <translation id="7313188324932846546">Touchez pour configurer la synchronisation</translation>
 <translation id="7324354302972299151">Envoyer une demande « Ne pas suivre »</translation>
 <translation id="7332075081379534664">Connexion réussie</translation>
@@ -1343,6 +1345,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7887174313503389866">Suivez une visite guidée des principaux paramètres de confidentialité et de sécurité. Pour plus d'options, accédez aux paramètres individuels.</translation>
 <translation id="7896724475402191389">Contenu pour les jeunes esprits – désactivé</translation>
 <translation id="7903184275147100332">Cette opération peut prendre une minute</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">Application installée</translation>
 <translation id="7919123827536834358">Traduire automatiquement ces langues</translation>
 <translation id="7926975587469166629">Pseudo de la carte</translation>

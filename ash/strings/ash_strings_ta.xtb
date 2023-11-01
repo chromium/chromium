@@ -116,12 +116,14 @@
 <translation id="1391102559483454063">இயக்கப்பட்டுள்ளது</translation>
 <translation id="1407069428457324124">டார்க் தீம்</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. தேதிகளுக்கு இடையே ஃபோகஸை நகர்த்த, அம்புக்குறி பட்டன்களைப் பயன்படுத்தவும்.</translation>
+<translation id="141170878022560212">நடு பட்டன்</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, நிறுவப்பட்ட ஆப்ஸ்</translation>
 <translation id="1414919006379339073">தற்போதைய சாளரத்தை மூடுக</translation>
 <translation id="1415846719612499304">நெட்வொர்க் பட்டியலைக் காட்டும். <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை அன்லாக் செய்யுங்கள்</translation>
 <translation id="1420408895951708260">நைட் லைட்டை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">ஆம்</translation>
+<translation id="1435537621343861112">சொல்வதை எழுதும் வசதியைத் தொடங்க முடியவில்லை. உங்கள் மைக் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="1455242230282523554">மொழி அமைப்புகளைக் காட்டும்</translation>
 <translation id="1460620680449458626">ஒலி முடக்கப்பட்டுள்ளது.</translation>
 <translation id="14648076227129703">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
@@ -281,6 +283,7 @@
 <translation id="2086334242442703436">ஈமோஜி தேர்வுக் கருவியைத் திறத்தல்</translation>
 <translation id="2088116547584365419">கேம்ஸ்</translation>
 <translation id="209965399369889474">நெட்வொர்க்குடன் இணைக்கப்படவில்லை</translation>
+<translation id="2107581415810719320">பிற பட்டன் <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Thunderboltடை உங்கள் USB-C கேபிள் ஆதரிக்காது. சாதனத்தின் செயல்திறன் பாதிக்கப்படலாம்.</translation>
 <translation id="2108303511227308752">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Alt + Backspace. Delete பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + backspace பட்டனை அழுத்தவும்.</translation>
 <translation id="2126242104232412123">புதிய டெஸ்க்</translation>

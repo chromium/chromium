@@ -1900,6 +1900,7 @@
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2436385001956947090">링크 복사(&amp;L)</translation>
 <translation id="2438853563451647815">프린터에 연결되어 있지 않음</translation>
+<translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> 비밀번호 재설정</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> 로드 중</translation>
 <translation id="2440604414813129000">소스 보기(&amp;O)</translation>
 <translation id="2440823041667407902">위치 액세스</translation>
@@ -2050,6 +2051,7 @@
 <translation id="2541423446708352368">다운로드 항목 모두 표시</translation>
 <translation id="2541706104884128042">새 취침 시간이 설정됨</translation>
 <translation id="2542050502251273923">ff_debug를 사용해 네트워크 연결 관리자와 다른 서비스의 디버깅 수준을 설정합니다.</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />"에 허용하는 권한은 이 앱에서도 허용됩니다. <ph name="MANAGE_LINK" />}other{"<ph name="APP_NAME" />"에 허용하는 권한은 이 앱에서도 허용됩니다. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">현재 탭</translation>
 <translation id="2546302722632337735">사이트가 보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용하지 않음</translation>
 <translation id="2546991196809436099">확대하여 화면에 있는 항목을 더 크게 표시할 수 있습니다. 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + M을 사용하세요.</translation>
@@ -2492,6 +2494,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 다시 시작되어 곧 재설정됩니다.</translation>
 <translation id="2883470649061584386">피드</translation>
 <translation id="2884070497102362193">배터리, CPU, 메모리, 연결 등을 테스트합니다.</translation>
+<translation id="2885129935310217435">같은 이름의 버튼이 있습니다. 다른 이름을 선택하세요.</translation>
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2885729872133513017">서버 응답을 디코딩하는 동안 문제가 발생했습니다.</translation>
 <translation id="2886119409731773154">최대 30분 걸릴 수 있습니다.</translation>
@@ -4573,7 +4576,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4565917129334815774">시스템 로그 저장</translation>
 <translation id="4566170377336116390">등록 후 전환하려면 기기를 초기화(파워워시)해야 합니다.</translation>
 <translation id="4566417217121906555">마이크 음소거</translation>
-<translation id="4566762846886188693">데이터를 보호하려면 최근에 방문하지 않은 사이트의 권한을 삭제하세요. 알림은 중지되지 않습니다.</translation>
 <translation id="456717285308019641">번역할 페이지 언어</translation>
 <translation id="4567512141633030272">잘못된 로그인 옵션인가요?</translation>
 <translation id="4567533462991917415">설정이 완료된 후에도 언제든지 사용자를 추가할 수 있습니다. 모든 사용자는 자신의 계정을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
@@ -4794,7 +4796,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4742334355511750246">이미지 표시가 허용되지 않음</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />애플리케이션 업데이트 방법 알아보기<ph name="END_LINK" /></translation>
-<translation id="4743664893327841597">주소 표시줄이나 검색창에 입력하는 내용은 기본 검색엔진으로 전송됩니다.</translation>
 <translation id="4744268813103118742">사이트로 이동</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
@@ -8792,6 +8793,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7952708427581814389">사이트에서 클립보드의 텍스트와 이미지를 확인하도록 요청할 수 있음</translation>
 <translation id="795282463722894016">복원 완료</translation>
 <translation id="7952904276017482715">ID로 '<ph name="EXPECTED_ID" />'을(를) 예상했으나 '<ph name="NEW_ID" />'이(가) 표시되었습니다</translation>
+<translation id="7953236668995583915">이 페이지를 새로고침하여 이 사이트에 업데이트된 설정 적용</translation>
 <translation id="7953669802889559161">입력</translation>
 <translation id="7953955868932471628">단축키 관리</translation>
 <translation id="7955105108888461311">직접 요청</translation>

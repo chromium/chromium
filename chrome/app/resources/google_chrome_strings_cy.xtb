@@ -254,6 +254,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="5170938038195470297">Ni ellir defnyddio'ch proffil oherwydd ei fod yn dod o fersiwn mwy diweddar o Google Chrome.
 
 Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol neu defnyddiwch fersiwn mwy diweddar o Chrome.</translation>
+<translation id="5201744974236816379">Diweddariad Chrome</translation>
 <translation id="521447420733633466">Os ydych yn rhannu dyfais, gall ffrindiau a theulu bori ar wahân a gosod Chrome yn yr union ffordd y maent eisiau</translation>
 <translation id="5239627039202700673">Defnyddiwch Chrome unrhyw bryd y byddwch yn clicio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="5251420635869119124">Gall gwesteion ddefnyddio Chrome heb adael unrhyw beth ar ôl.</translation>
@@ -281,6 +282,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5727531838415286053">Os yw Chrome wedi'ch gosod ar hap mewn treial gweithredol, mae eich hanes pori yn effeithio ar yr hysbysebion a welwch a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu eich diddordebau yn awtomatig bob mis. Mae diddordebau yn ail-lwytho oni bai eich bod yn eu tynnu.</translation>
 <translation id="5736850870166430177">Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon cyfeiriadau URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel</translation>
 <translation id="5756509061973259733">Mae proffil Chrome gyda'r cyfrif hwn eisoes yn bodoli ar y ddyfais hon</translation>
+<translation id="5779368197781401531">Mewngofnodwch i gael pethau Chrome ar draws eich dyfeisiau</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Methu â lansio Chrome. Rhowch gynnig arall arni.</translation>
 <translation id="5809516625706423866">Methu â chysylltu â'r Rhyngrwyd. HTTP 401 Anawdurdodedig. Gwiriwch ffurfweddiad eich dirprwy weinydd.</translation>
