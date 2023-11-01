@@ -35,7 +35,6 @@ class CORE_EXPORT InlineNode : public NGLayoutInputNode {
   LayoutBlockFlow* GetLayoutBlockFlow() const {
     return To<LayoutBlockFlow>(box_.Get());
   }
-  NGLayoutInputNode NextSibling() const { return nullptr; }
 
   const NGLayoutResult* Layout(const NGConstraintSpace&,
                                const NGBreakToken*,

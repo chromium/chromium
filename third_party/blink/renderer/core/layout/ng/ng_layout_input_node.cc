@@ -160,8 +160,7 @@ void NGLayoutInputNode::IntrinsicSize(
 
 NGLayoutInputNode NGLayoutInputNode::NextSibling() const {
   auto* inline_node = DynamicTo<InlineNode>(this);
-  return inline_node ? inline_node->NextSibling()
-                     : To<NGBlockNode>(*this).NextSibling();
+  return inline_node ? nullptr : To<NGBlockNode>(*this).NextSibling();
 }
 
 PhysicalSize NGLayoutInputNode::InitialContainingBlockSize() const {
