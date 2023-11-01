@@ -286,8 +286,8 @@ class SignedExchangeHandlerTest
   // returns the number of bytes read. If |output| is non-null, appends data
   // read to it.
   int ReadStream(net::SourceStream* stream, std::string* output) {
-    scoped_refptr<net::IOBuffer> output_buffer =
-        base::MakeRefCounted<net::IOBuffer>(kOutputBufferSize);
+    auto output_buffer =
+        base::MakeRefCounted<net::IOBufferWithSize>(kOutputBufferSize);
     int bytes_read = 0;
     while (true) {
       net::TestCompletionCallback callback;

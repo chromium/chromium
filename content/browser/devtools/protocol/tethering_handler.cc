@@ -108,8 +108,8 @@ class SocketPump {
   }
 
   void Pump(net::StreamSocket* from, net::StreamSocket* to) {
-    scoped_refptr<net::IOBuffer> buffer =
-        base::MakeRefCounted<net::IOBuffer>(kSocketPumpBufferSize);
+    auto buffer =
+        base::MakeRefCounted<net::IOBufferWithSize>(kSocketPumpBufferSize);
     int result =
         from->Read(buffer.get(), kSocketPumpBufferSize,
                    base::BindOnce(&SocketPump::OnRead, base::Unretained(this),

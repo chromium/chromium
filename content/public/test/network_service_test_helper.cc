@@ -110,7 +110,8 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
         base::MakeRefCounted<base::RefCountedData<WriteDataCallback>>();
     callback_holder->data = std::move(callback);
 
-    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(data.size());
+    auto data_to_pass =
+        base::MakeRefCounted<net::IOBufferWithSize>(data.size());
     memcpy(data_to_pass->data(), data.data(), data.size());
     int rv = entry_->WriteData(index, offset, data_to_pass.get(), data.size(),
                                base::BindOnce(&SimpleCacheEntry::OnDataWritten,
@@ -136,7 +137,7 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
         base::MakeRefCounted<base::RefCountedData<ReadDataCallback>>();
     callback_holder->data = std::move(callback);
 
-    auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
     int rv = entry_->ReadData(
         index, offset, buffer.get(), length,
         base::BindOnce(&SimpleCacheEntry::OnDataRead,
@@ -158,7 +159,8 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
         base::MakeRefCounted<base::RefCountedData<WriteDataCallback>>();
     callback_holder->data = std::move(callback);
 
-    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(data.size());
+    auto data_to_pass =
+        base::MakeRefCounted<net::IOBufferWithSize>(data.size());
     memcpy(data_to_pass->data(), data.data(), data.size());
     int rv =
         entry_->WriteSparseData(offset, data_to_pass.get(), data.size(),
@@ -183,7 +185,7 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
         base::MakeRefCounted<base::RefCountedData<ReadDataCallback>>();
     callback_holder->data = std::move(callback);
 
-    auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
     int rv = entry_->ReadSparseData(
         offset, buffer.get(), length,
         base::BindOnce(&SimpleCacheEntry::OnDataRead,

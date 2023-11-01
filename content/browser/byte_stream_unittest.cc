@@ -36,8 +36,7 @@ class ByteStreamTest : public testing::Test {
   // contents of the created buffer will be kept, and can be validated
   // by ValidateIOBuffer.
   scoped_refptr<net::IOBuffer> NewIOBuffer(size_t buffer_size) {
-    scoped_refptr<net::IOBuffer> buffer =
-        base::MakeRefCounted<net::IOBuffer>(buffer_size);
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer_size);
     char *bufferp = buffer->data();
     for (size_t i = 0; i < buffer_size; i++)
       bufferp[i] = (i + producing_seed_key_) % (1 << sizeof(char));

@@ -536,7 +536,7 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
 
     size_t bytes_to_read = std::min(
         static_cast<int64_t>(kDefaultFileSystemUrlPipeSize), remaining_bytes_);
-    file_data_ = base::MakeRefCounted<net::IOBuffer>(bytes_to_read);
+    file_data_ = base::MakeRefCounted<net::IOBufferWithSize>(bytes_to_read);
     ReadMoreFileData();
   }
 

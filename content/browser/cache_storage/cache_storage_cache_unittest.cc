@@ -1969,8 +1969,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaExceeded) {
   EXPECT_TRUE(Put(no_body_request_, std::move(response)));
 
   const size_t kSize = 1024 * 1024;
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buffer->data(), 0, kSize);
   EXPECT_FALSE(
       WriteSideData(no_body_request_->url, response_time, buffer, kSize));
@@ -1990,8 +1989,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaManagerModified) {
   EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_modified_count());
 
   const size_t kSize = 10;
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buffer->data(), 0, kSize);
   EXPECT_TRUE(
       WriteSideData(no_body_request_->url, response_time, buffer, kSize));
@@ -2007,8 +2005,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_DifferentTimeStamp) {
   EXPECT_TRUE(Put(no_body_request_, std::move(response)));
 
   const size_t kSize = 10;
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buffer->data(), 0, kSize);
   EXPECT_FALSE(WriteSideData(no_body_request_->url,
                              response_time + base::Seconds(1), buffer, kSize));
@@ -2018,8 +2015,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_DifferentTimeStamp) {
 
 TEST_P(CacheStorageCacheTestP, WriteSideData_NotFound) {
   const size_t kSize = 10;
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buffer->data(), 0, kSize);
   EXPECT_FALSE(WriteSideData(GURL("http://www.example.com/not_exist"),
                              base::Time::Now(), buffer, kSize));

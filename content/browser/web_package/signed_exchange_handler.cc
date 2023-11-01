@@ -254,7 +254,7 @@ const GURL& SignedExchangeHandler::GetFallbackUrl() const {
 }
 
 void SignedExchangeHandler::SetupBuffers(size_t size) {
-  header_buf_ = base::MakeRefCounted<net::IOBuffer>(size);
+  header_buf_ = base::MakeRefCounted<net::IOBufferWithSize>(size);
   header_read_buf_ =
       base::MakeRefCounted<net::DrainableIOBuffer>(header_buf_.get(), size);
 }
