@@ -7732,8 +7732,8 @@
   },
   {
     "name": "ui-enable-shared-image-cache-for-gpu",
-    "owners": [ "rjkroege@chromium.org", "khushalsagar@chromium.org", "msisov@igalia.com" ],
-    "expiry_milestone": 121
+    "owners": [ "petermcneeley@chromium.org", "khushalsagar@chromium.org", "msisov@igalia.com" ],
+    "expiry_milestone": 127
   },
   {
     "name": "ui-slow-animations",
