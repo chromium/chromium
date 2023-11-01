@@ -50,6 +50,16 @@
                      _BEGIN_METADATA, _BEGIN_METADATA_SIMPLE)           \
   (class_name, ##__VA_ARGS__)
 
+// This macro is used for defining template specializations for a templated view
+// class. `class_name_alias` is as the name indicates; it's an alias of the
+// instantiated template type. This is typically in the form of: `using foo =
+// bar<baz>;`. `template_name` is the base name of the templated class such as
+// `bar` from the previous alias. END_METADATA works the same as the non-
+// templated versions.
+#define BEGIN_TEMPLATE_METADATA(class_name_alias, template_name) \
+  BEGIN_TEMPLATE_METADATA_INTERNAL(                              \
+      class_name_alias, METADATA_CLASS_NAME_INTERNAL(template_name))
+
 #define END_METADATA }
 
 // This will fail to compile if the property accessors aren't in the form of

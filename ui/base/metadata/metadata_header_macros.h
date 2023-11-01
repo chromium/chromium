@@ -34,6 +34,24 @@
                       _METADATA_HEADER1)                            \
   (class_name, ##__VA_ARGS__)
 
+// When adding metadata to a templated class, use this macro. `class_name` is
+// the base name of the template class. If the `ancestor_class_name` is also a
+// templated class, define a type alias with a `using foo = bar<baz>'`
+// statement. Then use that alias for the parameter.
+#define METADATA_TEMPLATE_HEADER(class_name, ancestor_class_name)     \
+  static_assert(ui::metadata::kHasClassMetadata<ancestor_class_name>, \
+                #ancestor_class_name                                  \
+                " doesn't implement metadata. Make "                  \
+                "sure class publicly calls METADATA_HEADER in the "   \
+                "declaration.");                                      \
+                                                                      \
+ public:                                                              \
+  using kAncestorClass = ancestor_class_name;                         \
+  METADATA_ACCESSORS_INTERNAL_TEMPLATE(class_name)                    \
+  METADATA_CLASS_INTERNAL_TEMPLATE(class_name, __FILE__, __LINE__);   \
+                                                                      \
+ private:
+
 // A version of METADATA_HEADER for View, the root of the metadata hierarchy.
 // Here METADATA_ACCESSORS_INTERNAL_BASE is called.
 #define METADATA_HEADER_BASE(class_name)       \

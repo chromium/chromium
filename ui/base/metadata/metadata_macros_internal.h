@@ -27,6 +27,23 @@
   using MetaDataProvider::GetClassMetaData;            \
   const ui::metadata::ClassMetaData* GetClassMetaData() const override;
 
+#define METADATA_ACCESSORS_INTERNAL_TEMPLATE(class_name)                       \
+  using kMetadataTag = class_name;                                             \
+  [[maybe_unused]] static const char kViewClassName[];                         \
+  static ui::metadata::ClassMetaData* MetaData() {                             \
+    if (!METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_) {               \
+      METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_ =                   \
+          ui::metadata::MakeAndRegisterClassInfo<METADATA_CLASS_NAME_INTERNAL( \
+              class_name)>();                                                  \
+    }                                                                          \
+    return METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_;               \
+  }                                                                            \
+  /* Don't hide non-const base class version. */                               \
+  using ui::metadata::MetaDataProvider::GetClassMetaData;                      \
+  const ui::metadata::ClassMetaData* GetClassMetaData() const override {       \
+    return MetaData();                                                         \
+  }
+
 // A version of METADATA_ACCESSORS_INTERNAL for View, the root of the metadata
 // hierarchy; here GetClassName() is not declared as an override.
 //
@@ -68,6 +85,27 @@
    private:                                                          \
     friend class class_name;                                         \
     void BuildMetaData();                                            \
+    [[maybe_unused]] static ui::metadata::ClassMetaData* meta_data_; \
+  }
+
+#define METADATA_CLASS_INTERNAL_TEMPLATE(class_name, file, line)     \
+  class METADATA_CLASS_NAME_INTERNAL(class_name)                     \
+      : public ui::metadata::ClassMetaData {                         \
+   public:                                                           \
+    using TheClass = class_name;                                     \
+    explicit METADATA_CLASS_NAME_INTERNAL(class_name)()              \
+        : ClassMetaData(file, line) {                                \
+      BuildMetaData();                                               \
+    }                                                                \
+    METADATA_CLASS_NAME_INTERNAL(class_name)                         \
+    (const METADATA_CLASS_NAME_INTERNAL(class_name) &) = delete;     \
+    METADATA_CLASS_NAME_INTERNAL(class_name) & operator=(            \
+        const METADATA_CLASS_NAME_INTERNAL(class_name) &) = delete;  \
+                                                                     \
+   private:                                                          \
+    friend class class_name;                                         \
+    void BuildMetaData();                                            \
+    std::string GetClassName() const;                                \
     [[maybe_unused]] static ui::metadata::ClassMetaData* meta_data_; \
   }
 
@@ -116,6 +154,26 @@
                                                                               \
   void qualified_class_name::metadata_class_name::BuildMetaData() {           \
     SetTypeName(std::string(#qualified_class_name));
+
+#define BEGIN_TEMPLATE_METADATA_INTERNAL(qualified_class_name,               \
+                                         metadata_class_name)                \
+  template <>                                                                \
+  ui::metadata::ClassMetaData*                                               \
+      qualified_class_name::metadata_class_name::meta_data_ = nullptr;       \
+                                                                             \
+  template <>                                                                \
+  const char qualified_class_name::kViewClassName[] = #qualified_class_name; \
+                                                                             \
+  template <>                                                                \
+  std::string qualified_class_name::metadata_class_name::GetClassName()      \
+      const {                                                                \
+    return qualified_class_name::kViewClassName;                             \
+  }                                                                          \
+                                                                             \
+  template <>                                                                \
+  void qualified_class_name::metadata_class_name::BuildMetaData() {          \
+    SetTypeName(GetClassName());                                             \
+    SetParentClassMetaData(kAncestorClass::MetaData());
 
 #define BEGIN_METADATA_INTERNAL_BASE(qualified_class_name,                   \
                                      metadata_class_name, parent_class_name) \
