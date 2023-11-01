@@ -78,7 +78,6 @@
     -webkit-mask-image: url(chrome://resources/images/add.svg);
     background-color: currentColor;
     height: 24px;
-    margin-inline-end: 0.5em;
     width: 24px;
   }
 
@@ -213,7 +212,7 @@
     <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
         id="addAccountButton" on-click="addAccount_"
         deep-link-focus-id$="[[Setting.kAddAccount]]">
-      <div id="addAccountIcon"></div>
+      <div id="addAccountIcon" slot="prefix-icon"></div>
       [[getAddAccountLabel_(isChildUser_,
           isSecondaryGoogleAccountSigninAllowed_)]]
     </cr-button>
