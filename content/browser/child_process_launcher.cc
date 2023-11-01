@@ -45,15 +45,7 @@ base::TimeDelta GetCPUUsage(base::ProcessHandle process_handle) {
   std::unique_ptr<base::ProcessMetrics> process_metrics =
       base::ProcessMetrics::CreateProcessMetrics(process_handle);
 #endif
-
-#if BUILDFLAG(IS_WIN)
-  // Use the precise version which is Windows specific.
-  // TODO(pmonette): Clean up this code when the precise version becomes the
-  //                 default.
-  return process_metrics->GetPreciseCumulativeCPUUsage();
-#else
   return process_metrics->GetCumulativeCPUUsage();
-#endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -68,11 +68,7 @@ CPUMeasurementDelegateImpl::CPUMeasurementDelegateImpl(
 }
 
 base::TimeDelta CPUMeasurementDelegateImpl::GetCumulativeCPUUsage() {
-#if BUILDFLAG(IS_WIN)
-  return process_metrics_->GetPreciseCumulativeCPUUsage();
-#else
   return process_metrics_->GetCumulativeCPUUsage();
-#endif
 }
 
 // Returns true if `result` is in the default-initialized state.
