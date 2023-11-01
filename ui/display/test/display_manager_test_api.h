@@ -52,6 +52,10 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   void UpdateDisplay(const std::string& display_specs,
                      bool from_native_platform = false);
 
+  void UpdateDisplayWithDisplayInfoList(
+      const std::vector<ManagedDisplayInfo>& display_info_list,
+      bool from_native_platform = false);
+
   // Set the 1st display as an internal display and returns the display Id for
   // the internal display.
   int64_t SetFirstDisplayAsInternalDisplay();
