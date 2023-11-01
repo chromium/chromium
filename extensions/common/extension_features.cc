@@ -192,7 +192,7 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
 // ExtensionWebRequestEventRouter.
 BASE_FEATURE(kUsePerBrowserContextWebRequestEventRouter,
              "kUsePerBrowserContextWebRequestEventRouter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the <webview> tag behaviour changes proposed as part of the guest
 // view MPArch migration. See
