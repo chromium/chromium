@@ -4020,6 +4020,7 @@ TEST_F(SpeculationRuleSetTest, Eagerness) {
   const KURL kUrl6{"https://example.com/prefetch/document/page2.html"};
   const KURL kUrl7{"https://example.com/prerender/list/page2.html"};
   const KURL kUrl8{"https://example.com/prerender/document/page2.html"};
+  const KURL kUrl9{"https://example.com/prefetch/list/page3.html"};
 
   AddAnchor(*document.body(), kUrl2.GetString());
   AddAnchor(*document.body(), kUrl4.GetString());
@@ -4045,6 +4046,11 @@ TEST_F(SpeculationRuleSetTest, Eagerness) {
           {
             "source": "document",
             "where": {"href_matches": "https://example.com/prefetch/document/page2.html"}
+          },
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page3.html"],
+            "eagerness": "immediate"
           }
         ],
         "prerender": [
@@ -4090,9 +4096,11 @@ TEST_F(SpeculationRuleSetTest, Eagerness) {
               HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
           AllOf(HasURL(kUrl7),
                 HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
-          AllOf(HasURL(kUrl8),
-                HasEagerness(
-                    blink::mojom::SpeculationEagerness::kConservative))));
+          AllOf(
+              HasURL(kUrl8),
+              HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
+          AllOf(HasURL(kUrl9),
+                HasEagerness(blink::mojom::SpeculationEagerness::kEager))));
 }
 
 TEST_F(SpeculationRuleSetTest, InvalidUseOfEagerness1) {

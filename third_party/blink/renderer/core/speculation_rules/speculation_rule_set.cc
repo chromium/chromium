@@ -368,7 +368,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       return nullptr;
     }
 
-    if (eagerness_str == "eager") {
+    if (eagerness_str == "eager" || eagerness_str == "immediate") {
       eagerness = mojom::blink::SpeculationEagerness::kEager;
     } else if (eagerness_str == "moderate") {
       eagerness = mojom::blink::SpeculationEagerness::kModerate;
