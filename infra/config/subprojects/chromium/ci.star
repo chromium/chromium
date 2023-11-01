@@ -37,6 +37,7 @@ luci.bucket(
                 # or fix yet.
                 "mdb/chrome-active-sheriffs",
                 "mdb/chrome-gpu",
+                "mdb/bling-engprod",
             ],
             users = [
                 # Allow chrome-release/branch builders on luci.chrome.official.infra
@@ -58,6 +59,7 @@ luci.bucket(
                 # Allow currently-oncall gardeners to pause schedulers.
                 "mdb/chrome-active-sheriffs",
                 "mdb/chrome-gpu",
+                "mdb/bling-engprod",
             ],
         ),
     ],
