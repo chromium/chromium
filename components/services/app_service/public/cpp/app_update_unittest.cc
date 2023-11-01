@@ -132,6 +132,12 @@ class AppUpdateTest : public testing::Test {
   absl::optional<uint64_t> expect_data_size_in_bytes_;
   bool expect_data_size_in_bytes_changed_;
 
+  std::vector<std::string> expect_supported_locales_;
+  bool expect_supported_locales_changed_;
+
+  absl::optional<std::string> expect_selected_locale_;
+  bool expect_selected_locale_changed_;
+
   void ExpectNoChange() {
     expect_changed_ = false;
     expect_readiness_changed_ = false;
@@ -165,6 +171,8 @@ class AppUpdateTest : public testing::Test {
     expect_run_on_os_login_changed_ = false;
     expect_app_size_in_bytes_changed_ = false;
     expect_data_size_in_bytes_changed_ = false;
+    expect_supported_locales_changed_ = false;
+    expect_selected_locale_changed_ = false;
   }
 
   void CheckExpects(const AppUpdate& u) {
@@ -267,6 +275,9 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_data_size_in_bytes_, u.DataSizeInBytes());
     EXPECT_EQ(expect_data_size_in_bytes_changed_, u.DataSizeInBytesChanged());
+
+    EXPECT_EQ(expect_supported_locales_changed_, u.SupportedLocalesChanged());
+    EXPECT_EQ(expect_selected_locale_changed_, u.SelectedLocaleChanged());
   }
 
   void TestAppUpdate(App* state, App* delta) {
@@ -306,6 +317,8 @@ class AppUpdateTest : public testing::Test {
     expect_run_on_os_login_ = absl::nullopt;
     expect_app_size_in_bytes_ = absl::nullopt;
     expect_data_size_in_bytes_ = absl::nullopt;
+    expect_supported_locales_.clear();
+    expect_selected_locale_ = absl::nullopt;
     ExpectNoChange();
 
     if (!state && delta) {
@@ -1118,6 +1131,59 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_data_size_in_bytes_, state->data_size_in_bytes);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // Supported locales tests.
+
+    if (state) {
+      state->supported_locales.push_back("en-US");
+      state->supported_locales.push_back("ja-JP");
+      expect_supported_locales_.push_back("en-US");
+      expect_supported_locales_.push_back("ja-JP");
+      expect_supported_locales_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      expect_supported_locales_.clear();
+      delta->supported_locales.push_back("en-GB");
+      delta->supported_locales.push_back("fr-FR");
+      expect_supported_locales_.push_back("en-GB");
+      expect_supported_locales_.push_back("fr-FR");
+      expect_supported_locales_changed_ = true;
+      expect_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_supported_locales_, state->supported_locales);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // Selected locale tests.
+
+    if (state) {
+      state->selected_locale = "en-US";
+      expect_selected_locale_ = "en-US";
+      expect_selected_locale_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->selected_locale = "ja-JP";
+      expect_selected_locale_ = "ja-JP";
+      expect_selected_locale_changed_ = true;
+      expect_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_selected_locale_, state->selected_locale);
       ExpectNoChange();
       CheckExpects(u);
     }

@@ -116,6 +116,12 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(app_size_in_bytes);
   SET_OPTIONAL_VALUE(data_size_in_bytes);
 
+  if (!delta->supported_locales.empty()) {
+    state->supported_locales.clear();
+    state->supported_locales = delta->supported_locales;
+  }
+  SET_OPTIONAL_VALUE(selected_locale);
+
   // When adding new fields to the App type, this function should also be
   // updated.
 }
@@ -153,7 +159,8 @@ bool AppUpdate::IsChanged(const App* state, const App* delta) {
          update.PausedChanged() || update.IntentFiltersChanged() ||
          update.ResizeLockedChanged() || update.WindowModeChanged() ||
          update.RunOnOsLoginChanged() || update.AppSizeInBytesChanged() ||
-         update.DataSizeInBytesChanged();
+         update.DataSizeInBytesChanged() || update.SupportedLocalesChanged() ||
+         update.SelectedLocaleChanged();
 }
 
 AppUpdate::AppUpdate(const App* state,
@@ -479,7 +486,24 @@ bool AppUpdate::DataSizeInBytesChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(data_size_in_bytes);
 }
 
-std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
+const std::vector<std::string>& AppUpdate::SupportedLocales() const {
+  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(supported_locales, empty,
+                                          EmptyStringVector());
+}
+
+bool AppUpdate::SupportedLocalesChanged() const {
+  IS_VALUE_CHANGED_WITH_CHECK(supported_locales, empty);
+}
+
+absl::optional<std::string> AppUpdate::SelectedLocale() const {
+  GET_VALUE_WITH_FALLBACK(selected_locale, base::EmptyString())
+}
+
+bool AppUpdate::SelectedLocaleChanged() const {
+    RETURN_OPTIONAL_VALUE_CHANGED(selected_locale)}
+
+std::ostream&
+operator<<(std::ostream& out, const AppUpdate& app) {
   out << "AppType: " << EnumToString(app.AppType()) << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
   out << "Readiness: " << EnumToString(app.Readiness()) << std::endl;
@@ -540,6 +564,13 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
 
   out << "App Size: " << FormatBytes(app.AppSizeInBytes()) << std::endl;
   out << "Data Size: " << FormatBytes(app.DataSizeInBytes()) << std::endl;
+
+  out << "Supported locales: " << base::JoinString(app.SupportedLocales(), ", ")
+      << std::endl;
+  out << "Selected locale: "
+      << (app.SelectedLocale().has_value() ? app.SelectedLocale().value()
+                                           : "No selected_locale")
+      << std::endl;
 
   return out;
 }

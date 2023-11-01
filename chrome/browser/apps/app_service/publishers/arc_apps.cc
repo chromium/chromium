@@ -1333,6 +1333,10 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
       prefs->GetPackage(app_info.package_name);
   if (package) {
     app->permissions = CreatePermissions(package->permissions);
+    if (package->locale_info) {
+      app->supported_locales = package->locale_info->supported_locales;
+      app->selected_locale = package->locale_info->selected_locale;
+    }
   }
 
   auto show = ShouldShow(app_info);

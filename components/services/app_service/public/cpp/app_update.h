@@ -186,6 +186,16 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<uint64_t> DataSizeInBytes() const;
   bool DataSizeInBytesChanged() const;
 
+  // App-specified supported locales.
+  const std::vector<std::string>& SupportedLocales() const;
+  bool SupportedLocalesChanged() const;
+
+  // Currently selected locale, empty string means system language is used.
+  // ARC-specific note: Based on Android implementation, `selected_locale`
+  //  is not necessarily part of `supported_locales`.
+  absl::optional<std::string> SelectedLocale() const;
+  bool SelectedLocaleChanged() const;
+
   const App* State() const { return state_.get(); }
   const App* Delta() const { return delta_.get(); }
 

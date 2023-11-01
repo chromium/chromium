@@ -228,6 +228,13 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   absl::optional<uint64_t> app_size_in_bytes;
   absl::optional<uint64_t> data_size_in_bytes;
 
+  // App-specified supported locales.
+  std::vector<std::string> supported_locales;
+  // Currently selected locale, empty string means system language is used.
+  // ARC-specific note: Based on Android implementation, `selected_locale`
+  //  is not necessarily part of `supported_locales`.
+  absl::optional<std::string> selected_locale;
+
   // When adding new fields to the App type, the `Clone` function, the
   // `operator==` function, and the `AppUpdate` class should also be updated.
 };
