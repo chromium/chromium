@@ -198,6 +198,13 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
              "ZeroSuggestPrefetchingOnWeb",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables storing successful query/match in the shortcut database.
+// Desktop will populate db regardless of this feature.
+// Android will not populate db regardless of this feature.
+BASE_FEATURE(kOmniboxPopulateShortcutsDatabase,
+             "OmniboxPopulateShortcutsDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Features to provide head and tail non personalized search suggestion from
 // compact on device models. More specifically, feature name with suffix
 // Incognito / NonIncognito  will only controls behaviors under incognito /

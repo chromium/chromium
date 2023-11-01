@@ -76,7 +76,14 @@ int AutocompleteClassifier::DefaultOmniboxProviders() {
          AutocompleteProvider::TYPE_HISTORY_QUICK |
          AutocompleteProvider::TYPE_HISTORY_URL |
          AutocompleteProvider::TYPE_SEARCH |
+#if BUILDFLAG(IS_IOS)
+         (base::FeatureList::IsEnabled(
+              omnibox::kOmniboxPopulateShortcutsDatabase)
+              ? AutocompleteProvider::TYPE_SHORTCUTS
+              : 0) |
+#else
          AutocompleteProvider::TYPE_SHORTCUTS |
+#endif
          AutocompleteProvider::TYPE_HISTORY_FUZZY |
          AutocompleteProvider::TYPE_CALCULATOR;
 }

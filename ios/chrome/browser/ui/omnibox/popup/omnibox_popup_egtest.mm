@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
@@ -545,7 +546,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // to it adds an entry in the shortcuts database.
 - (void)testShortcutsDatabasePopulation {
   [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithFeaturesEnabled:{kOmniboxPopulateShortcutsDatabase}
+      ensureAppLaunchedWithFeaturesEnabled:
+          {omnibox::kOmniboxPopulateShortcutsDatabase}
                                   disabled:{}
                             relaunchPolicy:NoForceRelaunchAndResetState];
   [ChromeEarlGrey clearBrowsingHistory];

@@ -52,6 +52,7 @@ BASE_DECLARE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetching);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnSRP);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
+BASE_DECLARE_FEATURE(kOmniboxPopulateShortcutsDatabase);
 // Related, kMaxZeroSuggestMatches.
 
 // On Device Suggest.
