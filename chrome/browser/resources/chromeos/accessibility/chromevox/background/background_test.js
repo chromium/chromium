@@ -4207,3 +4207,18 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NestedEmptyClickable', async function() {
       .expectSpeech('end');
   await mockFeedback.replay();
 });
+
+AX_TEST_F('ChromeVoxBackgroundTest', 'CustomTabList', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const root = await this.runWithLoadedTree(Documents.customTabList);
+  const tabList = root.find({role: RoleType.TAB_LIST});
+  assertNotNullNorUndefined(tabList);
+  const tabs = root.findAll({role: RoleType.TAB});
+  assertEquals(2, tabs.length, 'Expected two tabs');
+
+  mockFeedback.call(() => tabs[1].doDefault())
+      .expectSpeech(/.*, tab/)
+      .expectSpeech(/[0-9]+ of [0-9]+/)
+      .expectSpeech('Selected');
+  await mockFeedback.replay();
+});
