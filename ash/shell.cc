@@ -649,6 +649,10 @@ void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
       handler);
 }
 
+DeskProfilesDelegate* Shell::GetDeskProfilesDelegate() {
+  return shell_delegate_->GetDeskProfilesDelegate();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Shell, private:
 

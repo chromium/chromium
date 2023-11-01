@@ -130,6 +130,7 @@ class ControlVHistogramRecorder;
 class CoralController;
 class CrosDisplayConfig;
 class DarkLightModeControllerImpl;
+class DeskProfilesDelegate;
 class DesksController;
 class DetachableBaseHandler;
 class DetachableBaseNotificationController;
@@ -880,6 +881,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   LoginUnlockThroughputRecorder* login_unlock_throughput_recorder() {
     return login_unlock_throughput_recorder_.get();
   }
+
+  // Returns the DeskProfilesDelegate, or nullptr if it isn't available.
+  DeskProfilesDelegate* GetDeskProfilesDelegate();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtendedDesktopTest, TestCursor);
