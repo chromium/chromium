@@ -103,7 +103,6 @@ void TabListSceneLayer::PutTabLayer(JNIEnv* env,
                                     jboolean anonymize_toolbar,
                                     jint toolbar_textbox_resource_id,
                                     jint toolbar_textbox_background_color,
-                                    jfloat toolbar_y_offset,
                                     jfloat content_offset) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the TabLayer";
@@ -136,7 +135,7 @@ void TabListSceneLayer::PutTabLayer(JNIEnv* env,
         content_width, show_toolbar, default_theme_color,
         toolbar_background_color, anonymize_toolbar,
         toolbar_textbox_resource_id, toolbar_textbox_background_color,
-        toolbar_y_offset, content_offset);
+        content_offset);
   }
 
   gfx::RectF self(own_tree_->position(), gfx::SizeF(own_tree_->bounds()));

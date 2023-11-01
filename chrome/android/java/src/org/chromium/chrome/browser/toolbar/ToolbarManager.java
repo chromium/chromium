@@ -1952,7 +1952,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @return The extra Y offset for the toolbar in pixels.
      */
     private int getToolbarExtraYOffset() {
-        return mBrowserControlsSizer.getTopControlsMinHeight();
+        int toolbarHairlineHeight =
+                mControlContainer.findViewById(R.id.toolbar_hairline).getHeight();
+        return mBrowserControlsSizer.getTopControlsHeight()
+                - (mControlContainer.getHeight() - toolbarHairlineHeight);
     }
 
     /**

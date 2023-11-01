@@ -80,7 +80,7 @@ public class TopToolbarOverlayMediatorTest {
                 new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                         .with(TopToolbarOverlayProperties.RESOURCE_ID, 0)
                         .with(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID, 0)
-                        .with(TopToolbarOverlayProperties.Y_OFFSET, 0)
+                        .with(TopToolbarOverlayProperties.CONTENT_OFFSET, 0)
                         .with(TopToolbarOverlayProperties.SHOW_SHADOW, true)
                         .with(
                                 TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR,

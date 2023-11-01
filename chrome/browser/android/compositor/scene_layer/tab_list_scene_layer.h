@@ -80,7 +80,6 @@ class TabListSceneLayer : public SceneLayer {
                    jboolean anonymize_toolbar,
                    jint toolbar_textbox_resource_id,
                    jint toolbar_textbox_background_color,
-                   jfloat toolbar_y_offset,
                    jfloat content_offset);
 
   void PutBackgroundLayer(JNIEnv* env,

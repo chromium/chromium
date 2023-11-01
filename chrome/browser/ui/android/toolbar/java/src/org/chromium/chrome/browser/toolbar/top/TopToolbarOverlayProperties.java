@@ -44,10 +44,19 @@ public class TopToolbarOverlayProperties {
     public static final WritableFloatPropertyKey X_OFFSET = new WritableFloatPropertyKey();
 
     /** The current y offset of the top toolbar. */
-    public static final WritableFloatPropertyKey Y_OFFSET = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey CONTENT_OFFSET = new WritableFloatPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ANONYMIZE, PROGRESS_BAR_INFO, RESOURCE_ID, SHOW_SHADOW,
-                    TOOLBAR_BACKGROUND_COLOR, URL_BAR_COLOR, URL_BAR_RESOURCE_ID, VISIBLE,
-                    X_OFFSET, Y_OFFSET};
+            new PropertyKey[] {
+                ANONYMIZE,
+                PROGRESS_BAR_INFO,
+                RESOURCE_ID,
+                SHOW_SHADOW,
+                TOOLBAR_BACKGROUND_COLOR,
+                URL_BAR_COLOR,
+                URL_BAR_RESOURCE_ID,
+                VISIBLE,
+                X_OFFSET,
+                CONTENT_OFFSET
+            };
 }
