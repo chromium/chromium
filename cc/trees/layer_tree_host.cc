@@ -451,9 +451,9 @@ void LayerTreeHost::WaitForProtectedSequenceCompletion() const {
 void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
   DCHECK(IsMainThread());    
 
-  recordreplay::CommandDiagnosticTrace(
-    "[RUN-2110-2761] LayerTreeHost::WaitForCommitCompletion %d",
-    !!commit_completion_event_);
+  // recordreplay::CommandDiagnosticTrace(
+  //   "[RUN-2110-2761] LayerTreeHost::WaitForCommitCompletion %d",
+  //   !!commit_completion_event_);
 
   if (commit_completion_event_) {
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
