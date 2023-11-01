@@ -470,8 +470,9 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
   // policies.
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
 #else
-  base::apple::ScopedCFTypeRef<CFStringRef> bundle_id(
-      base::SysUTF8ToCFStringRef(base::apple::BaseBundleID()));
+  base::apple::ScopedCFTypeRef<CFStringRef> bundle_id_scoper =
+      base::SysUTF8ToCFStringRef(base::apple::BaseBundleID());
+  CFStringRef bundle_id = bundle_id_scoper.get();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   policy_loader = std::make_unique<policy::PolicyLoaderMac>(
       file_task_runner,

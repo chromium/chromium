@@ -101,8 +101,8 @@ static CGEventRef LocalMouseMoved(CGEventTapProxy proxy,
         1 << kCGEventMouseMoved, LocalMouseMoved, (__bridge void*)self));
     if (_mouseMachPort) {
       _mouseRunLoopSource.reset(
-          CFMachPortCreateRunLoopSource(nullptr, _mouseMachPort, 0));
-      CFRunLoopAddSource(CFRunLoopGetMain(), _mouseRunLoopSource,
+          CFMachPortCreateRunLoopSource(nullptr, _mouseMachPort.get(), 0));
+      CFRunLoopAddSource(CFRunLoopGetMain(), _mouseRunLoopSource.get(),
                          kCFRunLoopCommonModes);
     } else {
       LOG(ERROR) << "CGEventTapCreate failed.";
@@ -119,8 +119,8 @@ static CGEventRef LocalMouseMoved(CGEventTapProxy proxy,
 
 - (void)invalidate {
   if (_mouseRunLoopSource) {
-    CFMachPortInvalidate(_mouseMachPort);
-    CFRunLoopRemoveSource(CFRunLoopGetMain(), _mouseRunLoopSource,
+    CFMachPortInvalidate(_mouseMachPort.get());
+    CFRunLoopRemoveSource(CFRunLoopGetMain(), _mouseRunLoopSource.get(),
                           kCFRunLoopCommonModes);
     _mouseMachPort.reset();
     _mouseRunLoopSource.reset();

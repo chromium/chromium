@@ -108,10 +108,10 @@ void KeyboardLayoutMonitorMac::Start() {
   CallbackContext* callback_context = callback_context_.get();
   base::apple::ScopedCFTypeRef<CFRunLoopRef> main_loop(
       CFRunLoopGetMain(), base::scoped_policy::RETAIN);
-  CFRunLoopPerformBlock(main_loop, kCFRunLoopCommonModes, ^(void) {
+  CFRunLoopPerformBlock(main_loop.get(), kCFRunLoopCommonModes, ^(void) {
     QueryLayoutOnMainLoop(callback_context);
   });
-  CFRunLoopWakeUp(main_loop);
+  CFRunLoopWakeUp(main_loop.get());
 }
 
 void KeyboardLayoutMonitorMac::OnLayoutChanged(
@@ -137,7 +137,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
       TISCopyCurrentKeyboardLayoutInputSource());
   base::apple::ScopedCFTypeRef<CFDataRef> layout_data(
       static_cast<CFDataRef>(TISGetInputSourceProperty(
-          input_source, kTISPropertyUnicodeKeyLayoutData)),
+          input_source.get(), kTISPropertyUnicodeKeyLayoutData)),
       base::scoped_policy::RETAIN);
 
   if (!layout_data) {
@@ -187,7 +187,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
       UniChar result_array[255];
       UniCharCount result_length = 0;
       UCKeyTranslate(reinterpret_cast<const UCKeyboardLayout*>(
-                         CFDataGetBytePtr(layout_data)),
+                         CFDataGetBytePtr(layout_data.get())),
                      keycode, kUCKeyActionDown, modifier_state >> 8,
                      keyboard_type, kUCKeyTranslateNoDeadKeysMask,
                      &deadkey_state, std::size(result_array), &result_length,

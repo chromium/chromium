@@ -170,14 +170,14 @@ void SessionWatcher::ActivateCurtain() {
   // this, or how common it is, a crash report is useful in this case (note
   // that the connection would have to be refused in any case, so this is no
   // loss of functionality).
-  CHECK(session != nullptr)
-      << "Error activating curtain-mode: "
-      << "CGSessionCopyCurrentDictionary() returned NULL. "
-      << "Logging out and back in should resolve this error.";
+  CHECK(session) << "Error activating curtain-mode: "
+                 << "CGSessionCopyCurrentDictionary() returned NULL. "
+                 << "Logging out and back in should resolve this error.";
 
   const void* on_console =
-      CFDictionaryGetValue(session, kCGSessionOnConsoleKey);
-  const void* logged_in = CFDictionaryGetValue(session, kCGSessionLoginDoneKey);
+      CFDictionaryGetValue(session.get(), kCGSessionOnConsoleKey);
+  const void* logged_in =
+      CFDictionaryGetValue(session.get(), kCGSessionLoginDoneKey);
   if (logged_in == kCFBooleanTrue && on_console == kCFBooleanTrue) {
     // If IsRunningHeadless() returns true then we know that CGSession will fail
     // silently w/o curtaining the session. This is a publicly known issue for
