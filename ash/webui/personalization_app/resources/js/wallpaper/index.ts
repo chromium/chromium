@@ -20,6 +20,7 @@ import './wallpaper_subpage_top_element.js';
 import './sea_pen/sea_pen_collection_element.js';
 import './sea_pen/sea_pen_images_element.js';
 import './sea_pen/sea_pen_input_query_element.js';
+import './sea_pen/sea_pen_recent_wallpapers_element.js';
 import './sea_pen/sea_pen_template_query_element.js';
 import './sea_pen/sea_pen_templates_element.js';
 import '../../css/wallpaper.css.js';

@@ -88,6 +88,7 @@ build_webui("build") {
     "js/wallpaper/sea_pen/sea_pen_input_query_element.ts",
     "js/wallpaper/sea_pen/sea_pen_template_query_element.ts",
     "js/wallpaper/sea_pen/sea_pen_images_element.ts",
+    "js/wallpaper/sea_pen/sea_pen_recent_wallpapers_element.ts",
     "js/wallpaper/sea_pen/sea_pen_templates_element.ts",
     "js/wallpaper/wallpaper_collections_element.ts",
     "js/wallpaper/wallpaper_error_element.ts",

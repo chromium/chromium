@@ -206,6 +206,7 @@ suite('WallpaperSubpageTopElementTest', function() {
               url: {url: 'chrome://personalization/images/feel_the_breeze.png'},
             },
           ],
+          recentWallpapers: null,
         },
         personalizationStore.data.wallpaper.seaPen,
         'expected SeaPen state is set',

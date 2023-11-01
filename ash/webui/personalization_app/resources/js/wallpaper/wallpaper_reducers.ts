@@ -631,19 +631,22 @@ function seaPenReducer(
   switch (action.name) {
     case WallpaperActionName.BEGIN_SEARCH_IMAGE_THUMBNAILS:
       return {
+        ...state,
         thumbnailsLoading: true,
         query: action.query,
-        thumbnails: state.thumbnails,
       };
     case WallpaperActionName.SET_IMAGE_THUMBNAILS:
       console.log('seaPenReducer, text: ', action.query);
       assert(!!action.query, 'input text is empty.');
       console.log('seapenReducer, thumbnails: ', action.images);
       return {
+        ...state,
         thumbnailsLoading: false,
         query: action.query,
         thumbnails: action.images,
       };
+    case WallpaperActionName.SET_RECENT_WALLPAPER_IMAGES:
+      return {...state, recentWallpapers: action.recentWallpapers};
     default:
       return state;
   }

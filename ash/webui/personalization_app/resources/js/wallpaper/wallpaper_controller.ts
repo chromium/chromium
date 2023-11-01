@@ -596,3 +596,37 @@ export async function fetchLocalData(
   }
   await getMissingLocalImageThumbnails(provider, store);
 }
+
+export async function getRecentWallpaperImages(store: PersonalizationStore):
+    Promise<void> {
+  // TODO(b/304576846): remove the function, use the real api to get the images
+  // and dispatch the action in sea pen observer.
+  const images = [
+    {
+      query_info: 'a close up of a flower with water drops on it',
+      url: {
+        url:
+            'https://lh5.googleusercontent.com/proxy/POggSGKiyt380V63sTRjua4Q6s6v02wNfTyeDhTK1TKjlZrEnRiZNHa4lDSXu_3mvdUGQe2HF0s_Z8J45ygrJ3jM9R6bZUcF-CN61iacGXrOVWr6YdbaDwuhZu7N2RxJRMKT2Wnrifc',
+      },
+      file_path: {path: '/sea_pen/image_1.jpg'},
+    },
+    {
+      query_info:
+          'a large white ball in the middle of a field with soap bubbles',
+      url: {
+        url:
+            'https://lh4.googleusercontent.com/proxy/yRB8hlnV86jWE3XgtAOd2Hniso9cv5YynGEBQrnVr26onWSvNWARKahdFxiSgv5CKVDnpgZ4LunQ7cxTX5ZGf4nZNVHjQ88xJzQnZ9yMWeOtA7r69Ep6G6Ns9fl5TwdHIC6M_YSLtFGjg_z3fHq5ooqyCTgq',
+      },
+      file_path: {'path': '/sea_pen/image_2.jpg'},
+    },
+    {
+      query_info: 'a large rock sitting on top of a hill in the desert',
+      url: {
+        url:
+            'https://lh5.googleusercontent.com/proxy/Don1aDsf2x5AOn25kN1-NdumW-Dc2QF5wbOVmn2WTpgC8ja0YfBZqqajhIXWsoqvnXdn6u57tHsAjD_ht6JywKiFFjAaum99YjAlkXuSX_Uwvi_OXuKyznUc4TR44bUlAXSYOhGeUn6pv-3vEXec',
+      },
+      file_path: {'path': '/sea_pen/image_3.jpg'},
+    },
+  ];
+  store.dispatch(action.setRecentWallpaperImagesAction(images));
+}
