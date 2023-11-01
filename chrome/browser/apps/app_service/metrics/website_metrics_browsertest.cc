@@ -1181,6 +1181,47 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
+                       NotifyUrlClosedOnContentNavigationToRegisteredWebApp) {
+  const std::string& kWebAppUrl = "https://b.example.org";
+  InstallWebAppOpeningAsTab(kWebAppUrl);
+
+  auto* const browser = CreateBrowser();
+  auto* const window = browser->window()->GetNativeWindow();
+  const std::string& kOldUrl = "https://a.example.org";
+  NavigateActiveTab(browser, kOldUrl);
+  website_metrics()->AddObserver(&observer_);
+
+  // Navigate to the web app and verify observer is notified of URL close.
+  const auto window_it = window_to_web_contents().find(window);
+  ASSERT_NE(window_it, window_to_web_contents().end());
+  ::content::WebContents* const active_web_contents = window_it->second;
+  EXPECT_CALL(observer_, OnUrlClosed(GURL(kOldUrl), active_web_contents))
+      .Times(1);
+  NavigateActiveTab(browser, kWebAppUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
+                       NotifyUrlOpenedOnContentNavigationFromRegisteredWebApp) {
+  const std::string& kWebAppUrl = "https://b.example.org";
+  InstallWebAppOpeningAsTab(kWebAppUrl);
+  website_metrics()->AddObserver(&observer_);
+
+  auto* const browser = CreateBrowser();
+  auto* const window = browser->window()->GetNativeWindow();
+  NavigateActiveTab(browser, kWebAppUrl);
+
+  // Navigate to the URL from the web app and verify observer is notified of URL
+  // open.
+  const std::string& kNewUrl = "https://a.example.org";
+  const auto window_it = window_to_web_contents().find(window);
+  ASSERT_NE(window_it, window_to_web_contents().end());
+  ::content::WebContents* const active_web_contents = window_it->second;
+  EXPECT_CALL(observer_, OnUrlOpened(GURL(kNewUrl), active_web_contents))
+      .Times(1);
+  NavigateActiveTab(browser, kNewUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
                        DoNotNotifyIfUrlAlreadyOpenInRenderFrame) {
   const std::string& kUrl = "https://a.example.org";
   auto* const browser = CreateBrowser();

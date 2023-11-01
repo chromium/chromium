@@ -440,13 +440,22 @@ void WebsiteMetrics::OnTabClosed(content::WebContents* web_contents) {
 
 void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   // If there is an app for the url, we don't need to record the url, because
-  // the app metrics can record the usage time metrics.
+  // the app metrics can record the usage time metrics. We need to ensure we
+  // notify observers of previous URL being closed if we happen to be tracking
+  // it.
   if (GetInstanceAppIdForWebContents(web_contents).has_value()) {
-    webcontents_to_ukm_key_.erase(web_contents);
+    if (const auto web_contents_it = webcontents_to_ukm_key_.find(web_contents);
+        web_contents_it != webcontents_to_ukm_key_.end()) {
+      for (auto& observer : observers_) {
+        observer.OnUrlClosed(web_contents_it->second, web_contents);
+      }
+      webcontents_to_ukm_key_.erase(web_contents);
+    }
     return;
   }
 
-  auto* window = GetWindowWithBrowser(chrome::FindBrowserWithTab(web_contents));
+  auto* const window =
+      GetWindowWithBrowser(chrome::FindBrowserWithTab(web_contents));
   if (!window) {
     return;
   }
