@@ -24,8 +24,8 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -151,7 +151,8 @@ class LaunchWebAppCommandTest_Shortstand : public LaunchWebAppCommandTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kCrosShortstand};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kCrosShortstand};
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,

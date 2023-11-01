@@ -26,7 +26,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/chrome_features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -111,7 +111,7 @@ base::Value LaunchWebApp(apps::AppLaunchParams params,
   // With Shortstand enabled all browser shortcuts (backed by shortcut web apps)
   // open in a browser tab and all non-shortcut web apps open in a standalone
   // window.
-  if (base::FeatureList::IsEnabled(features::kCrosShortstand)) {
+  if (chromeos::features::IsCrosShortstandEnabled()) {
     bool is_shortcut_app = registrar.IsShortcutApp(params.app_id);
     if (is_shortcut_app) {
       params.container = apps::LaunchContainer::kLaunchContainerTab;

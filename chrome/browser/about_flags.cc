@@ -10633,7 +10633,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kAllowDevtoolsInSystemUI)},
     {"cros-shortstand", flag_descriptions::kCrosShortstandName,
      flag_descriptions::kCrosShortstandDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kCrosShortstand)},
+     FEATURE_VALUE_TYPE(chromeos::features::kCrosShortstand)},
     {"cros-web-app-shortcut-ui-update",
      flag_descriptions::kCrosWebAppShortcutUiUpdateName,
      flag_descriptions::kCrosWebAppShortcutUiUpdateDescription, kOsCrOS,

@@ -144,12 +144,6 @@ BASE_FEATURE(kCrosCompUpdates,
              "CrosCompUpdates",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the behaviour difference between web apps and browser created
-// shortcut backed by the web app system on Chrome OS.
-BASE_FEATURE(kCrosShortstand,
-             "CrosShortstand",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable project Crostini, Linux VMs on Chrome OS.
 BASE_FEATURE(kCrostini, "Crostini", base::FEATURE_DISABLED_BY_DEFAULT);
 

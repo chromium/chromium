@@ -59,6 +59,12 @@ BASE_FEATURE(kCrosComponents,
              "CrosComponents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the behaviour difference between web apps and browser created
+// shortcut backed by the web app system on Chrome OS.
+BASE_FEATURE(kCrosShortstand,
+             "CrosShortstand",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the more detailed, OS-level dialog for web app installs.
 BASE_FEATURE(kCrosWebAppInstallDialog,
              "CrosWebAppInstallDialog",
@@ -196,6 +202,15 @@ bool IsSeparateWebAppShortcutBadgeIconEnabled() {
   return false;
 #else
   return base::FeatureList::IsEnabled(kSeparateWebAppShortcutBadgeIcon);
+#endif
+}
+
+bool IsCrosShortstandEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/300570785): Pass the value to lacros.
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kCrosShortstand);
 #endif
 }
 
