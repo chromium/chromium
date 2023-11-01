@@ -19,20 +19,13 @@ To produce an executable built with a custom PGO profile:
 
 * Run representative benchmarks to produce profiles
 
-  * `vpython3 tools/perf/run_benchmark --assert-gpu-compositing --browser=exact --browser-executable=out/path/to/chrome system_health.common_desktop --run-abridged-story-set`
-  * `vpython3 tools/perf/run_benchmark --assert-gpu-compositing --browser=exact --browser-executable=out/path/to/chrome speedometer2`
-  * `vpython3 tools/perf/run_benchmark --assert-gpu-compositing --browser=exact --browser-executable=out/path/to/chrome rendering.desktop --story-tag-filter=motionmark_fixed_2_seconds --also-run-disabled-tests`
-  * `vpython3 tools/perf/run_benchmark --assert-gpu-compositing --browser=exact --browser-executable=out/path/to/chrome jetstream2 `
-  * This will produce `*.profraw` files in the current working directory
+  `python3 tools/pgo/generate_profile.py -C out/builddir1`
 
   If this fails with `ServiceException: 401 Anonymous caller does not have storage.objects.get
   access to the Google Cloud Storage object.`, then run `download_from_google_storage --config`
   (with your @google address; enter 0 as project-id).
 
-* Merge the profiling data
-
-  * Get the `llvm-profdata` tool by adding `"checkout_clang_coverage_tools": True,` to `custom_vars` in the gclient config and running `gclient runhooks`.
-  * Run `third_party/llvm-build/Release+Asserts/bin/llvm-profdata merge *.profraw -o chrome.profdata`
+  This will produce `out/builddir1/prof.profdata`
 
 * Produce the final PGO'd executable with the following gn args:
 
@@ -41,5 +34,5 @@ To produce an executable built with a custom PGO profile:
   is_official_build = true
   symbol_level = 0
   use_goma = true
-  pgo_data_path = {path-to-the-profile}
+  pgo_data_path = "//out/builddir1/prof.prodata"
   ```
