@@ -159,10 +159,10 @@ LockManager* StorageAccessHandle::locks(ExceptionState& exception_state) const {
 
 void StorageAccessHandle::InitSessionStorage() {
   LocalDOMWindow* window = GetSupplementable();
-  if (!window->GetFrame()) {
+  if (!window->GetSecurityOrigin()->CanAccessSessionStorage()) {
     return;
   }
-  if (!window->GetSecurityOrigin()->CanAccessSessionStorage()) {
+  if (!window->GetFrame()) {
     return;
   }
   StorageNamespace* storage_namespace =
@@ -179,10 +179,10 @@ void StorageAccessHandle::InitSessionStorage() {
 
 void StorageAccessHandle::InitLocalStorage() {
   LocalDOMWindow* window = GetSupplementable();
-  if (!window->GetFrame()) {
+  if (!window->GetSecurityOrigin()->CanAccessLocalStorage()) {
     return;
   }
-  if (!window->GetSecurityOrigin()->CanAccessLocalStorage()) {
+  if (!window->GetFrame()) {
     return;
   }
   if (!window->GetFrame()->GetSettings()->GetLocalStorageEnabled()) {
@@ -210,6 +210,9 @@ StorageAccessHandle::GetRemote() {
 }
 
 void StorageAccessHandle::InitIndexedDB() {
+  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessDatabase()) {
+    return;
+  }
   HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
   if (!remote) {
     return;
@@ -221,6 +224,9 @@ void StorageAccessHandle::InitIndexedDB() {
 }
 
 void StorageAccessHandle::InitLocks() {
+  if (!GetSupplementable()->GetSecurityOrigin()->CanAccessLocks()) {
+    return;
+  }
   HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
   if (!remote) {
     return;
