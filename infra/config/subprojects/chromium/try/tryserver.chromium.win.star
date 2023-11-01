@@ -209,7 +209,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win10_chromium_x64_dbg_ng",
+    name = "win10-dbg",
     mirrors = [
         "ci/Win x64 Builder (dbg)",
         "ci/Win10 Tests x64 (dbg)",

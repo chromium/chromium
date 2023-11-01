@@ -65,7 +65,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "win10_chromium_x64_dbg_ng",
+          "builder": "win10-dbg",
           "group": "tryserver.chromium.win"
         }
       ]

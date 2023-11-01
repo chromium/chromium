@@ -170,8 +170,8 @@ chromium/try/win-official
 chromium/try/win-rel
 chromium/try/win-rel-cft
 chromium/try/win-siso-rel
+chromium/try/win10-dbg
 chromium/try/win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng
-chromium/try/win10_chromium_x64_dbg_ng
 chromium/try/win11-x64-fyi-rel
 chromium/try/win32-clobber-rel
 chromium/try/win32-official
