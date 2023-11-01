@@ -88,6 +88,12 @@ struct IndexedRule {
 
   // Set of tab IDs this rule doesn't apply to.
   base::flat_set<int> excluded_tab_ids;
+
+  // List of response headers this rule applies to.
+  std::vector<api::declarative_net_request::HeaderInfo> response_headers;
+
+  // List of response headers this rule doesn't apply to.
+  std::vector<std::string> excluded_response_headers;
 };
 
 // Compute the rule priority for indexing, by combining the priority from

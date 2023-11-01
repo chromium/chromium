@@ -79,6 +79,15 @@ const char kErrorTabIdsOnNonSessionRule[] =
     "supported for session-scoped rules.";
 const char kErrorTabIdDuplicated[] =
     "Rule with id * includes and excludes the same tab ID.";
+const char kErrorInvalidMatchingHeaderName[] =
+    "Rule with id * must specify a valid header name for \"*\" key";
+const char kErrorInvalidMatchingHeaderValue[] =
+    "Rule with id * must specify a valid header value for \"*\" key";
+const char kErrorResponseHeaderDuplicated[] =
+    "Rule with id * includes and excludes the same response header.";
+const char kErrorResponseHeaderRuleCannotModifyRequestHeaders[] =
+    "Rule with id * which matches on response headers cannot modify request "
+    "headers.";
 
 const char kErrorListNotPassed[] = "Rules file must contain a list.";
 

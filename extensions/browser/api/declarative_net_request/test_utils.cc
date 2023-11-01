@@ -321,6 +321,27 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_TAB_ID_DUPLICATED:
       output << "ERROR_TAB_ID_DUPLICATED";
       break;
+    case ParseResult::ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST:
+      output << "ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST";
+      break;
+    case ParseResult::ERROR_EMPTY_EXCLUDED_RESPONSE_HEADER_MATCHING_LIST:
+      output << "ERROR_EMPTY_EXCLUDED_RESPONSE_HEADER_MATCHING_LIST";
+      break;
+    case ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME:
+      output << "ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME";
+      break;
+    case ParseResult::ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME:
+      output << "ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME";
+      break;
+    case ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE:
+      output << "ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE";
+      break;
+    case ParseResult::ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED:
+      output << "ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED";
+      break;
+    case ParseResult::ERROR_RESPONSE_HEADER_RULE_CANNOT_MODIFY_REQUEST_HEADERS:
+      output << "ERROR_RESPONSE_HEADER_RULE_CANNOT_MODIFY_REQUEST_HEADERS";
+      break;
   }
   return output;
 }

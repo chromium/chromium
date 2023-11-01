@@ -14,11 +14,14 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -47,6 +50,18 @@ dnr_api::Rule CreateGenericParsedRule() {
   rule.condition.url_filter = "filter";
   rule.action.type = dnr_api::RuleActionType::kBlock;
   return rule;
+}
+
+dnr_api::HeaderInfo CreateHeaderInfo(
+    std::string header,
+    absl::optional<std::vector<std::string>> values,
+    absl::optional<std::vector<std::string>> excluded_values) {
+  dnr_api::HeaderInfo info;
+
+  info.header = std::move(header);
+  info.values = std::move(values);
+  info.excluded_values = std::move(excluded_values);
+  return info;
 }
 
 using IndexedRuleTest = ::testing::Test;
@@ -1065,6 +1080,202 @@ TEST_F(IndexedRuleTest, TabID) {
       EXPECT_EQ(cases[i].expected_excluded_tab_ids,
                 indexed_rule.excluded_tab_ids);
     }
+  }
+}
+
+class IndexedResponseHeaderRuleTest : public IndexedRuleTest {
+ public:
+  IndexedResponseHeaderRuleTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test the validation of rules that specify response header matching
+// conditions.
+TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
+  struct RawHeaderInfo {
+    std::string header;
+    absl::optional<std::vector<std::string>> values;
+    absl::optional<std::vector<std::string>> excluded_values;
+  };
+
+  using HeaderInfoList = std::vector<RawHeaderInfo>;
+  using ExcludedHeaderList = std::vector<std::string>;
+  struct {
+    absl::optional<HeaderInfoList> response_headers;
+    absl::optional<ExcludedHeaderList> excluded_response_headers;
+    ParseResult expected_result;
+  } cases[] = {
+      // No response headers included or excluded; should parse successfully.
+      {absl::nullopt, absl::nullopt, ParseResult::SUCCESS},
+
+      // only header1 specified, matching on name only should parse
+      // successfully.
+      {HeaderInfoList({{"header1", absl::nullopt, absl::nullopt}}),
+       absl::nullopt, ParseResult::SUCCESS},
+
+      // Valid included and excluded response headers with values and excluded
+      // values should parse successfully.
+      {HeaderInfoList(
+           {{"header1", std::vector<std::string>({"value-1", "value-2"}),
+             absl::nullopt},
+            {"header1", absl::nullopt,
+             std::vector<std::string>({"excluded-value"})}}),
+       ExcludedHeaderList({"excluded-header"}), ParseResult::SUCCESS},
+
+      // An empty matching response header list should trigger an error.
+      {HeaderInfoList(), absl::nullopt,
+       ParseResult::ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST},
+
+      // An empty matching excluded response header list should trigger an
+      // error.
+      {absl::nullopt, ExcludedHeaderList(),
+       ParseResult::ERROR_EMPTY_EXCLUDED_RESPONSE_HEADER_MATCHING_LIST},
+
+      // Test that a rule with an empty or invalid response header name will
+      // return an error.
+      {HeaderInfoList({{"", absl::nullopt, absl::nullopt}}), absl::nullopt,
+       ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME},
+
+      {absl::nullopt, ExcludedHeaderList({"<<invalid_header>>"}),
+       ParseResult::ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME},
+
+      // Test that a rule with an empty response header value will return an
+      // error.
+      {HeaderInfoList(
+           {{"header", std::vector<std::string>({""}), absl::nullopt}}),
+       absl::nullopt,
+       ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE},
+
+      // Test that a rule cannot specify the same header in `response_headers`
+      // and `excluded_response_headers` if that header is to be matched based
+      // on name only.
+      {HeaderInfoList({{"repeated-header", absl::nullopt, absl::nullopt}}),
+       ExcludedHeaderList({"repeated-header"}),
+       ParseResult::ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED},
+
+      // Test that a rule CAN specify the same header in `response_headers` and
+      // `excluded_response_headers` if that header is matched on name AND value
+      // in `response_headers`. In practice, the below rule will match a request
+      // if it either has no `repeated-header` or its `repeated-header` contains
+      // `specific-value`.
+      {HeaderInfoList(
+           {{"repeated-header", std::vector<std::string>({"specific-value"}),
+             absl::nullopt}}),
+       ExcludedHeaderList({"repeated-header"}), ParseResult::SUCCESS},
+  };
+
+  auto get_header_info_matcher = [](const RawHeaderInfo& info) {
+    return testing::AllOf(
+        testing::Field(&dnr_api::HeaderInfo::header, info.header),
+        testing::Field(&dnr_api::HeaderInfo::values, info.values),
+        testing::Field(&dnr_api::HeaderInfo::excluded_values,
+                       info.excluded_values));
+  };
+
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
+    dnr_api::Rule rule = CreateGenericParsedRule();
+
+    std::vector<testing::Matcher<dnr_api::HeaderInfo>> response_header_matchers;
+    if (cases[i].response_headers) {
+      rule.condition.response_headers.emplace();
+      for (const auto& header : *cases[i].response_headers) {
+        rule.condition.response_headers->push_back(CreateHeaderInfo(
+            header.header, header.values, header.excluded_values));
+        response_header_matchers.push_back(get_header_info_matcher(header));
+      }
+    }
+
+    ExcludedHeaderList expected_excluded_response_headers;
+    if (cases[i].excluded_response_headers) {
+      rule.condition.excluded_response_headers.emplace();
+      for (const auto& header : *cases[i].excluded_response_headers) {
+        rule.condition.excluded_response_headers->push_back(header);
+        expected_excluded_response_headers.push_back(header);
+      }
+    }
+
+    IndexedRule indexed_rule;
+    ParseResult result = IndexedRule::CreateIndexedRule(
+        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+    EXPECT_EQ(cases[i].expected_result, result);
+    if (result != ParseResult::SUCCESS) {
+      continue;
+    }
+
+    // If parsing is successful, test that the `response_headers` and
+    // `excluded_response_headers` from `indexed_rule` are the same as what's
+    // specified in the test case.
+    EXPECT_THAT(indexed_rule.response_headers,
+                testing::UnorderedElementsAreArray(response_header_matchers));
+    EXPECT_THAT(
+        indexed_rule.excluded_response_headers,
+        testing::UnorderedElementsAreArray(expected_excluded_response_headers));
+  }
+}
+
+// Test that response header matching rules may only modify response headers.
+TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders_ModifyHeaders) {
+  struct RawModifyHeaderInfo {
+    dnr_api::HeaderOperation operation;
+    std::string header;
+    absl::optional<std::string> value;
+  };
+
+  using ModifyHeaderInfoList = std::vector<RawModifyHeaderInfo>;
+  struct {
+    absl::optional<ModifyHeaderInfoList> request_headers_to_modify;
+    absl::optional<ModifyHeaderInfoList> response_headers_to_modify;
+    ParseResult expected_result;
+  } cases[] = {
+      // Two test cases here: one for a rule that tries to modify request
+      // headers, one for response headers. The first rule is disallowed since
+      // request headers cannot be further modified when it comes time to match
+      // on response headers.
+      {ModifyHeaderInfoList({{dnr_api::HeaderOperation::kRemove,
+                              "request-header", absl::nullopt}}),
+       absl::nullopt,
+       ParseResult::ERROR_RESPONSE_HEADER_RULE_CANNOT_MODIFY_REQUEST_HEADERS},
+
+      {absl::nullopt,
+       ModifyHeaderInfoList(
+           {{dnr_api::HeaderOperation::kSet, "response-header", "new-value"}}),
+       ParseResult::SUCCESS},
+  };
+
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
+    dnr_api::Rule rule = CreateGenericParsedRule();
+    rule.condition.response_headers.emplace();
+    rule.condition.response_headers->push_back(
+        CreateHeaderInfo("header", absl::nullopt, absl::nullopt));
+
+    rule.action.type = dnr_api::RuleActionType::kModifyHeaders;
+    if (cases[i].request_headers_to_modify) {
+      rule.action.request_headers.emplace();
+      for (const auto& header : *cases[i].request_headers_to_modify) {
+        rule.action.request_headers->push_back(CreateModifyHeaderInfo(
+            header.operation, header.header, header.value));
+      }
+    }
+
+    if (cases[i].response_headers_to_modify) {
+      rule.action.response_headers.emplace();
+      for (const auto& header : *cases[i].response_headers_to_modify) {
+        rule.action.response_headers->push_back(CreateModifyHeaderInfo(
+            header.operation, header.header, header.value));
+      }
+    }
+
+    IndexedRule indexed_rule;
+    ParseResult result = IndexedRule::CreateIndexedRule(
+        std::move(rule), GetBaseURL(), kMinValidStaticRulesetID, &indexed_rule);
+    EXPECT_EQ(cases[i].expected_result, result);
   }
 }
 

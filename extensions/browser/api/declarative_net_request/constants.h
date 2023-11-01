@@ -77,6 +77,15 @@ enum class ParseResult {
   ERROR_EMPTY_TAB_IDS_LIST,
   ERROR_TAB_IDS_ON_NON_SESSION_RULE,
   ERROR_TAB_ID_DUPLICATED,
+
+  // Parse errors related to matching on response headers.
+  ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST,
+  ERROR_EMPTY_EXCLUDED_RESPONSE_HEADER_MATCHING_LIST,
+  ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME,
+  ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME,
+  ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE,
+  ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED,
+  ERROR_RESPONSE_HEADER_RULE_CANNOT_MODIFY_REQUEST_HEADERS,
 };
 
 // Describes the ways in which updating dynamic rules can fail.
@@ -184,6 +193,10 @@ extern const char kErrorHeaderValuePresent[];
 extern const char kErrorAppendInvalidRequestHeader[];
 extern const char kErrorTabIdsOnNonSessionRule[];
 extern const char kErrorTabIdDuplicated[];
+extern const char kErrorInvalidMatchingHeaderName[];
+extern const char kErrorInvalidMatchingHeaderValue[];
+extern const char kErrorResponseHeaderDuplicated[];
+extern const char kErrorResponseHeaderRuleCannotModifyRequestHeaders[];
 
 extern const char kErrorListNotPassed[];
 

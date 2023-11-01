@@ -109,6 +109,8 @@ BASE_DECLARE_FEATURE(kNewWebstoreURL);
 
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
 
+BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

@@ -231,4 +231,10 @@ BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
              "DeclarativeNetRequestSafeDynamicRules",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables declarative net request rules to specify response headers as a
+// matching condition.
+BASE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching,
+             "DeclarativeNetRequestResponseHeaderMatching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features
