@@ -348,6 +348,12 @@ BASE_FEATURE(kBorealisProvision,
              "BorealisProvision",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disable use of calculated scale for -forcedesktopscaling on Steam client.
+// Scale will default to a value of 1.
+BASE_FEATURE(kBorealisScaleClientByDPI,
+             "BorealisScaleClientByDPI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Use the new WebUI installer instead of views installer.
 BASE_FEATURE(kBorealisWebUIInstaller,
              "BorealisWebUIInstaller",

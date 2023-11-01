@@ -912,6 +912,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "borealis-scale-client-by-dpi",
+    "owners": [ "lqu@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "borealis-web-ui-installer",
     "owners": [ "lqu@google.com", "borealis-syd@google.com", "buganizer-system+961348@google.com" ],
     "expiry_milestone": 132

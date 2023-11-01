@@ -675,7 +675,8 @@ const char kBorealisForceBetaClientDescription[] =
 
 const char kBorealisForceDoubleScaleName[] = "Borealis Force Double Scale";
 const char kBorealisForceDoubleScaleDescription[] =
-    "Force the client to run in 2x visual zoom.";
+    "Force the client to run in 2x visual zoom. the scale client by DPI flag "
+    "needs to be off for this to take effect.";
 
 const char kBorealisLinuxModeName[] = "Borealis Linux Mode";
 const char kBorealisLinuxModeDescription[] =
@@ -697,6 +698,11 @@ const char kBorealisProvisionDescription[] =
     "sparse vm images, to be passed to the underyling storage layers. "
     "Resulting in allocations in the Borealis being backed by physical "
     "storage.";
+
+const char kBorealisScaleClientByDPIName[] = "Borealis Scale Client By DPI";
+const char kBorealisScaleClientByDPIDescription[] =
+    "Enable scaling the Steam client according to device DPI. "
+    "If enabled this will override the force double scale flag.";
 
 const char kBorealisWebUIInstallerName[] = "Borealis WebUI Installer";
 const char kBorealisWebUIInstallerDescription[] =

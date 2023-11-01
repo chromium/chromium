@@ -54989,6 +54989,7 @@ from previous Chrome versions.
   <int value="730024226" label="enable-out-of-process-pdf"/>
   <int value="730478037" label="FilesAppExperimental:disabled"/>
   <int value="730750097" label="PermissionsBlacklist:disabled"/>
+  <int value="730763207" label="BorealisScaleClientByDPI:disabled"/>
   <int value="731201083" label="FeedWebUi:disabled"/>
   <int value="731318054" label="WebAssemblySimd:enabled"/>
   <int value="731593144" label="ReadPrinterCapabilitiesWithXps:enabled"/>
@@ -56893,6 +56894,7 @@ from previous Chrome versions.
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>
   <int value="1664401033" label="ColorCorrectRendering:enabled"/>
   <int value="1664463407" label="FirstPartySets:enabled"/>
+  <int value="1664710107" label="BorealisScaleClientByDPI:enabled"/>
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
   <int value="1665430464" label="force-control-face-ae"/>

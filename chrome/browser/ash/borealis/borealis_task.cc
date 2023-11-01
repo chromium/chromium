@@ -353,6 +353,7 @@ std::string SendFlagsToVm(const std::string& owner_id,
   PushFlag(ash::features::kBorealisLinuxMode, command);
   PushFlag(ash::features::kBorealisForceBetaClient, command);
   PushFlag(ash::features::kBorealisForceDoubleScale, command);
+  PushFlag(ash::features::kBorealisScaleClientByDPI, command);
 
   std::string output;
   if (!base::GetAppOutput(command, &output)) {

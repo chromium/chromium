@@ -404,6 +404,9 @@ extern const char kBorealisPermittedDescription[];
 extern const char kBorealisProvisionName[];
 extern const char kBorealisProvisionDescription[];
 
+extern const char kBorealisScaleClientByDPIName[];
+extern const char kBorealisScaleClientByDPIDescription[];
+
 extern const char kBorealisWebUIInstallerName[];
 extern const char kBorealisWebUIInstallerDescription[];
 

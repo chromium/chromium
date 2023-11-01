@@ -3049,6 +3049,8 @@ constexpr char kBorealisLinuxModeInternalName[] = "borealis-linux-mode";
 // internally to refer to whether borealis is installed or not.
 constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 constexpr char kBorealisProvisionInternalName[] = "borealis-provision";
+constexpr char kBorealisScaleClientByDPIInternalName[] =
+    "borealis-scale-client-by-dpi";
 constexpr char kBorealisWebUIInstallerInternalName[] =
     "borealis-web-ui-installer";
 constexpr char kVmPerBootShaderCacheName[] = "vm-per-boot-shader-cache";
@@ -9401,6 +9403,10 @@ const FeatureEntry kFeatureEntries[] = {
     {kBorealisProvisionInternalName, flag_descriptions::kBorealisProvisionName,
      flag_descriptions::kBorealisProvisionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisProvision)},
+    {kBorealisScaleClientByDPIInternalName,
+     flag_descriptions::kBorealisScaleClientByDPIName,
+     flag_descriptions::kBorealisScaleClientByDPIDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisScaleClientByDPI)},
     {kBorealisWebUIInstallerInternalName,
      flag_descriptions::kBorealisWebUIInstallerName,
      flag_descriptions::kBorealisWebUIInstallerDescription, kOsCrOS,
@@ -11365,6 +11371,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   if (!strcmp(kBorealisProvisionInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
+  if (!strcmp(kBorealisScaleClientByDPIInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 
