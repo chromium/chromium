@@ -45,9 +45,9 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resource
 
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';

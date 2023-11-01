@@ -35,11 +35,11 @@ import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://res
 import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {createPageAvailability, OsPageAvailability} from '../os_page_availability.js';
 import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {OsSettingsHatsBrowserProxy, OsSettingsHatsBrowserProxyImpl} from './os_settings_hats_browser_proxy.js';

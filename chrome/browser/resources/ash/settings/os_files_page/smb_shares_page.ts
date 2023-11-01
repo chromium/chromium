@@ -13,7 +13,7 @@ import '../settings_vars.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './smb_shares_page.html.js';

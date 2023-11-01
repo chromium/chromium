@@ -25,7 +25,7 @@ import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mi
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './user_list.html.js';

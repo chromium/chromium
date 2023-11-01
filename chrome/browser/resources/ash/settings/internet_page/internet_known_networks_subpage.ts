@@ -29,10 +29,10 @@ import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources
 
 import {assertExists} from '../assert_extras.js';
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './internet_known_networks_subpage.html.js';

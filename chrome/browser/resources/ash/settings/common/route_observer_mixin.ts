@@ -5,8 +5,8 @@
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from './common/types.js';
-import {Route, Router} from './router.js';
+import {Constructor} from './types.js';
+import {Route, Router} from '../router.js';
 
 export interface RouteObserverMixinInterface {
   currentRouteChanged(newRoute: Route, oldRoute?: Route): void;
@@ -17,29 +17,21 @@ export const RouteObserverMixin = dedupingMixin(
     Constructor<RouteObserverMixinInterface> => {
       class RouteObserverMixin extends superClass implements
           RouteObserverMixinInterface {
-        private routerInstance_: Router;
-
-        constructor(...args: any[]) {
-          super(...args);
-
-          this.routerInstance_ = Router.getInstance();
-        }
-
         override connectedCallback(): void {
           super.connectedCallback();
 
-          this.routerInstance_.addObserver(this);
+          const routerInstance = Router.getInstance();
+          routerInstance.addObserver(this);
 
           // Emulating Polymer data bindings, the observer is called when the
           // element starts observing the route.
-          this.currentRouteChanged(
-              this.routerInstance_.currentRoute, undefined);
+          this.currentRouteChanged(routerInstance.currentRoute, undefined);
         }
 
         override disconnectedCallback(): void {
           super.disconnectedCallback();
 
-          this.routerInstance_.removeObserver(this);
+          Router.getInstance().removeObserver(this);
         }
 
         currentRouteChanged(_newRoute: Route, _oldRoute?: Route): void {
