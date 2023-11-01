@@ -85011,6 +85011,13 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Clear badge"/>
 </enum>
 
+<enum name="UpdateClientBackgroundDownloaderMacStartDownloadOutcome">
+  <int value="0" label="Immediate error"/>
+  <int value="1" label="Download recovered from cache"/>
+  <int value="2" label="Session has ongoing download"/>
+  <int value="3" label="New download task created"/>
+</enum>
+
 <enum name="UpdateClientErrors">
   <int value="0" label="(No Error)"/>
   <int value="1" label="Update in progress"/>

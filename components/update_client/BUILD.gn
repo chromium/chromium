@@ -148,6 +148,8 @@ static_library("update_client") {
     "update_client.h",
     "update_client_errors.h",
     "update_client_internal.h",
+    "update_client_metrics.cc",
+    "update_client_metrics.h",
     "update_engine.cc",
     "update_engine.h",
     "update_query_params.cc",

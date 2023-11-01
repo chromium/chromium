@@ -13694,6 +13694,30 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram
+    name="UpdateClient.BackgroundDownloaderMac.DownloadResultRequestorKnown"
+    enum="Boolean" expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    Whether the requestor of a background download was known. Recorded each time
+    a download completes.
+  </summary>
+</histogram>
+
+<histogram name="UpdateClient.BackgroundDownloaderMac.StartDownloadOutcome"
+    enum="UpdateClientBackgroundDownloaderMacStartDownloadOutcome"
+    expires_after="2024-05-01">
+  <owner>noahrose@google.com</owner>
+  <owner>sorin@chromium.org</owner>
+  <owner>waffles@chromium.org</owner>
+  <summary>
+    The outcome of a download start request. Recorded once each time a download
+    is requested.
+  </summary>
+</histogram>
+
 <histogram name="UpgradeDetector.DaysBeforeUpgrade" units="days"
     expires_after="2024-05-01">
   <owner>emshack@chromium.org</owner>

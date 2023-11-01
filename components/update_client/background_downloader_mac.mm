@@ -41,6 +41,7 @@
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -258,6 +259,8 @@ class BackgroundDownloaderSharedSessionImpl {
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
       metrics.error =
           static_cast<int>(CrxDownloaderError::MAC_BG_SESSION_INVALIDATED);
+      metrics::RecordBDMStartDownloadOutcome(
+          metrics::BDMStartDownloadOutcome::kImmediateError);
       callback.Run(false, {metrics.error, base::FilePath()}, metrics);
       return;
     }
@@ -266,11 +269,15 @@ class BackgroundDownloaderSharedSessionImpl {
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
       metrics.error =
           static_cast<int>(CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD);
+      metrics::RecordBDMStartDownloadOutcome(
+          metrics::BDMStartDownloadOutcome::kImmediateError);
       callback.Run(false, {metrics.error, base::FilePath()}, metrics);
       return;
     }
 
     if (HandleDownloadFromCache(url, callback)) {
+      metrics::RecordBDMStartDownloadOutcome(
+          metrics::BDMStartDownloadOutcome::kDownloadRecoveredFromCache);
       return;
     }
 
@@ -279,7 +286,15 @@ class BackgroundDownloaderSharedSessionImpl {
         url, base::BindOnce(
                  [](base::WeakPtr<BackgroundDownloaderSharedSessionImpl> impl,
                     const GURL& url, bool has_download) {
-                   if (impl && !has_download) {
+                   if (!impl) {
+                     return;
+                   }
+                   metrics::RecordBDMStartDownloadOutcome(
+                       has_download ? metrics::BDMStartDownloadOutcome::
+                                          kSessionHasOngoingDownload
+                                    : metrics::BDMStartDownloadOutcome::
+                                          kNewDownloadTaskCreated);
+                   if (!has_download) {
                      impl->CreateAndResumeDownloadTask(url);
                    }
                  },
@@ -440,7 +455,9 @@ class BackgroundDownloaderSharedSessionImpl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(results_.contains(url));
 
-    if (downloads_.contains(url)) {
+    bool requestor_known = downloads_.contains(url);
+    metrics::RecordBDMResultRequestorKnown(requestor_known);
+    if (requestor_known) {
       DownloadResult result = results_.at(url);
       callback_sequence_->PostTask(
           FROM_HERE, base::BindOnce(downloads_.at(url), result.is_handled,
