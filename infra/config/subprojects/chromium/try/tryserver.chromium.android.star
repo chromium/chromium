@@ -317,6 +317,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-riscv64-dbg",
+    description_html = "Verifies building Cronet against RISC-V64",
+    mirrors = ["ci/android-cronet-riscv64-dbg"],
+    contact_team_email = "cronet-team@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-riscv64-rel",
+    description_html = "Verifies building Cronet against RISC-V64",
+    mirrors = ["ci/android-cronet-riscv64-rel"],
+    contact_team_email = "cronet-team@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-x64-rel",
     mirrors = ["ci/android-cronet-x64-rel"],
     contact_team_email = "cronet-team@google.com",
