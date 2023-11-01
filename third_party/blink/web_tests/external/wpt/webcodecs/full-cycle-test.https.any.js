@@ -68,6 +68,9 @@ promise_setup(async () => {
 
 async function runFullCycleTest(t, options) {
   let encoder_config = { ...ENCODER_CONFIG };
+  if (options.realTimeLatencyMode) {
+    encoder_config.latencyMode = 'realtime';
+  }
   let encoder_color_space = {};
   const w = encoder_config.width;
   const h = encoder_config.height;
@@ -160,6 +163,10 @@ async function runFullCycleTest(t, options) {
 promise_test(async t => {
   return runFullCycleTest(t, {});
 }, 'Encoding and decoding cycle');
+
+promise_test(async t => {
+  return runFullCycleTest(t, {realTimeLatencyMode: true});
+}, 'Encoding and decoding cycle with realtime latency mode');
 
 promise_test(async t => {
   if (ENCODER_CONFIG.hasEmbeddedColorSpace)

@@ -94739,6 +94739,71 @@
        {}
       ]
      ],
+     "margin-at-break-001.html": [
+      "79edf59696eac2b41c33099941ceec52ec1ea080",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "margin-at-break-002.html": [
+      "add4d831d10d2556e162485eb37de2552485cf13",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "margin-at-break-003.html": [
+      "18bc4dbd24fb62c8d87dfde676a3123186a85137",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "margin-at-break-004.html": [
+      "59e650e5d5caf8dca43f0f170d7a1b22f6561eac",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "margin-at-break-005.html": [
+      "9f47728c66622ee681be59bd247523f482315865",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "monolithic-content-with-forced-break-001.html": [
       "75b676d0ba08ab831d100ba1bc3bb87c62142abf",
       [
@@ -285599,16 +285664,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "e685db94b8775fad8f10e8d3be52bbfb898026bb",
-     []
-    ],
-    "mtime.json": [
-     "a17da0fc83a0d81f5bbf76fa77b2e0c7a4fd94eb",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -363220,43 +363275,7 @@
    "fledge": {
     "tentative": {
      "TODO": [
-      "272a5e3ffb982366053c13ee0610e6a2dc5d8eab",
-      []
-     ],
-     "auction-config.https.window.js.ini": [
-      "1ce39d2b1e3caae71bce6cd1aa00b58b7a8d69e0",
-      []
-     ],
-     "component-ads.https.window.js.ini": [
-      "861e097608632e1f332a725a7468fc3d340e6c41",
-      []
-     ],
-     "cross-origin.https.window.js.ini": [
-      "77828bd501a511133204970cbdd5e91d29b582b9",
-      []
-     ],
-     "fetch-ad-auction-headers-insecure-context.tentative.http.html.ini": [
-      "dec9266fe79e85f43fc6799ba485c5edc7416f60",
-      []
-     ],
-     "generate-bid-recency.https.window.js.ini": [
-      "5d1f751a07a184e3453cf8b00ed4036c53748bc6",
-      []
-     ],
-     "join-leave-ad-interest-group.https.window.js.ini": [
-      "8f25d8575f154f3db4f19c645a08ae14d2642ccf",
-      []
-     ],
-     "no-winner.https.window.js.ini": [
-      "f0eb2ad0ede1eea0b70417498a29ba8c89a3e317",
-      []
-     ],
-     "register-ad-beacon.https.window.js.ini": [
-      "fb6e912f23b86358efb74ba95f8bfe88e775b803",
-      []
-     ],
-     "reporting-arguments.https.window.js.ini": [
-      "787e9d8b3050e16399f6387a346a40310cf9d913",
+      "83591131076b7b64ce9c0ee6d13a14474c718cab",
       []
      ],
      "resources": {
@@ -363277,11 +363296,19 @@
        []
       ],
       "fledge-util.sub.js": [
-       "e19d85a558ff1fe885611daf7338bbead70a2012",
+       "4dd971d16ea8728a48d3149b42f18fc90aa7dbd6",
        []
       ],
       "fledge_http_server_util.py": [
        "a5c9c9715aa1013450b9cb60958a55c605b27701",
+       []
+      ],
+      "redirect-to-trusted-signals.py": [
+       "7da27cd6872f9119c8647be939aecc4452526e50",
+       []
+      ],
+      "redirect.py": [
+       "cf0a4718df9e1458f3d164eab2eab9e20d71d663",
        []
       ],
       "request-tracker.py": [
@@ -363307,22 +363334,6 @@
      },
      "round-a-value.https.window-expected.txt": [
       "77a8bb3943a0988a3ad1b5e4798610d180ad1016",
-      []
-     ],
-     "round-a-value.https.window.js.ini": [
-      "e197ba545274eeedee93a3fcb67d4dd46ed35d15",
-      []
-     ],
-     "send-report-to.https.window.js.ini": [
-      "ecfb6b36f7173eff24787193a7a5a23f7898c170",
-      []
-     ],
-     "trusted-bidding-signals.https.window.js.ini": [
-      "30b7fe9b33fa99984a32ed09a80f4614bd74f4c2",
-      []
-     ],
-     "trusted-scoring-signals.https.window.js.ini": [
-      "20ecb3bc6a1bb128040ea7f1afe11ac1b2fddda5",
       []
      ]
     }
@@ -537206,7 +537217,7 @@
       ]
      ],
      "network.https.window.js": [
-      "9c29610578664a026ad5d9d73e3cb295569424cb",
+      "fe287767c8d051328b82e7501a64f0ad86cc0505",
       [
        "fledge/tentative/network.https.window.html?1-5",
        {
@@ -537241,14 +537252,18 @@
          ],
          [
           "variant",
-          "?6-last"
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/network.https.window.html?6-last",
+       "fledge/tentative/network.https.window.html?11-last",
        {
         "script_metadata": [
          [
@@ -537281,7 +537296,55 @@
          ],
          [
           "variant",
-          "?6-last"
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/network.https.window.html?6-10",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-last"
          ]
         ],
         "timeout": "long"
@@ -671801,7 +671864,7 @@
      ]
     ],
     "full-cycle-test.https.any.js": [
-     "56671e683610ff412d08ba7999843246554ac7f4",
+     "d2e4ad94ac0a34597a7acfbd4ad56fedb1c2275e",
      [
       "webcodecs/full-cycle-test.https.any.html?av1",
       {
