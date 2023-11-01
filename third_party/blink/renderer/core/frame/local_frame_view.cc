@@ -5047,6 +5047,14 @@ void LocalFrameView::AddPendingStickyUpdate(PaintLayerScrollableArea* object) {
   pending_sticky_updates_->insert(object);
 }
 
+bool LocalFrameView::HasPendingStickyUpdate(
+    PaintLayerScrollableArea* object) const {
+  if (pending_sticky_updates_) {
+    return pending_sticky_updates_->Contains(object);
+  }
+  return false;
+}
+
 void LocalFrameView::ExecutePendingStickyUpdates() {
   if (pending_sticky_updates_) {
     UseCounter::Count(frame_->GetDocument(), WebFeature::kPositionSticky);

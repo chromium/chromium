@@ -758,6 +758,7 @@ class CORE_EXPORT LocalFrameView final
   bool ExecuteAllPendingUpdates();
 
   void AddPendingStickyUpdate(PaintLayerScrollableArea*);
+  bool HasPendingStickyUpdate(PaintLayerScrollableArea*) const;
   void ExecutePendingStickyUpdates();
 
   void AddPendingSnapUpdate(PaintLayerScrollableArea*);

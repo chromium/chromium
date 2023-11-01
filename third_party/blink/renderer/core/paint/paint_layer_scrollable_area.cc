@@ -2180,8 +2180,16 @@ void PaintLayerScrollableArea::EnqueueForStickyUpdateIfNeeded() {
 
 void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
   // Only allow access to the fragments if we are layout-clean.
-  if (GetLayoutBox()->NeedsLayout())
+  const auto* box = GetLayoutBox();
+  if (box->NeedsLayout()) {
     return;
+  }
+
+  // We might already be enqueued for a sticky update once layout is complete,
+  // skip updating the sticky constraints as they may not exist yet.
+  if (box->GetFrameView()->HasPendingStickyUpdate(this)) {
+    return;
+  }
 
   for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
     if (auto* sticky_descendants = fragment.StickyDescendants()) {
