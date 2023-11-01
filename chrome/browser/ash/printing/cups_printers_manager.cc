@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -64,7 +65,29 @@ namespace ash {
 
 constexpr base::TimeDelta kMetricsDelayTimerInterval = base::Minutes(1);
 constexpr base::TimeDelta kMaxPrinterStatusPollingTime = base::Minutes(5);
-constexpr base::TimeDelta kPrinterStatusQueryInterval = base::Seconds(10);
+
+enum class PollingIntervalLength {
+  kShort = 0,
+  kMedium = 1,
+  kLong = 2,
+  kMaxValue = kLong,
+};
+
+// Maps a PollingIntervalLength to a pair of numbers representing a range of
+// seconds. The polling timer delay is chosen by randomly choosing a number
+// between this range. Unreachable printers are more likely see a status change
+// (by turning on or connecting to the network) so they should be queried more
+// often.
+constexpr auto kUnreachableStatePollingIntervalMap =
+    base::MakeFixedFlatMap<PollingIntervalLength, std::pair<int, int>>(
+        {{PollingIntervalLength::kShort, {10, 15}},
+         {PollingIntervalLength::kMedium, {25, 30}},
+         {PollingIntervalLength::kLong, {45, 60}}});
+constexpr auto kGoodStatePollingIntervalMap =
+    base::MakeFixedFlatMap<PollingIntervalLength, std::pair<int, int>>(
+        {{PollingIntervalLength::kShort, {25, 30}},
+         {PollingIntervalLength::kMedium, {60, 80}},
+         {PollingIntervalLength::kLong, {60, 80}}});
 
 bool IsIppUri(const chromeos::Uri& uri) {
   return (uri.GetScheme() == chromeos::kIppScheme ||
@@ -418,17 +441,64 @@ class CupsPrintersManagerImpl
   }
 
   // Resets the overall polling timer then executes the first round of printer
-  // status queries.
+  // status queries for good and unreachable printers.
   void StartPrinterStatusPolling() {
     CHECK(base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
-    printer_status_polling_timer_.Start(FROM_HERE, kMaxPrinterStatusPollingTime,
-                                        base::DoNothing());
-    OnPrinterStatusTimerElapsed();
+    printer_status_polling_total_duration_timer_ =
+        std::make_unique<base::ElapsedTimer>();
+    OnPrinterStatusTimerElapsed(/*for_unreachable_printers=*/true);
+    OnPrinterStatusTimerElapsed(/*for_unreachable_printers=*/false);
+  }
+
+  // Determines if a printer is unreachable based on it's previously acquired
+  // printer status.
+  bool IsPrinterUnreachable(const chromeos::Printer& printer) {
+    const auto printer_status = printer.printer_status();
+    for (const auto& reason : printer.printer_status().GetStatusReasons()) {
+      if (reason.GetReason() == CupsPrinterStatus::CupsPrinterStatusReason::
+                                    Reason::kPrinterUnreachable) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // Returns the next polling delay in seconds based on the state of the
+  // printers, the # of printers being queried, and total polling time elapsed.
+  int GetPrinterStatusPollingDelay(bool for_unreachable_printers,
+                                   int printers_queried) {
+    // After polling for 2 minutes the printers' statuses are less likely to
+    // change so increase the polling delay.
+    const base::TimeDelta kLongDuration = base::Minutes(2);
+    // If there are large number of printers to query, increase the polling
+    // delay to reduce the overall use of network bandwidth.
+    const int kMaxPrinters = 3;
+
+    // Unreachable printers are more likely to have their status changed (by
+    // being turned on and connecting to the network) so they should be
+    // queried more often.
+    const auto& polling_intervals = for_unreachable_printers
+                                        ? kUnreachableStatePollingIntervalMap
+                                        : kGoodStatePollingIntervalMap;
+    std::pair<int, int> interval;
+    if (printer_status_polling_total_duration_timer_->Elapsed() >
+        kLongDuration) {
+      interval = polling_intervals.find(PollingIntervalLength::kLong)->second;
+    } else if (printers_queried > kMaxPrinters) {
+      interval = polling_intervals.find(PollingIntervalLength::kMedium)->second;
+    } else {
+      interval = polling_intervals.find(PollingIntervalLength::kShort)->second;
+    }
+
+    // Choose a random int between the selected interval.
+    return interval.first + (rand() % (interval.second - interval.first + 1));
   }
 
   // Starts printer status requests for all Saved and recently used printers
   // then queues the next round of requests if the overall timer hasn't elapsed.
-  void OnPrinterStatusTimerElapsed() {
+  // `for_unreachable_printers` determines when set of polling intervals to use.
+  void OnPrinterStatusTimerElapsed(bool for_unreachable_printers) {
     std::vector<std::string> recently_used_printers;
     ::printing::PrintPreviewStickySettings* sticky_settings =
         ::printing::PrintPreviewStickySettings::GetInstance();
@@ -436,23 +506,37 @@ class CupsPrintersManagerImpl
       recently_used_printers = sticky_settings->GetRecentlyUsedPrinters();
     }
 
+    int printers_queried = 0;
     const auto printers = printers_.Get();
     for (const auto& printer : printers) {
+      // Ensure the correct set of printers is being queried.
+      if (IsPrinterUnreachable(printer) != for_unreachable_printers) {
+        continue;
+      }
+
       // Query every printer that is either saved or recently used.
       if (printers_.IsPrinterInClass(chromeos::PrinterClass::kSaved,
                                      printer.id()) ||
           base::Contains(recently_used_printers, printer.id())) {
         FetchPrinterStatus(printer.id(),
                            /*PrinterStatusCallback=*/base::DoNothing());
+        ++printers_queried;
       }
     }
 
     // Only restart requests when the 5 minute timer hasn't elapsed.
-    if (printer_status_polling_timer_.IsRunning()) {
-      printer_status_query_timer_.Start(
-          FROM_HERE, kPrinterStatusQueryInterval,
+    if (printer_status_polling_total_duration_timer_->Elapsed() <
+        kMaxPrinterStatusPollingTime) {
+      auto& timer = for_unreachable_printers
+                        ? printer_status_unreachable_state_timer_
+                        : printer_status_good_state_timer_;
+      timer.Start(
+          FROM_HERE,
+          base::Seconds(GetPrinterStatusPollingDelay(for_unreachable_printers,
+                                                     printers_queried)),
           base::BindOnce(&CupsPrintersManagerImpl::OnPrinterStatusTimerElapsed,
-                         weak_ptr_factory_.GetWeakPtr()));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         for_unreachable_printers));
     }
   }
 
@@ -1079,10 +1163,12 @@ class CupsPrintersManagerImpl
   base::flat_set<std::string> detected_printers_seen_;
 
   // Once elapsed, executes a round of printer status queries.
-  base::OneShotTimer printer_status_query_timer_;
+  base::OneShotTimer printer_status_good_state_timer_;
+  base::OneShotTimer printer_status_unreachable_state_timer_;
 
   // Used to limit the total duration of printer status polling.
-  base::OneShotTimer printer_status_polling_timer_;
+  std::unique_ptr<base::ElapsedTimer>
+      printer_status_polling_total_duration_timer_;
 
   base::WeakPtrFactory<CupsPrintersManagerImpl> weak_ptr_factory_{this};
 };
