@@ -5,7 +5,6 @@
 #include <ctime>
 #include <memory>
 
-#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
@@ -60,17 +59,6 @@ constexpr char16_t kCompromisedPassword[] = u"fnlsr4@cm^mdls@fkspnsg3d";
 constexpr ContentSettingsType kUnusedPermission =
     ContentSettingsType::GEOLOCATION;
 
-namespace {
-
-// Creates a new PassworsStatusCheckService for the given `context`.
-std::unique_ptr<KeyedService> BuildPasswordService(
-    content::BrowserContext* context) {
-  return std::make_unique<PasswordStatusCheckService>(
-      Profile::FromBrowserContext(context));
-}
-
-}  // namespace
-
 class SafetyHubHandlerTest : public testing::Test {
  public:
   SafetyHubHandlerTest() {
@@ -115,10 +103,6 @@ class SafetyHubHandlerTest : public testing::Test {
     EXPECT_EQ(GURL(kUnusedTestSite),
               GURL(*revoked_permissions[0].GetDict().FindString(
                   site_settings::kOrigin)));
-
-    // Create password status check service.
-    PasswordStatusCheckServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&BuildPasswordService));
   }
 
   void TearDown() override {

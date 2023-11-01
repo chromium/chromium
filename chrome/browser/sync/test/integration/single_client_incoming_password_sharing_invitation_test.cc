@@ -444,9 +444,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                               base::UTF8ToUTF16(std::string(kPasswordValue))),
                         Field(&PasswordForm::type,
                               PasswordForm::Type::kReceivedViaSharing)))));
-  // TODO(crbug.com/1443466): Clean up after solving dangling ptrs when
-  // PasswordStatusCheckService::MaybeResetInfrastructureAsync is called.
-  base::RunLoop().RunUntilIdle();
 }
 
 // This test verifies that Incoming Password Sharing Invitation data type is
