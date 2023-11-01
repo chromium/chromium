@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/search_engines/template_url_service.h"
 
 #include <algorithm>
 
@@ -102,6 +103,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
 OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
     const AutocompleteResult& result,
     PrefService* pref_service,
+    TemplateURLService* template_url_service,
     Direction direction,
     Step step) const {
   if (result.empty()) {
@@ -118,7 +120,8 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   // in practice it's only something like ~10 elements long, and makes the code
   // easy to reason about.
   std::vector<OmniboxPopupSelection> all_available_selections =
-      GetAllAvailableSelectionsSorted(result, pref_service, direction, step);
+      GetAllAvailableSelectionsSorted(result, pref_service,
+                                      template_url_service, direction, step);
 
   if (all_available_selections.empty()) {
     return *this;
@@ -171,6 +174,7 @@ std::vector<OmniboxPopupSelection>
 OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     const AutocompleteResult& result,
     PrefService* pref_service,
+    TemplateURLService* template_url_service,
     Direction direction,
     Step step) {
   // First enumerate all the accessible states based on `direction` and `step`,
@@ -178,8 +182,11 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
   // all of these states - just that it's possible to get there, if available.
   std::vector<LineState> all_states;
   if (step == kWholeLine || step == kAllLines) {
-    // In the case of whole-line stepping, only the NORMAL state is accessible.
     all_states.push_back(NORMAL);
+    if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+      // Whole line stepping can go straight into keyword mode.
+      all_states.push_back(KEYWORD_MODE);
+    }
   } else {
     // Arrow keys should never reach the header controls.
     if (step == kStateOrLine) {
@@ -211,6 +218,25 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
             // implies that a match takeover action should be last
             // to allow other actions on the match to be included.
             break;
+          }
+        }
+      } else if (line_state == KEYWORD_MODE &&
+                 OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+        OmniboxPopupSelection selection(line_number, line_state);
+        if (selection.IsControlPresentOnMatch(result, pref_service)) {
+          if (result.match_at(line_number)
+                  .HasInstantKeyword(template_url_service)) {
+            if (available_selections.size() > 0 &&
+                available_selections.back().line == line_number &&
+                available_selections.back().state == LineState::NORMAL) {
+              // Remove the preceding normal state selection so that keyword
+              // mode will be entered immediately when the user arrows down
+              // to this keyword line.
+              available_selections.pop_back();
+            }
+            available_selections.push_back(selection);
+          } else if (step == kStateOrLine) {
+            available_selections.push_back(selection);
           }
         }
       } else {

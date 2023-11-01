@@ -1089,6 +1089,19 @@ bool AutocompleteMatch::IsActionCompatible() const {
          type != AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
 }
 
+bool AutocompleteMatch::HasInstantKeyword(
+    TemplateURLService* template_url_service) const {
+  if (!associated_keyword) {
+    return false;
+  }
+  TemplateURL* turl =
+      associated_keyword->GetTemplateURL(template_url_service, false);
+  if (!turl) {
+    return false;
+  }
+  return turl->starter_pack_id() != 0;
+}
+
 void AutocompleteMatch::GetKeywordUIState(
     TemplateURLService* template_url_service,
     std::u16string* keyword_out,

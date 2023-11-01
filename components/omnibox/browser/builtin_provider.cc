@@ -230,7 +230,11 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url,
   match.description = template_url.short_name();
   match.description_class.emplace_back(0, ACMatchClassification::NONE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  match.SetAllowedToBeDefault(input);
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+    match.allowed_to_be_default_match = false;
+  } else {
+    match.SetAllowedToBeDefault(input);
+  }
   matches_.push_back(match);
 }
 

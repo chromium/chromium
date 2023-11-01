@@ -1261,8 +1261,9 @@ void OmniboxEditModel::OnUpOrDownPressed(bool down, bool page) {
   // (user_input_in_progress_ is false) unless the first result is a
   // verbatim match of the omnibox input (on-focus query refinements on SERP).
   const OmniboxPopupSelection next_selection =
-      popup_selection_.GetNextSelection(controller_->result(), GetPrefService(),
-                                        direction, step);
+      popup_selection_.GetNextSelection(
+          controller_->result(), GetPrefService(),
+          controller_->client()->GetTemplateURLService(), direction, step);
   if (controller_->result().default_match() && has_temporary_text_ &&
       next_selection.line == 0 &&
       (user_input_in_progress_ ||
@@ -2107,15 +2108,26 @@ void OmniboxEditModel::StepPopupSelection(
   // called before changing the selected line.
   // AcceptKeyword should be called after changing the selected line so we don't
   // accept keyword on the wrong suggestion when stepping backwards.
-  const auto old_selection = GetPopupSelection();
-  const auto new_selection = old_selection.GetNextSelection(
-      controller_->result(), GetPrefService(), direction, step);
-  if (old_selection.IsChangeToKeyword(new_selection)) {
+  const OmniboxPopupSelection old_selection = GetPopupSelection();
+  OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
+      controller_->result(), GetPrefService(),
+      controller_->client()->GetTemplateURLService(), direction, step);
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
     ClearKeyword();
-  }
-  SetPopupSelection(new_selection);
-  if (new_selection.IsChangeToKeyword(old_selection)) {
-    AcceptKeyword(metrics::OmniboxEventProto::TAB);
+    SetPopupSelection(new_selection);
+    if (new_selection.state == OmniboxPopupSelection::LineState::KEYWORD_MODE) {
+      AcceptKeyword(old_selection.line == new_selection.line
+                        ? metrics::OmniboxEventProto::TAB
+                        : metrics::OmniboxEventProto::SELECT_SUGGESTION);
+    }
+  } else {
+    if (old_selection.IsChangeToKeyword(new_selection)) {
+      ClearKeyword();
+    }
+    SetPopupSelection(new_selection);
+    if (new_selection.IsChangeToKeyword(old_selection)) {
+      AcceptKeyword(metrics::OmniboxEventProto::TAB);
+    }
   }
 }
 
