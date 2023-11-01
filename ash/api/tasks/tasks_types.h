@@ -55,7 +55,7 @@ struct ASH_EXPORT Task {
   const std::string id;
 
   // Title of the task.
-  const std::string title;
+  std::string title;
 
   // Indicates whether the task is completed (has "status" field equals to
   // "completed" on the API side).

@@ -33,11 +33,11 @@ constexpr int kMaxAllowedMaxResults = 100;
 // ----- ListTaskListsRequest -----
 
 ListTaskListsRequest::ListTaskListsRequest(RequestSender* sender,
-                                           Callback callback,
-                                           const std::string& page_token)
+                                           const std::string& page_token,
+                                           Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)),
-      page_token_(page_token) {
+      page_token_(page_token),
+      callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
 }
 
@@ -98,13 +98,13 @@ void ListTaskListsRequest::OnDataParsed(std::unique_ptr<TaskLists> task_lists) {
 // ----- ListTasksRequest -----
 
 ListTasksRequest::ListTasksRequest(RequestSender* sender,
-                                   Callback callback,
                                    const std::string& task_list_id,
-                                   const std::string& page_token)
+                                   const std::string& page_token,
+                                   Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)),
       task_list_id_(task_list_id),
-      page_token_(page_token) {
+      page_token_(page_token),
+      callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
   CHECK(!task_list_id_.empty());
 }
@@ -166,15 +166,15 @@ void ListTasksRequest::OnDataParsed(std::unique_ptr<Tasks> tasks) {
 // ----- PatchTaskRequest -----
 
 PatchTaskRequest::PatchTaskRequest(RequestSender* sender,
-                                   Callback callback,
                                    const std::string& task_list_id,
                                    const std::string& task_id,
-                                   const TaskRequestPayload& payload)
+                                   const TaskRequestPayload& payload,
+                                   Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)),
       task_list_id_(task_list_id),
       task_id_(task_id),
-      payload_(payload) {
+      payload_(payload),
+      callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
   CHECK(!task_list_id_.empty());
   CHECK(!task_id_.empty());
@@ -210,12 +210,39 @@ void PatchTaskRequest::ProcessURLFetchResults(
     const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
-  std::move(callback_).Run(GetErrorCode());
-  OnProcessURLFetchResultsComplete();
+  ApiErrorCode error = GetErrorCode();
+  switch (error) {
+    case HTTP_SUCCESS:
+      blocking_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&PatchTaskRequest::Parse, std::move(response_body)),
+          base::BindOnce(&PatchTaskRequest::OnDataParsed,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    default:
+      RunCallbackOnPrematureFailure(error);
+      OnProcessURLFetchResultsComplete();
+      break;
+  }
 }
 
 void PatchTaskRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
-  std::move(callback_).Run(error);
+  std::move(callback_).Run(base::unexpected(error));
+}
+
+// static
+std::unique_ptr<Task> PatchTaskRequest::Parse(std::string json) {
+  std::unique_ptr<base::Value> value = ParseJson(json);
+  return value ? Task::CreateFrom(*value) : nullptr;
+}
+
+void PatchTaskRequest::OnDataParsed(std::unique_ptr<Task> task) {
+  if (!task) {
+    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+  } else {
+    std::move(callback_).Run(std::move(task));
+  }
+  OnProcessURLFetchResultsComplete();
 }
 
 // ----- InsertTaskRequest -----

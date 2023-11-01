@@ -171,9 +171,11 @@ class TasksClientImpl : public api::TasksClient {
   // Callback for `MarkAsCompleted()` request. Does not removes the task from
   // `tasks_in_task_lists_` as it will be cleared by
   // `OnGlanceablesBubbleClosed`.
-  void OnMarkedAsCompleted(const base::Time& request_start_time,
-                           base::RepeatingClosure on_done,
-                           google_apis::ApiErrorCode status_code);
+  void OnMarkedAsCompleted(
+      const base::Time& request_start_time,
+      base::RepeatingClosure on_done,
+      base::expected<std::unique_ptr<google_apis::tasks::Task>,
+                     google_apis::ApiErrorCode> result);
 
   // Done callback for `AddTask()` request.
   // `task_list_id` - id of the task list used in the request.
@@ -184,9 +186,11 @@ class TasksClientImpl : public api::TasksClient {
 
   // Done callback for `UpdateTask()` request.
   // `task_list_id` - id of the task list used in the request.
-  // `status_code`  - HTTP status code of the operation.
-  void OnTaskUpdated(api::TasksClient::UpdateTaskCallback callback,
-                     google_apis::ApiErrorCode status_code);
+  // `result`       - updated task or HTTP error.
+  void OnTaskUpdated(const std::string& task_list_id,
+                     api::TasksClient::UpdateTaskCallback callback,
+                     base::expected<std::unique_ptr<google_apis::tasks::Task>,
+                                    google_apis::ApiErrorCode> result);
 
   // To be called when requests to get user's task lists complete.
   // It sets the task lists fetch status to `final_fetch_status`, and runs all

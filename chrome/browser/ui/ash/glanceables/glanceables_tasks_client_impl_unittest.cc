@@ -1103,7 +1103,14 @@ TEST_F(TasksClientImplTest, MarkAsCompleted) {
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
       .Times(2)
       .WillRepeatedly(Invoke([](const HttpRequest&) {
-        return TestRequestHandler::CreateSuccessfulResponse("");
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#task",
+            "id": "task-id",
+            "title": "Updated title",
+            "status": "completed"
+          }
+        )");
       }));
 
   TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
@@ -1240,22 +1247,48 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
 TEST_F(TasksClientImplTest, UpdatesTask) {
   EXPECT_CALL(
       request_handler(),
-      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
           {
             "kind": "tasks#tasks",
+            "items": [
+              {
+                "id": "task-id",
+                "title": "Task 1",
+                "status": "needsAction"
+              }
+            ]
+          }
+        )"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#task",
             "id": "task-id",
-            "title": "Task 1",
+            "title": "Updated title",
             "status": "needsAction"
           }
         )"))));
 
+  // Get tasks first.
+  TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
+  client()->GetTasks("task-list-id", get_tasks_future.GetCallback());
+  ASSERT_TRUE(get_tasks_future.Wait());
+  auto* const tasks = get_tasks_future.Get();
+  ASSERT_EQ(tasks->item_count(), 1u);
+  EXPECT_EQ(tasks->GetItemAt(0)->title, "Task 1");
+
+  // Update the task.
   TestFuture<bool> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
                        update_task_future.GetCallback());
-
   ASSERT_TRUE(update_task_future.Wait());
   EXPECT_TRUE(update_task_future.Get());
+
+  // Make sure `tasks` contains the update.
+  EXPECT_EQ(tasks->GetItemAt(0)->title, "Updated title");
 }
 
 TEST_F(TasksClientImplTest, UpdatesTaskOnHttpError) {
