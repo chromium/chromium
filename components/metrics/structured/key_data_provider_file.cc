@@ -55,6 +55,11 @@ absl::optional<uint64_t> KeyDataProviderFile::GetId(
                        project_validator->key_rotation_period());
 }
 
+absl::optional<uint64_t> KeyDataProviderFile::GetSecondaryId(
+    const std::string& project_name) {
+  return absl::nullopt;
+}
+
 KeyData* KeyDataProviderFile::GetKeyData(const std::string& project_name) {
   DCHECK(IsReady());
   return key_data_.get();

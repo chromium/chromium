@@ -37,11 +37,12 @@ absl::optional<uint64_t> TestKeyDataProvider::GetId(
     }
     case IdScope::kPerDevice: {
       if (project_validator->event_type() ==
-              StructuredEventProto_EventType_SEQUENCE &&
-          profile_key_data_) {
+          StructuredEventProto_EventType_SEQUENCE) {
+        if (!profile_key_data_) {
+          return absl::nullopt;
+        }
         return profile_key_data_->GetId(project_name);
-      }
-      if (device_key_data_) {
+      } else if (device_key_data_) {
         return device_key_data_->GetId(project_name);
       }
       break;
@@ -50,6 +51,30 @@ absl::optional<uint64_t> TestKeyDataProvider::GetId(
       NOTREACHED();
       break;
   }
+  return absl::nullopt;
+}
+
+absl::optional<uint64_t> TestKeyDataProvider::GetSecondaryId(
+    const std::string& project_name) {
+  auto maybe_project_validator =
+      validator::Validators::Get()->GetProjectValidator(project_name);
+  if (!maybe_project_validator.has_value()) {
+    return absl::nullopt;
+  }
+
+  const auto* project_validator = maybe_project_validator.value();
+
+  // Only SEQUENCE types have secondary ids.
+  if (project_validator->event_type() !=
+      StructuredEventProto_EventType_SEQUENCE) {
+    return absl::nullopt;
+  }
+
+  DCHECK(device_key_data_);
+  if (device_key_data_ && device_key_data_->IsReady()) {
+    return device_key_data_->GetId(project_name);
+  }
+
   return absl::nullopt;
 }
 

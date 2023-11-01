@@ -30,6 +30,8 @@ class KeyDataProviderFile : public KeyDataProvider {
   void InitializeProfileKey(const base::FilePath& profile_path,
                             base::OnceClosure callback) override;
   absl::optional<uint64_t> GetId(const std::string& project_name) override;
+  absl::optional<uint64_t> GetSecondaryId(
+      const std::string& project_name) override;
   KeyData* GetKeyData(const std::string& project_name) override;
   KeyData* GetDeviceKeyData() override;
   KeyData* GetProfileKeyData() override;

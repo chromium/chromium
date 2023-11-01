@@ -78,9 +78,9 @@ class KeyDataProviderAshTest : public testing::Test {
         .Append("profile_keys");
   }
 
- private:
   std::unique_ptr<KeyDataProviderAsh> key_data_provider_;
 
+ private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
@@ -113,6 +113,38 @@ TEST_F(KeyDataProviderAshTest, ReturnProfileKeyForCrOSEvent) {
   auto* key_data = GetCurrentKeyData(kCrOSEventsProjectName);
   EXPECT_NE(key_data, nullptr);
   EXPECT_EQ(key_data, GetProfileKeyData());
+}
+
+TEST_F(KeyDataProviderAshTest, ReturnsAppropriateSequenceIds) {
+  SetUpProfileKeys();
+  auto* key_data = GetCurrentKeyData(kCrOSEventsProjectName);
+  EXPECT_NE(key_data, nullptr);
+  EXPECT_EQ(key_data, GetProfileKeyData());
+}
+
+TEST_F(KeyDataProviderAshTest, SequenceEvents_ReturnsDifferentSequenceIds) {
+  SetUpProfileKeys();
+
+  absl::optional<uint64_t> device_id =
+      key_data_provider_->GetSecondaryId(kCrOSEventsProjectName);
+  absl::optional<uint64_t> profile_id =
+      key_data_provider_->GetId(kCrOSEventsProjectName);
+
+  EXPECT_TRUE(device_id.has_value());
+  EXPECT_TRUE(profile_id.has_value());
+
+  // Ids generated should be different.
+  EXPECT_NE(device_id.value(), profile_id.value());
+}
+
+TEST_F(KeyDataProviderAshTest, SequenceEvents_PrimaryIdEmptyOnNoProfileSetup) {
+  absl::optional<uint64_t> device_id =
+      key_data_provider_->GetSecondaryId(kCrOSEventsProjectName);
+  absl::optional<uint64_t> profile_id =
+      key_data_provider_->GetId(kCrOSEventsProjectName);
+
+  EXPECT_TRUE(device_id.has_value());
+  EXPECT_FALSE(profile_id.has_value());
 }
 
 }  // namespace metrics::structured

@@ -48,6 +48,16 @@ class KeyDataProvider {
   // absl::nullopt.
   virtual absl::optional<uint64_t> GetId(const std::string& project_name) = 0;
 
+  // Retrieves the secondary ID for given |project_name|.
+  //
+  // If no valid secondary key is found for |project_name|, this function will
+  // return absl::nullopt.
+  //
+  // TODO(b/290096302): Refactor event sequence populator so there is no
+  // dependency on concepts such as device/profile in //components.
+  virtual absl::optional<uint64_t> GetSecondaryId(
+      const std::string& project_name) = 0;
+
   // Retrieves the key data to be used for |project_name|. Returns nullptr if
   // the KeyData is not available for given |project_name|.
   virtual KeyData* GetKeyData(const std::string& project_name) = 0;

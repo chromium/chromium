@@ -61,6 +61,30 @@ absl::optional<uint64_t> KeyDataProviderAsh::GetId(
   return key_data_provider->GetId(project_name);
 }
 
+absl::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
+    const std::string& project_name) {
+  auto maybe_project_validator =
+      validator::Validators::Get()->GetProjectValidator(project_name);
+  if (!maybe_project_validator.has_value()) {
+    return absl::nullopt;
+  }
+
+  // If |project_name| is not of type sequence, return absl::nullopt as it
+  // should not have a corresponding secondary ID.
+  const auto* project_validator = maybe_project_validator.value();
+  if (project_validator->event_type() !=
+      StructuredEventProto_EventType_SEQUENCE) {
+    return absl::nullopt;
+  }
+
+  DCHECK(device_key_);
+  if (device_key_->IsReady()) {
+    return device_key_->GetId(project_name);
+  }
+
+  return absl::nullopt;
+}
+
 void KeyDataProviderAsh::InitializeDeviceKey(base::OnceClosure callback) {
   if (HasDeviceKey()) {
     return;
@@ -130,10 +154,10 @@ KeyDataProvider* KeyDataProviderAsh::GetKeyDataProvider(
       break;
     }
     case IdScope::kPerDevice: {
+      // Retrieve the profile key if the type is a sequence.
       if (project_validator->event_type() ==
-              StructuredEventProto_EventType_SEQUENCE &&
-          profile_key_) {
-        return profile_key_.get();
+          StructuredEventProto_EventType_SEQUENCE) {
+        return profile_key_ ? profile_key_.get() : nullptr;
       }
       if (device_key_) {
         return device_key_.get();
