@@ -2393,8 +2393,7 @@
     },
     {
       name: "MediaCapabilitiesDynamicRange",
-      status: "test",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "MediaCapabilitiesEncodingInfo",
