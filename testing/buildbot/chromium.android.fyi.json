@@ -5188,7 +5188,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_browsertests.filter"
         ],
         "merge": {
           "args": [
@@ -8846,7 +8846,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter"
         ],
         "merge": {
           "args": [

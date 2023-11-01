@@ -1949,7 +1949,7 @@
         'ci_only': True,
         'experiment_percentage': 100,
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
@@ -1957,7 +1957,7 @@
       },
       'android-12l-x64-fyi-dbg': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
@@ -1965,7 +1965,7 @@
       },
       'android-13-x64-fyi-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
@@ -1973,7 +1973,7 @@
       },
       'android-13-x64-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,

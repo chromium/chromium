@@ -1,0 +1,35 @@
+# crbug.com/1120813
+-CompositorImplBrowserTestRefreshRate.VideoPreference
+
+# crbug.com/1296333
+-WebRtcBrowserTest.CallAndVerifyVideoMutingWorks
+-WebRtcBrowserTest.CallInsideIframe
+-WebRtcBrowserTest.CanSetupAudioAndVideoCall
+-WebRtcBrowserTest.CanSetupDefaultVideoCall
+-WebRtcBrowserTest.CanSetupDefaultVideoCallWithOldGetUserMedia
+-WebRtcBrowserTest.CanSetupVideoCallAndDisableLocalVideo
+-WebRtcBrowserTest.CanSetupVideoCallWith16To9AspectRatio
+-WebRtcBrowserTest.CanSetupVideoCallWith1To1AspectRatio
+-WebRtcBrowserTest.CanSetupVideoCallWith4To3AspectRatio
+-WebRtcBrowserTest.GetSettingsReportsValuesForRemoteTracks
+-WebRtcBrowserTest.NoCrashWhenConnectChromiumSinkToRemoteTrack
+-WebRtcDataBrowserTest.CallWithSctpDataAndMedia
+
+# crbug.com/1270151
+-FontUniqueNameBrowserTest.ContentLocalFontsMatching
+
+# crbug.com/1420817
+-WebRtcMediaRecorderTest.PausePreventsDataavailableFromBeingFired
+-WebRtcMediaRecorderTest.Start
+
+# crbug.com/1428296
+-All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/0
+-All/WebRtcCaptureFromElementBrowserTest.CaptureFromMediaElement/2
+
+# crbug.com/1428300
+-OpenCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
+
+# crbug.com/1495529
+-FormControlsBrowserTest.Checkbox
+-FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select
