@@ -173,8 +173,43 @@
     _index = [cell indexOfSelectedItem];
 }
 
-- (void)hide {
-  [_menu cancelTracking];
+- (void)cancelSynchronously {
+  [_menu cancelTrackingWithoutAnimation];
+
+  // Starting with macOS 14, menus were reimplemented with Cocoa (rather than
+  // with the old Carbon). However, with that reimplementation came a bug
+  // whereupon using -cancelTrackingWithoutAnimation does not consistently
+  // immediately cancel the tracking, and leaves associated state remaining
+  // uncleared for an indeterminate amount of time. If a new tracking session is
+  // begun before that state is cleared, an NSInternalInconsistencyException is
+  // thrown. See the discussion on https://crbug.com/1497774 and FB13320260.
+  // Therefore, on macOS 14+, clear out that state so that a new tracking
+  // session can begin immediately.
+  if (@available(macOS 14, *)) {
+    // When running a menu tracking session, the instances of
+    // NSMenuTrackingSession make calls to class methods of NSPopupMenuWindow:
+    //
+    // -[NSMenuTrackingSession sendBeginTrackingNotifications]
+    //   -> +[NSPopupMenuWindow enableWindowReuse]
+    // and
+    // -[NSMenuTrackingSession sendEndTrackingNotifications]
+    //   -> +[NSPopupMenuWindow disableWindowReusePurgingCache]
+    //
+    // +enableWindowReuse populates the _NSContextMenuWindowReuseSet global, and
+    // +disableWindowReusePurgingCache walks the set, clears out some state
+    // inside of each item, and then nils out the global, preparing for the next
+    // call to +enableWindowReuse.
+    //
+    // +disableWindowReusePurgingCache can be called directly here, as it's
+    // idempotent enough.
+
+    Class popupMenuWindowClass = NSClassFromString(@"NSPopupMenuWindow");
+    if ([popupMenuWindowClass
+            respondsToSelector:@selector(disableWindowReusePurgingCache)]) {
+      [popupMenuWindowClass
+          performSelector:@selector(disableWindowReusePurgingCache)];
+    }
+  }
 }
 
 - (int)indexOfSelectedItem {
