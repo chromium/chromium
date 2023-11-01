@@ -2875,6 +2875,109 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.PrefetchFontCount" units="count"
+    expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of font URLs to be prefetched using the LCPP prediction.
+
+    This metric is emitted when predicted font URLs are appended to the
+    PreconnectPrediction structure for prefetching.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.PreloadedFontCount" units="count"
+    expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of fetched font URLs to be preloaded in the renderer using
+    the LCPP prediction.
+
+    This metric is emitted just after the fonts are preloaded.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.RecordedFontCount" units="count"
+    expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the number of web fonts that was fetched in the page and recorded
+    to the LCPP database.
+
+    This metric is emitted for every page load when it is about to emit
+    &quot;onload&quot; event. Unlike Blink.LCPP.ReportedFontCount, this metric
+    counts the number of fonts after filitering with the max fonts per site.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.RecordedFontUrlMatchCount" units="count"
+    expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of fetched font URLs that are already recorded in the LCPP
+    database.
+
+    This metric is emitted for every page load when it is about to emit
+    &quot;onload&quot; event.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.RecordedFontUrlPredictionMatchPercent" units="%"
+    expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the percent of font URLs in the LCPP database against all fetched
+    font URLs.
+
+    This metric is emitted for every page load when it is about to emit
+    &quot;onload&quot; event.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.RecordedFontUrlsMaxLength" units="bytes"
+    expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the longest font URL that was fetched in the page and recorded to
+    the LCPP database.
+
+    This metric is emitted for every page load when it is about to emit
+    &quot;onload&quot; event.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.ReportedFontCount" units="count"
+    expires_after="2024-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Measures the number of web fonts that was fetched in the page.
+
+    This metric is emitted for every page load when it is about to emit
+    &quot;onload&quot; event.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Loading.CachedResponseArrivalAtRenderer"
     units="Milliseconds" expires_after="2024-04-28">
   <owner>yhirano@chromium.org</owner>

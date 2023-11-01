@@ -782,6 +782,8 @@ void DocumentLoader::DispatchLcppFontPreloads(
                                      frame_->GetDocument(), mode, viewport,
                                      nullptr /* alternate_resource_info */,
                                      nullptr /* recursive_prefetch_token */);
+  base::UmaHistogramCounts1000("Blink.LCPP.PreloadedFontCount",
+                               lcpp->fetched_fonts().size());
 }
 
 void DocumentLoader::DidChangePerformanceTiming() {

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
@@ -166,11 +166,14 @@ bool LoadingPredictor::PrepareForPageLoad(
       auto network_anonymization_key =
           net::NetworkAnonymizationKey::CreateSameSite(
               net::SchemefulSite(url::Origin::Create(url)));
+      size_t count = 0;
       for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_data)) {
         prediction.prefetch_requests.emplace_back(
             font_url, network_anonymization_key,
             network::mojom::RequestDestination::kFont);
+        ++count;
       }
+      base::UmaHistogramCounts1000("Blink.LCPP.PrefetchFontCount", count);
     }
   }
 

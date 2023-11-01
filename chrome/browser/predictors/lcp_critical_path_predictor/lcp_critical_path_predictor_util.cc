@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
+
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -286,6 +288,7 @@ class LcppFrequencyStatDataUpdater {
       auto it = histogram_.emplace(new_entry, 1);
       if (!it.second) {
         ++it.first->second;
+        ++num_matched_;
       }
     }
 
@@ -330,7 +333,9 @@ class LcppFrequencyStatDataUpdater {
     return lcp_element_locator_stat;
   }
 
-  bool has_updated() { return has_updated_; }
+  bool has_updated() const { return has_updated_; }
+
+  size_t num_matched() const { return num_matched_; }
 
  private:
   LcppFrequencyStatDataUpdater(const LoadingPredictorConfig& config,
@@ -346,6 +351,7 @@ class LcppFrequencyStatDataUpdater {
   std::map<std::string, double> histogram_;
   double other_bucket_frequency_;
   bool has_updated_ = false;
+  size_t num_matched_ = 0;
 };
 
 bool RecordLcpElementLocatorHistogram(const LoadingPredictorConfig& config,
@@ -398,12 +404,14 @@ bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
       LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
           config, data.mutable_lcpp_stat()->fetched_font_url_stat());
   std::set<GURL> used_urls;
+  size_t max_url_length = 0;
   for (const auto& url : fetched_font_urls) {
     // Deduplicate the font URLs.
     if (!used_urls.insert(url).second) {
       continue;
     }
     const std::string& font_spec = url.spec();
+    max_url_length = std::max<size_t>(max_url_length, font_spec.length());
     if (!IsValidUrlInLcppStringFrequencyStatData(font_spec)) {
       continue;
     }
@@ -411,6 +419,22 @@ bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
   }
   *data.mutable_lcpp_stat()->mutable_fetched_font_url_stat() =
       updater->ToLcppStringFrequencyStatData();
+
+  base::UmaHistogramCounts10000(
+      "Blink.LCPP.RecordedFontCount",
+      base::checked_cast<int>(fetched_font_urls.size()));
+  base::UmaHistogramCounts10000("Blink.LCPP.RecordedFontUrlsMaxLength",
+                                base::checked_cast<int>(max_url_length));
+  base::UmaHistogramCounts10000(
+      "Blink.LCPP.RecordedFontUrlMatchCount",
+      base::checked_cast<int>(updater->num_matched()));
+  if (!fetched_font_urls.empty()) {
+    base::UmaHistogramPercentage(
+        "Blink.LCPP.RecordedFontUrlPredictionMatchPercent",
+        base::checked_cast<int>(100 * updater->num_matched() /
+                                fetched_font_urls.size()));
+  }
+
   return updater->has_updated();
 }
 
@@ -512,6 +536,8 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
       config, inputs.lcp_influencer_scripts, data);
   data_updated |=
       RecordFetchedFontUrlsHistogram(config, inputs.font_urls, data);
+  base::UmaHistogramCounts10000("Blink.LCPP.ReportedFontCount",
+                                base::checked_cast<int>(inputs.font_url_count));
   return data_updated;
 }
 

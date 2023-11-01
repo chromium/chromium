@@ -44,7 +44,12 @@ struct LcppDataInputs {
 
   // Fetched font URLs.
   // Unlike data above, the field will be updated per font fetch.
+  // The number of URLs in the vector is up to the size defined by
+  // `kLCPPFontURLPredictorMaxUrlCountPerOrigin`.
   std::vector<GURL> font_urls;
+  // This field keeps the number of font URLs without omitting due to
+  // reaching `kLCPPFontURLPredictorMaxUrlCountPerOrigin` or deduplication.
+  size_t font_url_count = 0;
 };
 
 bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
