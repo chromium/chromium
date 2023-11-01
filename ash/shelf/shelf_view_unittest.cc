@@ -131,6 +131,40 @@ void ExpectNotFocused(views::View* view) {
   EXPECT_FALSE(view->Contains(view->GetFocusManager()->GetFocusedView()));
 }
 
+class LayerAnimationWaiter : public ui::LayerAnimationObserver {
+ public:
+  explicit LayerAnimationWaiter(ui::LayerAnimator* animator)
+      : animator_(animator) {
+    animator_->AddObserver(this);
+  }
+
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
+    OnAnimationCompleted();
+  }
+
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {
+    OnAnimationCompleted();
+  }
+
+  void OnLayerAnimationScheduled(
+      ui::LayerAnimationSequence* sequence) override {}
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void OnAnimationCompleted() {
+    if (animator_->is_animating() == false) {
+      animator_->RemoveObserver(this);
+      run_loop_.Quit();
+    }
+  }
+
+  // Dangling when executing ShelfViewPromiseAppTest.PromiseIconLayers because
+  // layer is destroyed by the ShelfView.
+  raw_ptr<ui::LayerAnimator, DanglingUntriaged> animator_;
+  base::RunLoop run_loop_;
+};
+
 class TestShelfObserver : public ShelfObserver {
  public:
   explicit TestShelfObserver(Shelf* shelf) : shelf_(shelf) {
@@ -4007,6 +4041,7 @@ TEST_F(ShelfViewPromiseAppTest, UpdateProgressOnPromiseIcon) {
 
   item.app_status = AppStatus::kPending;
   item.progress = 0.0f;
+  item.is_promise_app = true;
   model_->Set(index, item);
 
   // Start install progress bar.
@@ -4051,6 +4086,7 @@ TEST_F(ShelfViewPromiseAppTest, AppStatusReflectsOnProgressIndicator) {
 
   // Promise apps are created with app_status kPending.
   item.app_status = AppStatus::kPending;
+  item.is_promise_app = true;
   model_->Set(index, item);
 
   ProgressIndicator* progress_indicator = button->GetProgressIndicatorForTest();
@@ -4094,6 +4130,83 @@ TEST_F(ShelfViewPromiseAppTest, AppStatusReflectsOnProgressIndicator) {
   model_->Set(index, item);
   EXPECT_EQ(button->app_status(), AppStatus::kReady);
   ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+}
+
+TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
+  // Add platform app button.
+  ShelfID last_added = AddAppShortcut();
+  const std::string promise_app_id = last_added.app_id;
+  ShelfItem item = GetItemByID(last_added);
+  int index = model_->ItemIndexByID(last_added);
+  ShelfAppButton* button = GetButtonByID(last_added);
+
+  // Promise apps are created with app_status kPending.
+  item.app_status = AppStatus::kPending;
+  item.is_promise_app = true;
+  model_->Set(index, item);
+
+  ProgressIndicator* progress_indicator = button->GetProgressIndicatorForTest();
+  ASSERT_TRUE(progress_indicator);
+  // Change app status to installing and send a progress update. Verify that the
+  // progress indicator correctly reflects the progress.
+  EXPECT_EQ(button->progress(), -1.0f);
+  EXPECT_EQ(button->app_status(), AppStatus::kPending);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  // Start install progress bar.
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.3f;
+  model_->Set(index, item);
+
+  EXPECT_EQ(button->progress(), 0.3f);
+  EXPECT_EQ(button->app_status(), AppStatus::kInstalling);
+  EXPECT_TRUE(button->layer());
+
+  // Set the last status update to kInstallSuccess as if the app had finished
+  // installing.
+  item.app_status = AppStatus::kInstallSuccess;
+  model_->Set(index, item);
+  EXPECT_EQ(button->app_status(), AppStatus::kInstallSuccess);
+  EXPECT_TRUE(button->layer());
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Simulate pushing the installed app.
+  model_->RemoveItemAt(index);
+
+  ui::LayerTreeOwner* promise_app_duplicate_layer =
+      test_api_->GetPendingPromiseLayerForId(promise_app_id);
+  ASSERT_TRUE(promise_app_duplicate_layer);
+
+  LayerAnimationWaiter animation_waiter(
+      promise_app_duplicate_layer->root()->GetAnimator());
+  {
+    ShelfItem installed_item;
+    installed_item.id = ShelfID("foo");
+    installed_item.type = TYPE_APP;
+    installed_item.package_id = promise_app_id;
+    ShelfModel::Get()->Add(
+        installed_item,
+        std::make_unique<TestShelfItemDelegate>(installed_item.id));
+    ShelfAppButton* installed_button = GetButtonByID(installed_item.id);
+
+    ASSERT_TRUE(installed_button->layer());
+    ASSERT_TRUE(test_api_->GetPendingPromiseLayerForId(promise_app_id));
+
+    // Verify that the layer is still animating.
+    EXPECT_TRUE(installed_button->layer()->GetAnimator()->is_animating());
+    EXPECT_EQ(1.0f,
+              installed_button->layer()->GetAnimator()->GetTargetOpacity());
+    EXPECT_TRUE(
+        promise_app_duplicate_layer->root()->GetAnimator()->is_animating());
+    EXPECT_EQ(
+        0.0f,
+        promise_app_duplicate_layer->root()->GetAnimator()->GetTargetOpacity());
+  }
+  animation_waiter.Wait();
+
+  EXPECT_FALSE(test_api_->GetPendingPromiseLayerForId(promise_app_id));
 }
 
 }  // namespace ash

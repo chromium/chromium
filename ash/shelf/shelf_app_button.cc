@@ -21,6 +21,8 @@
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_util.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
@@ -661,8 +663,9 @@ void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
 
   app_status_ = item.app_status;
 
-  is_promise_app_ = app_status_ == AppStatus::kPending ||
-                    app_status_ == AppStatus::kInstalling;
+  is_promise_app_ = item.is_promise_app;
+
+  package_id_ = item.package_id;
 
   // Progress is incremental always by server side implementation. Do not use
   // equal for comparing progress as float point errors may surface.
@@ -1234,6 +1237,11 @@ float ShelfAppButton::GetAdjustedIconScaleForProgressRing() const {
 ProgressIndicator* ShelfAppButton::GetProgressIndicatorForTest() const {
   DCHECK(is_promise_app_);
   return progress_indicator_.get();
+}
+
+std::unique_ptr<ui::LayerTreeOwner> ShelfAppButton::RequestDuplicateLayer() {
+  CHECK(layer());
+  return ::wm::RecreateLayers(this);
 }
 
 }  // namespace ash

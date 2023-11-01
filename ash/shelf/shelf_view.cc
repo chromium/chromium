@@ -948,6 +948,9 @@ bool ShelfView::ShouldShowTooltipForChildView(
 // static
 void ShelfView::ConfigureChildView(views::View* view,
                                    ui::LayerType layer_type) {
+  if (view->layer()) {
+    return;
+  }
   view->SetPaintToLayer(layer_type);
   view->layer()->SetFillsBoundsOpaquely(false);
 }
@@ -2179,6 +2182,40 @@ void ShelfView::OnGestureEvent(ui::GestureEvent* event) {
     event->StopPropagation();
 }
 
+void ShelfView::MaybeDuplicatePromiseAppForRemoval(
+    ShelfAppButton* promise_app_view,
+    const ShelfItem& item) {
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    return;
+  }
+
+  if (!promise_app_view || !promise_app_view->is_promise_app()) {
+    return;
+  }
+
+  if (promise_app_view->app_status() != AppStatus::kInstallSuccess ||
+      !promise_app_view->IsDrawn()) {
+    return;
+  }
+
+  // Search along the `view_model_` for an existing app with the same
+  // package id as the promise app to be removed.
+  for (const auto& entry : view_model_->entries()) {
+    if (entry.view == promise_app_view) {
+      continue;
+    }
+    if (static_cast<ShelfAppButton*>(entry.view)->package_id() ==
+        item.id.app_id) {
+      // PromiseApps don't get animation for removal if an app already existst
+      // in the grid.
+      return;
+    }
+  }
+
+  AddPendingLayerOwnerForPromiseApp(item.id.app_id,
+                                    promise_app_view->RequestDuplicateLayer());
+}
+
 void ShelfView::ShelfItemAdded(int model_index) {
   // ShelfView must keep view_model_ in sync with ShelfModel::items_ as its very
   // first response to ShelfModel changes. Failure to do so can result in UaF in
@@ -2242,6 +2279,56 @@ void ShelfView::ShelfItemAdded(int model_index) {
         view, std::unique_ptr<gfx::AnimationDelegate>(
                   new StartFadeAnimationDelegate(this, view)));
   }
+  // Attempt to animate the transition from a promise app into an actual app
+  const std::string package_id = item.package_id;
+  PendingAppsLayersMap::iterator found =
+      pending_promise_apps_removals_.find(package_id);
+
+  if (item.app_status == AppStatus::kReady &&
+      found != pending_promise_apps_removals_.end()) {
+    AnimateTransitionForPromiseApps(
+        view, found->second->root(),
+        base::BindOnce(&ShelfView::FinishAnimationForPromiseApps,
+                       weak_factory_.GetWeakPtr(), package_id));
+  }
+}
+
+void ShelfView::AddPendingLayerOwnerForPromiseApp(
+    const std::string& id,
+    std::unique_ptr<ui::LayerTreeOwner> layer_owner) {
+  if (!layer_owner) {
+    return;
+  }
+
+  pending_promise_apps_removals_.emplace(id, std::move(layer_owner));
+}
+
+void ShelfView::AnimateTransitionForPromiseApps(views::View* view,
+                                                ui::Layer* promise_app_layer,
+                                                base::OnceClosure callback) {
+  if (!view->layer()) {
+    view->SetPaintToLayer();
+    view->layer()->SetFillsBoundsOpaquely(false);
+  }
+  view->layer()->SetOpacity(0.0f);
+
+  views::AnimationBuilder animation;
+  animation.OnEnded(std::move(callback));
+  animation.Once()
+      .SetDuration(base::Milliseconds(1000))
+      .SetOpacity(view->layer(), 1.0f, gfx::Tween::FAST_OUT_LINEAR_IN)
+      .SetOpacity(promise_app_layer, 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
+}
+
+void ShelfView::FinishAnimationForPromiseApps(
+    const std::string& pending_app_id) {
+  PendingAppsLayersMap::iterator pending_app_found =
+      pending_promise_apps_removals_.find(pending_app_id);
+
+  // Discard the pending promise app layer.
+  if (pending_app_found != pending_promise_apps_removals_.end()) {
+    pending_promise_apps_removals_.erase(pending_app_found);
+  }
 }
 
 void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
@@ -2255,6 +2342,11 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   std::unique_ptr<views::View> view(view_model_->view_at(model_index));
 
   shelf_button_delegate_->OnButtonWillBeRemoved();
+
+  if (old_item.is_promise_app) {
+    MaybeDuplicatePromiseAppForRemoval(static_cast<ShelfAppButton*>(view.get()),
+                                       old_item);
+  }
   view_model_->Remove(model_index);
 
   if (old_item.id == context_menu_id_ && shelf_menu_model_adapter_)
