@@ -1389,10 +1389,25 @@ public class CustomTabsConnection {
 
     private void notifyWarmupIsDone(int uid) {
         ThreadUtils.assertOnUiThread();
+        final Bundle args = new Bundle(); // Empty one - safe to reuse for all the callbacks.
+
         // Notifies all the sessions, as warmup() is tied to a UID, not a session.
         for (CustomTabsSessionToken session : mClientManager.uidToSessions(uid)) {
+            // TODO(crbug.com/1484676): Remove extra callback after its usage dwindles down.
             safeExtraCallback(session, ON_WARMUP_COMPLETED, null);
+
+            CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
+            if (callback == null) continue;
+            try {
+                callback.onWarmupCompleted(args);
+            } catch (Exception e) {
+                // Catching all exceptions is really bad, but we need it here,
+                // because Android exposes us to client bugs by throwing a variety
+                // of exceptions. See crbug.com/517023.
+                continue;
+            }
         }
+        logCallback("onWarmupCompleted()", bundleToJson(args).toString());
     }
 
     /**
