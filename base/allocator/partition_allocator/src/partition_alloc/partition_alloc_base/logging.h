@@ -139,16 +139,17 @@ namespace partition_alloc::internal::logging {
 // up to level INFO) if this function is not called.
 // Note that log messages for VLOG(x) are logged at level -x, so setting
 // the min log level to negative values enables verbose logging.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void SetMinLogLevel(int level);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) void SetMinLogLevel(int level);
 
 // Gets the current log level.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) int GetMinLogLevel();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) int GetMinLogLevel();
 
 // Used by PA_LOG_IS_ON to lazy-evaluate stream arguments.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool ShouldCreateLogMessage(int severity);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
+bool ShouldCreateLogMessage(int severity);
 
 // Gets the PA_VLOG default verbosity level.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) int GetVlogVerbosity();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) int GetVlogVerbosity();
 
 // A few definitions of macros that don't generate much code. These are used
 // by PA_LOG() and LOG_IF, etc. Since these are used all over our code, it's
@@ -355,7 +356,7 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 // Definitions for DCHECK et al.
 
 #if BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern LogSeverity LOGGING_DCHECK;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) extern LogSeverity LOGGING_DCHECK;
 #else
 constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 #endif  // BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
@@ -365,7 +366,7 @@ constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 #define assert(x) PA_DLOG_ASSERT(x)
 
 // Async signal safe logging mechanism.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void RawLog(int level, const char* message);
 
 #define PA_RAW_LOG(level, message)              \

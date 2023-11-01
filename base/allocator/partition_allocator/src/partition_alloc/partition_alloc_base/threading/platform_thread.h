@@ -72,7 +72,7 @@ const PlatformThreadId kInvalidThreadId(0);
 typedef void (*SetThreadNameProc)(const std::string&);
 
 // A namespace for low-level thread functions.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PlatformThread {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) PlatformThread {
  public:
   PlatformThread() = delete;
   PlatformThread(const PlatformThread&) = delete;

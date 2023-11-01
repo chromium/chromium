@@ -16,7 +16,7 @@ namespace partition_alloc::internal::base::internal {
 // after going through clone() syscall which does not call pthread_atfork()
 // handlers).
 // This can only be called when the process is single-threaded.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void InvalidateTidCache();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) void InvalidateTidCache();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace partition_alloc::internal::base::internal

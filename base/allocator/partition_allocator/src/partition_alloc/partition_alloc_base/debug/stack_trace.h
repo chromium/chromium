@@ -16,20 +16,20 @@ namespace partition_alloc::internal::base::debug {
 
 // Returns end of the stack, or 0 if we couldn't get it.
 #if BUILDFLAG(PA_CAN_UNWIND_WITH_FRAME_POINTERS)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 uintptr_t GetStackEnd();
 #endif
 
 // Record a stack trace with up to |count| frames into |trace|. Returns the
 // number of frames read.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 size_t CollectStackTrace(const void** trace, size_t count);
 
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void PrintStackTrace(const void** trace, size_t count);
 
 #if BUILDFLAG(IS_POSIX)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void OutputStackTrace(unsigned index,
                       uintptr_t address,
                       uintptr_t base_address,
@@ -61,7 +61,7 @@ constexpr bool kEnableScanningByDefault = false;
 // added to the trace so |skip_initial| should be 0 in most cases.
 // Returns number of frames written. |enable_scanning| enables scanning on
 // platforms that do not enable scanning by default.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 size_t TraceStackFramePointers(const void** out_trace,
                                size_t max_depth,
                                size_t skip_initial,

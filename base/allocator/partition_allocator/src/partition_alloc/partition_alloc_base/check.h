@@ -67,13 +67,13 @@ class VoidifyStream {
   true ? (void)0                                                     \
        : ::partition_alloc::internal::logging::VoidifyStream(expr) & \
              (*::partition_alloc::internal::logging::g_swallow_stream)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 extern base::strings::CStringBuilder* g_swallow_stream;
 
 class LogMessage;
 
 // Class used for raising a check error upon destruction.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CheckError {
  public:
   // Stream for adding optional details to the error message.
   base::strings::CStringBuilder& stream();
@@ -112,28 +112,29 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
 namespace check_error {
 
 // Class used for raising a check error upon destruction.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Check : public CheckError {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) Check : public CheckError {
  public:
   Check(const char* file, int line, const char* condition);
 };
 
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) DCheck : public CheckError {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) DCheck : public CheckError {
  public:
   DCheck(const char* file, int line, const char* condition);
 };
 
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCheck : public CheckError {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) PCheck : public CheckError {
  public:
   PCheck(const char* file, int line, const char* condition);
   PCheck(const char* file, int line);
 };
 
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) DPCheck : public CheckError {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) DPCheck : public CheckError {
  public:
   DPCheck(const char* file, int line, const char* condition);
 };
 
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) NotImplemented : public CheckError {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NotImplemented
+    : public CheckError {
  public:
   NotImplemented(const char* file, int line, const char* function);
 };
@@ -208,7 +209,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) NotImplemented : public CheckError {
 #endif
 
 // Async signal safe checking mechanism.
-[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) void RawCheckFailure(
+[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) void RawCheckFailure(
     const char* message);
 #define PA_RAW_CHECK(condition)                              \
   do {                                                       \

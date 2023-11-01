@@ -39,7 +39,7 @@ const ProcessId kNullProcessId = 0;
 // Returns the id of the current process.
 // Note that on some platforms, this is not guaranteed to be unique across
 // processes (use GetUniqueIdForProcess if uniqueness is required).
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) ProcessId GetCurrentProcId();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ProcessId GetCurrentProcId();
 
 }  // namespace partition_alloc::internal::base
 

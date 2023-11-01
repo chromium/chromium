@@ -17,7 +17,7 @@ namespace partition_alloc::internal::base::mac {
 // checking. Prefer to use @available in Objective-C files. Note that this does
 // not include any Rapid Security Response (RSR) suffixes (the "(a)" at the end
 // of version numbers.)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 __attribute__((const)) int MacOSMajorVersion();
 
 }  // namespace partition_alloc::internal::base::mac

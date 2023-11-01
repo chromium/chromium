@@ -11,7 +11,7 @@
 namespace partition_alloc::internal::base {
 
 // Query information about the processor.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CPU final {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CPU final {
  public:
   CPU();
   CPU(CPU&&);

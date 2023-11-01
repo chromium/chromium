@@ -31,7 +31,7 @@ namespace subtle {
 // time update isn't surprising. Instantiating a ScopedTimeClockOverrides while
 // other threads are running might break their expectation that TimeTicks and
 // ThreadTicks increase monotonically. Nested overrides are not allowed.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedTimeClockOverrides {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedTimeClockOverrides {
  public:
   // Pass |nullptr| for any override if it shouldn't be overriden.
   ScopedTimeClockOverrides(TimeNowFunction time_override,
@@ -55,11 +55,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedTimeClockOverrides {
 // should only be used in places where emulated time should be disregarded. For
 // example, they can be used to implement test timeouts for tests that may
 // override time.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) Time TimeNowIgnoringOverride();
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) Time TimeNowIgnoringOverride();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 Time TimeNowFromSystemTimeIgnoringOverride();
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) TimeTicks TimeTicksNowIgnoringOverride();
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
+TimeTicks TimeTicksNowIgnoringOverride();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 ThreadTicks ThreadTicksNowIgnoringOverride();
 
 }  // namespace subtle

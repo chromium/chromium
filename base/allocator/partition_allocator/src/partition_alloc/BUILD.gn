@@ -18,6 +18,11 @@ config("partition_alloc_implementation") {
   defines = [ "IS_PARTITION_ALLOC_IMPL" ]
 }
 
+config("partition_alloc_base_implementation") {
+  # See also: `partition_alloc_base/component_export.h`
+  defines = [ "IS_PARTITION_ALLOC_BASE_IMPL" ]
+}
+
 # TODO(https://crbug.com/1467773): Split PartitionAlloc into a public and
 # private parts. The public config would include add the "./include" dir and
 # the private config would add the "./src" dir.
@@ -347,7 +352,7 @@ source_set("allocator_core") {
   }
 }
 
-source_set("allocator_base") {
+component("allocator_base") {
   visibility = [ ":*" ]
 
   sources = [
@@ -519,7 +524,7 @@ source_set("allocator_base") {
   ]
   public_configs = [ ":public_includes" ]
   configs += [
-    ":partition_alloc_implementation",
+    ":partition_alloc_base_implementation",
     "//build/config/compiler:wexit_time_destructors",
   ]
 

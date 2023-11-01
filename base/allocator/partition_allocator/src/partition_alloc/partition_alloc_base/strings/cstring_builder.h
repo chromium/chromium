@@ -20,7 +20,7 @@ namespace partition_alloc::internal::base::strings {
 // char-type string, instead of std::string. To use inside memory allocation,
 // this method must not allocate any memory with malloc, aligned_malloc,
 // calloc, and so on.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CStringBuilder {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CStringBuilder {
  public:
   // If kBufferSize is too large, PA_LOG() and PA_BASE_*CHECK() will spend
   // much more stack. This causes out-of-stack.

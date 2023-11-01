@@ -24,17 +24,18 @@ class LightweightQuarantineList;
 namespace partition_alloc::internal::base {
 
 // Returns a random number in range [0, UINT64_MAX]. Thread-safe.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint64_t RandUint64();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) uint64_t RandUint64();
 
 // Returns a random number in range [0, range).  Thread-safe.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint64_t RandGenerator(uint64_t range);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
+uint64_t RandGenerator(uint64_t range);
 
 // Fills |output_length| bytes of |output| with random data. Thread-safe.
 //
 // Although implementations are required to use a cryptographically secure
 // random number source, code outside of base/ that relies on this should use
 // crypto::RandBytes instead to ensure the requirement is easily discoverable.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void RandBytes(void* output, size_t output_length);
 
 // Fast, insecure pseudo-random number generator.
@@ -63,7 +64,7 @@ void RandBytes(void* output, size_t output_length);
 // re-seeded during use.
 //
 // Uses the XorShift128+ generator under the hood.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InsecureRandomGenerator {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) InsecureRandomGenerator {
  public:
   // Never use outside testing, not enough entropy.
   void ReseedForTesting(uint64_t seed);

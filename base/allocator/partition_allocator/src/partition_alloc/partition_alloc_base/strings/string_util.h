@@ -9,9 +9,9 @@
 
 namespace partition_alloc::internal::base::strings {
 
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 const char* FindLastOf(const char* text, const char* characters);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 const char* FindLastNotOf(const char* text, const char* characters);
 
 }  // namespace partition_alloc::internal::base::strings

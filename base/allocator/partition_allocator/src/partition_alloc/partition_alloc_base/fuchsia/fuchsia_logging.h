@@ -19,7 +19,7 @@
 
 namespace partition_alloc::internal::logging {
 
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ZxLogMessage
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ZxLogMessage
     : public logging::LogMessage {
  public:
   ZxLogMessage(const char* file_path,
