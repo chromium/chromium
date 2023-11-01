@@ -1072,8 +1072,6 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     // Office/OneDrive.
     OpenOrMoveFiles();
   } else if (user_response == kUserActionUploadToGoogleDrive) {
-    cloud_provider_ = CloudProvider::kGoogleDrive;
-    cloud_open_metrics_->set_cloud_provider(cloud_provider_);
     fm_tasks::SetOfficeMoveConfirmationShownForDrive(profile_, true);
     SourceType source_type = GetSourceType(profile_, file_urls_[0]);
     switch (source_type) {
