@@ -217,7 +217,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
       // DEFAULT_VERSION throws exception.)
       DCHECK(is_new_database);
       pending_->factory_client->OnOpenSuccess(
-          db_->CreateConnection(pending_->database_callbacks,
+          db_->CreateConnection(std::move(pending_->database_callbacks),
                                 std::move(client_state_checker_)),
           db_->metadata_);
       bucket_context_handle_.Release();
@@ -229,7 +229,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
         (new_version == old_version ||
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
       pending_->factory_client->OnOpenSuccess(
-          db_->CreateConnection(pending_->database_callbacks,
+          db_->CreateConnection(std::move(pending_->database_callbacks),
                                 std::move(client_state_checker_)),
           db_->metadata_);
       state_ = RequestState::kDone;
@@ -308,7 +308,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     DCHECK(state_ == RequestState::kPendingLocks);
 
     DCHECK(!lock_receiver_.locks.empty());
-    connection_ = db_->CreateConnection(pending_->database_callbacks,
+    connection_ = db_->CreateConnection(std::move(pending_->database_callbacks),
                                         std::move(client_state_checker_));
     bucket_context_handle_.Release();
     DCHECK(!connection_ptr_for_close_comparision_);
@@ -388,9 +388,12 @@ class IndexedDBConnectionCoordinator::OpenRequest
       // so we don't need to.
       connection_->CloseAndReportForceClose();
       connection_.reset();
-    } else {
+    } else if (pending_->database_callbacks) {
       pending_->database_callbacks->OnForcedClose();
     }
+    // else: `database_callbacks` has been passed to `connection_`, in which
+    // case the IndexedDBDatabase will have called `CloseAndReportForceClose()`.
+
     pending_.reset();
     // The tasks_available_callback_ is NOT run here, because we are assuming
     // the caller is doing their own cleanup & execution for ForceClose.

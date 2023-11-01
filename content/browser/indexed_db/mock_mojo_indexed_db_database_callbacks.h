@@ -26,8 +26,14 @@ class MockMojoIndexedDBDatabaseCallbacks
 
   ~MockMojoIndexedDBDatabaseCallbacks() override;
 
+  // Creates a remote that must be passed over another mojo pipe before it's
+  // used.
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
   CreateInterfacePtrAndBind();
+
+  // Creates a remote that has its own mojo pipe.
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
+  BindNewEndpointAndPassDedicatedRemote();
 
   MOCK_METHOD0(ForcedClose, void());
   MOCK_METHOD2(VersionChange, void(int64_t old_version, int64_t new_version));

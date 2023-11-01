@@ -22,10 +22,10 @@
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
+#include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_fake_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -140,7 +140,8 @@ class IndexedDBTransactionTest : public testing::Test {
     auto connection = std::make_unique<IndexedDBConnection>(
         *bucket_context_, db_->AsWeakPtr(), base::DoNothing(),
         base::DoNothing(),
-        base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>(),
+        std::make_unique<IndexedDBDatabaseCallbacks>(
+            mojo::NullAssociatedRemote()),
         base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
             std::move(remote)));
     db_->AddConnectionForTesting(connection.get());

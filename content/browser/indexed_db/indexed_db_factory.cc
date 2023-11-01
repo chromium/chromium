@@ -287,7 +287,7 @@ void IndexedDBFactory::Open(
 
   auto callbacks = std::make_unique<IndexedDBFactoryClient>(
       std::move(pending_factory_client));
-  auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
+  auto database_callbacks = std::make_unique<IndexedDBDatabaseCallbacks>(
       std::move(database_callbacks_remote));
 
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();

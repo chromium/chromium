@@ -34,14 +34,14 @@ IndexedDBConnection::IndexedDBConnection(
     base::WeakPtr<IndexedDBDatabase> database,
     base::RepeatingClosure on_version_change_ignored,
     base::OnceCallback<void(IndexedDBConnection*)> on_close,
-    scoped_refptr<IndexedDBDatabaseCallbacks> callbacks,
+    std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker)
     : id_(g_next_indexed_db_connection_id++),
       bucket_context_handle_(bucket_context),
       database_(std::move(database)),
       on_version_change_ignored_(std::move(on_version_change_ignored)),
       on_close_(std::move(on_close)),
-      callbacks_(callbacks),
+      callbacks_(std::move(callbacks)),
       client_state_checker_(std::move(client_state_checker)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
@@ -60,14 +60,15 @@ IndexedDBConnection::~IndexedDBConnection() {
   AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
 }
 
-void IndexedDBConnection::AbortTransactionsAndClose(
+std::unique_ptr<IndexedDBDatabaseCallbacks>
+IndexedDBConnection::AbortTransactionsAndClose(
     CloseErrorHandling error_handling) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsConnected())
-    return;
+  if (!IsConnected()) {
+    return {};
+  }
 
   DCHECK(database_);
-  callbacks_ = nullptr;
 
   // Finish up any transaction, in case there were any running.
   IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
@@ -82,6 +83,7 @@ void IndexedDBConnection::AbortTransactionsAndClose(
       break;
   }
 
+  std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks = std::move(callbacks_);
   std::move(on_close_).Run(this);
   client_keep_active_remotes_.Clear();
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
@@ -90,6 +92,7 @@ void IndexedDBConnection::AbortTransactionsAndClose(
     bucket_context_handle_->delegate().on_fatal_error.Run(status);
   }
   bucket_context_handle_.Release();
+  return callbacks;
 }
 
 void IndexedDBConnection::CloseAndReportForceClose() {
@@ -97,9 +100,8 @@ void IndexedDBConnection::CloseAndReportForceClose() {
   if (!IsConnected())
     return;
 
-  scoped_refptr<IndexedDBDatabaseCallbacks> callbacks(callbacks_);
-  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
-  callbacks->OnForcedClose();
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError)
+      ->OnForcedClose();
 }
 
 void IndexedDBConnection::VersionChangeIgnored() {

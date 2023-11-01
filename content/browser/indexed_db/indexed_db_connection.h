@@ -32,7 +32,7 @@ class CONTENT_EXPORT IndexedDBConnection {
       base::WeakPtr<IndexedDBDatabase> database,
       base::RepeatingClosure on_version_change_ignored,
       base::OnceCallback<void(IndexedDBConnection*)> on_close,
-      scoped_refptr<IndexedDBDatabaseCallbacks> callbacks,
+      std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
       scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
 
   IndexedDBConnection(const IndexedDBConnection&) = delete;
@@ -48,7 +48,9 @@ class CONTENT_EXPORT IndexedDBConnection {
     kAbortAllReturnLastError,
   };
 
-  void AbortTransactionsAndClose(CloseErrorHandling error_handling);
+  // The return value is `callbacks_`, passing ownership.
+  std::unique_ptr<IndexedDBDatabaseCallbacks> AbortTransactionsAndClose(
+      CloseErrorHandling error_handling);
 
   void CloseAndReportForceClose();
   bool IsConnected();
@@ -124,7 +126,7 @@ class CONTENT_EXPORT IndexedDBConnection {
 
   // The callbacks_ member is cleared when the connection is closed.
   // May be nullptr in unit tests.
-  scoped_refptr<IndexedDBDatabaseCallbacks> callbacks_;
+  std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

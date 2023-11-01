@@ -139,7 +139,6 @@ IndexedDBTransaction::IndexedDBTransaction(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB",
                                     "IndexedDBTransaction::lifetime", this);
 
-  callbacks_ = connection_->callbacks();
   database_ = connection_->database();
   if (database_) {
     database_->TransactionCreated();
@@ -249,8 +248,7 @@ leveldb::Status IndexedDBTransaction::Abort(
   locks_receiver_.locks.clear();
   locks_receiver_.AbortLockRequest();
 
-  if (callbacks_.get())
-    callbacks_->OnAbort(*this, error);
+  callbacks()->OnAbort(*this, error);
 
   if (database_)
     database_->TransactionFinished(mode_, false);
@@ -624,7 +622,7 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
           "IndexedDB",
           "IndexedDBTransaction::CommitPhaseTwo.TransactionCompleteCallbacks",
           "txn.id", id());
-      callbacks_->OnComplete(*this);
+      callbacks()->OnComplete(*this);
     }
 
     if (mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
@@ -652,7 +650,7 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
       error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                      "Internal error committing transaction.");
     }
-    callbacks_->OnAbort(*this, error);
+    callbacks()->OnAbort(*this, error);
     if (database_)
       database_->TransactionFinished(mode_, false);
   }

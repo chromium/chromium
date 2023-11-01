@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
@@ -20,12 +19,12 @@ class IndexedDBDatabaseError;
 class IndexedDBTransaction;
 
 // Expected to be constructed/called/deleted on IDB sequence.
-class CONTENT_EXPORT IndexedDBDatabaseCallbacks
-    : public base::RefCounted<IndexedDBDatabaseCallbacks> {
+class CONTENT_EXPORT IndexedDBDatabaseCallbacks {
  public:
   explicit IndexedDBDatabaseCallbacks(
       mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
           callbacks_remote);
+  virtual ~IndexedDBDatabaseCallbacks();
 
   IndexedDBDatabaseCallbacks(const IndexedDBDatabaseCallbacks&) = delete;
   IndexedDBDatabaseCallbacks& operator=(const IndexedDBDatabaseCallbacks&) =
@@ -38,12 +37,7 @@ class CONTENT_EXPORT IndexedDBDatabaseCallbacks
                        const IndexedDBDatabaseError& error);
   virtual void OnComplete(const IndexedDBTransaction& transaction);
 
- protected:
-  virtual ~IndexedDBDatabaseCallbacks();
-
  private:
-  friend class base::RefCounted<IndexedDBDatabaseCallbacks>;
-
   bool complete_ = false;
   mojo::AssociatedRemote<blink::mojom::IDBDatabaseCallbacks> callbacks_;
   SEQUENCE_CHECKER(sequence_checker_);

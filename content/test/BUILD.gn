@@ -2440,8 +2440,6 @@ test("content_unittests") {
     "../browser/indexed_db/indexed_db_transaction_unittest.cc",
     "../browser/indexed_db/indexed_db_unittest.cc",
     "../browser/indexed_db/list_set_unittest.cc",
-    "../browser/indexed_db/mock_indexed_db_database_callbacks.cc",
-    "../browser/indexed_db/mock_indexed_db_database_callbacks.h",
     "../browser/indexed_db/mock_indexed_db_factory_client.cc",
     "../browser/indexed_db/mock_indexed_db_factory_client.h",
     "../browser/indexed_db/mock_mojo_indexed_db_database_callbacks.cc",

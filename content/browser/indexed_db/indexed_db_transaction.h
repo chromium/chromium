@@ -128,7 +128,9 @@ class CONTENT_EXPORT IndexedDBTransaction
   int64_t id() const { return id_; }
 
   base::WeakPtr<IndexedDBDatabase> database() const { return database_; }
-  IndexedDBDatabaseCallbacks* callbacks() const { return callbacks_.get(); }
+  IndexedDBDatabaseCallbacks* callbacks() const {
+    return connection()->callbacks();
+  }
   IndexedDBConnection* connection() const { return connection_.get(); }
   bool is_commit_pending() const { return is_commit_pending_; }
   int64_t num_errors_sent() const { return num_errors_sent_; }
@@ -245,7 +247,6 @@ class CONTENT_EXPORT IndexedDBTransaction
   // We are owned by the connection object, but during force closes sometimes
   // there are issues if there is a pending OpenRequest. So use a WeakPtr.
   base::WeakPtr<IndexedDBConnection> connection_;
-  scoped_refptr<IndexedDBDatabaseCallbacks> callbacks_;
   base::WeakPtr<IndexedDBDatabase> database_;
 
   IndexedDBBucketContextHandle bucket_context_;
