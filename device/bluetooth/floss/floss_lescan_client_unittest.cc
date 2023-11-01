@@ -421,7 +421,7 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
                            EXPECT_EQ(ret.value(),
                                      FlossDBusClient::BtifStatus::kSuccess);
                          }),
-                     kTestScannerId, ScanSettings{}, ScanFilter{});
+                     kTestScannerId, absl::nullopt, ScanFilter{});
 
   // Method of 1 parameter with no return.
   EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(

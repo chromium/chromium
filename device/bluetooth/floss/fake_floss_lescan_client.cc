@@ -44,7 +44,7 @@ void FakeFlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
 void FakeFlossLEScanClient::StartScan(
     ResponseCallback<BtifStatus> callback,
     uint8_t scanner_id,
-    const ScanSettings& scan_settings,
+    const absl::optional<ScanSettings>& scan_settings,
     const absl::optional<ScanFilter>& filters) {
   // TODO (b/217274013): filters are currently being ignored
   scanner_ids_.insert(scanner_id);

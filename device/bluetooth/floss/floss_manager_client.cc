@@ -516,7 +516,7 @@ void FlossManagerClient::HandleGetFlossApiVersion(
                          << ". Valid range: "
                          << floss::version::GetMinimalSupportedVersion()
                          << " to "
-                         << floss::version::GetMinimalSupportedVersion();
+                         << floss::version::GetMaximalSupportedVersion();
   }
 }
 
