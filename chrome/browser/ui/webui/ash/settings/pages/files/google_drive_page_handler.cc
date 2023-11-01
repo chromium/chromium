@@ -21,9 +21,11 @@ namespace {
 using drive::DriveIntegrationService;
 using drivefs::pinning::PinningManager;
 using drivefs::pinning::Progress;
+using google_drive::mojom::Status;
+using google_drive::mojom::StatusPtr;
 
-google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
-  auto status = google_drive::mojom::Status::New();
+StatusPtr CreateStatusPtr(const Progress& progress) {
+  StatusPtr status = Status::New();
   status->required_space =
       (progress.required_space >= 0)
           ? base::UTF16ToUTF8(ui::FormatBytes(progress.required_space))

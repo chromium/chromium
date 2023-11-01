@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link.css.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
@@ -30,7 +30,7 @@ const SettingsGoogleDriveSubpageElementBase =
     I18nMixin(PrefsMixin(DeepLinkingMixin(RouteObserverMixin(PolymerElement))));
 
 /**
- * The preference containing the value whether Google drive is disabled or not.
+ * The preference containing the value whether Google Drive is disabled or not.
  */
 const GOOGLE_DRIVE_DISABLED_PREF = 'gdata.disabled';
 
@@ -120,7 +120,8 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   static get observers() {
     return [
-      `updateDriveDisabled_(prefs.${GOOGLE_DRIVE_DISABLED_PREF}.*)`,
+      `updateDriveDisabled_(prefs.${GOOGLE_DRIVE_DISABLED_PREF}.value)`,
+      `updateBulkPinningVisible_(prefs.drivefs.bulk_pinning.visible.value)`,
     ];
   }
 
@@ -128,6 +129,11 @@ export class SettingsGoogleDriveSubpageElement extends
    * Reflects the state of `prefs.gdata.disabled` pref.
    */
   private driveDisabled_: boolean;
+
+  /**
+   * Reflects the state of `prefs.drivefs.bulk_pinning.visible` pref.
+   */
+  private bulkPinningVisible_: boolean;
 
   /**
    * A connection with the browser process to send/receive messages.
@@ -329,12 +335,23 @@ export class SettingsGoogleDriveSubpageElement extends
   /**
    * Invoked when the `prefs.gdata.disabled` preference changes value.
    */
-  private updateDriveDisabled_(): void {
-    const disabled = this.getPref(GOOGLE_DRIVE_DISABLED_PREF).value;
+  private updateDriveDisabled_(disabled: boolean): void {
     this.driveDisabled_ = disabled;
     if (disabled) {
       this.showSpinner = false;
     }
+  }
+
+  /**
+   * Invoked when the `prefs.drivefs.bulk_pinning.visible` preference changes
+   * value.
+   */
+  private updateBulkPinningVisible_(visible: boolean): void {
+    this.bulkPinningVisible_ = visible;
+  }
+
+  private and_(a: boolean, b: boolean): boolean {
+    return a && b;
   }
 
   override currentRouteChanged(route: Route, _oldRoute?: Route): void {
