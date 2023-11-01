@@ -63,52 +63,71 @@ void RecordCookieCopyTimes(
       base::Seconds(5), 50);
 }
 
+// Most of (not all though) eligibility-related `PrefetchStatus` are
+// mapped to `PreloadingEligibility` by adding
+// `PreloadingEligibility::kPreloadingEligibilityCommonEnd`.
 static_assert(
     static_cast<int>(PrefetchStatus::kMaxValue) +
         static_cast<int>(
             PreloadingEligibility::kPreloadingEligibilityCommonEnd) <=
     static_cast<int>(PreloadingEligibility::kPreloadingEligibilityContentEnd));
 
-PreloadingEligibility ToPreloadingEligibility(PrefetchStatus status) {
-  switch (status) {
-    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
-      return PreloadingEligibility::kDataSaverEnabled;
-    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
-      return PreloadingEligibility::kBatterySaverEnabled;
-    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
-      return PreloadingEligibility::kPreloadingDisabled;
-    default:
-      return static_cast<PreloadingEligibility>(
-          static_cast<int>(status) +
-          static_cast<int>(
-              PreloadingEligibility::kPreloadingEligibilityCommonEnd));
-  }
-}
+#define CHECK_PRELOADING_ELIGIBILITY_VALUE(NAME)                         \
+  static_assert(                                                         \
+      static_cast<int>(PrefetchStatus::kPrefetchIneligible##NAME) +      \
+          static_cast<int>(                                              \
+              PreloadingEligibility::kPreloadingEligibilityCommonEnd) == \
+      static_cast<int>(PreloadingEligibility::k##NAME))
 
-// Please follow go/preloading-dashboard-updates if a new eligibility is added.
-void SetIneligibilityFromStatus(PreloadingAttempt* attempt,
-                                PrefetchStatus status) {
-  if (attempt) {
-    switch (status) {
-      case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
-      case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
-      case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
-      case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
-      case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
-      case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
-      case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
-      case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
-      case PrefetchStatus::kPrefetchIneligibleRetryAfter:
-      case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
-      case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
-      case PrefetchStatus::kPrefetchIneligibleExistingProxy:
-      case PrefetchStatus::
-          kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
-        attempt->SetEligibility(ToPreloadingEligibility(status));
-        break;
-      default:
-        NOTIMPLEMENTED();
-    }
+CHECK_PRELOADING_ELIGIBILITY_VALUE(BrowserContextOffTheRecord);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(ExistingProxy);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(HostIsNonUnique);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(NonDefaultStoragePartition);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(PrefetchProxyNotAvailable);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(RetryAfter);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(SameSiteCrossOriginPrefetchRequiredProxy);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(SchemeIsNotHttps);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(UserHasCookies);
+CHECK_PRELOADING_ELIGIBILITY_VALUE(UserHasServiceWorker);
+
+#undef CHECK_PRELOADING_ELIGIBILITY_VALUE
+
+PrefetchStatus PrefetchStatusFromIneligibleReason(
+    PreloadingEligibility eligibility) {
+  switch (eligibility) {
+    case PreloadingEligibility::kBatterySaverEnabled:
+      return PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled;
+    case PreloadingEligibility::kBrowserContextOffTheRecord:
+      return PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord;
+    case PreloadingEligibility::kDataSaverEnabled:
+      return PrefetchStatus::kPrefetchIneligibleDataSaverEnabled;
+    case PreloadingEligibility::kExistingProxy:
+      return PrefetchStatus::kPrefetchIneligibleExistingProxy;
+    case PreloadingEligibility::kHostIsNonUnique:
+      return PrefetchStatus::kPrefetchIneligibleHostIsNonUnique;
+    case PreloadingEligibility::kNonDefaultStoragePartition:
+      return PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition;
+    case PreloadingEligibility::kPrefetchProxyNotAvailable:
+      return PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable;
+    case PreloadingEligibility::kPreloadingDisabled:
+      return PrefetchStatus::kPrefetchIneligiblePreloadingDisabled;
+    case PreloadingEligibility::kRetryAfter:
+      return PrefetchStatus::kPrefetchIneligibleRetryAfter;
+    case PreloadingEligibility::kSameSiteCrossOriginPrefetchRequiredProxy:
+      return PrefetchStatus::
+          kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy;
+    case PreloadingEligibility::kSchemeIsNotHttps:
+      return PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps;
+    case PreloadingEligibility::kUserHasCookies:
+      return PrefetchStatus::kPrefetchIneligibleUserHasCookies;
+    case PreloadingEligibility::kUserHasServiceWorker:
+      return PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker;
+
+    case PreloadingEligibility::kEligible:
+    default:
+      // Other ineligible cases are not used in `PrefetchService`.
+      NOTREACHED();
+      return PrefetchStatus::kPrefetchIneligiblePreloadingDisabled;
   }
 }
 
@@ -332,7 +351,7 @@ class PrefetchContainer::SinglePrefetch {
   const bool is_isolated_network_context_required_;
 
   // Whether this |url_| is eligible to be prefetched
-  absl::optional<bool> is_eligible_;
+  absl::optional<PreloadingEligibility> eligibility_;
 
   // This tracks whether the cookies associated with |url_| have changed at
   // some point after the initial eligibility check.
@@ -551,26 +570,23 @@ PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
 }
 
 void PrefetchContainer::OnEligibilityCheckComplete(
-    bool is_eligible,
-    absl::optional<PrefetchStatus> status) {
+    PreloadingEligibility eligibility) {
   SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
-  this_prefetch.is_eligible_ = is_eligible;
+  this_prefetch.eligibility_ = eligibility;
+  bool is_eligible = eligibility == PreloadingEligibility::kEligible;
 
   if (redirect_chain_.size() == 1) {
     // This case is for just the URL that was originally requested to be
     // prefetched.
     if (!is_eligible) {
-      // Expect a reason (status) if not eligible.
-      DCHECK(status.has_value());
-      SetPrefetchStatusWithoutUpdatingTriggeringOutcome(status.value());
+      SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
+          PrefetchStatusFromIneligibleReason(eligibility));
     }
 
     if (attempt_) {
-      if (is_eligible) {
-        attempt_->SetEligibility(PreloadingEligibility::kEligible);
-      } else {
-        SetIneligibilityFromStatus(attempt_.get(), prefetch_status_.value());
-      }
+      // Please follow go/preloading-dashboard-updates if a new eligibility is
+      // added.
+      attempt_->SetEligibility(eligibility);
     }
 
     if (prefetch_document_manager_) {
@@ -586,9 +602,9 @@ void PrefetchContainer::OnEligibilityCheckComplete(
 
 bool PrefetchContainer::IsInitialPrefetchEligible() const {
   DCHECK(redirect_chain_.size() > 0);
-  return redirect_chain_[0]->is_eligible_
-             ? redirect_chain_[0]->is_eligible_.value()
-             : false;
+  return redirect_chain_[0]->eligibility_ &&
+         redirect_chain_[0]->eligibility_.value() ==
+             PreloadingEligibility::kEligible;
 }
 
 void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {

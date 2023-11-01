@@ -85,15 +85,6 @@ const char kHTMLBody[] = R"(
         <body></body>
       </html>)";
 
-PreloadingEligibility ToPreloadingEligibility(PrefetchStatus status) {
-  if (status == PrefetchStatus::kPrefetchIneligibleDataSaverEnabled) {
-    return PreloadingEligibility::kDataSaverEnabled;
-  }
-  return static_cast<PreloadingEligibility>(
-      static_cast<int>(status) +
-      static_cast<int>(PreloadingEligibility::kPreloadingEligibilityCommonEnd));
-}
-
 PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
   return static_cast<PreloadingFailureReason>(
       static_cast<int>(status) +
@@ -1446,10 +1437,8 @@ TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester,
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchIneligibleHostIsNonUnique));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kHostIsNonUnique);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -1501,10 +1490,8 @@ TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester,
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kSchemeIsNotHttps);
 
   Navigate(GURL("http://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("http://example.com")));
@@ -1533,10 +1520,8 @@ TEST_F(PrefetchServiceTest, NotEligiblePrefetchProxyNotAvailable) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester,
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kPrefetchProxyNotAvailable);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -1598,9 +1583,8 @@ TEST_F(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester,
-      ToPreloadingEligibility(PrefetchStatus::kPrefetchIneligibleRetryAfter));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kRetryAfter);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -1651,10 +1635,8 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester,
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kUserHasServiceWorker);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -1933,9 +1915,8 @@ TEST_F(PrefetchServiceTest, NotEligibleUserHasCookies) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester, ToPreloadingEligibility(
-                            PrefetchStatus::kPrefetchIneligibleUserHasCookies));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kUserHasCookies);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -2131,9 +2112,7 @@ TEST_F(PrefetchServiceTest,
 
   ExpectPrefetchNotEligible(
       histogram_tester,
-      ToPreloadingEligibility(
-          PrefetchStatus::
-              kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy));
+      PreloadingEligibility::kSameSiteCrossOriginPrefetchRequiredProxy);
 
   Navigate(GURL("https://other.example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://other.example.com")));
@@ -2162,9 +2141,8 @@ TEST_F(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester, ToPreloadingEligibility(
-                            PrefetchStatus::kPrefetchIneligibleExistingProxy));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kExistingProxy);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -2607,9 +2585,8 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester, ToPreloadingEligibility(
-                            PrefetchStatus::kPrefetchIneligibleUserHasCookies));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kUserHasCookies);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -2730,10 +2707,8 @@ TEST_F(PrefetchServiceIncognitoTest, OffTheRecordIneligible) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester,
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kBrowserContextOffTheRecord);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
@@ -2756,10 +2731,8 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  ExpectPrefetchNotEligible(
-      histogram_tester,
-      ToPreloadingEligibility(
-          PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition));
+  ExpectPrefetchNotEligible(histogram_tester,
+                            PreloadingEligibility::kNonDefaultStoragePartition);
 
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));

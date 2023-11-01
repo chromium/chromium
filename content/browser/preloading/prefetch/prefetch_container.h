@@ -17,6 +17,7 @@
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -182,8 +183,7 @@ class CONTENT_EXPORT PrefetchContainer {
   std::unique_ptr<ProxyLookupClientImpl> ReleaseProxyLookupClient();
 
   // Whether or not the prefetch was determined to be eligibile.
-  void OnEligibilityCheckComplete(bool is_eligible,
-                                  absl::optional<PrefetchStatus> status);
+  void OnEligibilityCheckComplete(PreloadingEligibility eligibility);
   bool IsInitialPrefetchEligible() const;
 
   // Adds a the new URL to |redirect_chain_|.

@@ -214,6 +214,23 @@ enum class PreloadingEligibility {
   // defined under `//content`, namely `PrefetchStatus`.
   kPreloadingEligibilityCommonEnd = 50,
 
+  // Values corresponding to `PrefetchStatus`.
+  // The values here are equal to the corresponding `PrefetchStatus`'s values +
+  // `kPreloadingEligibilityCommonEnd`.
+  kUserHasCookies = 55,
+  kUserHasServiceWorker = 56,
+  // This is similar to `kHttpsOnly`, but separately defined here to keep
+  // existing metrics values, for cases corresponding to
+  // `PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps`.
+  kSchemeIsNotHttps = 57,
+  kNonDefaultStoragePartition = 59,
+  kRetryAfter = 77,
+  kPrefetchProxyNotAvailable = 78,
+  kHostIsNonUnique = 86,
+  kExistingProxy = 88,
+  kBrowserContextOffTheRecord = 89,
+  kSameSiteCrossOriginPrefetchRequiredProxy = 96,
+
   // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
   // each preloading operation
   // This constant is used to define the value beyond which embedders can add

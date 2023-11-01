@@ -158,12 +158,10 @@ class CONTENT_EXPORT PrefetchService {
  private:
   // Checks whether the given |prefetch_container| is eligible for prefetch.
   // Once the eligibility is determined then |result_callback| will be called
-  // with result and an optional status stating why the prefetch is not
-  // eligible.
+  // with result (`PreloadingEligibility::kEligible` when eligible).
   using OnEligibilityResultCallback =
       base::OnceCallback<void(base::WeakPtr<PrefetchContainer>,
-                              bool eligible,
-                              absl::optional<PrefetchStatus> status)>;
+                              PreloadingEligibility eligibility)>;
   void CheckEligibilityOfPrefetch(
       const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container,
@@ -212,8 +210,7 @@ class CONTENT_EXPORT PrefetchService {
   // not eligible, then we consider making it a decoy request.
   void OnGotEligibilityResult(
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      bool eligible,
-      absl::optional<PrefetchStatus> status);
+      PreloadingEligibility eligibility);
 
   // Called once the eligibility of a redirect for a |prefetch_container| is
   // determined. If its eligible, then the prefetch will continue, otherwise it
@@ -222,8 +219,7 @@ class CONTENT_EXPORT PrefetchService {
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr redirect_head,
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      bool eligible,
-      absl::optional<PrefetchStatus> status);
+      PreloadingEligibility eligibility);
 
   // Starts the network requests for as many prefetches in |prefetch_queue_| as
   // possible.
