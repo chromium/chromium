@@ -109,6 +109,18 @@ extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
 BASE_FEATURE(kWebAppsEnableMLModelForPromotion,
              "WebAppsEnableMLModelForPromotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
+extern const base::FeatureParam<double> kWebAppsMLGuardrailResultReportProb(
+    &kWebAppsEnableMLModelForPromotion,
+    "guardrail_report_prob",
+    0);
+extern const base::FeatureParam<double> kWebAppsMLModelUserDeclineReportProb(
+    &kWebAppsEnableMLModelForPromotion,
+    "model_and_user_decline_report_prob",
+    0);
+extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage(
+    &kWebAppsEnableMLModelForPromotion,
+    "max_days_to_store_guardrails",
+    kTotalDaysToStoreMLGuardrails);
 
 // Allows installing a web app with fallback manifest values.
 BASE_FEATURE(kUniversalInstallManifest,
