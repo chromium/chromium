@@ -412,16 +412,15 @@ export class AppElement extends AppElementBase {
               this.showCustomize_ = visible;
             });
     this.showWebstoreToastListenerId_ =
-        NewTabPageProxy.getInstance()
-            .callbackRouter.showWebstoreToast.addListener(() => {
-              if (this.showCustomize_) {
-                const toast = $$<CrToastElement>(this, '#webstoreToast');
-                if (toast) {
-                  toast!.hidden = false;
-                  toast!.show();
-                }
-              }
-            });
+        this.callbackRouter_.showWebstoreToast.addListener(() => {
+          if (this.showCustomize_) {
+            const toast = $$<CrToastElement>(this, '#webstoreToast');
+            if (toast) {
+              toast!.hidden = false;
+              toast!.show();
+            }
+          }
+        });
 
     // Open Customize Chrome if there are Customize Chrome URL params.
     if (this.showCustomize_) {
@@ -472,6 +471,7 @@ export class AppElement extends AppElementBase {
     this.callbackRouter_.removeListener(this.setThemeListenerId_!);
     this.callbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_!);
+    this.callbackRouter_.removeListener(this.showWebstoreToastListenerId_!);
     this.eventTracker_.removeAll();
   }
 
