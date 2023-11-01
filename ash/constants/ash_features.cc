@@ -1188,6 +1188,11 @@ BASE_FEATURE(kFirmwareUpdateJelly,
              "FirmwareUpdateJelly",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the v2 version of the Firmware Updates app.
+BASE_FEATURE(kFirmwareUpdateUIV2,
+             "FirmwareUpdateUIV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables first party Vietnamese input method.
 BASE_FEATURE(kFirstPartyVietnameseInput,
              "FirstPartyVietnameseInput",
@@ -3419,6 +3424,10 @@ bool IsFilesConflictDialogEnabled() {
 
 bool IsFilesLocalImageSearchEnabled() {
   return base::FeatureList::IsEnabled(kFilesLocalImageSearch);
+}
+
+bool IsFirmwareUpdateUIV2Enabled() {
+  return base::FeatureList::IsEnabled(kFirmwareUpdateUIV2);
 }
 
 bool IsFloatingWorkspaceEnabled() {

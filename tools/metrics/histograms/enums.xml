@@ -49456,6 +49456,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-dictation-offline"/>
   <int value="-1859421131" label="BackForwardCache:disabled"/>
   <int value="-1859095876" label="Previews:disabled"/>
+  <int value="-1858742756" label="FirmwareUpdateUIV2:disabled"/>
   <int value="-1858614075" label="IsolateSandboxedIframes:enabled"/>
   <int value="-1858284725" label="TabGroupsFeedback:enabled"/>
   <int value="-1858245344" label="CcoTest1:enabled"/>
@@ -54088,6 +54089,7 @@ from previous Chrome versions.
   <int value="369352033" label="GenericSensorExtraClasses:enabled"/>
   <int value="369635818" label="PasswordExport:enabled"/>
   <int value="370486304" label="enable-origin-chip-on-srp"/>
+  <int value="370926002" label="FirmwareUpdateUIV2:enabled"/>
   <int value="371268743" label="OmniboxUIExperimentVerticalMargin:disabled"/>
   <int value="372460068" label="QuickUnlockFingerprint:disabled"/>
   <int value="373177941" label="DockedMagnifier:enabled"/>

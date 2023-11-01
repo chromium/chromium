@@ -3714,6 +3714,9 @@ extern const char kFilesGoogleDriveSettingsPageDescription[];
 extern const char kFirmwareUpdateJellyName[];
 extern const char kFirmwareUpdateJellyDescription[];
 
+extern const char kFirmwareUpdateUIV2Name[];
+extern const char kFirmwareUpdateUIV2Description[];
+
 extern const char kFirstPartyVietnameseInputName[];
 extern const char kFirstPartyVietnameseInputDescription[];
 

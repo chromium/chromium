@@ -6452,6 +6452,11 @@ const char kFirmwareUpdateJellyDescription[] =
     "Enable jelly colors for the Firmware Update App. Requires "
     "jelly-colors flag to be enabled.";
 
+const char kFirmwareUpdateUIV2Name[] =
+    "Enables the v2 version of the Firmware Updates app";
+const char kFirmwareUpdateUIV2Description[] =
+    "Enable the v2 version of the Firmware Updates App.";
+
 const char kForceSpectreVariant2MitigationName[] =
     "Force Spectre variant 2 mitigagtion";
 const char kForceSpectreVariant2MitigationDescription[] =
