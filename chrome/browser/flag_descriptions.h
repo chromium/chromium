@@ -3172,6 +3172,9 @@ extern const char kArcNativeBridgeToggleDescription[];
 extern const char kArcNearbyShareFuseBoxName[];
 extern const char kArcNearbyShareFuseBoxDescription[];
 
+extern const char kArcPerAppLanguageName[];
+extern const char kArcPerAppLanguageDescription[];
+
 extern const char kArcRoundedWindowCompatName[];
 extern const char kArcRoundedWindowCompatDescription[];
 

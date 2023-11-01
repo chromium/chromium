@@ -209,6 +209,12 @@ BASE_FEATURE(kOutOfProcessVideoDecoding,
              "OutOfProcessVideoDecoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Android per-app-language settings will be surfaced in ChromeOS
+// Settings page.
+BASE_FEATURE(kPerAppLanguage,
+             "PerAppLanguage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls ARC picture-in-picture feature. If this is enabled, then Android
 // will control which apps can enter PIP. If this is disabled, then ARC PIP
 // will be disabled.

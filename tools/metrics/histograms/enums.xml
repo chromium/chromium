@@ -53900,6 +53900,7 @@ from previous Chrome versions.
   <int value="209805234" label="MessagesForAndroidAutoDarkWebContents:enabled"/>
   <int value="211313007" label="CrOSEnforceSystemAecNs:disabled"/>
   <int value="211561930" label="TouchDragAndContextMenu:disabled"/>
+  <int value="212194994" label="PerAppLanguage:enabled"/>
   <int value="212245695" label="PowerBookmarksSidePanel:disabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
@@ -56638,6 +56639,7 @@ from previous Chrome versions.
   <int value="1537693783" label="KioskEnableAppService:enabled"/>
   <int value="1538685213" label="DownloadHomeV2:enabled"/>
   <int value="1538690515" label="OneGoogleBarOnLocalNtp:enabled"/>
+  <int value="1539399467" label="PerAppLanguage:disabled"/>
   <int value="1540395380" label="WebContentsOcclusion:enabled"/>
   <int value="1540487070" label="ContextualSearchDebug:enabled"/>
   <int value="1541446160" label="DisallowManagedProfileSignout:disabled"/>

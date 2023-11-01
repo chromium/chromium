@@ -49,6 +49,7 @@ extern const base::FeatureParam<int> kMglruReclaimInterval;
 extern const base::FeatureParam<int> kMglruReclaimSwappiness;
 BASE_DECLARE_FEATURE(kNativeBridgeToggleFeature);
 BASE_DECLARE_FEATURE(kOutOfProcessVideoDecoding);
+BASE_DECLARE_FEATURE(kPerAppLanguage);
 BASE_DECLARE_FEATURE(kPictureInPictureFeature);
 BASE_DECLARE_FEATURE(kRoundedWindowCompat);
 extern const char kRoundedWindowCompatStrategy[];
