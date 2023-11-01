@@ -1058,19 +1058,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionStorageContext.CachePurgedInKB" units="KB"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    Total size of the HTML5 SessionStorage browser-side cache purged in KB when
-    memory pressure signal was triggered or cache size hit the limits.
+    Total size of the HTML5 SessionStorage browser-side cache purged in KB,
+    recorded when memory pressure signal is triggered or cache size hit the
+    limits.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SessionStorageContext.CacheSizeInKB" units="KB"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1082,18 +1083,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionStorageContext.CommitResult" enum="LevelDBStatus"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The result of an attempt to commit SessionStorage data to the database.
+    Recorded after the commit operation has completed.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SessionStorageContext.DatabaseOpenError" enum="LevelDBStatus"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1105,114 +1107,93 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionStorageContext.DatabaseOpenError.Disk"
-    enum="LevelDBStatus" expires_after="2023-12-01">
+    enum="LevelDBStatus" expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The result of a failed attempt to open a LevelDB database for SessionStorage
-    on disk.
+    The status of a failed attempt to open a LevelDB database for SessionStorage
+    on disk. Recorded when the operation returns and error.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SessionStorageContext.DatabaseOpenError.Memory"
-    enum="LevelDBStatus" expires_after="2023-12-01">
+    enum="LevelDBStatus" expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The result of a failed attempt to open a LevelDB database for SessionStorage
-    in memory.
+    The status of a failed attempt to open a LevelDB database for SessionStorage
+    in memory. Recorded when the operation returns an error.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SessionStorageContext.DestroyDBResult" enum="LevelDBStatus"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The result of attempting to delete the SessionStorage database.
-
-    Warning: Histogram expired between M95-M110. Data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="SessionStorageContext.DirectoryOpenError"
-    enum="PlatformFileError" expires_after="2023-12-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The reason opening a directory for the LevelDB database that backs
-    LocalStorage failed.
-
-    Warning: Histogram expired between M95-M110. Data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="SessionStorageContext.OnConnectionDestroyed" enum="Boolean"
-    expires_after="2023-12-01">
-  <owner>dullweber@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Recorded when the database connection is closed unexpectedly.
+    The result of attempting to delete the SessionStorage database. Recorded
+    when the operation completes and returns a status.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SessionStorageContext.OpenError" enum="LocalStorageOpenError"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The reason opening the LevelDB database that backs SessionStorage failed.
+    Recorded after an error is encountered after an open operation.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram base="true" name="SessionStorageContext.OpenResultAfter"
-    enum="LocalStorageOpenError" expires_after="2023-12-01">
+    enum="LocalStorageOpenError" expires_after="2024-12-01">
 <!-- Name completed by histogram_suffixes name="SessionStorageContextOpenReasons" -->
 
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The result of opening the LevelDB database that backs SessionStorage.
+    Recorded after an open operation attempt returns an error.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SessionStorageContext.ReadNamespacesError"
-    enum="LevelDBStatus" expires_after="2023-12-01">
+    enum="LevelDBStatus" expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The reason reading the namespaces metadata of the SessionStorage database
-    failed.
+    failed. Recorded after the operation returns an error.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SessionStorageContext.ReadNextMapIdError" enum="LevelDBStatus"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The reason reading the next data map id metadata of the SessionStorage
-    database failed.
+    database failed. Recorded after the operation returns an error.
 
     Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="SessionStorageContext.ReadVersionError" enum="LevelDBStatus"
-    expires_after="2023-12-01">
+    expires_after="2024-12-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

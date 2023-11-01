@@ -270,17 +270,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorage.RendererLocalStorageSizeInKB" units="KB"
-    expires_after="2023-12-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Size of the HTML5 LocalStorage DB in KB in the renderer-side cache.
-
-    Warning: Histogram expired between M95-M110. Data may be missing.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
