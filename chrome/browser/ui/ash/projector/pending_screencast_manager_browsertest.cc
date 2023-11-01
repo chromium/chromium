@@ -770,11 +770,16 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                        UpdateIndexableTextSuccess) {
   // Prepares a ".projector" file and it's metadata:
   const std::string kProjectorFileContent =
-      "{\"captionLanguage\":\"en\",\"captions\":[{\"endOffset\":1260,"
-      "\"hypothesisParts\":[],\"startOffset\":760,\"text\":\"metadata "
-      "file.\"},{\"endOffset\":2300,"
-      "\"hypothesisParts\":[],\"startOffset\":2000,\"text\":\"another sentence."
-      "\"}],\"tableOfContent\":[]}";
+      R"({
+        "captionLanguage": "en",
+        "captions": [
+          {"endOffset": 400, "startOffset": 200, "editState": 1},
+          {"endOffset": 1260, "hypothesisParts": [], "startOffset": 760,
+          "text": "metadata file."},
+          {"endOffset": 2300, "hypothesisParts": [], "startOffset": 2000,
+          "text": "another sentence."}
+        ],
+        "tableOfContent":[]})";
   CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kProjectorFileContent);
   drivefs::FakeMetadata metadata;
   metadata.path = base::FilePath(kDefaultMetadataFilePath);
