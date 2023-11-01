@@ -68,13 +68,25 @@ void OnEndpointFetcherComplete(MantaProtoResponseCallback callback,
   // proper error status.
 
   std::string message = std::string();
-  if (!responses || responses->error_type.has_value() ||
-      responses->http_status_code != net::HTTP_OK) {
-    // Parses the unexpected response as RpcStatus and passes back the error
-    // messages.
-    proto::RpcStatus rpc_status;
 
+  if (!responses) {
+    std::move(callback).Run(nullptr,
+                            {MantaStatusCode::kBackendFailure, message});
+    return;
+  }
+
+  // Tries to parse the unexpected response as RpcStatus and passes back the
+  // error messages.
+  if (responses->error_type.has_value() ||
+      responses->http_status_code != net::HTTP_OK) {
     MantaStatusCode manta_status_code = MantaStatusCode::kBackendFailure;
+
+    if (responses->error_type.has_value() &&
+        responses->error_type.value() == FetchErrorType::kNetError) {
+      manta_status_code = MantaStatusCode::kNoInternetConnection;
+    }
+
+    proto::RpcStatus rpc_status;
 
     if (!rpc_status.ParseFromString(responses->response)) {
       DVLOG(1) << "Got unexpected failed response but failed to parse a "

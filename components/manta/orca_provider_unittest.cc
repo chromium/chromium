@@ -168,7 +168,7 @@ TEST_F(OrcaProviderTest, CaptureNetError) {
                  [quit_closure = task_environment_.QuitClosure()](
                      base::Value::Dict response, MantaStatus manta_status) {
                    EXPECT_EQ(manta_status.status_code,
-                             MantaStatusCode::kBackendFailure);
+                             MantaStatusCode::kNoInternetConnection);
                    quit_closure.Run();
                  }));
   task_environment_.RunUntilQuit();
