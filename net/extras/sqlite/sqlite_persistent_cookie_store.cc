@@ -1236,7 +1236,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_statement.BindString(1, po->cc().Domain());
           add_statement.BindString(2, top_frame_site_key);
           add_statement.BindString(3, po->cc().Name());
-          if (crypto_ && crypto_->ShouldEncrypt()) {
+          if (crypto_) {
             std::string encrypted_value;
             if (!crypto_->EncryptString(po->cc().Value(), &encrypted_value)) {
               DLOG(WARNING) << "Could not encrypt a cookie, skipping add.";

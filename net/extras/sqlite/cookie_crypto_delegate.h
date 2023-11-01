@@ -14,10 +14,6 @@ class COMPONENT_EXPORT(NET_EXTRAS) CookieCryptoDelegate {
  public:
   virtual ~CookieCryptoDelegate() = default;
 
-  // Return if cookies should be encrypted on this platform.  Decryption of
-  // previously encrypted cookies is always possible.
-  virtual bool ShouldEncrypt() = 0;
-
   // Encrypt |plaintext| string and store the result in |ciphertext|.  This
   // method is always functional even if ShouldEncrypt() is false.
   virtual bool EncryptString(const std::string& plaintext,

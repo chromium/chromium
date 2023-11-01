@@ -130,6 +130,16 @@ class ChromeNetworkServiceBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
+  // These test is only valid if crypto is enabled on the platform.
+  net::CookieCryptoDelegate* crypto_delegate =
+      cookie_config::GetCookieCryptoDelegate();
+  if (!crypto_delegate) {
+    GTEST_SKIP() << "No crypto on this platform.";
+  }
+  std::string ciphertext;
+  crypto_delegate->EncryptString(kCookieValue, &ciphertext);
+  ASSERT_NE(ciphertext, kCookieValue) << "Crypto should really encrypt.";
+
   // First set a cookie with cookie encryption enabled.
   mojo::Remote<network::mojom::NetworkContext> context(
       CreateNetworkContext(/*enable_encrypted_cookies=*/true));
@@ -154,14 +164,6 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
 #endif
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest,
                        MAYBE_EncryptedCookies) {
-  net::CookieCryptoDelegate* crypto_delegate =
-      cookie_config::GetCookieCryptoDelegate();
-  std::string ciphertext;
-  crypto_delegate->EncryptString(kCookieValue, &ciphertext);
-  // These checks are only valid if crypto is enabled on the platform.
-  if (!crypto_delegate->ShouldEncrypt() || ciphertext == kCookieValue)
-    return;
-
   // Now attempt to read the cookie with encryption disabled.
   mojo::Remote<network::mojom::NetworkContext> context(
       CreateNetworkContext(/*enable_encrypted_cookies=*/false));
