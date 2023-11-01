@@ -164,7 +164,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 void TabSearchPageHandler::AcceptTabOrganization(
     int32_t session_id,
     int32_t organization_id,
-    const std::string& name,
+    const std::u16string& name,
     std::vector<tab_search::mojom::TabPtr> tabs) {
   // TODO(dpenning): Implement this
   Browser* browser = chrome::FindLastActive();

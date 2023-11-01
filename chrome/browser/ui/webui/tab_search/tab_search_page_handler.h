@@ -61,7 +61,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void AcceptTabOrganization(
       int32_t session_id,
       int32_t organization_id,
-      const std::string& name,
+      const std::u16string& name,
       std::vector<tab_search::mojom::TabPtr> tabs) override;
   void RejectTabOrganization(int32_t session_id,
                              int32_t organization_id) override;

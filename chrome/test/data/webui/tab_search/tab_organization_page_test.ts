@@ -4,6 +4,7 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {SyncInfo, Tab, TabOrganizationError, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -48,7 +49,8 @@ suite('TabOrganizationPageTest', () => {
     TabSearchSyncBrowserProxyImpl.setInstance(testSyncProxy);
 
     tabOrganizationResults = document.createElement('tab-organization-results');
-    tabOrganizationResults.name = session.organizations[0]!.name;
+    tabOrganizationResults.name =
+        mojoString16ToString(session.organizations[0]!.name);
     tabOrganizationResults.tabs = session.organizations[0]!.tabs;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -83,7 +85,7 @@ suite('TabOrganizationPageTest', () => {
           state: TabOrganizationState.kNotStarted,
           organizations: [{
             organizationId: 1,
-            name: 'foo',
+            name: stringToMojoString16('foo'),
             tabs: [
               createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
               createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),

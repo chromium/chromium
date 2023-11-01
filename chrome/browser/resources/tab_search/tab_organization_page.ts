@@ -14,6 +14,7 @@ import './tab_organization_results.js';
 import './tab_organization_shared_style.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_page.html.js';
@@ -85,7 +86,7 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.error_ = session.error;
     if (session.state === TabOrganizationState.kSuccess) {
       const organization: TabOrganization = session.organizations[0];
-      this.name_ = organization.name;
+      this.name_ = mojoString16ToString(organization.name);
       this.tabs_ = organization.tabs;
       this.organizationId_ = organization.organizationId;
     } else {

@@ -4,6 +4,7 @@
 
 module tab_search.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
@@ -154,7 +155,7 @@ struct SwitchToTabInfo {
 struct TabOrganization {
   int32 organization_id;
   array<Tab> tabs;
-  string name;
+  mojo_base.mojom.String16 name;
 };
 
 struct TabOrganizationSession {
@@ -197,7 +198,7 @@ interface PageHandler {
   // Accept the tab organization, updated with the specified name and tab list.
   AcceptTabOrganization(int32 session_id,
                         int32 organization_id,
-                        string name,
+                        mojo_base.mojom.String16 name,
                         array<Tab> tabs);
 
   // Reject the tab organization.
