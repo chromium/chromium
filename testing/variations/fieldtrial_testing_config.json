@@ -16465,6 +16465,30 @@
             ]
         }
     ],
+    "SecurityPageHats": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.01",
+                        "security-page-time": "15s",
+                        "security-page-trigger-id": "c4dvJ3Sz70ugnJ3q1cK0SkwJZodD"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysForSecurityPage"
+                    ]
+                }
+            ]
+        }
+    ],
     "SegmentationCompactionFix": [
         {
             "platforms": [
