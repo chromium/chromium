@@ -205,7 +205,7 @@ void FileSystemAccessWatcherManager::OnSourceBeingDestroyed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   source_observations_.RemoveObservation(source);
-  size_t count_removed = base::Erase(all_sources_, source);
+  size_t count_removed = base::Erase(all_sources_, *source);
   CHECK_EQ(count_removed, 1u);
 }
 
@@ -214,7 +214,7 @@ void FileSystemAccessWatcherManager::RegisterSource(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   source_observations_.AddObservation(source);
-  all_sources_.push_back(source);
+  all_sources_.emplace_back(*source);
 }
 
 void FileSystemAccessWatcherManager::AddObserver(Observation* observation) {
@@ -247,7 +247,8 @@ bool FileSystemAccessWatcherManager::HasSourceContainingScopeForTesting(
     const FileSystemAccessWatchScope& scope) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::ranges::any_of(
-      all_sources_, [&scope](const FileSystemAccessChangeSource* source) {
+      all_sources_,
+      [&scope](const raw_ref<FileSystemAccessChangeSource> source) {
         return source->scope().Contains(scope);
       });
 }
@@ -263,11 +264,12 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
 
   FileSystemAccessChangeSource* raw_change_source = nullptr;
   auto it = base::ranges::find_if(
-      all_sources_, [&scope](const FileSystemAccessChangeSource* source) {
+      all_sources_,
+      [&scope](const raw_ref<FileSystemAccessChangeSource> source) {
         return source->scope().Contains(scope);
       });
   if (it != all_sources_.end()) {
-    raw_change_source = *it;
+    raw_change_source = &it->get();
   } else {
     auto owned_change_source = CreateOwnedSourceForScope(scope);
     if (!owned_change_source) {

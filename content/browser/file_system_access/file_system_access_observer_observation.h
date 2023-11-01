@@ -56,7 +56,7 @@ class FileSystemAccessObserverObservation {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The host which owns this instance.
-  const raw_ptr<FileSystemAccessObserverHost> host_;
+  const raw_ptr<FileSystemAccessObserverHost> host_ = nullptr;
 
   // The `FileSystemHandle` being observed.
   const absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,

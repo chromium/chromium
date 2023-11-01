@@ -181,7 +181,8 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   }
 
   // The FileSystemAccessManagerImpl that owns this instance.
-  const raw_ptr<FileSystemAccessManagerImpl, DanglingUntriaged> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl, DanglingUntriaged> manager_ =
+      nullptr;
   base::WeakPtr<WebContents> web_contents_
       GUARDED_BY_CONTEXT(sequence_checker_);
   const BindingContext context_;

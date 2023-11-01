@@ -194,9 +194,9 @@ class FileSystemAccessSafeMoveHelperTest : public testing::Test {
 
   base::ScopedTempDir dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  raw_ptr<TestFileSystemBackend> test_file_system_backend_;
+  raw_ptr<TestFileSystemBackend> test_file_system_backend_ = nullptr;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
-  raw_ptr<storage::BlobStorageContext> blob_context_;
+  raw_ptr<storage::BlobStorageContext> blob_context_ = nullptr;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
   FileSystemURL test_dest_url_;

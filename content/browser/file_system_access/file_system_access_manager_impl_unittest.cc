@@ -83,7 +83,7 @@ class StringDataPipeReader : public mojo::DataPipeDrainer::Client {
   void OnDataComplete() override { std::move(done_callback_).Run(); }
 
  private:
-  raw_ptr<std::string> data_out_;
+  raw_ptr<std::string> data_out_ = nullptr;
   base::OnceClosure done_callback_;
 };
 
@@ -447,7 +447,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
-  raw_ptr<WebContents> web_contents_;
+  raw_ptr<WebContents> web_contents_ = nullptr;
 
   testing::StrictMock<MockFileSystemAccessPermissionContext>
       permission_context_;

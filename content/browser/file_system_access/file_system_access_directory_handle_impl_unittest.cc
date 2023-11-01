@@ -235,8 +235,9 @@ class TestFileSystemAccessDirectoryEntriesListener
   }
 
  private:
-  raw_ptr<std::vector<blink::mojom::FileSystemAccessEntryPtr>> entries_;
-  raw_ptr<blink::mojom::FileSystemAccessErrorPtr> final_result_;
+  raw_ptr<std::vector<blink::mojom::FileSystemAccessEntryPtr>> entries_ =
+      nullptr;
+  raw_ptr<blink::mojom::FileSystemAccessErrorPtr> final_result_ = nullptr;
   base::OnceClosure done_;
 };
 }  // namespace

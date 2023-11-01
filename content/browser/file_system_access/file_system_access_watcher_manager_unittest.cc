@@ -311,7 +311,7 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote_;
 
-  raw_ptr<WebContents> web_contents_;
+  raw_ptr<WebContents> web_contents_ = nullptr;
 };
 
 // Watching the local file system is not supported on Android or Fuchsia.

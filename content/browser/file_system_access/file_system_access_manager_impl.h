@@ -593,7 +593,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<FileSystemAccessPermissionContext> permission_context_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // All the mojo receivers for this FileSystemAccessManager itself. Keeps
   // track of associated origin and other state as well to not have to rely on

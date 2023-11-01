@@ -186,7 +186,7 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The manager which owns this instance.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
 
   // Watches changes to the all bucket file systems. Though this is technically
   // a change source which is owned by this instance, it is not included in
@@ -219,10 +219,10 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   base::ScopedMultiSourceObservation<FileSystemAccessChangeSource,
                                      RawChangeObserver>
       source_observations_ GUARDED_BY_CONTEXT(sequence_checker_){this};
-  // Raw pointers to each source in `source_observations_`.
+  // Raw refs to each source in `source_observations_`.
   // Unfortunately, ScopedMultiSourceObservation does not allow for peeking
   // inside the list. This is a workaround.
-  std::list<FileSystemAccessChangeSource*> all_sources_;
+  std::list<raw_ref<FileSystemAccessChangeSource>> all_sources_;
 
   base::WeakPtrFactory<FileSystemAccessWatcherManager> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
