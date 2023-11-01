@@ -63,11 +63,11 @@ api::file_system_provider::FileSystemInfo ConvertFileSystemInfoMojomToExtension(
     switch (opened_file->mode) {
       case crosapi::mojom::OpenFileMode::kRead:
         opened_file_item.mode =
-            extensions::api::file_system_provider::OPEN_FILE_MODE_READ;
+            extensions::api::file_system_provider::OpenFileMode::kRead;
         break;
       case crosapi::mojom::OpenFileMode::kWrite:
         opened_file_item.mode =
-            extensions::api::file_system_provider::OPEN_FILE_MODE_WRITE;
+            extensions::api::file_system_provider::OpenFileMode::kWrite;
         break;
     }
     item.opened_files.push_back(std::move(opened_file_item));
@@ -80,9 +80,9 @@ api::file_system_provider::FileSystemInfo ConvertFileSystemInfoMojomToExtension(
 crosapi::mojom::FSPChangeType ParseChangeType(
     const api::file_system_provider::ChangeType& change_type) {
   switch (change_type) {
-    case api::file_system_provider::CHANGE_TYPE_CHANGED:
+    case api::file_system_provider::ChangeType::kChanged:
       return crosapi::mojom::FSPChangeType::kChanged;
-    case api::file_system_provider::CHANGE_TYPE_DELETED:
+    case api::file_system_provider::ChangeType::kDeleted:
       return crosapi::mojom::FSPChangeType::kDeleted;
     default:
       break;
@@ -519,7 +519,7 @@ FileSystemProviderInternalOperationRequestedErrorFunction::Run() {
   absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (params->error == api::file_system_provider::PROVIDER_ERROR_OK) {
+  if (params->error == api::file_system_provider::ProviderError::kOk) {
     // It's incorrect to pass OK as an error code.
     return ValidationFailure(this);
   }
