@@ -89,7 +89,6 @@ class PrintPreviewDialogDelegate : public ui::WebDialogDelegate {
   GURL GetDialogContentURL() const override;
   void GetDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
-  void OnDialogClosingFromKeyEvent() override;
   void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(WebContents* source, bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
@@ -157,10 +156,6 @@ void PrintPreviewDialogDelegate::GetDialogSize(gfx::Size* size) const {
 
 std::string PrintPreviewDialogDelegate::GetDialogArgs() const {
   return std::string();
-}
-
-void PrintPreviewDialogDelegate::OnDialogClosingFromKeyEvent() {
-  OnDialogClosed(std::string());
 }
 
 void PrintPreviewDialogDelegate::OnDialogClosed(
