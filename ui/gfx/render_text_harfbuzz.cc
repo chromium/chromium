@@ -337,12 +337,12 @@ inline hb_script_t ICUScriptToHBScript(UScriptCode script) {
 }
 
 bool FontWasAlreadyTried(sk_sp<SkTypeface> typeface,
-                         std::set<SkFontID>* fallback_fonts) {
+                         std::set<SkTypefaceID>* fallback_fonts) {
   return fallback_fonts->count(typeface->uniqueID()) != 0;
 }
 
 void MarkFontAsTried(sk_sp<SkTypeface> typeface,
-                     std::set<SkFontID>* fallback_fonts) {
+                     std::set<SkTypefaceID>* fallback_fonts) {
   fallback_fonts->insert(typeface->uniqueID());
 }
 
@@ -2058,7 +2058,7 @@ void RenderTextHarfBuzz::ShapeRuns(
   }
 
   // Keep a set of fonts already tried for shaping runs.
-  std::set<SkFontID> fallback_fonts_already_tried;
+  std::set<SkTypefaceID> fallback_fonts_already_tried;
   std::vector<Font> fallback_font_candidates;
 
   // Shaping with primary configured fonts from font_list().

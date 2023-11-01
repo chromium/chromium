@@ -123,7 +123,7 @@ sk_sp<SkTypeface> GetSkiaFallbackTypeface(const Font& template_font,
       font_weight, SkFontStyle::kNormal_Width,
       italic ? SkFontStyle::kItalic_Slant : SkFontStyle::kUpright_Slant);
 
-  std::set<SkFontID> tested_typeface;
+  std::set<SkTypefaceID> tested_typeface;
   sk_sp<SkTypeface> fallback_typeface;
   size_t fewest_missing_glyphs = text.length() + 1;
 

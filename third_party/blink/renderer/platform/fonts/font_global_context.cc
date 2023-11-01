@@ -67,7 +67,7 @@ IdentifiableToken FontGlobalContext::GetOrComputeTypefaceDigest(
   if (!typeface)
     return 0;
 
-  SkFontID font_id = typeface->uniqueID();
+  SkTypefaceID font_id = typeface->uniqueID();
 
   auto iter = typeface_digest_cache_.Get(font_id);
   if (iter == typeface_digest_cache_.end())
@@ -82,7 +82,7 @@ IdentifiableToken FontGlobalContext::GetOrComputePostScriptNameDigest(
   if (!typeface)
     return IdentifiableToken();
 
-  SkFontID font_id = typeface->uniqueID();
+  SkTypefaceID font_id = typeface->uniqueID();
 
   auto iter = postscript_name_digest_cache_.Get(font_id);
   if (iter == postscript_name_digest_cache_.end())

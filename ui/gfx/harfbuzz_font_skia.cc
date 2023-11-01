@@ -272,7 +272,7 @@ hb_font_t* CreateHarfBuzzFont(sk_sp<SkTypeface> skia_face,
                               const FontRenderParams& params,
                               bool subpixel_rendering_suppressed) {
   // A cache from Skia font to harfbuzz typeface information.
-  using TypefaceCache = base::LRUCache<SkFontID, TypefaceData>;
+  using TypefaceCache = base::LRUCache<SkTypefaceID, TypefaceData>;
 
   constexpr int kTypefaceCacheSize = 64;
   static base::NoDestructor<TypefaceCache> face_caches(kTypefaceCacheSize);

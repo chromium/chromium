@@ -56,8 +56,8 @@ class PLATFORM_EXPORT FontGlobalContext {
   FontCache font_cache_;
   std::unique_ptr<HarfBuzzFontCache> harfbuzz_font_cache_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
-  base::HashingLRUCache<SkFontID, IdentifiableToken> typeface_digest_cache_;
-  base::HashingLRUCache<SkFontID, IdentifiableToken>
+  base::HashingLRUCache<SkTypefaceID, IdentifiableToken> typeface_digest_cache_;
+  base::HashingLRUCache<SkTypefaceID, IdentifiableToken>
       postscript_name_digest_cache_;
 };
 

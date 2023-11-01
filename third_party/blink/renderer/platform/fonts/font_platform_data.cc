@@ -186,7 +186,7 @@ bool FontPlatformData::operator==(const FontPlatformData& a) const {
          orientation_ == a.orientation_;
 }
 
-SkFontID FontPlatformData::UniqueID() const {
+SkTypefaceID FontPlatformData::UniqueID() const {
   return Typeface()->uniqueID();
 }
 
