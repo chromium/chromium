@@ -266,7 +266,11 @@
   E_CPONLY(kColorOmniboxResultsButtonIcon) \
   E_CPONLY(kColorOmniboxResultsButtonIconSelected) \
   E_CPONLY(kColorOmniboxResultsButtonInkDrop) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropRowHovered) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropRowSelected) \
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelected) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropSelectedRowHovered) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropSelectedRowSelected) \
   E_CPONLY(kColorOmniboxResultsFocusIndicator) \
   E_CPONLY(kColorOmniboxResultsIcon) \
   E_CPONLY(kColorOmniboxResultsIconGM3Background) \

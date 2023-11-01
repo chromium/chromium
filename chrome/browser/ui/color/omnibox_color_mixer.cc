@@ -127,21 +127,58 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxResultsButtonIcon] = {kColorOmniboxResultsUrl};
   mixer[kColorOmniboxResultsButtonIconSelected] = {
       kColorOmniboxResultsButtonIcon};
-  mixer[kColorOmniboxResultsButtonInkDrop] = {ui::kColorSysStateHoverOnSubtle};
-  mixer[kColorOmniboxResultsButtonInkDropSelected] = {
+  // Action chip hover & select colors for hovered suggestion rows (e.g. via
+  // mouse cursor).
+  mixer[kColorOmniboxResultsButtonInkDropRowHovered] = {
+      ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorOmniboxResultsButtonInkDropSelectedRowHovered] = {
+      ui::kColorSysStateRippleNeutralOnSubtle};
+  // Action chip hover & select colors for selected suggestion rows (e.g. via
+  // arrow keys).
+  mixer[kColorOmniboxResultsButtonInkDropRowSelected] = {
+      ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorOmniboxResultsButtonInkDropSelectedRowSelected] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
 
   // Update starter pack icon color.
   mixer[kColorOmniboxResultsStarterPackIcon] = {ui::kColorSysPrimary};
 }
 
+// Apply fallback Omnibox color mappings for CR2023 clients who are not eligible
+// for the usual color treatment (due to using high-contrast mode and/or a
+// custom theme).
+void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
+                                      const ui::ColorProviderKey& key) {
+  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kExpandedStateColors)) {
+    return;
+  }
+
+  // Action chip hover & select colors for hovered suggestion rows (e.g. via
+  // mouse cursor).
+  mixer[kColorOmniboxResultsButtonInkDropRowHovered] = {ui::SetAlpha(
+      kColorOmniboxResultsButtonInkDrop, std::ceil(0.10f * 255.0f))};
+  mixer[kColorOmniboxResultsButtonInkDropSelectedRowHovered] = {ui::SetAlpha(
+      kColorOmniboxResultsButtonInkDrop, std::ceil(0.16f * 255.0f))};
+  // Action chip hover & select colors for selected suggestion rows (e.g. via
+  // arrow keys).
+  mixer[kColorOmniboxResultsButtonInkDropRowSelected] = {ui::SetAlpha(
+      kColorOmniboxResultsButtonInkDropSelected, std::ceil(0.10f * 255.0f))};
+  mixer[kColorOmniboxResultsButtonInkDropSelectedRowSelected] = {ui::SetAlpha(
+      kColorOmniboxResultsButtonInkDropSelected, std::ceil(0.16f * 255.0f))};
+}
+
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.
 void ApplyOmniboxCR2023Colors(ui::ColorMixer& mixer,
                               const ui::ColorProviderKey& key) {
-  // Do not apply CR2023 Omnibox colors to clients using high-contrast
-  // mode or a custom theme.
-  // TODO(khalidpeer): Roll out CR2023 color updates for high-contrast clients.
-  // TODO(khalidpeer): Roll out CR2023 color updates for themed clients.
+  ApplyOmniboxCR2023FallbackColors(mixer, key);
+
+  // Do not apply the full set of CR2023 Omnibox colors to clients using
+  // high-contrast mode or a custom theme.
+  // TODO(khalidpeer): Roll out full set of CR2023 color updates for
+  //   high-contrast clients.
+  // TODO(khalidpeer): Roll out full set of CR2023 color updates for themed
+  //   clients.
   if (ShouldApplyHighContrastColors(key) || key.custom_theme) {
     return;
   }
