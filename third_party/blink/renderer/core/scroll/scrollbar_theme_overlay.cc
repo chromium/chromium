@@ -71,8 +71,9 @@ ScrollbarPart ScrollbarThemeOverlay::PartsToInvalidateOnThumbPositionChange(
   return kNoPart;
 }
 
-int ScrollbarThemeOverlay::ScrollbarThickness(float scale_from_dip,
-                                              EScrollbarWidth scrollbar_width) {
+int ScrollbarThemeOverlay::ScrollbarThickness(
+    float scale_from_dip,
+    EScrollbarWidth scrollbar_width) const {
   return ThumbThickness(scale_from_dip, scrollbar_width) +
          ScrollbarMargin(scale_from_dip, scrollbar_width);
 }

@@ -39,7 +39,7 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
   ~CustomScrollbarTheme() override = default;
 
   int ScrollbarThickness(float scale_from_dip,
-                         EScrollbarWidth scrollbar_width) override {
+                         EScrollbarWidth scrollbar_width) const override {
     return GetTheme().ScrollbarThickness(scale_from_dip, scrollbar_width);
   }
 

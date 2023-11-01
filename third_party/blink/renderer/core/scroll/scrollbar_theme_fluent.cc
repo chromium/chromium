@@ -50,8 +50,9 @@ ScrollbarThemeFluent::ScrollbarThemeFluent() {
   }
 }
 
-int ScrollbarThemeFluent::ScrollbarThickness(float scale_from_dip,
-                                             EScrollbarWidth scrollbar_width) {
+int ScrollbarThemeFluent::ScrollbarThickness(
+    float scale_from_dip,
+    EScrollbarWidth scrollbar_width) const {
   return base::ClampRound(scrollbar_track_thickness_ * scale_from_dip);
 }
 
@@ -123,8 +124,9 @@ base::TimeDelta ScrollbarThemeFluent::OverlayScrollbarFadeOutDuration() const {
   return style_.fade_out_duration;
 }
 
-int ScrollbarThemeFluent::ThumbThickness(const float scale_from_dip,
-                                         const EScrollbarWidth scrollbar_width) {
+int ScrollbarThemeFluent::ThumbThickness(
+    const float scale_from_dip,
+    const EScrollbarWidth scrollbar_width) const {
   // The difference between track's and thumb's thicknesses should always be
   // even to have equal thumb offsets from both sides so the thumb can remain
   // in the middle of the track. Subtract one pixel if the difference is odd.

@@ -64,7 +64,7 @@ class CORE_EXPORT ScrollbarTheme {
   ScrollbarPart HitTestRootFramePosition(const Scrollbar&, const gfx::Point&);
 
   virtual int ScrollbarThickness(float scale_from_dip,
-                                 EScrollbarWidth scrollbar_width) {
+                                 EScrollbarWidth scrollbar_width) const {
     return 0;
   }
   virtual int ScrollbarMargin(float scale_from_dip,

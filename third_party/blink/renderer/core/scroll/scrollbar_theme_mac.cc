@@ -324,8 +324,9 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
     context.EndLayer();
 }
 
-int ScrollbarThemeMac::ScrollbarThickness(float scale_from_dip,
-                                          EScrollbarWidth scrollbar_width) {
+int ScrollbarThemeMac::ScrollbarThickness(
+    float scale_from_dip,
+    EScrollbarWidth scrollbar_width) const {
   if (scrollbar_width == EScrollbarWidth::kNone)
     return 0;
   const auto& painter_values =

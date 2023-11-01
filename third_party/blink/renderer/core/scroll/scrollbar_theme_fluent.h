@@ -24,7 +24,7 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   ~ScrollbarThemeFluent() override = default;
 
   int ScrollbarThickness(float scale_from_dip,
-                         EScrollbarWidth scrollbar_width) override;
+                         EScrollbarWidth scrollbar_width) const override;
   bool UsesOverlayScrollbars() const override;
   bool UsesFluentOverlayScrollbars() const override;
   // When scrollbars are main threaded the thumb size returned by ThumbRect()
@@ -52,7 +52,8 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
  private:
   friend class ScrollbarThemeFluentMock;
 
-  int ThumbThickness(float scale_from_dip, EScrollbarWidth scrollbar_width);
+  int ThumbThickness(float scale_from_dip,
+                     EScrollbarWidth scrollbar_width) const;
   // Overlay scrollbar tracks have a invisible length-wise inset to give them a
   // floating appearance.
   gfx::Rect InsetButtonRect(const Scrollbar& scrollbar,
