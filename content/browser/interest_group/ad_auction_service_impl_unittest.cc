@@ -36,6 +36,8 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -719,12 +721,13 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kInterestGroupStorage,
-                              blink::features::kAdInterestGroupAPI,
-                              blink::features::kFledge,
-                              blink::features::
-                                  kFledgeClearOriginJoinedAdInterestGroups,
-                              blink::features::kFledgeNegativeTargeting},
+        /*enabled_features=*/
+        {blink::features::kInterestGroupStorage,
+         blink::features::kAdInterestGroupAPI, blink::features::kFledge,
+         blink::features::kFledgeClearOriginJoinedAdInterestGroups,
+         blink::features::kFledgeNegativeTargeting,
+         blink::features::kPrivateAggregationApiMultipleCloudProviders,
+         aggregation_service::kAggregationServiceMultipleCloudProviders},
         /*disabled_features=*/{});
     fenced_frame_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
@@ -1398,7 +1401,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   // supported.
   network_responder_->RegisterUpdateResponse(
       kUpdateUrlPath,
-      base::StringPrintf(R"({
+      base::StringPrintf(
+          R"({
 "priority": 1.59,
 "enableBiddingSignalsPrioritization": true,
 "priorityVector": {"old1": 2, "new1": 1.1},
@@ -1432,10 +1436,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
 "sizeGroups": {"group_new": ["size_new"]},
 "auctionServerRequestFlags": ["omit-ads", "include-full-ads"],
-"aggregationCoordinatorOrigin": "https://aggregation.coordinator.test"
+"privateAggregationConfig": {
+  "aggregationCoordinatorOrigin": "%s"
+}
 })",
-                         kOriginStringA, kOriginStringA, kOriginStringA,
-                         kOriginStringA, kOriginStringA, kOriginStringA));
+          kOriginStringA, kOriginStringA, kOriginStringA, kOriginStringA,
+          kOriginStringA, kOriginStringA,
+          aggregation_service::kDefaultAggregationCoordinatorAwsCloud));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.priority = 2.0;
@@ -1576,7 +1583,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_TRUE(group.auction_server_request_flags.Has(
       blink::AuctionServerRequestFlagsEnum::kIncludeFullAds));
   EXPECT_EQ(
-      "https://aggregation.coordinator.test",
+      aggregation_service::kDefaultAggregationCoordinatorAwsCloud,
       group.aggregation_coordinator_origin.value_or(url::Origin()).Serialize());
 }
 

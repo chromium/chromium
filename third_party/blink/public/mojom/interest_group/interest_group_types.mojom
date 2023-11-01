@@ -501,6 +501,7 @@ struct AuctionAdConfig {
   // via `AbortableAdAuction.ResolvedAdditionalBids()`.
   bool expects_additional_bids = false;
 
-  // Origin for the Coordinator to be used for Private Aggregation.
+  // Origin for the Coordinator to be used for the seller's Private Aggregation
+  // requests.
   url.mojom.Origin? aggregation_coordinator_origin;
 };

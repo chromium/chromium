@@ -42,6 +42,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -5017,7 +5019,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+class InterestGroupAggregationCoordinatorBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupAggregationCoordinatorBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrivateAggregationApiMultipleCloudProviders,
+         aggregation_service::kAggregationServiceMultipleCloudProviders},
+        /*disabled_features=*/{});
+  }
+
+  ~InterestGroupAggregationCoordinatorBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
                        JoinInterestGroupInvalidAggregationCoordinatorOrigin) {
   const char kScriptTemplate[] = R"(
 (async function() {
@@ -5026,7 +5044,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          aggregationCoordinatorOrigin: 'https://invalid^&',
+          privateAggregationConfig: {
+            aggregationCoordinatorOrigin: 'https://invalid^&'
+          }
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -5040,13 +5060,45 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "aggregationCoordinatorOrigin 'https://invalid^&' for "
-      "AuctionAdInterestGroup with name 'cars' must be a valid https origin.",
+      "SyntaxError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "aggregationCoordinatorOrigin 'https://invalid^&' must be a valid https "
+      "origin.",
       EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
+                       JoinInterestGroupValidAggregationCoordinatorOrigin) {
+  const char kScriptTemplate[] = R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          privateAggregationConfig: {
+            aggregationCoordinatorOrigin: $2,
+          }
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())";
+
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      "done",
+      EvalJs(shell(),
+             JsReplace(
+                 kScriptTemplate, origin_string.c_str(),
+                 aggregation_service::kDefaultAggregationCoordinatorAwsCloud)));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
                        JoinInterestGroupNonHTTPSAggregationCoordinatorOrigin) {
   const char kScriptTemplate[] = R"(
 (async function() {
@@ -5055,7 +5107,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          aggregationCoordinatorOrigin: 'http://coordinator.test/',
+          privateAggregationConfig: {
+            aggregationCoordinatorOrigin: 'http://coordinator.test/',
+          }
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -5069,9 +5123,41 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "aggregationCoordinatorOrigin 'http://coordinator.test/' for "
-      "AuctionAdInterestGroup with name 'cars' must be a valid https origin.",
+      "SyntaxError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "aggregationCoordinatorOrigin 'http://coordinator.test/' must be a valid "
+      "https origin.",
+      EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupAggregationCoordinatorBrowserTest,
+    JoinInterestGroupUnsupportedAggregationCoordinatorOrigin) {
+  const char kScriptTemplate[] = R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          privateAggregationConfig: {
+            aggregationCoordinatorOrigin: 'https://coordinator.test/',
+          }
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())";
+
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      "DataError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "aggregationCoordinatorOrigin 'https://coordinator.test/' is not a "
+      "recognized coordinator origin.",
       EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
 }
 

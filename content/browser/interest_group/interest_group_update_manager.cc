@@ -26,6 +26,8 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
@@ -42,6 +44,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -474,6 +477,42 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return true;
 }
 
+[[nodiscard]] bool TryToCopyPrivateAggregationConfig(
+    const base::Value::Dict& dict,
+    InterestGroupUpdate& interest_group_update) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
+      !base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    // Ignore the specified aggregation coordinator unless the feature is
+    // enabled.
+    return true;
+  }
+
+  const base::Value::Dict* maybe_config =
+      dict.FindDict("privateAggregationConfig");
+  if (!maybe_config) {
+    return true;
+  }
+  const std::string* maybe_aggregation_coordinator_origin =
+      maybe_config->FindString("aggregationCoordinatorOrigin");
+  if (!maybe_aggregation_coordinator_origin) {
+    return true;
+  }
+
+  url::Origin aggregation_coordinator_origin =
+      url::Origin::Create(GURL(*maybe_aggregation_coordinator_origin));
+
+  if (!aggregation_service::IsAggregationCoordinatorOriginAllowed(
+          aggregation_coordinator_origin)) {
+    return false;
+  }
+
+  interest_group_update.aggregation_coordinator_origin =
+      std::move(aggregation_coordinator_origin);
+  return true;
+}
+
 absl::optional<InterestGroupUpdate> ParseUpdateJson(
     const blink::InterestGroupKey& group_key,
     const data_decoder::DataDecoder::ValueOrError& result) {
@@ -591,11 +630,8 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
   if (!TryToCopyAuctionServerRequestFlags(*dict, interest_group_update)) {
     return absl::nullopt;
   }
-  const std::string* maybe_aggregation_coordinator_origin =
-      dict->FindString("aggregationCoordinatorOrigin");
-  if (maybe_aggregation_coordinator_origin) {
-    interest_group_update.aggregation_coordinator_origin =
-        url::Origin::Create(GURL(*maybe_aggregation_coordinator_origin));
+  if (!TryToCopyPrivateAggregationConfig(*dict, interest_group_update)) {
+    return absl::nullopt;
   }
   return interest_group_update;
 }
