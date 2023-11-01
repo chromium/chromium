@@ -552,9 +552,7 @@ TEST_F(TestLauncherTest, DisablePreTests) {
 
 // Test TestLauncher enforce to run tests in the exact positive filter.
 TEST_F(TestLauncherTest, EnforceRunTestsInExactPositiveFilter) {
-  AddMockedTests("Test", {"firstTest",
-                          "secondTest"
-                          "thirdTest"});
+  AddMockedTests("Test", {"firstTest", "secondTest", "thirdTest"});
   SetUpExpectCalls();
 
   ASSERT_TRUE(dir.CreateUniqueTempDir());
@@ -1284,6 +1282,67 @@ TEST(ProcessGTestOutputTest, RunMockTests) {
   ASSERT_TRUE(test_results[2].timestamp.has_value());
   EXPECT_GT(*test_results[2].timestamp, Time());
 }
+
+// TODO(crbug.com/1498237): Enable the test once GetAppOutputAndError
+// can collect stdout and stderr on Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
+TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
+  ScopedTempDir dir;
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = dir.GetPath().AppendASCII("test.filter");
+  WriteFile(path, "Test.firstTest\nTest.secondTest");
+  CommandLine command_line(CommandLine::ForCurrentProcess()->GetProgram());
+  command_line.AppendSwitchPath("test-launcher-filter-file", path);
+  command_line.AppendSwitch("enforce-exact-positive-filter");
+  std::string output;
+  // Test cases in the filter do not exist, hence test launcher should
+  // fail and print their names.
+  EXPECT_FALSE(GetAppOutputAndError(command_line, &output));
+  // Banner should appear in the output.
+  const char kBanner[] = "Found exact positive filter not enforced:";
+  EXPECT_TRUE(Contains(output, kBanner));
+  std::vector<std::string> lines = base::SplitString(
+      output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::unordered_set<std::string> tests_not_enforced;
+  bool banner_has_printed = false;
+  for (size_t i = 0; i < lines.size(); i++) {
+    if (Contains(lines[i], kBanner)) {
+      // The following two lines should have the test cases not enforced
+      // and the third line for the check failure message.
+      EXPECT_LT(i + 3, lines.size());
+      // Banner should only appear once.
+      EXPECT_FALSE(banner_has_printed);
+      banner_has_printed = true;
+      continue;
+    }
+    if (banner_has_printed && tests_not_enforced.size() < 2) {
+      // Note, gtest prints the error with datetime and file line info
+      // ahead to the test names, e.g. below:
+      // [1030/220237.425678:ERROR:test_launcher.cc(2123)] Test.secondTest
+      // [1030/220237.425682:ERROR:test_launcher.cc(2123)] Test.firstTest
+      std::vector<std::string> line_vec = base::SplitString(
+          lines[i], "]", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      ASSERT_EQ(line_vec.size(), 2u);
+      tests_not_enforced.insert(line_vec[1]);
+      continue;
+    }
+    if (banner_has_printed && tests_not_enforced.size() == 2) {
+// For official builds, they discard logs from CHECK failures, hence
+// the test case cannot catch the "Check failed" line.
+#if !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
+      EXPECT_TRUE(Contains(lines[i],
+                           "Check failed: "
+                           "!found_exact_positive_filter_not_enforced."));
+#endif  // !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
+      break;
+    }
+  }
+  // The test case printed is not ordered, hence need UnorderedElementsAre
+  // to compare.
+  EXPECT_THAT(tests_not_enforced, testing::UnorderedElementsAre(
+                                      "Test.firstTest", "Test.secondTest"));
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // TODO(crbug.com/1094369): Enable leaked-child checks on other platforms.
 #if BUILDFLAG(IS_FUCHSIA)
