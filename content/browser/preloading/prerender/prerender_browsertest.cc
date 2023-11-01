@@ -478,16 +478,12 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return ssl_server_.GetURL("a.test", path);
   }
 
-  GURL GetCrossSiteUrl(const std::string& path) {
-    return ssl_server_.GetURL("b.test", path);
-  }
-
-  GURL GetUrlForSameSiteCrossOriginTest(const std::string& path) {
-    return ssl_server().GetURL("a.a.test", path);
-  }
-
   GURL GetSameSiteCrossOriginUrl(const std::string& path) {
     return ssl_server().GetURL("b.a.test", path);
+  }
+
+  GURL GetCrossSiteUrl(const std::string& path) {
+    return ssl_server_.GetURL("b.test", path);
   }
 
   void ResetSSLConfig(
@@ -9201,7 +9197,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossSitePrerender) {
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginNavigationSpeculationRulesWithoutOptInHeader) {
-  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl =
       GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
 
@@ -9229,15 +9225,15 @@ IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginRedirectionSpeculationRulesWithoutOptInHeader) {
   // Navigate to an initial page.
-  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering a URL that causes cross-origin redirection. The
   // cross-origin redirection should fail prerendering without an opt-in header.
   const GURL kRedirectedUrl =
       GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
-  const GURL kPrerenderingUrl = GetUrlForSameSiteCrossOriginTest(
-      "/server-redirect?" + kRedirectedUrl.spec());
+  const GURL kPrerenderingUrl =
+      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
   test::PrerenderHostObserver host_observer(*web_contents_impl(),
                                             kPrerenderingUrl);
   AddPrerenderAsync(kPrerenderingUrl);
@@ -9253,20 +9249,20 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that same-site cross-origin redirection with credentialed prerender by
 // speculation rules with the feature enabled but the redirected page without
-// opt-in. This test verifies a case which is a.a.test -> a.a.test (credentialed
+// opt-in. This test verifies a case which is a.test -> a.test (credentialed
 // prerender) -> b.a.test (no credentialed prerender).
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginCredentialedPrerenderRedirectionSpeculationRulesWithoutOptInHeader) {
   // Navigate to an initial page.
-  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering a URL that causes cross-origin redirection. The
   // cross-origin redirection should fail prerendering without an opt-in header.
   const GURL kRedirectedUrl =
       GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
-  const GURL kPrerenderingUrl = GetUrlForSameSiteCrossOriginTest(
+  const GURL kPrerenderingUrl = GetUrl(
       "/server-redirect-credentialed-prerender?" + kRedirectedUrl.spec());
   test::PrerenderHostObserver host_observer(*web_contents_impl(),
                                             kPrerenderingUrl);
@@ -9283,13 +9279,13 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that same-site cross-origin redirection with credentialed prerender by
 // speculation rules with the feature enabled but the redirected page without
-// opt-in. This test verifies a case which is a.a.test -> b.a.test (credentialed
+// opt-in. This test verifies a case which is a.test -> b.a.test (credentialed
 // prerender) -> b.a.test (no credentialed prerender)
 IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginCredentialedPrerenderRedirectionSpeculationRulesWithoutOptInHeader2) {
   // Navigate to an initial page.
-  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering a URL that causes cross-origin redirection. The
@@ -9317,14 +9313,13 @@ IN_PROC_BROWSER_TEST_F(
     PrerenderSameSiteCrossOriginBrowserTest,
     SameSiteCrossOriginNavigationBackToSameOriginWithoutOptInHeader) {
   // Navigate to an initial page.
-  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-  // Start prerendering a URL that causes cross-origin navigation and redirects
-  // back to the same-origin. This should not fail even without same-site
-  // cross-origin opt-in header.
-  const GURL kRedirectedUrl =
-      GetUrlForSameSiteCrossOriginTest("/empty.html?samesitecrossorigin");
+  // Start prerendering a URL that causes same-site cross-origin navigation and
+  // redirects back to the same-origin. This should not fail even without
+  // same-site cross-origin opt-in header.
+  const GURL kRedirectedUrl = GetUrl("/empty.html?samesitecrossorigin");
   const GURL kPrerenderingUrl =
       GetSameSiteCrossOriginUrl("/server-redirect?" + kRedirectedUrl.spec());
   test::PrerenderHostObserver host_observer(*web_contents_impl(),
@@ -9355,7 +9350,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
                        CrossSiteMultipleRedirectionSpeculationRules) {
   // Navigate to an initial page.
-  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Start prerendering a URL that causes cross-origin redirection. The
@@ -9364,8 +9359,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
       "/prerender/prerender_with_opt_in_header.html?prerender");
   const GURL kRedirectedUrl2 =
       GetCrossSiteUrl("/server-redirect?" + kRedirectedUrl.spec());
-  const GURL kPrerenderingUrl = GetUrlForSameSiteCrossOriginTest(
-      "/server-redirect?" + kRedirectedUrl2.spec());
+  const GURL kPrerenderingUrl =
+      GetUrl("/server-redirect?" + kRedirectedUrl2.spec());
   test::PrerenderHostObserver host_observer(*web_contents_impl(),
                                             kPrerenderingUrl);
   AddPrerenderAsync(kPrerenderingUrl);
