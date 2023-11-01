@@ -3337,10 +3337,9 @@ void PDFiumEngine::DrawSelections(int progressive_index,
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
 
-  base::span<uint8_t> region;
-  size_t stride;
-  GetRegion(dirty_in_screen.origin(), image_data, region, stride);
-  if (region.empty()) {
+  const absl::optional<RegionData> region =
+      GetRegion(dirty_in_screen.origin(), image_data);
+  if (!region.has_value()) {
     return;
   }
 
@@ -3359,7 +3358,7 @@ void PDFiumEngine::DrawSelections(int progressive_index,
         continue;
 
       visible_selection.Offset(-dirty_in_screen.OffsetFromOrigin());
-      Highlight(region, stride, visible_selection, kHighlightColorR,
+      Highlight(region.value(), visible_selection, kHighlightColorR,
                 kHighlightColorG, kHighlightColorB, highlighted_rects);
     }
   }
@@ -3371,7 +3370,7 @@ void PDFiumEngine::DrawSelections(int progressive_index,
       continue;
 
     visible_selection.Offset(-dirty_in_screen.OffsetFromOrigin());
-    Highlight(region, stride, visible_selection, kHighlightColorR,
+    Highlight(region.value(), visible_selection, kHighlightColorR,
               kHighlightColorG, kHighlightColorB, highlighted_rects);
   }
 }
@@ -3405,16 +3404,15 @@ int PDFiumEngine::GetProgressiveIndex(int page_index) const {
 ScopedFPDFBitmap PDFiumEngine::CreateBitmap(const gfx::Rect& rect,
                                             bool has_alpha,
                                             SkBitmap& image_data) const {
-  base::span<uint8_t> region;
-  size_t stride;
-  GetRegion(rect.origin(), image_data, region, stride);
-  if (region.empty()) {
+  const absl::optional<RegionData> region =
+      GetRegion(rect.origin(), image_data);
+  if (!region.has_value()) {
     return nullptr;
   }
-
   int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
-  return ScopedFPDFBitmap(FPDFBitmap_CreateEx(rect.width(), rect.height(),
-                                              format, region.data(), stride));
+  return ScopedFPDFBitmap(
+      FPDFBitmap_CreateEx(rect.width(), rect.height(), format,
+                          region.value().buffer.data(), region.value().stride));
 }
 
 void PDFiumEngine::GetPDFiumRect(int page_index,
@@ -3488,15 +3486,12 @@ gfx::RectF PDFiumEngine::GetPageBoundingBox(int page_index) {
   return page->GetBoundingBox();
 }
 
-void PDFiumEngine::Highlight(base::span<uint8_t> buffer,
-                             size_t stride,
+void PDFiumEngine::Highlight(const RegionData& region,
                              const gfx::Rect& rect,
                              int color_red,
                              int color_green,
                              int color_blue,
                              std::vector<gfx::Rect>& highlighted_rects) const {
-  CHECK(!buffer.empty());
-
   gfx::Rect new_rect = rect;
   for (const auto& highlighted : highlighted_rects)
     new_rect.Subtract(highlighted);
@@ -3516,7 +3511,8 @@ void PDFiumEngine::Highlight(base::span<uint8_t> buffer,
   int h = new_rect.height();
 
   for (int y = t; y < t + h; ++y) {
-    base::span<uint8_t> row = buffer.subspan(y * stride, stride);
+    base::span<uint8_t> row =
+        region.buffer.subspan(y * region.stride, region.stride);
     for (int x = l; x < l + w; ++x) {
       bool overlaps = false;
       for (size_t i : overlapping_rect_indices) {
@@ -3638,6 +3634,16 @@ bool PDFiumEngine::MouseDownState::Matches(
   return true;
 }
 
+PDFiumEngine::RegionData::RegionData(base::span<uint8_t> buffer, size_t stride)
+    : buffer(buffer), stride(stride) {}
+
+PDFiumEngine::RegionData::RegionData(RegionData&&) = default;
+
+PDFiumEngine::RegionData& PDFiumEngine::RegionData::operator=(RegionData&&) =
+    default;
+
+PDFiumEngine::RegionData::~RegionData() = default;
+
 void PDFiumEngine::DeviceToPage(int page_index,
                                 const gfx::Point& device_point,
                                 double* page_x,
@@ -3717,30 +3723,31 @@ void PDFiumEngine::DrawPageShadow(const gfx::Rect& page_rc,
   DrawShadow(image_data, shadow_rect, page_rect, clip_rect, *page_shadow_);
 }
 
-void PDFiumEngine::GetRegion(const gfx::Point& location,
-                             SkBitmap& image_data,
-                             base::span<uint8_t>& region,
-                             size_t& stride) const {
+absl::optional<PDFiumEngine::RegionData> PDFiumEngine::GetRegion(
+    const gfx::Point& location,
+    SkBitmap& image_data) const {
   if (image_data.isNull()) {
     DCHECK(plugin_size().IsEmpty());
-    stride = 0;
-    return;
+    return absl::nullopt;
   }
+
   uint8_t* buffer = static_cast<uint8_t*>(image_data.getPixels());
-  stride = image_data.rowBytes();
+  if (!buffer) {
+    return absl::nullopt;
+  }
 
   gfx::Point offset_location = location + page_offset_;
   // TODO: update this when we support BIDI and scrollbars can be on the left.
-  if (!buffer ||
-      !gfx::Rect(gfx::PointAtOffsetFromOrigin(page_offset_), plugin_size())
+  if (!gfx::Rect(gfx::PointAtOffsetFromOrigin(page_offset_), plugin_size())
            .Contains(offset_location)) {
-    return;
+    return absl::nullopt;
   }
 
+  size_t stride = image_data.rowBytes();
   base::span<uint8_t> buffer_span(buffer, image_data.height() * stride);
   size_t x_offset = location.x() + page_offset_.x();
   size_t offset = location.y() * stride + x_offset * 4;
-  region = buffer_span.subspan(offset);
+  return PDFiumEngine::RegionData(buffer_span.subspan(offset), stride);
 }
 
 void PDFiumEngine::OnSelectionTextChanged() {
