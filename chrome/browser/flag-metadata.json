@@ -7110,17 +7110,17 @@
   {
     "name": "shopping-collection",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "shopping-list",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "shopping-list-track-by-default",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "shopping-page-types",
@@ -7226,7 +7226,7 @@
   {
     "name": "simplified-bookmark-save-flow",
     "owners": [ "mdjones@google.com", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "site-data-improvements",
