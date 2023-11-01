@@ -36,6 +36,7 @@ public class SiteSettingsUtil {
         ContentSettingsType.AUTOMATIC_DOWNLOADS,
         ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER,
         ContentSettingsType.SOUND,
+        ContentSettingsType.MIDI,
         ContentSettingsType.MIDI_SYSEX,
         ContentSettingsType.CLIPBOARD_READ_WRITE,
         ContentSettingsType.NFC,

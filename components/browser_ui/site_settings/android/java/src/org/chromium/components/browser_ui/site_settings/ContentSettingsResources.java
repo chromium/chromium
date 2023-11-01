@@ -217,6 +217,15 @@ public class ContentSettingsResources {
                         R.string.website_settings_use_mic, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK, R.string.website_settings_category_mic_ask, 0);
 
+            case ContentSettingsType.MIDI:
+                return new ResourceItem(
+                        R.drawable.gm_filled_piano_24,
+                        R.string.midi_permission_title,
+                        null,
+                        null,
+                        0,
+                        0);
+
             case ContentSettingsType.MIDI_SYSEX:
                 return new ResourceItem(R.drawable.gm_filled_piano_24,
                         R.string.midi_sysex_permission_title, null, null, 0, 0);

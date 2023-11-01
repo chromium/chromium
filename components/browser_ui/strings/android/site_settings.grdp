@@ -79,8 +79,11 @@
   <message name="IDS_WEBSITE_SETTINGS_USE_MIC" desc="The category filter 'Mic' for site settings.">
     Microphone
   </message>
+  <message name="IDS_MIDI_PERMISSION_TITLE" desc="Title of the permission that allows a website to use MIDI devices [CHAR_LIMIT=32]">
+    MIDI devices
+  </message>
   <message name="IDS_MIDI_SYSEX_PERMISSION_TITLE" desc="Title of the permission that allows a website to get full control of MIDI devices [CHAR_LIMIT=32]">
-    Allow full control of MIDI devices
+    MIDI device control / reprogram
   </message>
   <message name="IDS_MOTION_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's motion sensors (accelerometer, gyroscope, magnetometer) [CHAR_LIMIT=32]">
     Motion sensors

@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.CookiesInfo;
@@ -49,6 +50,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -529,6 +531,7 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     public void testFetchAllPreferencesForSingleOrigin() {
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
@@ -545,6 +548,8 @@ public class WebsitePermissionsFetcherTest {
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.GEOLOCATION, googleOrigin, SITE_WILDCARD, false));
+        websitePreferenceBridge.addPermissionInfo(
+                new PermissionInfo(ContentSettingsType.MIDI, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(
                         ContentSettingsType.MIDI_SYSEX, googleOrigin, SITE_WILDCARD, false));
@@ -725,6 +730,7 @@ public class WebsitePermissionsFetcherTest {
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
                     Assert.assertNotNull(
                             site.getPermissionInfo(ContentSettingsType.IDLE_DETECTION));
+                    Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.MIDI));
                     Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.MIDI_SYSEX));
                     Assert.assertNotNull(
                             site.getPermissionInfo(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER));

@@ -47,10 +47,12 @@ import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.permissions.PermissionDialogController;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -129,7 +131,7 @@ public class PageInfoDiscoverabilityTest {
             parameters.add(
                     new ParameterSet()
                             .name("RequestType.kMidi")
-                            .value(ContentSettingsType.MIDI, false));
+                            .value(ContentSettingsType.MIDI, true));
             parameters.add(
                     new ParameterSet()
                             .name("RequestType.kMidiSysex")
@@ -256,6 +258,7 @@ public class PageInfoDiscoverabilityTest {
     /** Tests omnibox permission when permission is allowed by the user. */
     @Test
     @MediumTest
+    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     @Feature({"PageInfoDiscoverability"})
     public void testPageInfoDiscoverabilityAllowPrompt() throws Exception {
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
@@ -287,6 +290,7 @@ public class PageInfoDiscoverabilityTest {
     /** Tests omnibox permission when permission is blocked by the user. */
     @Test
     @MediumTest
+    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     @Feature({"PageInfoDiscoverability"})
     public void testPageInfoDiscoverabilityBlockPrompt() throws Exception {
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
@@ -318,6 +322,7 @@ public class PageInfoDiscoverabilityTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     @Feature({"PageInfoDiscoverability"})
     public void testPermissionRequestTypeEnumSize() {
         Assert.assertEquals(
@@ -327,6 +332,7 @@ public class PageInfoDiscoverabilityTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     @Feature({"PageInfoDiscoverability"})
     @ParameterAnnotations.UseMethodParameter(RequestTypeTestParams.class)
     public void testPermissionRequestTypes(
