@@ -308,29 +308,42 @@ GLFormatDesc ToGLFormatDescOverrideHalfFloatType(viz::SharedImageFormat format,
 bool HasVkFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     return ToVkFormatSinglePlanarInternal(format) != VK_FORMAT_UNDEFINED;
-  } else if (format == viz::MultiPlaneFormat::kYV12 ||
-             format == viz::MultiPlaneFormat::kNV12 ||
-             format == viz::MultiPlaneFormat::kP010 ||
-             format == viz::MultiPlaneFormat::kI420) {
-    return true;
   }
-
-  return false;
+  if (format.PrefersExternalSampler()) {
+    return ToVkFormatExternalSampler(format) != VK_FORMAT_UNDEFINED;
+  }
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    if (ToVkFormat(format, plane) == VK_FORMAT_UNDEFINED) {
+      return false;
+    }
+  }
+  return true;
 }
 
 VkFormat ToVkFormatExternalSampler(viz::SharedImageFormat format) {
   CHECK(format.PrefersExternalSampler());
-  if (format == viz::MultiPlaneFormat::kYV12 ||
-      format == viz::MultiPlaneFormat::kI420) {
-    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kNV12) {
-    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kP010) {
-    return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
+
+  // Return early for unsupported kY_UV_A plane configs.
+  if (format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV_A) {
+    return VK_FORMAT_UNDEFINED;
   }
 
-  NOTREACHED() << "Unsupported format: " << format.ToString();
-  return VK_FORMAT_UNDEFINED;
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+                 ? VK_FORMAT_G8_B8R8_2PLANE_420_UNORM
+                 : VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+                 ? VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16
+                 : VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+                 ? VK_FORMAT_G16_B16R16_2PLANE_420_UNORM
+                 : VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return VK_FORMAT_UNDEFINED;
+  }
 }
 
 VkFormat ToVkFormatSinglePlanar(viz::SharedImageFormat format) {
@@ -348,27 +361,23 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
     return ToVkFormatSinglePlanar(format);
   }
 
-  // The following SharedImageFormat constants have PrefersExternalSampler()
-  // false so they create a separate VkImage per plane and return the single
-  // planar equivalents. NOTE: Callsites that handle formats with external
-  // sampling need to call ToVkFormatExternalSampler() if external sampling is
-  // being used.
+  // Since the format has PrefersExternalSampler() false we create a separate
+  // VkImage per plane and return the single planar equivalents. NOTE: Callsites
+  // that handle formats with external sampling need to call
+  // ToVkFormatExternalSampler() if external sampling is being used.
   CHECK(!format.PrefersExternalSampler());
-  if (format == viz::MultiPlaneFormat::kYV12 ||
-      format == viz::MultiPlaneFormat::kI420) {
-    // Based on VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM.
-    return VK_FORMAT_R8_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kNV12) {
-    // Based on VK_FORMAT_G8_B8R8_2PLANE_420_UNORM.
-    return plane_index == 0 ? VK_FORMAT_R8_UNORM : VK_FORMAT_R8G8_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kP010) {
-    // Based on VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 but using
-    // 16bit unorm plane formats as they are class compatible and more widely
-    // supported.
-    return plane_index == 0 ? VK_FORMAT_R16_UNORM : VK_FORMAT_R16G16_UNORM;
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  CHECK_LE(num_channels, 2);
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return num_channels == 2 ? VK_FORMAT_R8G8_UNORM : VK_FORMAT_R8_UNORM;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return num_channels == 2 ? VK_FORMAT_R16G16_UNORM : VK_FORMAT_R16_UNORM;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      break;
   }
 
-  NOTREACHED() << "Unsupported format: " << format.ToString();
   return VK_FORMAT_UNDEFINED;
 }
 #endif
@@ -441,14 +450,6 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
     // Fallback to return single-plane format.
     return ToDawnFormat(format);
   }
-}
-
-WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format) {
-  return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
-}
-
-WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format, int plane_index) {
-  return static_cast<WGPUTextureFormat>(ToDawnFormat(format, plane_index));
 }
 
 wgpu::TextureUsage GetSupportedDawnTextureUsage(

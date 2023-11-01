@@ -63,12 +63,19 @@ viz::SharedImageFormat GLTextureHolder::GetPlaneFormat(
     return format;
   }
 
-  if (format == viz::MultiPlaneFormat::kNV12) {
-    return plane_index == 0 ? viz::SinglePlaneFormat::kR_8
-                            : viz::SinglePlaneFormat::kRG_88;
-  } else if (format == viz::MultiPlaneFormat::kYV12 ||
-             format == viz::MultiPlaneFormat::kI420) {
-    return viz::SinglePlaneFormat::kR_8;
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  DCHECK_LE(num_channels, 2);
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_88
+                               : viz::SinglePlaneFormat::kR_8;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_1616
+                               : viz::SinglePlaneFormat::kR_16;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      CHECK_EQ(num_channels, 1);
+      return viz::SinglePlaneFormat::kLUMINANCE_F16;
   }
 
   NOTREACHED();

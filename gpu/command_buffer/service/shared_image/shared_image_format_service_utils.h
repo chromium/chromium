@@ -108,11 +108,6 @@ GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
 // `plane_index` must be 0 if `format` is single-plane.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
                                                   int plane_index);
-// Same as ToDawnFormat, except it casts from wgpu::TextureFormat to
-// WGPUTextureFormat instead.
-GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format);
-GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format,
-                                                int plane_index);
 
 // Returns the supported Dawn texture usage. `is_yuv_plane` indicates if the
 // texture corresponds to a plane of a multi-planar image and `is_dcomp_surface`
