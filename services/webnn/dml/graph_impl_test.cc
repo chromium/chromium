@@ -247,6 +247,8 @@ struct Conv2dTester {
     absl::optional<OperandInfo<T>> bias;
     absl::optional<mojom::Activation::Tag> activation;
     absl::optional<ClampAttributes> clamp_attributes;
+    absl::optional<float> elu_alpha;
+    absl::optional<float> leaky_relu_alpha;
   };
   Conv2dAttributes attributes;
   OperandInfo<float> output;

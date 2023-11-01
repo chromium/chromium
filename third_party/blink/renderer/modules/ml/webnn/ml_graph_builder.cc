@@ -1075,6 +1075,14 @@ MLOperand* MLGraphBuilder::elu(const MLOperand* input,
 
 MLActivation* MLGraphBuilder::elu(const MLEluOptions* options,
                                   ExceptionState& exception_state) {
+  // The current spec doesn't restrict the value of alpha. An issue has been
+  // filed to track it: https://github.com/webmachinelearning/webnn/issues/383
+  if (options->alpha() <= 0.0f) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The value of alpha must be greater than 0.");
+    return nullptr;
+  }
   // Create the elu operator that would be used as an activation
   // function.
   return MakeGarbageCollected<MLActivation>(
@@ -1149,6 +1157,16 @@ MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
 MLOperand* MLGraphBuilder::leakyRelu(const MLOperand* input,
                                      const MLLeakyReluOptions* options,
                                      ExceptionState& exception_state) {
+  // The current spec doesn't specify the operand type constraints of leakyRelu.
+  // An issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The type of input must be one of the floating point types.");
+    return nullptr;
+  }
+
   auto* leaky_relu = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kLeakyRelu, options);
   // According to WebNN spec
@@ -1574,6 +1592,12 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   }
   softmax->Connect({input}, {output.value()});
   return output.value();
+}
+
+MLActivation* MLGraphBuilder::softmax(ExceptionState& exception_state) {
+  // Create the softmax operator that would be used as an activation function.
+  return MakeGarbageCollected<MLActivation>(this,
+                                            MLOperator::OperatorKind::kSoftmax);
 }
 
 HeapVector<Member<const MLOperand>> MLGraphBuilder::split(

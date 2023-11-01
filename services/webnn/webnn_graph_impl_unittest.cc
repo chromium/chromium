@@ -452,6 +452,8 @@ struct Conv2dTester {
     absl::optional<OperandInfo> bias;
     absl::optional<mojom::Activation::Tag> activation;
     absl::optional<ClampTester::ClampAttributes> clamp_attributes;
+    absl::optional<float> elu_alpha;
+    absl::optional<float> leaky_relu_alpha;
   };
   Conv2dAttributes attributes;
   OperandInfo output;
@@ -556,6 +558,33 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
         .Test();
   }
   {
+    // Test conv2d with elu activation.
+    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 5, 5}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.activation = mojom::Activation::Tag::kElu,
+                                .elu_alpha = 1.0},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test conv2d with leaky relu activation.
+    Conv2dTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation = mojom::Activation::Tag::kLeakyRelu,
+                       .leaky_relu_alpha = 0.01},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
     // Test conv2d with relu activation.
     Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
@@ -601,6 +630,19 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
                  .output = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {1, 1, 3, 3}},
                  .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when elu activation has alpha < 0.
+    Conv2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 1, 5, 5}},
+                 .filter = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .attributes = {.activation = mojom::Activation::Tag::kElu,
+                                .elu_alpha = -1.0},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, 1, 3, 3}},
+                 .expected = false}
         .Test();
   }
   {
@@ -732,8 +774,8 @@ struct ElementWiseBinaryTester {
 
 TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   {
-    // Testing building add with two input dimensions - {8, 1, 6, 1} and {7, 1,
-    // 5}. Both the a and b dimensions have axes with length one that are
+    // Testing building add with two input dimensions - {8, 1, 6, 1} and {7,
+    // 1, 5}. Both the a and b dimensions have axes with length one that are
     // expanded to a larger size during the broadcast operation.
     // a_dimensions     (4d) 8 * 1 * 6 * 1
     // b_dimensions     (3d)     7 * 1 * 5
@@ -812,6 +854,91 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
   }
 }
 
+struct EluTester {
+  OperandInfo input;
+  OperandInfo output;
+  float alpha = 1.0;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildElu(input_operand_id, output_operand_id, alpha);
+
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, EluTest) {
+  {
+    // Test elu operator for 2-D tensor with float32 input.
+    EluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2, 6}},
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {2, 6}},
+              .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the alpha is less than or equal to 0.
+    EluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2}},
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {2}},
+              .alpha = 0,
+              .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the alpha is NAN.
+    EluTester{
+        .input = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .alpha = NAN,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not as expected.
+    EluTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                        .dimensions = {4, 2}},
+              .output = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {2}},
+              .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output data types which don't match.
+    EluTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input data type is not floating
+    // point.
+    EluTester{
+        .input = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is as same as output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildElu(input_operand_id, input_operand_id, /*alpha*/ 1.0);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct GemmTester {
   OperandInfo a;
   OperandInfo b;
@@ -883,8 +1010,8 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
   }
   {
     // Test building gemm with setting optional input C.
-    // The output dimensions of a * b would be {2, 4} and c_dimensions {4} is
-    // able to broadcast to {2, 4}.
+    // The output dimensions of a * b would be {2, 4} and c_dimensions {4}
+    // is able to broadcast to {2, 4}.
     GemmTester{
         .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
         .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
@@ -896,8 +1023,8 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
         .Test();
   }
   {
-    // Test building gemm with two matrices - {2, 3} and {2, 4} that can't be
-    // multiplied together due to incompatible dimensions.
+    // Test building gemm with two matrices - {2, 3} and {2, 4} that can't
+    // be multiplied together due to incompatible dimensions.
     GemmTester{
         .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
         .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 4}},
@@ -908,8 +1035,8 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
   }
   {
     // Test building gemm with aTranspose = true, bTranspose = true.
-    // The output dimensions of a * b would be {2, 4} and c_dimension {2, 3} is
-    // incompatible with {2, 4}.
+    // The output dimensions of a * b would be {2, 4} and c_dimension {2, 3}
+    // is incompatible with {2, 4}.
     GemmTester{
         .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
         .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
@@ -1145,8 +1272,8 @@ TEST_F(WebNNGraphImplTest, PadTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the length of beginningPadding is not equal
-    // to the input rank.
+    // Test the invalid graph when the length of beginningPadding is not
+    // equal to the input rank.
     PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                         .dimensions = {2, 3}},
               .beginning_padding = {1},
@@ -1157,8 +1284,8 @@ TEST_F(WebNNGraphImplTest, PadTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the length of endingPadding is not equal to
-    // the input rank.
+    // Test the invalid graph when the length of endingPadding is not equal
+    // to the input rank.
     PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                         .dimensions = {2, 3}},
               .beginning_padding = {1, 0},
@@ -1169,7 +1296,8 @@ TEST_F(WebNNGraphImplTest, PadTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the padding of one dimension is too large.
+    // Test the invalid graph when the padding of one dimension is too
+    // large.
     PadTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                         .dimensions = {2, 3}},
               .beginning_padding = {2294967295, 0},
@@ -1411,8 +1539,8 @@ TEST_F(WebNNGraphImplTest, PreluTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the slope datatype doesn't match the input's
-    // datatype.
+    // Test the invalid graph when the slope datatype doesn't match the
+    // input's datatype.
     PreluTester{.input = {.type = mojom::Operand::DataType::kFloat16,
                           .dimensions = {3, 2, 5}},
                 .slope = {.type = mojom::Operand::DataType::kFloat32,
@@ -1423,8 +1551,8 @@ TEST_F(WebNNGraphImplTest, PreluTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the output datatype doesn't match the input's
-    // datatype.
+    // Test the invalid graph when the output datatype doesn't match the
+    // input's datatype.
     PreluTester{.input = {.type = mojom::Operand::DataType::kFloat16,
                           .dimensions = {3, 2, 5}},
                 .slope = {.type = mojom::Operand::DataType::kFloat16,
@@ -1619,8 +1747,8 @@ TEST_F(WebNNGraphImplTest, ReshapeTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the number of input elements are not equal to
-    // the number of output elements.
+    // Test the invalid graph when the number of input elements are not
+    // equal to the number of output elements.
     ReshapeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {2, 3, 4}},
                   .output = {.type = mojom::Operand::DataType::kInt32,
@@ -1737,7 +1865,8 @@ TEST_F(WebNNGraphImplTest, SliceTest) {
         .Test();
   }
   {
-    // Test that input data type not equal to the output data type will fail.
+    // Test that input data type not equal to the output data type will
+    // fail.
     SliceTester{.input = {.type = mojom::Operand::DataType::kFloat16,
                           .dimensions = {4, 4}},
                 .attributes = {.starts = {0, 0}, .sizes = {4, 4}},
@@ -1748,7 +1877,7 @@ TEST_F(WebNNGraphImplTest, SliceTest) {
   }
 }
 
-enum class FloatingPointUnaryKind { kSigmoid, kTanh };
+enum class FloatingPointUnaryKind { kLeakyRelu, kSigmoid, kTanh };
 
 struct FloatingPointUnaryTester {
   OperandInfo input;
@@ -1756,6 +1885,7 @@ struct FloatingPointUnaryTester {
   bool expected;
 
   void Test() {
+    Test(FloatingPointUnaryKind::kLeakyRelu);
     Test(FloatingPointUnaryKind::kSigmoid);
     Test(FloatingPointUnaryKind::kTanh);
   }
@@ -1768,6 +1898,10 @@ struct FloatingPointUnaryTester {
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
     switch (kind) {
+      case FloatingPointUnaryKind::kLeakyRelu:
+        builder.BuildLeakyRelu(input_operand_id, output_operand_id,
+                               /*alpha*/ 1.0);
+        break;
       case FloatingPointUnaryKind::kSigmoid:
         builder.BuildSigmoid(input_operand_id, output_operand_id);
         break;
@@ -1781,7 +1915,7 @@ struct FloatingPointUnaryTester {
 
 TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
   {
-    // Test sigmoid operator for 2-D tensor with float32 input.
+    // Test the operator for 2-D tensor with float32 input.
     FloatingPointUnaryTester{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {2, 6}},
@@ -1791,7 +1925,7 @@ TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
         .Test();
   }
   {
-    // Test sigmoid operator for 3-D tensor with float16 input.
+    // Test the operator for 3-D tensor with float16 input.
     FloatingPointUnaryTester{
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {2, 6, 4}},
@@ -1820,7 +1954,8 @@ TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the input data type is not floating point.
+    // Test the invalid graph when the input data type is not floating
+    // point.
     FloatingPointUnaryTester{
         .input = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
         .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
@@ -1828,7 +1963,29 @@ TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid graph for sigmoid when the input is as same as output.
+    // Test the invalid graph for leaky relu when the input is as same as
+    // output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildLeakyRelu(input_operand_id, input_operand_id, /*alpha*/ 1.0);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for leaky relu when alpha is NAN.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildLeakyRelu(input_operand_id, output_operand_id, /*alpha*/ NAN);
+
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for sigmoid when the input is as same as
+    // output.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
         builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
@@ -1974,8 +2131,8 @@ TEST_F(WebNNGraphImplTest, ValidateSplitTest) {
         .Test();
   }
   {
-    // Tests for an invalid graph where the sum of the splits is less than the
-    // input tensor size.
+    // Tests for an invalid graph where the sum of the splits is less than
+    // the input tensor size.
     SplitTester{.input = {.type = kFloat32, .dimensions = {2, 6}},
                 .outputs = {{.type = kFloat32, .dimensions = {2, 1}},
                             {.type = kFloat32, .dimensions = {2, 2}},
@@ -1985,8 +2142,8 @@ TEST_F(WebNNGraphImplTest, ValidateSplitTest) {
         .Test();
   }
   {
-    // Tests for an invalid graph where the sum of the splits is greater than
-    // the input tensor size.
+    // Tests for an invalid graph where the sum of the splits is greater
+    // than the input tensor size.
     SplitTester{.input = {.type = kFloat32, .dimensions = {2, 6}},
                 .outputs = {{.type = kFloat32, .dimensions = {2, 1}},
                             {.type = kFloat32, .dimensions = {2, 2}},
@@ -1996,8 +2153,8 @@ TEST_F(WebNNGraphImplTest, ValidateSplitTest) {
         .Test();
   }
   {
-    // Tests for an invalid graph where specified axis is greater then the rank
-    // of the input tensor
+    // Tests for an invalid graph where specified axis is greater then the
+    // rank of the input tensor
     SplitTester{.input = {.type = kFloat32, .dimensions = {2, 2}},
                 .outputs = {{.type = kFloat32, .dimensions = {1, 2}},
                             {.type = kFloat32, .dimensions = {1, 2}}},
@@ -2065,8 +2222,8 @@ TEST_F(WebNNGraphImplTest, TransposeTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the rank of permutation is larger than the
-    // input rank.
+    // Test the invalid graph when the rank of permutation is larger than
+    // the input rank.
     TransposeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                               .dimensions = {1, 2, 3}},
                     .permutation = {0, 1, 2, 2},
@@ -2076,7 +2233,8 @@ TEST_F(WebNNGraphImplTest, TransposeTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the permutation contains duplicate values.
+    // Test the invalid graph when the permutation contains duplicate
+    // values.
     TransposeTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                               .dimensions = {1, 2, 3, 4}},
                     .permutation = {0, 1, 2, 2},
@@ -2209,8 +2367,8 @@ TEST_F(WebNNGraphImplTest, ValidateConstantOperandTest) {
         .Test();
   }
   {
-    // Test the invalid graph for the byte length of constant data doesn't match
-    // the graph's expected.
+    // Test the invalid graph for the byte length of constant data doesn't
+    // match the graph's expected.
     ConstantOperandTester{.values = std::vector<uint8_t>(10), .expected = false}
         .Test();
   }

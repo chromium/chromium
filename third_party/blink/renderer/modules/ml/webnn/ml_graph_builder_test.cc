@@ -3806,15 +3806,6 @@ TEST_F(MLGraphBuilderTest, LeakyReluTest) {
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3}));
   }
   {
-    // Test building leaky_relu with int32 input.
-    auto* input =
-        BuildInput(builder, "input", {2, 2, 3}, V8MLOperandType::Enum::kInt32,
-                   scope.GetExceptionState());
-    auto* options = MLLeakyReluOptions::Create();
-    auto* output = BuildLeakyRelu(scope, builder, input, options);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 2, 3}));
-  }
-  {
     // Test building leaky_relu as a standalone operator.
     auto* leaky_relu = builder->leakyRelu(MLLeakyReluOptions::Create(),
                                           scope.GetExceptionState());

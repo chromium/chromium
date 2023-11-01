@@ -63,6 +63,27 @@ uint64_t GraphInfoBuilder::BuildOutput(const std::string& name,
   return operand_id;
 }
 
+void GraphInfoBuilder::BuildElu(uint64_t input_operand_id,
+                                uint64_t output_operand_id,
+                                float alpha) {
+  mojom::EluPtr elu = mojom::Elu::New();
+  elu->input_operand_id = input_operand_id;
+  elu->output_operand_id = output_operand_id;
+  elu->alpha = alpha;
+  graph_info_->operations.push_back(mojom::Operation::NewElu(std::move(elu)));
+}
+
+void GraphInfoBuilder::BuildLeakyRelu(uint64_t input_operand_id,
+                                      uint64_t output_operand_id,
+                                      float alpha) {
+  mojom::LeakyReluPtr leaky_relu = mojom::LeakyRelu::New();
+  leaky_relu->input_operand_id = input_operand_id;
+  leaky_relu->output_operand_id = output_operand_id;
+  leaky_relu->alpha = alpha;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewLeakyRelu(std::move(leaky_relu)));
+}
+
 void GraphInfoBuilder::BuildPad(uint64_t input_operand_id,
                                 uint64_t output_operand_id,
                                 const std::vector<uint32_t>& beginning_padding,

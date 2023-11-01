@@ -7,7 +7,9 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
@@ -143,6 +145,42 @@ blink_mojom::ClampPtr CreateClamp(const OperandToIdMap& operand_to_id_map,
   return clamp_mojo;
 }
 
+blink_mojom::EluPtr CreateElu(const OperandToIdMap& operand_to_id_map,
+                              const MLOperator* elu,
+                              bool is_activation) {
+  auto elu_mojo = blink_mojom::Elu::New();
+  // Activation has no input and output operand.
+  if (!is_activation) {
+    elu_mojo->input_operand_id = GetOperatorInputId(elu, operand_to_id_map);
+    elu_mojo->output_operand_id = GetOperatorOutputId(elu, operand_to_id_map);
+  }
+
+  const auto* options = static_cast<const MLEluOptions*>(elu->Options());
+  CHECK(options);
+  elu_mojo->alpha = options->alpha();
+  return elu_mojo;
+}
+
+blink_mojom::LeakyReluPtr CreateLeakyRelu(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* leaky_relu,
+    bool is_activation) {
+  auto leaky_relu_mojo = blink_mojom::LeakyRelu::New();
+  // Activation has no input and output operand.
+  if (!is_activation) {
+    leaky_relu_mojo->input_operand_id =
+        GetOperatorInputId(leaky_relu, operand_to_id_map);
+    leaky_relu_mojo->output_operand_id =
+        GetOperatorOutputId(leaky_relu, operand_to_id_map);
+  }
+
+  const auto* options =
+      static_cast<const MLLeakyReluOptions*>(leaky_relu->Options());
+  CHECK(options);
+  leaky_relu_mojo->alpha = options->alpha();
+  return leaky_relu_mojo;
+}
+
 blink_mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
     blink::V8MLInputOperandLayout::Enum type) {
   switch (type) {
@@ -262,6 +300,17 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
       case blink::MLOperator::OperatorKind::kClamp: {
         conv2d_mojo->activation = blink_mojom::Activation::NewClamp(CreateClamp(
             operand_to_id_map, options->activation()->Operator(), true));
+        break;
+      }
+      case blink::MLOperator::OperatorKind::kElu: {
+        conv2d_mojo->activation = blink_mojom::Activation::NewElu(CreateElu(
+            operand_to_id_map, options->activation()->Operator(), true));
+        break;
+      }
+      case blink::MLOperator::OperatorKind::kLeakyRelu: {
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewLeakyRelu(CreateLeakyRelu(
+                operand_to_id_map, options->activation()->Operator(), true));
         break;
       }
       case blink::MLOperator::OperatorKind::kRelu:
@@ -632,8 +681,14 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       [[fallthrough]];
     case MLOperator::OperatorKind::kPow:
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kElu:
+      return blink_mojom::Operation::NewElu(
+          CreateElu(operand_to_id_map, op, false));
     case MLOperator::OperatorKind::kGemm:
       return CreateGemmOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kLeakyRelu:
+      return blink_mojom::Operation::NewLeakyRelu(
+          CreateLeakyRelu(operand_to_id_map, op, false));
     case MLOperator::OperatorKind::kMatmul:
       return CreateMatmulOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kPad:

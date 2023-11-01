@@ -247,6 +247,19 @@ struct Slice {
   array<StartAndSize> starts_and_sizes;
 };
 
+// Represents an operation of exponential linear unit function in the
+// expression max(0, x) + alpha * (exp(min(0, x)) - 1).
+struct Elu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // A float scalar multiplier for (exp(min(0, x)) - 1).
+  float alpha = 1.0;
+};
+
 // Represents general matrix multiplication (gemm) operation in the expression
 // `alpha * A * B + beta * C`.
 struct Gemm {
@@ -271,6 +284,19 @@ struct Gemm {
   bool a_transpose = false;
   // True is to transpose the second tensor before matrix multiplication.
   bool b_transpose = false;
+};
+
+// Represents a leaky version of relu operation whose calculation follows the
+// expression max(0, x) + alpha ∗ min(0, x).
+struct LeakyRelu {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // A float scalar multiplier for min(0, x).
+  float alpha = 0.01;
 };
 
 // Represents a parametric relu operation whose calculation follows the
@@ -398,6 +424,8 @@ struct Resample2d {
 // to create other operations (Conv2d, BatchNormalization, for example).
 union Activation {
   Clamp clamp;
+  Elu elu;
+  LeakyRelu leaky_relu;
   Relu relu;
   Sigmoid sigmoid;
   Softmax softmax;
@@ -411,7 +439,9 @@ union Operation {
   Concat concat;
   Conv2d conv2d;
   ElementWiseBinary element_wise_binary;
+  Elu elu;
   Gemm gemm;
+  LeakyRelu leaky_relu;
   Matmul matmul;
   Pad pad;
   Pool2d pool2d;

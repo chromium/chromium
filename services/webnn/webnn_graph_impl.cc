@@ -89,10 +89,32 @@ bool ValidateClampAttributes(const mojom::ClampPtr& clamp) {
   return true;
 }
 
+bool ValidateEluAttributes(const mojom::EluPtr& elu) {
+  if (std::isnan(elu->alpha) || elu->alpha <= 0.0f) {
+    // The value of alpha must be greater than 0.
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateLeakyReluAttributes(const mojom::LeakyReluPtr& leaky_relu) {
+  if (std::isnan(leaky_relu->alpha)) {
+    // The value of alpha should not be NAN.
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateActivation(const mojom::ActivationPtr& activation) {
   switch (activation->which()) {
     case mojom::Activation::Tag::kClamp:
       return ValidateClampAttributes(activation->get_clamp());
+    case mojom::Activation::Tag::kElu:
+      return ValidateEluAttributes(activation->get_elu());
+    case mojom::Activation::Tag::kLeakyRelu:
+      return ValidateLeakyReluAttributes(activation->get_leaky_relu());
     case mojom::Activation::Tag::kRelu:
     case mojom::Activation::Tag::kSigmoid:
     case mojom::Activation::Tag::kSoftmax:
@@ -359,6 +381,18 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateElu(const IdToOperandMap& id_to_operand_map,
+                 const mojom::EluPtr& elu) {
+  if (!ValidateFloatingPointUnaryOperation(id_to_operand_map, elu)) {
+    return false;
+  }
+  if (!ValidateEluAttributes(elu)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
                   const mojom::GemmPtr& gemm) {
   auto* a = GetMojoOperand(id_to_operand_map, gemm->a_operand_id);
@@ -380,6 +414,18 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
+                       const mojom::LeakyReluPtr& leaky_relu) {
+  if (!ValidateFloatingPointUnaryOperation(id_to_operand_map, leaky_relu)) {
+    return false;
+  }
+  if (!ValidateLeakyReluAttributes(leaky_relu)) {
     return false;
   }
 
@@ -663,8 +709,12 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kElementWiseBinary:
       return ValidateElementWiseBinary(id_to_operand_map,
                                        operation->get_element_wise_binary());
+    case mojom::Operation::Tag::kElu:
+      return ValidateElu(id_to_operand_map, operation->get_elu());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
+    case mojom::Operation::Tag::kLeakyRelu:
+      return ValidateLeakyRelu(id_to_operand_map, operation->get_leaky_relu());
     case mojom::Operation::Tag::kMatmul:
       return ValidateMatmul(id_to_operand_map, operation->get_matmul());
     case mojom::Operation::Tag::kPad:
