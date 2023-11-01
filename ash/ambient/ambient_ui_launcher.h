@@ -58,9 +58,6 @@ class AmbientUiLauncher {
   // dependency from the ambient controller.
   virtual AmbientPhotoController* GetAmbientPhotoController() = 0;
 
-  // Returns whether an ambient UI session is active.
-  virtual bool IsActive() = 0;
-
   // Returns whether an ambient UI session is ready to be started and the
   // `Intiailize` method can be called. Note: This can potentially disable
   // ambient mode until the next lock/unlock event if this is false on the lock

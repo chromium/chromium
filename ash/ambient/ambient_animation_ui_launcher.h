@@ -50,13 +50,11 @@ class AmbientAnimationUiLauncher : public AmbientUiLauncher,
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;
   AmbientPhotoController* GetAmbientPhotoController() override;
-  bool IsActive() override;
 
  private:
   const scoped_refptr<cc::SkottieWrapper> animation_;
   const raw_ptr<AmbientViewDelegateImpl> view_delegate_;
 
-  bool is_active_ = false;
   InitializationCallback initialization_callback_;
   AmbientPhotoController photo_controller_;
   AmbientUiSettings current_ui_settings_;

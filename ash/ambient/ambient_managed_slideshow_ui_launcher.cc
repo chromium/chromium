@@ -74,7 +74,8 @@ void AmbientManagedSlideshowUiLauncher::UpdateImageFilePaths(
   // more images to it, even when it is inactive. So that, errors like
   // insufficient images or decoding failures can be cleared when new data
   // is available.
-  if (!IsActive() && !photo_controller_.HasScreenUpdateErrors()) {
+  if (!photo_controller_.IsScreenUpdateActive() &&
+      !photo_controller_.HasScreenUpdateErrors()) {
     return;
   }
   photo_controller_.UpdateImageFilePaths(path_to_images);
@@ -99,10 +100,6 @@ AmbientManagedSlideshowUiLauncher::GetAmbientBackendModel() {
 AmbientPhotoController*
 AmbientManagedSlideshowUiLauncher::GetAmbientPhotoController() {
   return nullptr;
-}
-
-bool AmbientManagedSlideshowUiLauncher::IsActive() {
-  return photo_controller_.IsScreenUpdateActive();
 }
 
 bool AmbientManagedSlideshowUiLauncher::ComputeReadyState() {

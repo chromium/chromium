@@ -39,10 +39,8 @@ class AmbientSlideshowUiLauncher : public AmbientUiLauncher,
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;
   AmbientPhotoController* GetAmbientPhotoController() override;
-  bool IsActive() override;
 
  private:
-  bool is_active_ = false;
   InitializationCallback initialization_callback_;
   AmbientPhotoController photo_controller_;
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
