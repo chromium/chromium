@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/test.gni")
 import("//third_party/libvpx/libvpx_srcs.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
@@ -542,4 +543,17 @@ static_library("libvpxrc") {
   public_deps = [ ":libvpx" ]
 
   public_configs = [ ":libvpx_external_config" ]
+}
+
+if (fuzztest_supported) {
+  test("vp8_encoder_fuzz_test") {
+    sources = [ "tests/fuzzer/vp8_encoder_fuzz_test.cc" ]
+
+    enable_fuzztest = true
+
+    deps = [
+      ":libvpx",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
 }
