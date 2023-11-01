@@ -54,6 +54,12 @@ const char kPreviouslyRegisteredOptimizationTypes[] =
 const char kStoreFilePathsToDelete[] =
     "optimization_guide.store_file_paths_to_delete";
 
+// An integer pref that contains the user's setting state of the opt-in
+// main toggle. Changing this toggle affects the state of the per-feature
+// toggles.
+const char kModelExecutionMainToggleSettingState[] =
+    "optimization_guide.model_execution_main_toggle_setting_state";
+
 // Pref that contains user opt-in state for different features.
 std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature) {
   switch (feature) {
@@ -70,6 +76,10 @@ std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature) {
 }
 
 void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kModelExecutionMainToggleSettingState,
+      static_cast<int>(FeatureOptInState::kNotInitialized));
+
   for (int i = proto::ModelExecutionFeature_MIN;
        i <= proto::ModelExecutionFeature_MAX; ++i) {
     proto::ModelExecutionFeature feature =

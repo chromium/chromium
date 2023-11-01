@@ -20,6 +20,7 @@ extern const char kHintsFetcherHostsSuccessfullyFetched[];
 extern const char kPendingHintsProcessingVersion[];
 extern const char kPreviouslyRegisteredOptimizationTypes[];
 extern const char kStoreFilePathsToDelete[];
+extern const char kFeatureOptInMainToggleSettingState[];
 
 // Value stored in the pref.
 enum class FeatureOptInState {
