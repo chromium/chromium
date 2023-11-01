@@ -110,6 +110,7 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 // TODO(tsepez): mass rename this class out of existence.
 class NET_EXPORT IOBufferWithSize : public IOBuffer {
  public:
+  IOBufferWithSize();
   explicit IOBufferWithSize(size_t size);
 
  protected:

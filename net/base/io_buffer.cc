@@ -39,6 +39,8 @@ IOBuffer::~IOBuffer() {
   data_.ClearAndDeleteArray();
 }
 
+IOBufferWithSize::IOBufferWithSize() = default;
+
 IOBufferWithSize::IOBufferWithSize(size_t size) : IOBuffer(size) {}
 
 IOBufferWithSize::IOBufferWithSize(char* data, size_t size)
