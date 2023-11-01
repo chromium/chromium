@@ -74,6 +74,7 @@ luci.bucket(
         luci.binding(
             roles = "role/buildbucket.creator",
             groups = [
+                "mdb/chrome-build-access-sphinx",
                 "mdb/chrome-troopers",
                 "chromium-led-users",
             ],
