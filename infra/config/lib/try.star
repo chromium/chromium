@@ -117,7 +117,11 @@ def tryjob(
         experiment_percentage = None,
         location_filters = None,
         cancel_stale = None,
-        add_default_filters = True):
+        add_default_filters = True,
+        equivalent_builder = None,
+        equivalent_builder_percentage = None,
+        equivalent_builder_whitelist = None,
+        omit_from_luci_cv = False):
     """Specifies the details of a tryjob verifier.
 
     See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.cq_tryjob_verifier
@@ -135,6 +139,12 @@ def tryjob(
         exclude certain directories that would have no impact when building
         chromium with the patch applied (docs, config files that don't take
         effect until landing, etc., see default_location_filters).
+      equivalent_builder: See cq.tryjob_verifier.
+      equivalent_builder_percentage: See cq.tryjob_verifier.
+      equivalent_builder_whitelist: See cq.tryjob_verifier.
+      omit_from_luci_cv: A bool indicating whether the tryjob will be
+        added to luci verifier. This is useful for the equivalent_builder which
+        can't be added twice.
 
     Returns:
       A struct that can be passed to the `tryjob` argument of `try_.builder` to
@@ -155,6 +165,10 @@ def tryjob(
         add_default_filters = add_default_filters,
         location_filters = location_filters,
         cancel_stale = cancel_stale,
+        equivalent_builder = equivalent_builder,
+        equivalent_builder_percentage = equivalent_builder_percentage,
+        equivalent_builder_whitelist = equivalent_builder_whitelist,
+        omit_from_luci_cv = omit_from_luci_cv,
     )
 
 def try_builder(
@@ -312,18 +326,21 @@ def try_builder(
         location_filters = tryjob.location_filters
         if tryjob.add_default_filters:
             location_filters = (location_filters or []) + default_location_filters(builder)
-
-        luci.cq_tryjob_verifier(
-            builder = builder,
-            cq_group = cq_group,
-            disable_reuse = tryjob.disable_reuse,
-            experiment_percentage = tryjob.experiment_percentage,
-            location_filters = location_filters,
-            cancel_stale = tryjob.cancel_stale,
-            # These are the default if includable_only is False, but we list
-            # them here so we can add additional modes in a later generator.
-            mode_allowlist = [cq.MODE_DRY_RUN, cq.MODE_FULL_RUN],
-        )
+        if not tryjob.omit_from_luci_cv:
+            luci.cq_tryjob_verifier(
+                builder = builder,
+                cq_group = cq_group,
+                disable_reuse = tryjob.disable_reuse,
+                experiment_percentage = tryjob.experiment_percentage,
+                location_filters = location_filters,
+                cancel_stale = tryjob.cancel_stale,
+                # These are the default if includable_only is False, but we list
+                # them here so we can add additional modes in a later generator.
+                mode_allowlist = [cq.MODE_DRY_RUN, cq.MODE_FULL_RUN],
+                equivalent_builder = tryjob.equivalent_builder,
+                equivalent_builder_percentage = tryjob.equivalent_builder_percentage,
+                equivalent_builder_whitelist = tryjob.equivalent_builder_whitelist,
+            )
     else:
         # Allow CQ to trigger this builder if user opts in via CQ-Include-Trybots.
         luci.cq_tryjob_verifier(

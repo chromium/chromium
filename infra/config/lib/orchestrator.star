@@ -131,12 +131,6 @@ def _get_compilator(bucket_name, builder):
         if _builder_name(n) not in experimental_orchestrator_names
     ]
 
-    if len(orchestrator_nodes) != 1:
-        fail("compilator should have exactly 1 referring orchestrator, got: {}, {}".format(
-            _builder_name(node),
-            [_builder_name(n) for n in orchestrator_nodes],
-        ))
-
     return struct(
         name = compilator_name,
         builder = builder,

@@ -240,6 +240,11 @@ builder.
   * [`//content/gpu/.+`](https://cs.chromium.org/chromium/src/content/gpu/)
   * [`//media/.+`](https://cs.chromium.org/chromium/src/media/)
 
+* [chromeos-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel-gtest""))
+
+  Location filters:
+  * [`//dummypath/*`](https://cs.chromium.org/search?q=+file:dummypath/*)
+
 * [dawn-android-arm-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-android-arm-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-android-arm-deps-rel""))
 
   Location filters:

@@ -5,6 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -73,30 +74,55 @@ try_.builder(
     main_list_view = "try",
 )
 
-try_.builder(
+try_.orchestrator_builder(
     name = "chromeos-amd64-generic-rel-gtest",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    description_html = "This is a Ash chrome builder only run gtest",
+    description_html = "This is an Ash chrome builder which only runs gtest." +
+                       " This builder is the default CQ builder for" +
+                       " non-ChromeOS engineers only. See the builder" +
+                       " description for " +
+                       linkify_builder("try", "chromeos-amd64-generic-rel-gtest-and-tast", "chromium") +
+                       " for more information",
     mirrors = [
         "ci/chromeos-amd64-generic-rel",
         "ci/chromeos-amd64-generic-rel-gtest",
     ],
+    compilator = "chromeos-amd64-generic-rel-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
+    tryjob = try_.job(
+        equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
+        equivalent_builder_percentage = 100,
+        equivalent_builder_whitelist = "google/chromeos-pa@google.com",
+        # Use dummypath to make sure it's not auto triggered.
+        location_filters = ["dummypath/*"],
+    ),
 )
 
-try_.builder(
+try_.orchestrator_builder(
     name = "chromeos-amd64-generic-rel-gtest-and-tast",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    description_html = "This is a Ash chrome builder which run gtest" +
-                       " and Tast tests.",
+    description_html = "This is an Ash chrome builder which runs gtest" +
+                       " and Tast tests. This builder is the default CQ" +
+                       " builder for ChromeOS engineers only." +
+                       " For a CL, infra would check the CL’s owner to see" +
+                       " if the owner is a ChromeOS org engineer or not." +
+                       " If the owner is a ChromeOS org engineer, the" +
+                       " default CQ would include this builder which runs" +
+                       " both Tast tests and gtests. Otherwise, the default" +
+                       " CQ would include `chromeos-amd64-generic-rel-gtest`" +
+                       " which only runs gtests.",
     mirrors = [
         "ci/chromeos-amd64-generic-rel",
         "ci/chromeos-amd64-generic-rel-gtest",
         "ci/chromeos-amd64-generic-rel-tast",
     ],
+    compilator = "chromeos-amd64-generic-rel-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
+    tryjob = try_.job(
+        omit_from_luci_cv = True,
+    ),
 )
 
 try_.orchestrator_builder(

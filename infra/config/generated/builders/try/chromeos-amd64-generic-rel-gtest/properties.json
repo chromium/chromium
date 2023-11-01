@@ -96,11 +96,9 @@
       ]
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "jobs": 150,
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -110,5 +108,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.chromiumos",
-  "recipe": "chromium_trybot"
+  "cq": "path-based",
+  "recipe": "chromium/orchestrator"
 }
