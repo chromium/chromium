@@ -546,13 +546,7 @@ void Vp9Parser::Context::UpdateRefSlot(
 }
 
 Vp9Parser::Vp9Parser(bool parsing_compressed_header)
-    : Vp9Parser(parsing_compressed_header,
-                /*needs_external_context_update=*/false) {}
-
-Vp9Parser::Vp9Parser(bool parsing_compressed_header,
-                     bool needs_external_context_update)
-    : parsing_compressed_header_(parsing_compressed_header),
-      needs_external_context_update_(needs_external_context_update) {
+    : parsing_compressed_header_(parsing_compressed_header) {
   Reset();
 }
 
@@ -654,15 +648,9 @@ bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
 
   Vp9CompressedHeaderParser compressed_parser;
   bool parse_success;
-  if (!needs_external_context_update_) {
-    parse_success = compressed_parser.ParseNoContext(
-        frame_info.ptr + curr_frame_header_.uncompressed_header_size,
-        curr_frame_header_.header_size_in_bytes, &curr_frame_header_);
-  } else {
-    parse_success = compressed_parser.Parse(
-        frame_info.ptr + curr_frame_header_.uncompressed_header_size,
-        curr_frame_header_.header_size_in_bytes, &curr_frame_header_);
-  }
+  parse_success = compressed_parser.ParseNoContext(
+      frame_info.ptr + curr_frame_header_.uncompressed_header_size,
+      curr_frame_header_.header_size_in_bytes, &curr_frame_header_);
   if (!parse_success) {
     *result = kInvalidStream;
     return true;
@@ -677,9 +665,6 @@ bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
         *result = kInvalidStream;
         return true;
       }
-    } else {
-      if (needs_external_context_update_)
-        context_.MarkFrameContextForUpdate(frame_context_idx);
     }
   }
   return false;

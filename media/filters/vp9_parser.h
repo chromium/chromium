@@ -368,9 +368,8 @@ class MEDIA_EXPORT Vp9Parser {
     Vp9FrameContextManager frame_context_managers_[kVp9NumFrameContexts];
   };
 
-  // See homonymous member variables for information on the parameters.
+  // See homonymous member variable for information on the parameter.
   explicit Vp9Parser(bool parsing_compressed_header);
-  Vp9Parser(bool parsing_compressed_header, bool needs_external_context_update);
 
   Vp9Parser(const Vp9Parser&) = delete;
   Vp9Parser& operator=(const Vp9Parser&) = delete;
@@ -485,11 +484,6 @@ class MEDIA_EXPORT Vp9Parser {
   // Set on ctor if the client needs VP9Parser to also parse compressed headers,
   // otherwise they'll be skipped.
   const bool parsing_compressed_header_;
-
-  // Set on ctor if the client needs to call the ContextRefreshCallback obtained
-  // via GetContextRefreshCb() with the updated Vp9FrameContext; otherwise
-  // VP9Parser will update it internally.
-  const bool needs_external_context_update_;
 
   // FrameInfo for the remaining frames in the current superframe to be parsed.
   base::circular_deque<FrameInfo> frames_;

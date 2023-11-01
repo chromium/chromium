@@ -310,8 +310,4 @@ bool VP9Delegate::NeedsCompressedHeaderParsed() const {
   return supports_compressed_header_;
 }
 
-bool VP9Delegate::SupportsContextProbabilityReadback() const {
-  return false;
-}
-
 }  // namespace media

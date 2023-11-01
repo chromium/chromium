@@ -37,7 +37,6 @@ class V4L2VideoDecoderDelegateVP9 : public VP9Decoder::VP9Accelerator {
   bool GetFrameContext(scoped_refptr<VP9Picture> pic,
                        Vp9FrameContext* frame_ctx) override;
   bool NeedsCompressedHeaderParsed() const override;
-  bool SupportsContextProbabilityReadback() const override;
 
  private:
   raw_ptr<V4L2DecodeSurfaceHandler> const surface_handler_;

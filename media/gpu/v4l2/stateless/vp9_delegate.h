@@ -34,7 +34,6 @@ class VP9Delegate : public VP9Decoder::VP9Accelerator {
   bool GetFrameContext(scoped_refptr<VP9Picture> pic,
                        Vp9FrameContext* frame_ctx) override;
   bool NeedsCompressedHeaderParsed() const override;
-  bool SupportsContextProbabilityReadback() const override;
 
  private:
   raw_ptr<StatelessDecodeSurfaceHandler> const surface_handler_;
