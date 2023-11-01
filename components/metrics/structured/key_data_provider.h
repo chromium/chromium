@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/metrics/structured/key_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -28,12 +29,28 @@ class KeyDataProvider {
 
   virtual ~KeyDataProvider() = default;
 
+  // Returns true if the keys are ready to be used.
+  virtual bool IsReady() = 0;
+
+  // Callback to be made once the key is ready.
+  virtual void OnKeyReady() = 0;
+
   // Initializes the device key data.
   virtual void InitializeDeviceKey(base::OnceClosure callback) = 0;
 
   // Called whenever a profile key should be initialized.
   virtual void InitializeProfileKey(const base::FilePath& profile_path,
                                     base::OnceClosure callback) = 0;
+
+  // Retrieves the ID for given |project_name|.
+  //
+  // If no valid key is found for |project_name|, this function will return
+  // absl::nullopt.
+  virtual absl::optional<uint64_t> GetId(const std::string& project_name) = 0;
+
+  // Retrieves the key data to be used for |project_name|. Returns nullptr if
+  // the KeyData is not available for given |project_name|.
+  virtual KeyData* GetKeyData(const std::string& project_name) = 0;
 
   // Returns the device key data.
   //

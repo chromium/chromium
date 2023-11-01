@@ -14,6 +14,8 @@ static_library("structured") {
     "key_data.cc",
     "key_data.h",
     "key_data_provider.h",
+    "key_data_provider_file.cc",
+    "key_data_provider_file.h",
     "persistent_proto.cc",
     "persistent_proto.h",
     "reporting/structured_metrics_log_metrics.cc",
@@ -213,6 +215,7 @@ static_library("test_support") {
   ]
   deps = [
     ":structured",
+    ":structured_metrics_validator",
     "//base",
     "//base/test:test_support",
     "//components/metrics:metrics",

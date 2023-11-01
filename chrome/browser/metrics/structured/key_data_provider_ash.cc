@@ -4,6 +4,9 @@
 
 #include "chrome/browser/metrics/structured/key_data_provider_ash.h"
 
+#include "components/metrics/structured/key_data_provider_file.h"
+#include "components/metrics/structured/structured_metrics_validator.h"
+
 namespace metrics::structured {
 namespace {
 
@@ -31,13 +34,40 @@ KeyDataProviderAsh::KeyDataProviderAsh(const base::FilePath& device_key_path,
 
 KeyDataProviderAsh::~KeyDataProviderAsh() = default;
 
+bool KeyDataProviderAsh::IsReady() {
+  DCHECK(device_key_);
+  return device_key_->IsReady();
+}
+
+void KeyDataProviderAsh::OnKeyReady() {
+  DCHECK(device_key_);
+  return device_key_->OnKeyReady();
+}
+
+KeyData* KeyDataProviderAsh::GetKeyData(const std::string& project_name) {
+  auto* key_data_provider = GetKeyDataProvider(project_name);
+  if (!key_data_provider) {
+    return nullptr;
+  }
+  return key_data_provider->GetKeyData(project_name);
+}
+
+absl::optional<uint64_t> KeyDataProviderAsh::GetId(
+    const std::string& project_name) {
+  KeyDataProvider* key_data_provider = GetKeyDataProvider(project_name);
+  if (!key_data_provider) {
+    return absl::nullopt;
+  }
+  return key_data_provider->GetId(project_name);
+}
+
 void KeyDataProviderAsh::InitializeDeviceKey(base::OnceClosure callback) {
   if (HasDeviceKey()) {
     return;
   }
 
-  device_key_ = std::make_unique<KeyData>(device_key_path_, write_delay_,
-                                          std::move(callback));
+  device_key_ = std::make_unique<KeyDataProviderFile>(
+      device_key_path_, write_delay_, std::move(callback));
 }
 
 void KeyDataProviderAsh::InitializeProfileKey(
@@ -49,18 +79,20 @@ void KeyDataProviderAsh::InitializeProfileKey(
     return;
   }
 
-  profile_key_ = std::make_unique<KeyData>(profile_path.Append(kProfileKeyPath),
-                                           write_delay_, std::move(callback));
+  profile_key_ = std::make_unique<KeyDataProviderFile>(
+      profile_path.Append(kProfileKeyPath), write_delay_, std::move(callback));
 }
 
 KeyData* KeyDataProviderAsh::GetDeviceKeyData() {
   DCHECK(HasDeviceKey());
-  return device_key_.get();
+  // Project name does not matter for this implementation.
+  return device_key_->GetKeyData(/*project_name=*/"");
 }
 
 KeyData* KeyDataProviderAsh::GetProfileKeyData() {
   DCHECK(HasProfileKey());
-  return profile_key_.get();
+  // Project name does not matter for this implementation.
+  return profile_key_->GetKeyData(/*project_name=*/"");
 }
 
 void KeyDataProviderAsh::Purge() {
@@ -78,7 +110,42 @@ bool KeyDataProviderAsh::HasProfileKey() {
 }
 
 bool KeyDataProviderAsh::HasDeviceKey() {
-  return profile_key_ != nullptr;
+  return device_key_ != nullptr;
+}
+
+KeyDataProvider* KeyDataProviderAsh::GetKeyDataProvider(
+    const std::string& project_name) {
+  auto maybe_project_validator =
+      validator::Validators::Get()->GetProjectValidator(project_name);
+  if (!maybe_project_validator.has_value()) {
+    return nullptr;
+  }
+  const auto* project_validator = maybe_project_validator.value();
+
+  switch (project_validator->id_scope()) {
+    case IdScope::kPerProfile: {
+      if (profile_key_) {
+        return profile_key_.get();
+      }
+      break;
+    }
+    case IdScope::kPerDevice: {
+      if (project_validator->event_type() ==
+              StructuredEventProto_EventType_SEQUENCE &&
+          profile_key_) {
+        return profile_key_.get();
+      }
+      if (device_key_) {
+        return device_key_.get();
+      }
+      break;
+    }
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  return nullptr;
 }
 
 }  // namespace metrics::structured

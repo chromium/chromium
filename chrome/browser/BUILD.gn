@@ -5427,6 +5427,7 @@ static_library("browser") {
       "//components/digital_goods/mojom",
       "//components/drive",
       "//components/metrics/structured",
+      "//components/metrics/structured:structured_metrics_validator",
       "//components/quirks",
       "//components/services/app_service/public/cpp:instance_update",
       "//components/services/font:lib",

@@ -439,6 +439,7 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
 
   // Choose which KeyData to use for this event.
   KeyData* key_data;
+
   switch (project_validator->id_scope()) {
     case IdScope::kPerProfile:
       key_data = profile_key_data;

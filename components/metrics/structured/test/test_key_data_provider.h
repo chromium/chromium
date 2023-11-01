@@ -6,9 +6,11 @@
 #define COMPONENTS_METRICS_STRUCTURED_TEST_TEST_KEY_DATA_PROVIDER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "components/metrics/structured/key_data_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -31,6 +33,10 @@ class TestKeyDataProvider : public KeyDataProvider {
   ~TestKeyDataProvider() override;
 
   // KeyDataProvider:
+  bool IsReady() override;
+  void OnKeyReady() override;
+  absl::optional<uint64_t> GetId(const std::string& project_name) override;
+  KeyData* GetKeyData(const std::string& project_name) override;
   KeyData* GetDeviceKeyData() override;
   KeyData* GetProfileKeyData() override;
   bool HasProfileKey() override;
@@ -44,8 +50,8 @@ class TestKeyDataProvider : public KeyDataProvider {
   base::FilePath device_key_path_;
   base::FilePath profile_key_path_;
 
-  std::unique_ptr<KeyData> device_key_data_;
-  std::unique_ptr<KeyData> profile_key_data_;
+  std::unique_ptr<KeyDataProvider> device_key_data_;
+  std::unique_ptr<KeyDataProvider> profile_key_data_;
 };
 
 }  // namespace metrics::structured

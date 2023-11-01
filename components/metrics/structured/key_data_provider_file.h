@@ -2,32 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_STRUCTURED_KEY_DATA_PROVIDER_ASH_H_
-#define CHROME_BROWSER_METRICS_STRUCTURED_KEY_DATA_PROVIDER_ASH_H_
+#ifndef COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_FILE_H_
+#define COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_FILE_H_
 
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/metrics/structured/key_data_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics::structured {
 
-// Implementation for Ash Chrome to provide keys to StructuredMetricsRecorder.
-//
-// Device keys are stored in a static path while profile keys are stored in the
-// user's cryptohome partition.
-//
-// InitializeProfileKey should only be called once for the primary user. All
-// subsequent calls will no-op.
-class KeyDataProviderAsh : public KeyDataProvider {
+// KeyDataProvider implementation that stores the keys in a file.
+class KeyDataProviderFile : public KeyDataProvider {
  public:
-  KeyDataProviderAsh();
-  KeyDataProviderAsh(const base::FilePath& device_key_path,
-                     base::TimeDelta write_delay);
-  ~KeyDataProviderAsh() override;
+  KeyDataProviderFile(const base::FilePath& file_path,
+                      base::TimeDelta write_delay,
+                      base::OnceClosure on_key_ready_callback);
+  ~KeyDataProviderFile() override;
 
   // KeyDataProvider:
   bool IsReady() override;
@@ -44,14 +38,16 @@ class KeyDataProviderAsh : public KeyDataProvider {
   bool HasDeviceKey() override;
 
  private:
-  KeyDataProvider* GetKeyDataProvider(const std::string& project_name);
-
-  const base::FilePath device_key_path_;
+  const base::FilePath file_path_;
   const base::TimeDelta write_delay_;
+  bool is_data_loaded_ = false;
 
-  std::unique_ptr<KeyDataProvider> device_key_;
-  std::unique_ptr<KeyDataProvider> profile_key_;
+  std::unique_ptr<KeyData> key_data_;
+  base::OnceClosure on_key_ready_callback_;
+
+  base::WeakPtrFactory<KeyDataProviderFile> weak_ptr_factory_{this};
 };
+
 }  // namespace metrics::structured
 
-#endif  // CHROME_BROWSER_METRICS_STRUCTURED_KEY_DATA_PROVIDER_ASH_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_FILE_H_
