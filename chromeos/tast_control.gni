@@ -30,8 +30,8 @@
 # WARNING: This may cause unexpected disablement and is strongly discouraged.
 # You should specify the tests one-by-one in most cases, instead of this.
 tast_disabled_tests_from_chrome_all = [
-  # b/302415044: Fails on chromeos-jacuzzi-chrome-skylab due to low disk space.
-  "crostini.BackupRestore.bullseye_stable@jacuzzi",
+  # b/308463545: Fails on chromeos-jacuzzi-chrome-skylab due to low disk space.
+  "crostini.ResizeInstallation.stable@jacuzzi",
 
   # https://crbug.com/1379756
   "inputs.VirtualKeyboardHandwriting.floating",
