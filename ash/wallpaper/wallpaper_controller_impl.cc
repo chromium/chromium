@@ -43,6 +43,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resolution.h"
 #include "ash/wallpaper/wallpaper_window_state_manager.h"
@@ -269,6 +270,21 @@ scoped_refptr<base::RefCountedMemory> EncodeAndResizeImage(
                                   &jpg_buffer);
   jpg_bytes = base::RefCountedBytes::TakeVector(&jpg_buffer);
   return jpg_bytes;
+}
+
+// Selects the online wallpaper variant to show and specifies it in the
+// returned `WallpaperInfo`. Returns nullptr on failure.
+std::unique_ptr<WallpaperInfo> CreateOnlineWallpaperInfo(
+    const OnlineWallpaperParams& params,
+    const char* source) {
+  const OnlineWallpaperVariant* selected_variant = FirstValidVariant(
+      params.variants,
+      Shell::Get()->dark_light_mode_controller()->current_checkpoint());
+  if (!selected_variant) {
+    LOG(ERROR) << "Failed to select online wallpaper variant from " << source;
+    return nullptr;
+  }
+  return std::make_unique<WallpaperInfo>(params, *selected_variant);
 }
 
 }  // namespace
@@ -748,8 +764,15 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
     return;
   }
 
-  if (current_wallpaper_ && current_wallpaper_->wallpaper_info().MatchesAsset(
-                                WallpaperInfo(params))) {
+  std::unique_ptr<WallpaperInfo> new_info =
+      CreateOnlineWallpaperInfo(params, __func__);
+  if (!new_info) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  if (current_wallpaper_ &&
+      current_wallpaper_->wallpaper_info().MatchesAsset(*new_info)) {
     DVLOG(1) << "Detected no change in online wallpaper";
     std::move(callback).Run(/*success=*/true);
     return;
@@ -762,9 +785,10 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
     observer.OnOnlineWallpaperSet(params);
 
   online_wallpaper_manager_.GetOnlineWallpaper(
-      GlobalChromeOSWallpapersDir(), params,
+      GlobalChromeOSWallpapersDir(), params.account_id, *new_info,
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
+                     set_wallpaper_weak_factory_.GetWeakPtr(),
+                     params.account_id, params.preview_mode, *new_info,
                      std::move(callback)));
 }
 
@@ -879,7 +903,6 @@ void WallpaperControllerImpl::SetTimeOfDayWallpaper(
                      WallpaperType::kOnline, std::move(callback));
   variant_info_fetcher_->FetchTimeOfDayWallpaper(
       account_id, wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
-      Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
       std::move(on_fetch));
 }
 
@@ -1584,7 +1607,6 @@ void WallpaperControllerImpl::OnCheckpointChanged(
 
   variant_info_fetcher_->FetchOnlineWallpaper(
       account_id, info,
-      Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
       base::BindOnce(&WallpaperControllerImpl::RepaintOnlineWallpaper,
                      set_wallpaper_weak_factory_.GetWeakPtr()));
 }
@@ -1887,9 +1909,14 @@ void WallpaperControllerImpl::RepaintOnlineWallpaper(
     return;
   }
 
-  WallpaperInfo new_info(*params);
+  std::unique_ptr<WallpaperInfo> new_info =
+      CreateOnlineWallpaperInfo(*params, __func__);
+  if (!new_info) {
+    return;
+  }
+
   if (current_wallpaper_ &&
-      current_wallpaper_->wallpaper_info().MatchesAsset(new_info)) {
+      current_wallpaper_->wallpaper_info().MatchesAsset(*new_info)) {
     DVLOG(1) << "Detected no change in online wallpaper asset";
     return;
   }
@@ -1897,37 +1924,35 @@ void WallpaperControllerImpl::RepaintOnlineWallpaper(
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   online_wallpaper_manager_.GetOnlineWallpaper(
-      GlobalChromeOSWallpapersDir(), *params,
+      GlobalChromeOSWallpapersDir(), params->account_id, *new_info,
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                     set_wallpaper_weak_factory_.GetWeakPtr(), *params,
+                     set_wallpaper_weak_factory_.GetWeakPtr(),
+                     params->account_id, params->preview_mode, *new_info,
                      /*callback=*/base::DoNothing()));
 }
 
 void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
-    const OnlineWallpaperParams& params,
+    const AccountId& account_id,
+    bool preview_mode,
+    WallpaperInfo wallpaper_info,
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   DCHECK(callback);
   if (image.isNull()) {
     std::move(callback).Run(/*success=*/false);
     wallpaper_metrics_manager_->LogWallpaperResult(
-        params.daily_refresh_enabled ? WallpaperType::kDaily
-                                     : WallpaperType::kOnline,
-        SetWallpaperResult::kDecodingError);
+        wallpaper_info.type, SetWallpaperResult::kDecodingError);
     LOG(ERROR) << "Failed to decode online wallpaper.";
     return;
   } else {
     for (auto& observer : observers_) {
-      observer.OnUserSetWallpaper(params.account_id);
+      observer.OnUserSetWallpaper(account_id);
     }
     wallpaper_metrics_manager_->LogWallpaperResult(
-        params.daily_refresh_enabled ? WallpaperType::kDaily
-                                     : WallpaperType::kOnline,
-        SetWallpaperResult::kSuccess);
+        wallpaper_info.type, SetWallpaperResult::kSuccess);
   }
 
-  const bool is_active_user = IsActiveUser(params.account_id);
-  WallpaperInfo wallpaper_info = WallpaperInfo(params);
+  const bool is_active_user = IsActiveUser(account_id);
   if (current_wallpaper_ &&
       current_wallpaper_->wallpaper_info().MatchesSelection(wallpaper_info)) {
     DVLOG(1) << "Detected a change in asset for the same wallpaper.";
@@ -1936,12 +1961,12 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     // wallpapers).
     wallpaper_info.date = current_wallpaper_->wallpaper_info().date;
   }
-  if (params.preview_mode) {
+  if (preview_mode) {
     DCHECK(is_active_user);
     std::move(callback).Run(/*success=*/true);
     confirm_preview_wallpaper_callback_ = base::BindOnce(
         &WallpaperControllerImpl::SetWallpaperImpl, weak_factory_.GetWeakPtr(),
-        params.account_id, wallpaper_info, image, /*show_wallpaper=*/false);
+        account_id, wallpaper_info, image, /*show_wallpaper=*/false);
     reload_preview_wallpaper_callback_ =
         base::BindRepeating(&WallpaperControllerImpl::ShowWallpaperImage,
                             weak_factory_.GetWeakPtr(), image, wallpaper_info,
@@ -1950,7 +1975,7 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     reload_preview_wallpaper_callback_.Run();
   } else {
     std::move(callback).Run(/*success=*/true);
-    SetWallpaperImpl(params.account_id, wallpaper_info, image,
+    SetWallpaperImpl(account_id, wallpaper_info, image,
                      /*show_wallpaper=*/is_active_user);
   }
 }
@@ -2771,7 +2796,6 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
       // |info| is malformed.
       if (!variant_info_fetcher_->FetchDailyWallpaper(
               account_id, info,
-              Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
               std::move(fetch_callback))) {
         // Could not start fetch of wallpaper variants. Likely because the
         // chrome client isn't ready. Schedule for later.
@@ -2893,7 +2917,6 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
                      weak_factory_.GetWeakPtr(), info.type, base::DoNothing());
   if (!variant_info_fetcher_->FetchDailyWallpaper(
           account_id, info,
-          Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
           std::move(callback))) {
     NOTREACHED() << "Fetch of daily wallpaper info failed.";
   }
@@ -2936,10 +2959,8 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
                      set_wallpaper_weak_factory_.GetWeakPtr(), info.type,
                      base::DoNothing());
 
-  variant_info_fetcher_->FetchOnlineWallpaper(
-      account_id, info,
-      Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
-      std::move(callback));
+  variant_info_fetcher_->FetchOnlineWallpaper(account_id, info,
+                                              std::move(callback));
 }
 
 void WallpaperControllerImpl::CleanUpBeforeSettingUserWallpaperInfo(

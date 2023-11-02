@@ -21,7 +21,10 @@ namespace ash {
 struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperInfo();
 
-  explicit WallpaperInfo(const OnlineWallpaperParams& online_wallpaper_params);
+  // `target_variant` should match one of the
+  // `online_wallpaper_params.variants`.
+  explicit WallpaperInfo(const OnlineWallpaperParams& online_wallpaper_params,
+                         const OnlineWallpaperVariant& target_variant);
   explicit WallpaperInfo(
       const GooglePhotosWallpaperParams& google_photos_wallpaper_params);
 

@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resolution.h"
@@ -40,20 +40,23 @@ class ASH_EXPORT OnlineWallpaperManager {
       base::OnceCallback<void(const gfx::ImageSkia&)>;
   // Attempts to load the wallpaper from the disk first. Instead of failing if
   // loading the wallpaper is unsuccessful, it tries to download the wallpaper
-  // along with other wallpapers in `params.variants` over the network.
+  // along with other wallpapers in `wallpaper_info.variants` over the network.
   void GetOnlineWallpaper(const base::FilePath& wallpaper_dir,
-                          const OnlineWallpaperParams& params,
+                          const AccountId& account_id,
+                          const WallpaperInfo& wallpaper_info,
                           LoadOnlineWallpaperCallback callback);
 
  private:
   void OnLoadExistingOnlineWallpaperComplete(
       const base::FilePath& wallpaper_dir,
-      const OnlineWallpaperParams& params,
+      const AccountId& account_id,
+      const WallpaperInfo& wallpaper_info,
       LoadOnlineWallpaperCallback callback,
       const gfx::ImageSkia& image);
 
   void DownloadAndSaveAllVariants(const base::FilePath& wallpaper_dir,
-                                  const OnlineWallpaperParams& params,
+                                  const AccountId& account_id,
+                                  const WallpaperInfo& wallpaper_info,
                                   LoadOnlineWallpaperCallback callback);
 
   // Just bundles together the ultimate output needed in

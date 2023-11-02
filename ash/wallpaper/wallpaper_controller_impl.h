@@ -488,9 +488,11 @@ class ASH_EXPORT WallpaperControllerImpl
   void RepaintOnlineWallpaper(absl::optional<OnlineWallpaperParams> params);
 
   // Used as the callback of decoding wallpapers of type
-  // `WallpaperType::kOnline`. Shows the wallpaper immediately if
-  // `params.account_id` is the active user.
-  void OnOnlineWallpaperDecoded(const OnlineWallpaperParams& params,
+  // `WallpaperType::kOnline`. Shows the wallpaper immediately if `account_id`
+  // is the active user.
+  void OnOnlineWallpaperDecoded(const AccountId& account_id,
+                                bool preview_mode,
+                                WallpaperInfo wallpaper_info,
                                 SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
 

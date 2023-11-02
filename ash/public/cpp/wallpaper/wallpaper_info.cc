@@ -18,14 +18,15 @@ WallpaperInfo::WallpaperInfo() {
 }
 
 WallpaperInfo::WallpaperInfo(
-    const OnlineWallpaperParams& online_wallpaper_params)
-    : location(online_wallpaper_params.url.spec()),
+    const OnlineWallpaperParams& online_wallpaper_params,
+    const OnlineWallpaperVariant& target_variant)
+    : location(target_variant.raw_url.spec()),
       layout(online_wallpaper_params.layout),
       type(online_wallpaper_params.daily_refresh_enabled
                ? WallpaperType::kDaily
                : WallpaperType::kOnline),
       date(base::Time::Now()),
-      asset_id(online_wallpaper_params.asset_id),
+      asset_id(target_variant.asset_id),
       collection_id(online_wallpaper_params.collection_id),
       unit_id(online_wallpaper_params.unit_id),
       variants(online_wallpaper_params.variants) {}

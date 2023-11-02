@@ -103,7 +103,8 @@ void TestWallpaperController::SetOnlineWallpaper(
     const ash::OnlineWallpaperParams& params,
     SetWallpaperCallback callback) {
   ++set_online_wallpaper_count_;
-  wallpaper_info_ = ash::WallpaperInfo(params);
+  CHECK(!params.variants.empty());
+  wallpaper_info_ = ash::WallpaperInfo(params, params.variants.front());
   std::move(callback).Run(/*success=*/true);
 }
 

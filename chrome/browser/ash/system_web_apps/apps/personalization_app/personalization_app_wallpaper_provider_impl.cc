@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "ash/public/cpp/image_util.h"
-#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
@@ -24,9 +23,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/public/cpp/window_backdrop.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
@@ -109,15 +106,6 @@ std::string GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
     return std::string();
   }
   return GetJpegDataUrl(output.data(), output.size());
-}
-
-// Convenience method to get the current checkpoint.
-ScheduleCheckpoint GetCurrentCheckPoint() {
-  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
-  if (!dark_light_mode_controller) {
-    return ScheduleCheckpoint::kDisabled;
-  }
-  return dark_light_mode_controller->current_checkpoint();
 }
 
 }  // namespace
@@ -504,10 +492,6 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
     collection_id = image_info.collection_id;
   }
 
-  const auto checkpoint = GetCurrentCheckPoint();
-  auto* variant = FirstValidVariant(variants, checkpoint);
-  DCHECK(variant);
-
   if (pending_select_wallpaper_callback_) {
     std::move(pending_select_wallpaper_callback_).Run(/*success=*/false);
   }
@@ -521,8 +505,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
 
   wallpaper_controller->SetOnlineWallpaper(
       ash::OnlineWallpaperParams(
-          GetAccountId(profile_), variant->asset_id,
-          GURL(variant->raw_url.spec()), collection_id,
+          GetAccountId(profile_), collection_id,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
           /*from_user=*/true,
           /*daily_refresh_enabled=*/false, unit_id, variants),

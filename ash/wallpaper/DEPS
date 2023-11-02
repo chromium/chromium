@@ -4,6 +4,7 @@ include_rules = [
 
 specific_include_rules = {
   "wallpaper_controller_unittest.cc": [
+    "+chromeos/ash/components/geolocation",
     "+components/user_manager",
   ],
 }
