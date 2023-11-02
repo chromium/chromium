@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div id="container" class="container">
+<div id="container" class="container" role="group">
     <button class="bigbutton">One</button>
     <button class="bigbutton">Two</button>
     <button class="bigbutton">Three</button>
@@ -28,24 +28,39 @@
 
 <script>
 
-async_test((t) => {
-  var container = document.getElementById('container');
+function scrollPromise(scroller, scrollPosition) {
+  return new Promise(resolve => {
+    scroller.addEventListener('scrollend', resolve, { once: true });
+    // Ensure page is rendered before adjusting the scroll position.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scroller.scrollTop = scrollPosition;
+      });
+    });
+  });
+}
 
-  accessibilityController.addNotificationListener(t.step_func((target, notification) => {
-    if (target.role == 'AXRole: AXGenericContainer') {
-      console.log('Got notification on container div');
-      assert_equals(container.scrollTop, 500);
-      accessibilityController.removeNotificationListener();
-      t.done();
-    }
-  }));
+function scrollNotificationPromise(expectedScroll) {
+  return new Promise(resolve => {
+    accessibilityController.addNotificationListener(target => {
+      if (target.role == 'AXRole: AXGroup' &&
+          target.scrollY() == expectedScroll) {
+        accessibilityController.removeNotificationListener();
+        resolve();
+      }
+    });
+  });
+}
 
-  window.setTimeout(function() {
-    container.scrollTop = 500;
-  }, 0);
-  window.setTimeout(t.step_func_done(() => {
-    assert_unreached();
-  }), 200);
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const scrollPosition = 500;
+  return Promise.all([
+    scrollNotificationPromise(scrollPosition),
+    scrollPromise(container, scrollPosition)
+  ]).then(results => {
+    assert_equals(container.scrollTop, scrollPosition);
+  });
 }, "This test ensures that scrolling the window sends a notification.");
 
 </script>
