@@ -49,9 +49,9 @@ class [[nodiscard]] Status {
   Status();
 
   Status(const Status&);
-  Status& operator=(const Status& x);
+  Status& operator=(const Status&);
   Status(Status&&);
-  Status& operator=(Status&& x);
+  Status& operator=(Status&&);
   virtual ~Status();
 
   // Create a status in the canonical error space with the specified
