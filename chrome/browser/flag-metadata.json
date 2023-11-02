@@ -5567,6 +5567,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "ntp-realbox-cr23-expanded-state-icons",
+    "owners": [ "niharm@google.com", "mahmadi@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ntp-realbox-is-tall",
     "owners": [ "tiborg@chromium.org", "mahmadi@chromium.org" ],
     "expiry_milestone": 130

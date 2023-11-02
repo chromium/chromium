@@ -50,6 +50,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -315,6 +316,12 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                           : match.contents,
           ImageLineToString16(match.answer->second_line()));
       mojom_match->image_url = match.ImageUrl().spec();
+      if (base::FeatureList::IsEnabled(
+              ntp_features::kRealboxCr23ExpandedStateIcons) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
+        mojom_match->is_weather_answer_suggestion =
+            match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER;
+      }
     }
     mojom_match->is_rich_suggestion =
         !mojom_match->image_url.empty() ||
@@ -603,6 +610,11 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
   source->AddBoolean(
       "omniboxActionsUISimplification",
       base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
+  source->AddBoolean(
+      "realboxCr23ExpandedStateIcons",
+      base::FeatureList::IsEnabled(
+          ntp_features::kRealboxCr23ExpandedStateIcons) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 }
 
 // static

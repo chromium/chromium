@@ -4932,6 +4932,12 @@ const char kNtpRealboxCr23AllName[] = "Realbox Chrome Refresh 2023";
 const char kNtpRealboxCr23AllDescription[] =
     "Enables all NTP Realbox Chrome Refresh features";
 
+const char kNtpRealboxCr23ExpandedStateIconsName[] =
+    "Realbox Chrome Refresh Expanded State Icons";
+const char kNtpRealboxCr23ExpandedStateIconsDescription[] =
+    "CR23 Icons, AiS and Pedal backgrounds, CR23 entity rounded corner radii "
+    "in Realbox expanded state";
+
 const char kNtpRealboxMatchSearchboxThemeName[] =
     "NTP Realbox Matches Searchbox Theme";
 const char kNtpRealboxMatchSearchboxThemeDescription[] =

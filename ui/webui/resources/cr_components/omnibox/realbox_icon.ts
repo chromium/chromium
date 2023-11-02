@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import {getFaviconForPageURL} from '//resources/js/icon.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AutocompleteMatch} from './omnibox.mojom-webui.js';
 import {getTemplate} from './realbox_icon.html.js';
 
+const CALCULATOR: string = 'search-calculator-answer';
 const DOCUMENT_MATCH_TYPE: string = 'document';
 const HISTORY_CLUSTER_MATCH_TYPE: string = 'history-cluster';
 const PEDAL: string = 'pedal';
@@ -53,6 +55,20 @@ export class RealboxIconElement extends PolymerElement {
         value: '',
       },
 
+      expandedStateIconsChromeRefresh: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateIcons'),
+        reflectToAttribute: true,
+      },
+
+      /**  Whether icon should have a background. */
+      hasIconContainerBackground: {
+        type: Boolean,
+        computed:
+            `computeHasIconContainerBackground_(match.*, isWeatherAnswer)`,
+        reflectToAttribute: true,
+      },
+
       /**
        * Whether icon is in searchbox or not. Used to prevent
        * the match icon of rich suggestions from showing in the context of the
@@ -71,6 +87,16 @@ export class RealboxIconElement extends PolymerElement {
       isAnswer: {
         type: Boolean,
         computed: `computeIsAnswer_(match)`,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Whether suggestion answer is of answer type weather. Weather answers
+       * don't have the same background as other suggestion answers.
+       */
+      isWeatherAnswer: {
+        type: Boolean,
+        computed: `computeIsWeatherAnswer_(match)`,
         reflectToAttribute: true,
       },
 
@@ -113,8 +139,11 @@ export class RealboxIconElement extends PolymerElement {
 
   backgroundImage: string;
   defaultIcon: string;
+  expandedStateIconsChromeRefresh: boolean;
+  hasIconContainerBackground: boolean;
   inSearchbox: boolean;
   isAnswer: boolean;
+  isWeatherAnswer: boolean;
   maskImage: string;
   match: AutocompleteMatch;
   private iconStyle_: string;
@@ -156,6 +185,10 @@ export class RealboxIconElement extends PolymerElement {
     return this.match && !!this.match.answer;
   }
 
+  private computeIsWeatherAnswer_(): boolean {
+    return this.match?.isWeatherAnswerSuggestion || false;
+  }
+
   private computeMaskImage_(): string {
     if (this.match && (!this.match.isRichSuggestion || !this.inSearchbox)) {
       return `url(${this.match.iconUrl})`;
@@ -165,13 +198,53 @@ export class RealboxIconElement extends PolymerElement {
   }
 
   private computeIconStyle_(): string {
-    // Use a background image if applicable. Otherwise use a mask image.
+    if (this.expandedStateIconsChromeRefresh) {
+      if (this.showBackgroundImage_()) {
+        return `background-image: ${this.backgroundImage};` +
+            `background-color: transparent;`;
+      } else {
+        return `-webkit-mask-image: ${this.maskImage};`;
+      }
+    }
+
     if (this.backgroundImage) {
       return `background-image: ${this.backgroundImage};` +
           `background-color: transparent;`;
     } else {
       return `-webkit-mask-image: ${this.maskImage};`;
     }
+  }
+
+  // The following icons should not use the GM3 foreground color
+  // TODO(niharm): Refactor logic in C++ and send via mojom in
+  // "chrome/browser/ui/webui/realbox/realbox_handler.cc".
+  private showBackgroundImage_(): boolean {
+    const imageUrl = this.backgroundImage;
+    if (!imageUrl) {
+      return false;
+    }
+    const themedIcons = [
+      'calendar',
+      'drive_docs',
+      'drive_folder',
+      'drive_form',
+      'drive_image',
+      'drive_logo',
+      'drive_pdf',
+      'drive_sheets',
+      'drive_slides',
+      'drive_video',
+      'google_g',
+      'note',
+      'sites',
+    ];
+    for (const icon of themedIcons) {
+      if (imageUrl ===
+          'url(//resources/cr_components/omnibox/icons/' + icon + '.svg)') {
+        return true;
+      }
+    }
+    return false;
   }
 
   private computeImageSrc_(): string {
@@ -205,6 +278,20 @@ export class RealboxIconElement extends PolymerElement {
 
   private onImageLoad_() {
     this.imageLoading_ = false;
+  }
+
+  // All pedals and AiS except weather should be have a background that
+  // matches theme.
+  // TODO(niharm): Refactor logic in C++ and send via mojom in
+  // "chrome/browser/ui/webui/realbox/realbox_handler.cc".
+  private computeHasIconContainerBackground_(): boolean {
+    if (this.expandedStateIconsChromeRefresh && this.match) {
+      return this.match.type === PEDAL ||
+          this.match.type === HISTORY_CLUSTER_MATCH_TYPE ||
+          this.match.type === CALCULATOR ||
+          (!!this.match.answer && !this.isWeatherAnswer);
+    }
+    return false;
   }
 }
 
