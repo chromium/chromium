@@ -8712,6 +8712,24 @@
             ]
         }
     ],
+    "IOSPasswordInfobarDuration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Sixteen_Seconds",
+                    "params": {
+                        "duration-seconds": "16"
+                    },
+                    "enable_features": [
+                        "PasswordInfobarDisplayLength"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPaymentsBottomSheet": [
         {
             "platforms": [
@@ -12292,24 +12310,6 @@
                     "name": "Enabled_20231018",
                     "enable_features": [
                         "PasswordGenerationBottomSheet"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PasswordInfobarDisplayLength": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Sixteen_Seconds",
-                    "params": {
-                        "duration-seconds": "16"
-                    },
-                    "enable_features": [
-                        "PasswordInfobarDisplayLength"
                     ]
                 }
             ]
