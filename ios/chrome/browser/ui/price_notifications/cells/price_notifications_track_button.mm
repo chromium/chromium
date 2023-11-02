@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button.h"
 
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button_util.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/common/button_configuration_util.h"
@@ -24,46 +23,28 @@ const CGFloat kTrackButtonTopPadding = 4;
   self = [super init];
   if (self) {
     size_t horizontalPadding = [self horizontalPadding];
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kTrackButtonTopPadding, horizontalPadding, kTrackButtonTopPadding,
-          horizontalPadding);
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
+                                    kTrackButtonTopPadding, horizontalPadding);
 
-      // Customize title string.
-      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      NSDictionary* attributes = @{NSFontAttributeName : font};
-      NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-          initWithString:
-              l10n_util::GetNSString(
-                  IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON)];
-      [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-      buttonConfiguration.attributedTitle = string;
+    // Customize title string.
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+        initWithString:
+            l10n_util::GetNSString(
+                IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON)];
+    [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+    buttonConfiguration.attributedTitle = string;
 
-      buttonConfiguration.baseForegroundColor = UIColor.whiteColor;
-      buttonConfiguration.background.backgroundColor =
-          [UIColor colorNamed:kBlueColor];
-      buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-      self.configuration = buttonConfiguration;
-    } else {
-      self.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      [self.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
-      [self setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                 forState:UIControlStateNormal];
-      self.backgroundColor = [UIColor colorNamed:kBlueColor];
-      self.accessibilityIdentifier =
-          kPriceNotificationsListItemTrackButtonIdentifier;
-      [self setTitle:l10n_util::GetNSString(
-                         IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON)
-            forState:UIControlStateNormal];
-      UIEdgeInsets contentEdgeInsets =
-          UIEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
-                           kTrackButtonTopPadding, horizontalPadding);
-      SetContentEdgeInsets(self, contentEdgeInsets);
-    }
+    buttonConfiguration.baseForegroundColor = UIColor.whiteColor;
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+    buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+    self.configuration = buttonConfiguration;
   }
   return self;
 }
