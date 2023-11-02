@@ -1,0 +1,8 @@
+team_email: "chromeos-comercial-remote-management@google.com"
+os: CHROME_OS
+buganizer {
+  component_id: 1031231
+}
+buganizer_public {
+  component_id: 1185303
+}
