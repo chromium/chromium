@@ -43,6 +43,10 @@ export class CircularProgress extends HTMLElement {
     this.label_ = this.shadowRoot!.querySelector<SVGElement>('.label')!;
   }
 
+  static get is() {
+    return 'xf-circular-progress' as const;
+  }
+
   /**
    * Registers this instance to listen to these attribute changes.
    */
@@ -175,4 +179,10 @@ export class CircularProgress extends HTMLElement {
   }
 }
 
-window.customElements.define('xf-circular-progress', CircularProgress);
+declare global {
+  interface HTMLElementTagNameMap {
+    [CircularProgress.is]: CircularProgress;
+  }
+}
+
+window.customElements.define(CircularProgress.is, CircularProgress);
