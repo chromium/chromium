@@ -64,14 +64,12 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStat
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -111,10 +109,8 @@ public class TabGroupUiMediatorUnitTest {
     @Mock View mView;
     @Mock TabModelFilterProvider mTabModelFilterProvider;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock TabModelFilter mTabModelFilter;
     @Mock TabGridDialogMediator.DialogController mTabGridDialogController;
     @Mock Context mContext;
-    @Mock SnackbarManager mSnackbarManager;
     @Mock ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     @Mock private Resources mResources;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverArgumentCaptor;
@@ -130,7 +126,6 @@ public class TabGroupUiMediatorUnitTest {
     private TabImpl mTab3;
     private List<Tab> mTabGroup1;
     private List<Tab> mTabGroup2;
-    private List<Tab> mAllTabsList;
     private PropertyModel mModel;
     private TabGroupUiMediator mTabGroupUiMediator;
     private InOrder mResetHandlerInOrder;
@@ -238,7 +233,6 @@ public class TabGroupUiMediatorUnitTest {
         mTab3 = prepareTab(TAB3_ID, TAB3_ROOT_ID);
         mTabGroup1 = new ArrayList<>(Arrays.asList(mTab1));
         mTabGroup2 = new ArrayList<>(Arrays.asList(mTab2, mTab3));
-        mAllTabsList = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3));
 
         // Setup TabModel.
         doReturn(mTabModel).when(mTabModel).getComprehensiveModel();
