@@ -4,12 +4,17 @@
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './hats.mojom-webui.js';
 
+type RequestSurveyFunction =
+    (apiKey: string, triggerId: string, enableTesting: boolean,
+     languageList: string[], productSpecificDataJson: string) => void;
+
 class BrowserProxy {
   callbackRouter: PageCallbackRouter;
   handler: PageHandlerInterface;
 
-  constructor() {
+  constructor(requestSurveyFn: RequestSurveyFunction) {
     this.callbackRouter = new PageCallbackRouter();
+    this.callbackRouter.requestSurvey.addListener(requestSurveyFn);
 
     this.handler = new PageHandlerRemote();
 
@@ -18,16 +23,6 @@ class BrowserProxy {
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
-
-  static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxy());
-  }
-
-  static setInstance(obj: BrowserProxy) {
-    instance = obj;
-  }
 }
-
-let instance: BrowserProxy|null = null;
 
 export {BrowserProxy};

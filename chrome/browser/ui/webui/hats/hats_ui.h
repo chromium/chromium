@@ -37,6 +37,8 @@ class HatsUI : public ui::UntrustedWebUIController,
   HatsUI& operator=(const HatsUI&) = delete;
   ~HatsUI() override;
 
+  void SetHatsPageHandlerDelegate(HatsPageHandlerDelegate* delegate);
+
   void BindInterface(
       mojo::PendingReceiver<hats::mojom::PageHandlerFactory> receiver);
 
@@ -47,6 +49,7 @@ class HatsUI : public ui::UntrustedWebUIController,
       mojo::PendingReceiver<hats::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<HatsPageHandler> page_handler_;
+  raw_ptr<HatsPageHandlerDelegate> page_handler_delegate_ = nullptr;
 
   mojo::Receiver<hats::mojom::PageHandlerFactory> page_factory_receiver_{this};
 

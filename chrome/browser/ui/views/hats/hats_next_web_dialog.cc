@@ -16,19 +16,23 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
+#include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -129,15 +133,17 @@ HatsNextWebDialog::HatsNextWebDialog(
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data)
-    : HatsNextWebDialog(
-          browser,
-          trigger_id,
-          GURL("https://storage.googleapis.com/chrome_hats_staging/index.html"),
-          base::Seconds(10),
-          std::move(success_callback),
-          std::move(failure_callback),
-          product_specific_bits_data,
-          product_specific_string_data) {}
+    : HatsNextWebDialog(browser,
+                        trigger_id,
+                        base::FeatureList::IsEnabled(features::kHaTSWebUI)
+                            ? GURL(chrome::kChromeUIUntrustedHatsURL)
+                            : GURL("https://storage.googleapis.com/"
+                                   "chrome_hats_staging/index.html"),
+                        base::Seconds(10),
+                        std::move(success_callback),
+                        std::move(failure_callback),
+                        product_specific_bits_data,
+                        product_specific_string_data) {}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   gfx::Size preferred_size = views::View::CalculatePreferredSize();
@@ -149,6 +155,35 @@ gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
 void HatsNextWebDialog::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile, otr_profile_);
   otr_profile_ = nullptr;
+}
+
+std::string HatsNextWebDialog::GetTriggerId() {
+  return trigger_id_;
+}
+
+bool HatsNextWebDialog::GetEnableTesting() {
+  return base::FeatureList::IsEnabled(
+      features::kHappinessTrackingSurveysForDesktopDemo);
+}
+
+std::vector<std::string> HatsNextWebDialog::GetLanguageList() {
+  // The HaTS backend service accepts a list of preferred languages, although
+  // only the application locale is provided here to ensure that the survey
+  // matches the native UI language.
+  return std::vector<std::string>({g_browser_process->GetApplicationLocale()});
+}
+
+base::Value::Dict HatsNextWebDialog::GetProductSpecificDataJson() {
+  // Append any Product Specific Data to the query. This will be interpreted
+  // by the wrapper website and provided to the HaTS backend service.
+  base::Value::Dict dict;
+  for (const auto& field_value : product_specific_bits_data_) {
+    dict.Set(field_value.first, field_value.second ? "true" : "false");
+  }
+  for (const auto& field_value : product_specific_string_data_) {
+    dict.Set(field_value.first, field_value.second);
+  }
+  return dict;
 }
 
 HatsNextWebDialog::HatsNextWebDialog(
@@ -195,7 +230,16 @@ HatsNextWebDialog::HatsNextWebDialog(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   web_view_ =
       AddChildView(std::make_unique<HatsWebView>(otr_profile_, browser, this));
-  web_view_->LoadInitialURL(GetParameterizedHatsURL());
+  if (base::FeatureList::IsEnabled(features::kHaTSWebUI)) {
+    web_view_->LoadInitialURL(hats_survey_url_);
+    web_view_->web_contents()
+        ->GetWebUI()
+        ->GetController()
+        ->GetAs<HatsUI>()
+        ->SetHatsPageHandlerDelegate(this);
+  } else {
+    web_view_->LoadInitialURL(GetParameterizedHatsURL());
+  }
   web_view_->EnableSizingFromWebContents(kMinSize, kMaxSize);
 
   set_margins(gfx::Insets());
@@ -221,6 +265,8 @@ HatsNextWebDialog::~HatsNextWebDialog() {
   web_view_->web_contents()->SetDelegate(nullptr);
 }
 
+// TODO(crbug.com/1493711): Remove this whole function after HaTSWebUI is
+// launched.
 GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   GURL param_url =
       net::AppendQueryParameter(hats_survey_url_, "trigger_id", trigger_id_);

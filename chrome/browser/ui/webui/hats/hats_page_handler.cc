@@ -6,16 +6,24 @@
 
 #include <string>
 
+#include "base/json/json_writer.h"
 #include "google_apis/google_api_keys.h"
 
 HatsPageHandler::HatsPageHandler(
     mojo::PendingReceiver<hats::mojom::PageHandler> receiver,
-    mojo::PendingRemote<hats::mojom::Page> page)
-    : receiver_(this, std::move(receiver)), page_(std::move(page)) {}
+    mojo::PendingRemote<hats::mojom::Page> page,
+    HatsPageHandlerDelegate* delegate)
+    : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
+      delegate_(delegate) {
+  CHECK(delegate_ != nullptr);
+  std::string product_specific_data_json;
+  base::JSONWriter::Write(delegate_->GetProductSpecificDataJson(),
+                          &product_specific_data_json);
+  page_->RequestSurvey(google_apis::GetHatsAPIKey(), delegate_->GetTriggerId(),
+                       delegate_->GetEnableTesting(),
+                       delegate_->GetLanguageList(),
+                       product_specific_data_json);
+}
 
 HatsPageHandler::~HatsPageHandler() = default;
-
-// Triggered by getApiKey() call in TS; sends a response back to the renderer.
-void HatsPageHandler::GetApiKey(GetApiKeyCallback callback) {
-  std::move(callback).Run(google_apis::GetHatsAPIKey());
-}
