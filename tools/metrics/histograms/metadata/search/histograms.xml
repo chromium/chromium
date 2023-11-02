@@ -239,22 +239,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.Counted.Event"
-    enum="ContextualSearchCountedEvent" expires_after="2023-04-16">
-  <owner>donnd@chromium.org</owner>
+    enum="ContextualSearchCountedEvent" expires_after="2024-11-01">
+  <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records that a Search was done and whether the search was unintelligent or
     intelligent, and whether it was likely counted by Rasta. Recorded for all
     users when the panel is closed after being opened. Implemented for Android.
+    (Expired in 2023-04-16. Revived in 2024-11-03.)
   </summary>
 </histogram>
 
 <histogram name="Search.ContextualSearch.Counted.Searches" enum="Boolean"
-    expires_after="2023-04-16">
+    expires_after="2024-11-01">
 <!-- TODO(donnd): change expires_after to "never" once established and
          approved. -->
 
-  <owner>donnd@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
     Records that a Contextual Search was initiated by the user, and whether that
@@ -268,7 +269,7 @@ chromium-metrics-reviews@google.com.
     view the Search Result Page. Usually this is because the user did not expand
     the panel beyond the peeking state, but occasionally because it did not
     render. Recorded when the panel is closed for all users. Implemented for
-    Android.
+    Android. (Expired in 2023-04-16. Revived in 2024-11-03.)
   </summary>
 </histogram>
 
@@ -454,13 +455,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.ResolveRequested"
-    enum="ContextualSearchGestureIsTap" expires_after="2023-02-12">
+    enum="ContextualSearchGestureIsTap" expires_after="2024-11-01">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     Records that a resolve request was sent to the server, and whether that was
     due to a Tap or not (vs longpress). Recorded when the user triggers the
-    feature. Implemented for Android.
+    feature. Implemented for Android. (Expired in 2023-02-12. Revived in
+    2024-11-03.)
   </summary>
 </histogram>
 
@@ -932,24 +934,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPrivacyOptInPreferenceStateChange"
-    enum="BooleanOptedIn" expires_after="2023-10-15">
-  <owner>donnd@chromium.org</owner>
+    enum="BooleanOptedIn" expires_after="2024-11-01">
+  <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
     The Contextual Search privacy opt-in preference state after a modification
     from the preference menu. Recorded when the opt-in switch in Settings page
-    is toggled. Implemented for Android.
+    is toggled. Implemented for Android. (Expired in 2023-10-15. Revived in
+    2024-11-03.)
   </summary>
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoCardChoice" enum="BooleanOptedIn"
-    expires_after="2023-05-07">
-  <owner>donnd@chromium.org</owner>
+    expires_after="2024-11-01">
+  <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
     The user's choice in the Contextual Search promo card. Recorded when the 'No
     thanks' or 'Turn on' button on the Contextual Search Promo Card is chosen.
-    Implemented for Android.
+    Implemented for Android. (Expired in 2023-05-07. Revived in 2024-11-03.)
   </summary>
 </histogram>
 
@@ -967,13 +970,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoOpenCount2" units="opens"
-    expires_after="2023-06-26">
+    expires_after="2024-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>contextual-search-eng@chromium.org</owner>
   <summary>
     The total count of times that the revised promo has been shown. Once the
     user decides, this counter is no longer updated. Logged for each show of the
-    promo card. Implemented for Android.
+    promo card. Implemented for Android. (Expired in 2023-06-26. Revived in
+    2024-11-03.)
   </summary>
 </histogram>
 
@@ -1031,12 +1035,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchQuickActions.Category"
-    enum="ContextualSearchQuickActionCategory" expires_after="2023-10-22">
-  <owner>donnd@chromium.org</owner>
+    enum="ContextualSearchQuickActionCategory" expires_after="2024-11-01">
+  <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     The category of quick actions shown in the Contextual Search bar. Recorded
-    when the quick action is set. Implemented for Android.
+    when the quick action is set. Implemented for Android. (Expired in
+    2023-10-22. Revived in 2024-11-03.)
   </summary>
 </histogram>
 
@@ -1785,8 +1790,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.AllUserPermissions"
-    enum="ContextualSearchPermissions" expires_after="2022-12-11">
-  <owner>donnd@chromium.org</owner>
+    enum="ContextualSearchPermissions" expires_after="2024-11-01">
+  <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
     Enumerates all users by the permissions needed in order to use the Related
@@ -1794,7 +1799,8 @@ chromium-metrics-reviews@google.com.
     one of the current requirements (which are sending page content and sending
     the URL to Google). Logged whenever the Chrome application is paused. NOTE:
     Use the Count unique clients option to count users since multiple events are
-    logged for each user. Implemented for Android.
+    logged for each user. Implemented for Android. (Expired in 2022-12-11.
+    Revived in 2024-11-03.)
   </summary>
 </histogram>
 
@@ -1838,8 +1844,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.CTR" enum="BooleanClicked"
-    expires_after="2022-08-07">
-  <owner>donnd@chromium.org</owner>
+    expires_after="2024-11-01">
+  <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
     Records the click through rate for Related Searches. This is the rate that
@@ -1848,12 +1854,13 @@ chromium-metrics-reviews@google.com.
     were selected, and true whenever the user has clicked on any suggestion to
     view the suggested query. Only records one entry per botton-sheet session.
     Recorded when the presentation UI is dismissed. Implemented for Android.
+    (Expired in 2022-08-07. Revived in 2024-11-03.)
   </summary>
 </histogram>
 
 <histogram name="Search.RelatedSearches.NumberOfSuggestionsClicked2"
     units="selected" expires_after="2024-02-25">
-  <owner>donnd@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
     The number of suggestions that were chosen by the user in a bottom-sheet
@@ -1864,7 +1871,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.RelatedSearches.QualifiedUsers" enum="Boolean"
     expires_after="2024-03-03">
-  <owner>donnd@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
     Records true for every user that is qualified for the Related Searches
@@ -1878,26 +1885,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedCarouselIndex" units="position"
-    expires_after="2023-10-22">
-  <owner>donnd@chromium.org</owner>
+    expires_after="2024-11-01">
+  <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
     The display position index for a chip in the carousel when it was selected
     by the user. Written when a Related Searches suggestion chip is clicked.
-    Implemented for Android.
+    Implemented for Android. (Expired in 2023-10-22. Revived in 2024-11-03.)
   </summary>
 </histogram>
 
 <histogram name="Search.RelatedSearches.SelectedSuggestionIndex"
-    units="position" expires_after="2023-10-22">
-  <owner>donnd@chromium.org</owner>
+    units="position" expires_after="2024-11-01">
+  <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
     The display position index for a suggestion when it was selected by the
     user. The suggestion at location 0 is always the default selection search,
     which may not be a possible position in some implementations. All indecies
     from 1 on are true Related Searches suggestions. Written when a Related
-    Searches suggestion in the UI is selected. Implemented for Android.
+    Searches suggestion in the UI is selected. Implemented for Android. (Expired
+    in 2023-02-12. Revived in 2024-11-03.)
   </summary>
 </histogram>
 
