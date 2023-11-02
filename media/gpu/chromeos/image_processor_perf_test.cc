@@ -273,10 +273,6 @@ class ImageProcessorPerfTest : public ::testing::Test {
 // frames looped over |kNumberOfTestCycles| iterations to the GLImageProcessor
 // as fast as possible. Will print out elapsed processing time.
 TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
-  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
-      /*fallback_to_software_gl=*/false);
-
   if (!SupportsNecessaryGLExtension()) {
     GTEST_SKIP() << "Skipping GL Backend test, unsupported platform.";
   }
@@ -380,6 +376,10 @@ TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
 // frames looped over |kNumberOfCappedTestCycles| iterations to the
 // GLImageProcessor at 60fps. Will print out elapsed processing time.
 TEST_F(ImageProcessorPerfTest, CappedGLImageProcessorPerfTest) {
+  if (!SupportsNecessaryGLExtension()) {
+    GTEST_SKIP() << "Skipping GL Backend test, unsupported platform.";
+  }
+
   InitializeImageProcessorTest(/*use_cpu_memory=*/false, kMM21Detiling);
 
   scoped_refptr<base::SequencedTaskRunner> client_task_runner =
@@ -903,5 +903,10 @@ int main(int argc, char** argv) {
   auto* const test_environment = new media::test::VideoTestEnvironment;
   media::g_env = reinterpret_cast<media::test::VideoTestEnvironment*>(
       testing::AddGlobalTestEnvironment(test_environment));
+
+  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      /*fallback_to_software_gl=*/false);
+
   return RUN_ALL_TESTS();
 }
