@@ -355,11 +355,6 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   // No op.
 }
 
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-    contentNeedsAuthenticationChanged:(BOOL)needsAuth {
-  NOTREACHED();
-}
-
 - (void)gridViewControllerWillBeginDragging:
     (BaseGridViewController*)gridViewController {
   // No op.

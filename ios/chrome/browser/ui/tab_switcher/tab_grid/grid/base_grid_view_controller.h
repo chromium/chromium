@@ -55,11 +55,6 @@ class WebStateID;
 - (void)didChangeLastItemVisibilityInGridViewController:
     (BaseGridViewController*)gridViewController;
 
-// Tells the delegate when the currently displayed content is hidden from the
-// user until they authenticate. Used for incognito biometric authentication.
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-    contentNeedsAuthenticationChanged:(BOOL)needsAuth;
-
 // Tells the delegate that the grid view controller's scroll view will begin
 // dragging.
 - (void)gridViewControllerWillBeginDragging:

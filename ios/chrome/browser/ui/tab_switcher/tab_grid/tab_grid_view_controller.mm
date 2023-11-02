@@ -1977,11 +1977,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     (BaseGridViewController*)gridViewController {
 }
 
-- (void)gridViewController:(BaseGridViewController*)gridViewController
-    contentNeedsAuthenticationChanged:(BOOL)needsAuth {
-  [self configureButtonsForActiveAndCurrentPage];
-}
-
 - (void)gridViewControllerWillBeginDragging:
     (BaseGridViewController*)gridViewController {
 }

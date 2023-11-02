@@ -25,9 +25,6 @@
 @synthesize itemCount = _itemCount;
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
-    contentNeedsAuthenticationChanged:(BOOL)needsAuth {
-}
-- (void)gridViewController:(BaseGridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
   self.itemCount = count;
 }

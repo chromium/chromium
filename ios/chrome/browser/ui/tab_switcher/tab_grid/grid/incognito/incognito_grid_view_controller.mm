@@ -36,8 +36,6 @@
 
 - (void)setItemsRequireAuthentication:(BOOL)require {
   self.contentNeedsAuthentication = require;
-  [self.delegate gridViewController:self
-      contentNeedsAuthenticationChanged:require];
 
   if (require) {
     if (!_blockingView) {
