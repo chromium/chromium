@@ -2069,8 +2069,7 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
                   weak_ptr->proxy_delegate_->GetIpProtectionConfigCache();
               ipp_config_cache->InvalidateTryAgainAfterTime();
               while (ipp_config_cache->AreAuthTokensAvailable()) {
-                ipp_config_cache->GetAuthToken(
-                    network::mojom::IpProtectionProxyLayer::kProxyA);
+                ipp_config_cache->GetAuthToken(0);  // kProxyA.
               }
               // Call `PostTask()` instead of invoking the Verify method again
               // directly so that if `DisableCacheManagementForTesting()` needed
@@ -2115,8 +2114,7 @@ void NetworkContext::OnIpProtectionConfigAvailableForTesting(
                   network::mojom::IpProtectionProxyLayer::kProxyA));
 
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
-      ipp_config_cache->GetAuthToken(
-          network::mojom::IpProtectionProxyLayer::kProxyA);
+      ipp_config_cache->GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {
     std::move(callback).Run(std::move(result).value(), absl::nullopt);
     return;

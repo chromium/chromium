@@ -41,7 +41,7 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   bool AreAuthTokensAvailable() override { return auth_token_.has_value(); }
   void InvalidateTryAgainAfterTime() override {}
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
-      network::mojom::IpProtectionProxyLayer proxy_layer) override {
+      size_t chain_index) override {
     return std::move(auth_token_);
   }
 

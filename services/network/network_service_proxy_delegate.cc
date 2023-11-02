@@ -242,8 +242,7 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
   if (IsForIpProtection() && IsProxyForIpProtection(proxy_server)) {
     if (ipp_config_cache_) {
       absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
-          ipp_config_cache_->GetAuthToken(
-              network::mojom::IpProtectionProxyLayer::kProxyA);
+          ipp_config_cache_->GetAuthToken(chain_index);
       if (token) {
         vlog("adding auth token");
         // The token value we have here is the full Authorization header value,

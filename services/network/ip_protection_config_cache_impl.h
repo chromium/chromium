@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   void SetUp() override;
   bool AreAuthTokensAvailable() override;
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
-      network::mojom::IpProtectionProxyLayer proxy_layer) override;
+      size_t chain_index) override;
   void InvalidateTryAgainAfterTime() override;
   void SetIpProtectionTokenCacheManagerForTesting(
       network::mojom::IpProtectionProxyLayer proxy_layer,

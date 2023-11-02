@@ -32,11 +32,14 @@ IpProtectionConfigCacheImpl::~IpProtectionConfigCacheImpl() = default;
 void IpProtectionConfigCacheImpl::SetUp() {
   ipp_proxy_list_manager_ =
       std::make_unique<IpProtectionProxyListManagerImpl>(&config_getter_);
-  // TODO(@ciaramcmullin) Initialize kProxyB cache manager when fetching tokens
-  // for proxy B is supported.
+
   ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyA] =
       std::make_unique<IpProtectionTokenCacheManagerImpl>(
           &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyA);
+
+  ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyB] =
+      std::make_unique<IpProtectionTokenCacheManagerImpl>(
+          &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyB);
 }
 
 bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
@@ -49,9 +52,11 @@ bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
 }
 
 absl::optional<network::mojom::BlindSignedAuthTokenPtr>
-IpProtectionConfigCacheImpl::GetAuthToken(
-    network::mojom::IpProtectionProxyLayer proxy_layer) {
+IpProtectionConfigCacheImpl::GetAuthToken(size_t chain_index) {
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> result;
+  auto proxy_layer = chain_index == 0
+                         ? network::mojom::IpProtectionProxyLayer::kProxyA
+                         : network::mojom::IpProtectionProxyLayer::kProxyB;
   if (ipp_token_cache_managers_.count(proxy_layer) > 0) {
     result = ipp_token_cache_managers_[proxy_layer]->GetAuthToken();
   }

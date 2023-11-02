@@ -81,7 +81,6 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   SetUp();
-  CHECK(proxy_layer == network::mojom::IpProtectionProxyLayer::kProxyA);
 
   // The `batch_size` is cast to an `int` for use by BlindSignAuth, so check
   // for overflow here.
@@ -98,6 +97,7 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
     return;
   }
 
+  // TODO(crbug.com/1491092): Pass in proxy_layer parameter.
   RequestOAuthToken(batch_size, std::move(callback));
 }
 
@@ -194,6 +194,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
   FetchBlindSignedToken(access_token_info, batch_size, std::move(callback));
 }
 
+// TODO(crbug.com/1491092): Pass in proxy_layer parameter.
 void IpProtectionConfigProvider::FetchBlindSignedToken(
     signin::AccessTokenInfo access_token_info,
     uint32_t batch_size,

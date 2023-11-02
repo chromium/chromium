@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // permanent reason. This method may return `nullopt` even if
   // `IsAuthTokenAvailable()` recently returned `true`.
   virtual absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
-      network::mojom::IpProtectionProxyLayer proxy_layer) = 0;
+      size_t chain_index) = 0;
 
   // Invalidate any previous instruction that token requests should not be
   // made until after a specified time.
