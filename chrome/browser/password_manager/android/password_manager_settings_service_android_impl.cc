@@ -94,25 +94,6 @@ bool ShouldSuspendPasswordSavingDueToError(PrefService* pref_service,
              password_manager::prefs::kSavePasswordsSuspendedByError);
 }
 
-// Checks that the user is either syncing and enrolled in UPM or not syncing and
-// ready to use local UPM.
-bool UsesUPMBackend(PrefService* pref_service,
-                    syncer::SyncService* sync_service) {
-  // TODO(crbug.com/1494913): Include the bridge helper check here.
-  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  bool is_pwd_sync_enabled =
-      IsSyncFeatureEnabledIncludingPasswords(sync_service);
-  bool is_unenrolled = IsUnenrolledFromUPM(pref_service);
-  if (is_pwd_sync_enabled && is_unenrolled) {
-    return false;
-  }
-  if (is_pwd_sync_enabled) {
-    return true;
-  }
-  return UsesUPMForLocalM2(pref_service);
-}
-
 }  // namespace
 
 PasswordManagerSettingsServiceAndroidImpl::
@@ -167,7 +148,7 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
     return regular_pref->GetValue()->GetBool();
   }
 
-  if (!UsesUPMBackend(pref_service_, sync_service_)) {
+  if (!UsesUPMBackend()) {
     return regular_pref->GetValue()->GetBool();
   }
 
@@ -182,10 +163,7 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
-  if (!bridge_helper_) {
-    return;
-  }
-  if (!UsesUPMBackend(pref_service_, sync_service_)) {
+  if (!UsesUPMBackend()) {
     return;
   }
   FetchSettings();
@@ -194,7 +172,7 @@ void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
 void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
   // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
   // Android.
-  if (!bridge_helper_ || !UsesUPMBackend(pref_service_, sync_service_)) {
+  if (!UsesUPMBackend()) {
     pref_service_->SetBoolean(
         password_manager::prefs::kCredentialsEnableAutosignin, false);
     return;
@@ -257,8 +235,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
   // written to the cache and the regular pref, unless this call to
   // `OnSettingValueFetched` was part of the final fetch after a sync state
   // change.
-  if (!UsesUPMBackend(pref_service_, sync_service_) &&
-      !fetch_after_sync_status_change_in_progress_) {
+  if (!UsesUPMBackend() && !fetch_after_sync_status_change_in_progress_) {
     return;
   }
 
@@ -270,7 +247,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
   CHECK(bridge_helper_);
   UpdateSettingFetchState(setting);
 
-  if (!UsesUPMBackend(pref_service_, sync_service_)) {
+  if (!UsesUPMBackend()) {
     return;
   }
 
@@ -391,4 +368,24 @@ void PasswordManagerSettingsServiceAndroidImpl::
     // for the evicted users.
     RequestSettingsFromBackend();
   }
+}
+
+bool PasswordManagerSettingsServiceAndroidImpl::UsesUPMBackend() const {
+  // It's not possible to get or set the password settings values without the
+  // helper.
+  if (!bridge_helper_) {
+    return false;
+  }
+  // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
+  // Android.
+  bool is_pwd_sync_enabled =
+      IsSyncFeatureEnabledIncludingPasswords(sync_service_);
+  bool is_unenrolled = IsUnenrolledFromUPM(pref_service_);
+  if (is_pwd_sync_enabled && is_unenrolled) {
+    return false;
+  }
+  if (is_pwd_sync_enabled) {
+    return true;
+  }
+  return UsesUPMForLocalM2(pref_service_);
 }

@@ -92,6 +92,10 @@ class PasswordManagerSettingsServiceAndroidImpl
   // in the middle of the browser session.
   void OnUnenrollmentPreferenceChanged();
 
+  // Checks that the user is either syncing and enrolled in UPM or not syncing
+  // and ready to use local UPM.
+  bool UsesUPMBackend() const;
+
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
