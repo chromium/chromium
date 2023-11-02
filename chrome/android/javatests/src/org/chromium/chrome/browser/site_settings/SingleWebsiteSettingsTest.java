@@ -43,6 +43,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
@@ -164,6 +165,45 @@ public class SingleWebsiteSettingsTest {
                                             ContentSettingsType.REQUEST_DESKTOP_SITE)));
                 });
         settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testChoosenObjectPermission() {
+        String origin = "https://example.com";
+        Website website = new Website(WebsiteAddress.create(origin), WebsiteAddress.create(origin));
+        String object =
+                """
+                 {"name": "Some device",
+                  "ephemeral-guid": "1",
+                  "product-id": "2",
+                  "serial-number": "3"}""";
+        website.addChosenObjectInfo(
+                new ChosenObjectInfo(
+                        ContentSettingsType.USB_CHOOSER_DATA,
+                        origin,
+                        "Some device",
+                        object,
+                        /* isManaged= */ false));
+        website.addChosenObjectInfo(
+                new ChosenObjectInfo(
+                        ContentSettingsType.USB_CHOOSER_DATA,
+                        origin,
+                        "A managed device",
+                        "not needed",
+                        /* isManaged= */ true));
+
+        // Open site settings and check that permissions are displayed.
+        SettingsActivity activity = SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        onView(withText("Some device")).check(matches(isDisplayed()));
+        onView(withText("A managed device")).check(matches(isDisplayed()));
+
+        // Reset permission and check that only the non-managed permission is removed.
+        onView(withText(containsString("reset"))).perform(click());
+        onView(withText("Delete & reset")).perform(click());
+        onView(withText("Some device")).check(doesNotExist());
+        onView(withText("A managed device")).check(matches(isDisplayed()));
+        activity.finish();
     }
 
     @Test
