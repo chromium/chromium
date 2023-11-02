@@ -41,8 +41,8 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/session_metrics.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 
 // To get access to UseSessionSerializationOptimizations().

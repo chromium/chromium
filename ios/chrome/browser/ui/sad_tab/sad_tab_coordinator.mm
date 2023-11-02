@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_view_controller.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/web_state.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_SESSION_METRICS_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_SESSION_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_SESSION_METRICS_H_
+#define IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_SESSION_METRICS_H_
 
 #include "base/supports_user_data.h"
 
@@ -60,4 +60,4 @@ class SessionMetrics : public base::SupportsUserData::Data {
   unsigned int activated_web_state_counter_ = 0;
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_SESSION_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_SESSION_METRICS_H_

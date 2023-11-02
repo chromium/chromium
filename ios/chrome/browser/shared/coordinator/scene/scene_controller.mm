@@ -157,7 +157,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"

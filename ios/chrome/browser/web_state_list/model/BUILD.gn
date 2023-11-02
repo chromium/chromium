@@ -13,7 +13,7 @@ source_set("session_metrics") {
   ]
 }
 
-source_set("web_state_list") {
+source_set("model") {
   sources = [
     "web_state_dependency_installation_observer.h",
     "web_state_dependency_installation_observer.mm",
@@ -43,7 +43,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":session_metrics",
-    ":web_state_list",
+    ":model",
     "//base/test:test_support",
     "//components/favicon/ios",
     "//ios/chrome/browser/sessions:serialisation",

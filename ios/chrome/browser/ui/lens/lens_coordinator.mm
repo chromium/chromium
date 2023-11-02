@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
-#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"

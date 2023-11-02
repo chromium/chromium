@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/web_state_list/session_metrics.h"
+#include "ios/chrome/browser/web_state_list/model/session_metrics.h"
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"

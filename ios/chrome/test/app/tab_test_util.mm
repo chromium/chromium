@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/open_url_context.h"
 

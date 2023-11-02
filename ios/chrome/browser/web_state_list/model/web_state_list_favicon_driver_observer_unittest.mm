@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/web_state_list_favicon_driver_observer.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"

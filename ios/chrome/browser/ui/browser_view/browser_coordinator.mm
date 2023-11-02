@@ -220,7 +220,7 @@
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"

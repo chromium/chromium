@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_favicon_driver_observer.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
