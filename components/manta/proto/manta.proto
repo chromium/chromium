@@ -64,11 +64,13 @@ message Image {
 }
 
 message OutputData {
-  reserved 3, 4;
+  reserved 3, 4, 5;
   oneof output_data {
     string text = 1;
     Image image = 2;
   }
+
+  optional uint32 generation_seed = 6;
 }
 
 message Response {
