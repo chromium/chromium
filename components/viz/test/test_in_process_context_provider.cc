@@ -94,11 +94,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
 
     caps_ = raster_context_->GetCapabilities();
-
-    // We don't have a good way for tests to change what the in process gpu
-    // service will return for this capability. But we want to use gpu
-    // rasterization if and only if the test requests it.
-    caps_.gpu_rasterization = is_gpu_raster;
+    CHECK_EQ(caps_.supports_oop_raster, is_gpu_raster);
   }
 
   cache_controller_ = std::make_unique<ContextCacheController>(

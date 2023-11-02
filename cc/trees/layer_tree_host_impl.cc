@@ -2897,7 +2897,8 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
       shared_image_caps.supports_scanout_shared_images;
   raster_caps_.tile_texture_target = GL_TEXTURE_2D;
 
-  if (settings_.gpu_rasterization_disabled || !context_caps.gpu_rasterization) {
+  if (settings_.gpu_rasterization_disabled ||
+      !context_caps.supports_oop_raster) {
     // This is the GPU compositing but software rasterization path. Pick the
     // best format for GPU textures to be uploaded to.
     raster_caps_.tile_format =
@@ -2917,7 +2918,6 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   }
 
   // GPU compositing + rasterization is enabled if we get this far.
-  CHECK(context_caps.supports_oop_raster);
   raster_caps_.use_gpu_rasterization = true;
 
   raster_caps_.can_use_msaa =
