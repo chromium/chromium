@@ -402,10 +402,6 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
     return;
   }
 
-  if (prefetch_loader_) {
-    LogEvent(Event::kRequestInvalidated, result_type, /*is_prefetch=*/true);
-  }
-
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.page_classification = input.current_page_classification();
   search_terms_args.focus_type = input.focus_type();
@@ -419,8 +415,21 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
   const TemplateURL* template_url =
       template_url_service->GetDefaultSearchProvider();
 
-  // Create a loader for the request and take ownership of it.
-  prefetch_loader_ =
+  std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;
+  if (result_type == ResultType::kRemoteNoURL) {
+    prefetch_loader = &ntp_prefetch_loader_;
+  } else if (result_type == ResultType::kRemoteSendURL) {
+    prefetch_loader = &srp_web_prefetch_loader_;
+  } else {
+    NOTREACHED_NORETURN();
+  }
+
+  if (*prefetch_loader) {
+    LogEvent(Event::kRequestInvalidated, result_type, /*is_prefetch=*/true);
+  }
+
+  // Create a loader for the appropriate page context and take ownership of it.
+  *prefetch_loader =
       client()
           ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
           ->StartZeroPrefixSuggestionsRequest(
@@ -603,7 +612,16 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::OnPrefetchURLLoadComplete");
 
-  DCHECK_EQ(prefetch_loader_.get(), source);
+  std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;
+  if (result_type == ResultType::kRemoteNoURL) {
+    prefetch_loader = &ntp_prefetch_loader_;
+  } else if (result_type == ResultType::kRemoteSendURL) {
+    prefetch_loader = &srp_web_prefetch_loader_;
+  } else {
+    NOTREACHED_NORETURN();
+  }
+
+  DCHECK_EQ(prefetch_loader->get(), source);
 
   if (response_code == 200) {
     LogEvent(Event::kRemoteResponseReceived, result_type, /*is_prefetch=*/true);
@@ -615,7 +633,7 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
                         /*is_prefetch=*/true, &unused_results);
   }
 
-  prefetch_loader_.reset();
+  prefetch_loader->reset();
 }
 
 AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
