@@ -3478,7 +3478,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSignin) {
   // calling the observer.
   test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
   network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
-  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
       kIdpOrigin, /*idp_signin_status=*/true);
 
   WaitForCurrentAuthRequest();
@@ -3534,7 +3534,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSigninButHidden) {
   // calling observer.
   test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
   network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
-  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
       kIdpOrigin, /*idp_signin_status=*/true);
 
   WaitForCurrentAuthRequest();
@@ -3591,7 +3591,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiSigninFromDifferentIdp) {
   // Simulate user signing into different IdP by updating the IdP signin status
   // and calling observer.
   test_permission_delegate_->idp_signin_statuses_[kOtherOrigin] = true;
-  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
       kOtherOrigin, /*idp_signin_status=*/true);
   base::RunLoop().RunUntilIdle();
 
@@ -3645,7 +3645,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiAccountEndpointKeepsFailing) {
   test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
   weak_dialog_controller->SetIdpSigninStatusMismatchDialogAction(
       IdpSigninStatusMismatchDialogAction::kClose);
-  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
       kIdpOrigin, /*idp_signin_status=*/true);
 
   base::RunLoop().RunUntilIdle();
@@ -3707,7 +3707,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenFailDifferentEndpoint) {
   // calling the observer.
   test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
   network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
-  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
       kIdpOrigin, /*idp_signin_status=*/true);
 
   WaitForCurrentAuthRequest();
@@ -3776,7 +3776,7 @@ TEST_F(FederatedAuthRequestImplTest,
   // calling the observer.
   test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
   network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
-  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
       kIdpOrigin, /*idp_signin_status=*/true);
   WaitForCurrentAuthRequest();
 
@@ -4746,7 +4746,7 @@ TEST_F(FederatedAuthRequestImplTest,
   // observers.
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
-  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
       OriginFromString(kProviderUrlFull), true);
 
   WaitForCurrentAuthRequest();

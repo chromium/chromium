@@ -20,8 +20,11 @@ class FederatedIdentityPermissionContextDelegate {
   // Observes IdP sign-in status changes.
   class IdpSigninStatusObserver : public base::CheckedObserver {
    public:
-    virtual void OnIdpSigninStatusChanged(const url::Origin& idp_origin,
-                                          bool idp_signin_status) = 0;
+    // Called every time we receive a signed-in status (so we can refresh
+    // the account list if a new account is now signed in) and also when
+    // the status changes from signed-in to signed-out.
+    virtual void OnIdpSigninStatusReceived(const url::Origin& idp_origin,
+                                           bool idp_signin_status) = 0;
 
    protected:
     IdpSigninStatusObserver() = default;

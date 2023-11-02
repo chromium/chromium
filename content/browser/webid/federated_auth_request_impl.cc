@@ -1077,7 +1077,7 @@ void FederatedAuthRequestImpl::UnregisterIdP(const GURL& idp,
   std::move(callback).Run(true);
 }
 
-void FederatedAuthRequestImpl::OnIdpSigninStatusChanged(
+void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
     const url::Origin& idp_config_origin,
     bool idp_signin_status) {
   if (!idp_signin_status) {

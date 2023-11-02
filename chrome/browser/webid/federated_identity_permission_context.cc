@@ -125,13 +125,15 @@ void FederatedIdentityPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     bool idp_signin_status) {
   absl::optional<bool> old_idp_signin_status = GetIdpSigninStatus(idp_origin);
-  if (idp_signin_status == old_idp_signin_status) {
+  // We always notify if idp_signin_status is true because the list of logged
+  // in accounts may have changed.
+  if (!idp_signin_status && (idp_signin_status == old_idp_signin_status)) {
     return;
   }
 
   idp_signin_context_->SetSigninStatus(idp_origin, idp_signin_status);
   for (IdpSigninStatusObserver& observer : idp_signin_status_observer_list_) {
-    observer.OnIdpSigninStatusChanged(idp_origin, idp_signin_status);
+    observer.OnIdpSigninStatusReceived(idp_origin, idp_signin_status);
   }
 }
 

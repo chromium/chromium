@@ -95,8 +95,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
               RevokeCallback) override;
 
   // FederatedIdentityPermissionContextDelegate::IdpSigninStatusObserver:
-  void OnIdpSigninStatusChanged(const url::Origin& idp_config_origin,
-                                bool idp_signin_status) override;
+  void OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
+                                 bool idp_signin_status) override;
 
   void SetTokenRequestDelayForTests(base::TimeDelta delay);
   void SetNetworkManagerForTests(
