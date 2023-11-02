@@ -88,4 +88,8 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
     PropertyModel getModelForTesting() {
         return mTouchToFillCreditCardModel;
     }
+
+    TouchToFillCreditCardMediator getMediatorForTesting() {
+        return mMediator;
+    }
 }
