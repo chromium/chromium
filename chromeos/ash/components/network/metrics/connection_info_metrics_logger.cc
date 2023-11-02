@@ -180,7 +180,8 @@ void ConnectionInfoMetricsLogger::ConnectionAttemptFinished(
 
   if (curr_info.status == ConnectionInfo::Status::kConnected) {
     NetworkMetricsHelper::LogAllConnectionResult(curr_info.guid,
-                                                 !curr_info.is_user_initiated);
+                                                 !curr_info.is_user_initiated,
+                                                 /*is_repeated_error=*/false);
     NotifyConnectionResult(curr_info.guid, /*shill_error=*/absl::nullopt);
   }
 
@@ -192,7 +193,9 @@ void ConnectionInfoMetricsLogger::ConnectionAttemptFinished(
       curr_info.status == ConnectionInfo::Status::kDisconnected &&
       NetworkState::ErrorIsValid(curr_info.shill_error)) {
     NetworkMetricsHelper::LogAllConnectionResult(
-        curr_info.guid, !curr_info.is_user_initiated, curr_info.shill_error);
+        curr_info.guid, !curr_info.is_user_initiated,
+        /*is_repeated_error=*/prev_info->shill_error == curr_info.shill_error,
+        curr_info.shill_error);
     NotifyConnectionResult(curr_info.guid, curr_info.shill_error);
   }
 }
