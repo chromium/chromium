@@ -872,7 +872,6 @@ void DCLayerOverlayProcessor::CollectCandidates(
             has_p010_video_processor_support_, allowed_yuv_overlay_count_,
             global_overlay_state.processed_yuv_overlay_count,
             resource_provider);
-        LOG(ERROR) << "ValidateYUVQuad: " << result;
         is_yuv_overlay = true;
         break;
       case DrawQuad::Material::kTextureContent: {
